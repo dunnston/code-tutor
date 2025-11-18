@@ -133,47 +133,55 @@ This document tracks the development roadmap for Code Tutor, an interactive codi
 
 ---
 
-## Phase 3: Curriculum System 📚
+## Phase 3: Curriculum System 📚 (Mostly Complete)
 **Goal**: Build lesson data structure, navigation, and validation
+**Status**: CORE COMPLETE (completed in Phase 1)
 
-### 3.1 Lesson Data Structure
-- [ ] Design JSON schema for lessons
-  - [ ] Lesson metadata (id, title, description, difficulty)
-  - [ ] Starter code, solution code
-  - [ ] Validation criteria (output matching, code checks)
-  - [ ] Hints array (progressive difficulty)
-  - [ ] XP reward, prerequisites
-- [ ] Create lesson loader utility
-- [ ] Implement lesson parser and validator
+### 3.1 Lesson Data Structure ✅
+- [x] Design JSON schema for lessons
+  - [x] Lesson metadata (id, title, description, difficulty)
+  - [x] Starter code, solution code
+  - [x] Validation criteria (output matching, code checks)
+  - [x] XP reward, prerequisites
+  - [ ] Hints array (progressive difficulty) - TO DO
+- [x] Create lesson loader utility (lib/lessons.ts)
+- [x] Implement lesson parser and validator
 
-### 3.2 Lesson Renderer
-- [ ] Create lesson content component (left panel)
-- [ ] Render markdown content with syntax highlighting
-- [ ] Add image/video embedding support
-- [ ] Display assignment instructions clearly
-- [ ] Show lesson progress (current/total lessons)
+### 3.2 Lesson Renderer ✅
+- [x] Create lesson content component (LessonPanel)
+- [x] Render markdown content with syntax highlighting
+- [x] Display assignment instructions clearly
+- [x] Show lesson progress (current/total lessons)
+- [x] Add previous/next navigation buttons
+- [ ] Add image/video embedding support - OPTIONAL
 
-### 3.3 Python Track (Beginner)
-- [ ] Lesson 1: "The Scroll of Print" (print statements)
-- [ ] Lesson 2: "Variables of Power" (variables & data types)
-- [ ] Lesson 3: "The Conditional Path" (if/else statements)
-- [ ] Lesson 4: "The Loop of Destiny" (for/while loops)
-- [ ] Lesson 5: "The Function Forge" (defining functions)
-- [ ] Lessons 6-15: Expand to cover lists, dicts, file I/O, classes
+### 3.3 Python Track (Beginner) - IN PROGRESS
+- [x] Lesson 1: "The Scroll of Print" (print statements)
+- [x] Lesson 2: "Variables of Power" (variables & data types)
+- [x] Lesson 3: "The Conditional Path" (if/else statements)
+- [x] Lesson 4: "The Loop of Destiny" (for/while loops)
+- [x] Lesson 5: "The Function Forge" (defining functions)
+- [ ] Lessons 6-15: Expand to cover lists, dicts, file I/O, classes - TO DO
 
-### 3.4 Exercise Validation
-- [ ] Implement output matching (expected vs. actual)
-- [ ] Add regex-based output validation
-- [ ] Implement code structure checks (e.g., "must use a loop")
-- [ ] Create visual feedback (success/error messages)
-- [ ] Award XP on successful completion
-- [ ] Unlock next lesson after validation passes
+### 3.4 Exercise Validation ✅
+- [x] Implement output matching (expected vs. actual)
+- [x] Add regex-based output validation
+- [x] Implement code structure checks (lib/validation.ts)
+- [x] Create visual feedback (success/error messages in console)
+- [x] Award XP on successful completion
+- [ ] Unlock next lesson after validation passes - TO DO
 
-### 3.5 Hint System
-- [ ] Display hints progressively (1 → 2 → 3)
-- [ ] Integrate AI-generated hints as fallback
-- [ ] Track hint usage in progress data
-- [ ] Add XP penalty for using too many hints (optional)
+### 3.5 Hint System ✅
+- [x] Add hints array to lesson JSON structure (already in schema)
+- [x] Display hints progressively (1 → 2 → 3) in LessonPanel
+- [x] Show hint count (revealed/total)
+- [x] Progressive reveal with "Show Next Hint" button
+- [x] Reset hints when lesson changes
+- [x] Integrate AI-generated hints as fallback (AI Tutor available!)
+- [ ] Track hint usage in progress data (Phase 4)
+- [ ] Add XP penalty for using too many hints (optional - Phase 4)
+
+**Remaining Work**: Lesson unlocking, more lessons (6-15)
 
 ---
 
