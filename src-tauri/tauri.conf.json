@@ -1,20 +1,22 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
-  "productName": "code-tutor",
+  "productName": "Code Tutor",
   "version": "0.1.0",
-  "identifier": "com.tauri.dev",
+  "identifier": "com.codetutor.app",
   "build": {
-    "frontendDist": "../build",
-    "devUrl": "http://localhost:3000",
+    "frontendDist": "../dist",
+    "devUrl": "http://localhost:1420",
     "beforeDevCommand": "npm run dev",
     "beforeBuildCommand": "npm run build"
   },
   "app": {
     "windows": [
       {
-        "title": "code-tutor",
-        "width": 800,
-        "height": 600,
+        "title": "Code Tutor",
+        "width": 1400,
+        "height": 900,
+        "minWidth": 1200,
+        "minHeight": 700,
         "resizable": true,
         "fullscreen": false
       }

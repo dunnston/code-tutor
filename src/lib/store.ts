@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import type { Lesson } from '@types/lesson'
 import type { ConsoleMessage, ExecutionStatus } from '@types/execution'
+import type { ChatMessage, AIProviderType } from '@types/ai'
 import { loadUserCode, saveUserCode, clearUserCode } from './storage'
 
 interface AppState {
@@ -21,6 +22,15 @@ interface AppState {
   // Execution state
   executionStatus: ExecutionStatus
   setExecutionStatus: (status: ExecutionStatus) => void
+
+  // AI Chat
+  chatMessages: ChatMessage[]
+  addChatMessage: (message: Omit<ChatMessage, 'id' | 'timestamp'>) => void
+  clearChat: () => void
+  chatOpen: boolean
+  toggleChat: () => void
+  aiProvider: AIProviderType
+  setAIProvider: (provider: AIProviderType) => void
 
   // UI state
   sidebarCollapsed: boolean
@@ -87,6 +97,25 @@ export const useAppStore = create<AppState>((set, get) => ({
   // Execution state
   executionStatus: 'idle',
   setExecutionStatus: (status) => set({ executionStatus: status }),
+
+  // AI Chat state
+  chatMessages: [],
+  addChatMessage: (message) =>
+    set((state) => ({
+      chatMessages: [
+        ...state.chatMessages,
+        {
+          ...message,
+          id: Math.random().toString(36).substring(7),
+          timestamp: new Date(),
+        },
+      ],
+    })),
+  clearChat: () => set({ chatMessages: [] }),
+  chatOpen: false,
+  toggleChat: () => set((state) => ({ chatOpen: !state.chatOpen })),
+  aiProvider: 'none',
+  setAIProvider: (provider) => set({ aiProvider: provider }),
 
   // UI state
   sidebarCollapsed: false,

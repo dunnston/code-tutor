@@ -5,6 +5,7 @@ import { LessonPanel } from '@components/LessonPanel'
 import { CodeEditor } from '@components/CodeEditor'
 import { Console } from '@components/Console'
 import { ActionBar } from '@components/ActionBar'
+import { ChatPanel } from '@components/ChatPanel'
 import { useAppStore } from '@/lib/store'
 import { executePythonCode } from '@/lib/tauri'
 import { validateCode, getValidationSummary } from '@/lib/validation'
@@ -19,6 +20,7 @@ function App() {
   const setExecutionStatus = useAppStore((state) => state.setExecutionStatus)
   const code = useAppStore((state) => state.code)
   const currentLesson = useAppStore((state) => state.currentLesson)
+  const chatOpen = useAppStore((state) => state.chatOpen)
 
   // Store last execution result for validation
   const lastExecutionResult = useRef<ExecutionResult | undefined>()
@@ -149,14 +151,14 @@ function App() {
       <div className="flex-1 overflow-hidden">
         <PanelGroup direction="horizontal">
           {/* Left: Lesson content panel */}
-          <Panel defaultSize={40} minSize={25}>
+          <Panel defaultSize={chatOpen ? 30 : 40} minSize={20}>
             <LessonPanel />
           </Panel>
 
           <PanelResizeHandle className="w-1 bg-navy-700 hover:bg-accent-500 transition-colors cursor-col-resize" />
 
-          {/* Right: Code editor + console panel */}
-          <Panel defaultSize={60} minSize={40}>
+          {/* Middle: Code editor + console panel */}
+          <Panel defaultSize={chatOpen ? 40 : 60} minSize={30}>
             <PanelGroup direction="vertical">
               {/* Top: Code editor */}
               <Panel defaultSize={65} minSize={30}>
@@ -171,8 +173,21 @@ function App() {
               </Panel>
             </PanelGroup>
           </Panel>
+
+          {/* Right: AI Chat panel (conditional) */}
+          {chatOpen && (
+            <>
+              <PanelResizeHandle className="w-1 bg-navy-700 hover:bg-accent-500 transition-colors cursor-col-resize" />
+              <Panel defaultSize={30} minSize={20}>
+                <ChatPanel />
+              </Panel>
+            </>
+          )}
         </PanelGroup>
       </div>
+
+      {/* Floating chat button when closed */}
+      {!chatOpen && <ChatPanel />}
 
       <ActionBar
         onRun={handleRun}

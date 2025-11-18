@@ -89,37 +89,47 @@ This document tracks the development roadmap for Code Tutor, an interactive codi
 
 ---
 
-## Phase 2: AI Tutor Integration 🤖
+## Phase 2: AI Tutor Integration 🤖 ✅
 **Goal**: Connect AI models and implement Socratic tutoring system
+**Status**: COMPLETED
 
-### 2.1 Backend AI Setup
-- [ ] Install Ollama dependencies in Rust
-- [ ] Create Ollama API client (for local LLM)
-- [ ] Create Claude API client (Anthropic SDK)
-- [ ] Implement AI provider selection logic
-- [ ] Add API key management (secure storage)
+### 2.1 Frontend AI Infrastructure
+- [x] Create AI TypeScript types (ChatMessage, AIProvider, ChatContext)
+- [x] Build Ollama provider with streaming support
+- [x] Build Claude API provider with streaming support
+- [x] Create AIService manager singleton
+- [x] Add AI state management to Zustand store
+- [x] Implement provider selection and switching logic
 
 ### 2.2 Tutor Prompt Engineering
-- [ ] Design system prompt for Socratic method
-- [ ] Create context payload (user code + lesson + console output)
-- [ ] Implement hint progression system (vague → specific)
-- [ ] Add anti-spoiler safeguards (prevent direct answers)
-- [ ] Test prompts with sample scenarios
+- [x] Design system prompt for Socratic method
+- [x] Create context payload (user code + lesson + console output + chat history)
+- [x] Add anti-spoiler safeguards (prevent direct answers)
+- [x] Implement adaptive help levels in system prompt
+- [x] Add positive reinforcement guidelines
 
 ### 2.3 Chat Interface
-- [ ] Create collapsible AI chat sidebar
-- [ ] Add message history (user + AI)
-- [ ] Implement message input with send button
-- [ ] Add "Ask for Hint" quick action button
-- [ ] Display AI thinking/loading state
-- [ ] Add message timestamps
+- [x] Create ChatPanel component with collapsible sidebar
+- [x] Add message history (user + AI) with auto-scroll
+- [x] Implement message input with send button
+- [x] Add keyboard shortcuts (Enter to send, Shift+Enter for newline)
+- [x] Display AI thinking/loading state
+- [x] Add message timestamps
+- [x] Create floating chat button when closed
 
-### 2.4 Contextual Help
-- [ ] Send user code to AI when requesting help
-- [ ] Include console output in AI context
-- [ ] Add current lesson objectives to context
-- [ ] Detect prolonged struggle (no progress in 5 min)
-- [ ] Offer proactive help after struggle threshold
+### 2.4 AI Provider Settings
+- [x] Add provider selection UI (Ollama vs Claude)
+- [x] Implement Claude API key input and secure storage
+- [x] Add settings panel in chat interface
+- [x] Save provider preference and API key to localStorage
+
+### 2.5 Integration
+- [x] Integrate ChatPanel into App.tsx with resizable panels
+- [x] Wire up chat state to global store
+- [x] Send lesson context (code, lesson objectives) to AI
+- [x] Connect chat messages to AI service
+
+**Next Phase**: Advanced features (proactive help, hint progression, struggle detection)
 
 ---
 
