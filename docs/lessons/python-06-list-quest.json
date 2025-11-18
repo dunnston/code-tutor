@@ -1,0 +1,56 @@
+{
+  "id": 6,
+  "trackId": 1,
+  "language": "python",
+  "title": "The List Quest",
+  "subtitle": "Storing Multiple Treasures",
+  "difficulty": 3,
+  "estimatedTime": "10-15 minutes",
+  "xpReward": 150,
+  "description": "# The Treasure Collection\n\nYou've been collecting treasures on your adventure, but carrying them one at a time is inefficient! It's time to learn about **lists** - magical containers that can hold multiple items.\n\n## What is a List?\n\nA list in Python is a collection of items stored in a specific order. Think of it like a backpack that can hold many treasures!\n\n```python\ntreasures = [\"gold coin\", \"ruby\", \"magic scroll\"]\n```\n\n**Key concepts:**\n- Lists are created with square brackets `[]`\n- Items are separated by commas `,`\n- Lists can hold different types of items (strings, numbers, etc.)\n- Items maintain their order\n\n## Accessing List Items\n\nEach item in a list has an **index** (position number), starting from 0:\n\n```python\ntreasures = [\"gold coin\", \"ruby\", \"magic scroll\"]\nprint(treasures[0])  # Prints: gold coin\nprint(treasures[1])  # Prints: ruby\nprint(treasures[2])  # Prints: magic scroll\n```\n\n## Your Quest\n\n1. Create a list called `inventory` with these items: `\"sword\"`, `\"shield\"`, `\"potion\"`\n2. Print the **first item** in the list (the sword)\n3. Print the **third item** in the list (the potion)\n4. Print the **entire list**",
+  "starterCode": "# Create your inventory list here\n# inventory = [...]\n\n# Print the first item (sword)\n\n\n# Print the third item (potion)\n\n\n# Print the entire list\n\n",
+  "solutionCode": "# Create your inventory list here\ninventory = [\"sword\", \"shield\", \"potion\"]\n\n# Print the first item (sword)\nprint(inventory[0])\n\n# Print the third item (potion)\nprint(inventory[2])\n\n# Print the entire list\nprint(inventory)",
+  "hints": [
+    "Lists use square brackets [ ] and items are separated by commas",
+    "Remember: list indices start at 0, not 1! So the first item is inventory[0]",
+    "The third item is at index 2 (0, 1, 2)",
+    "You can print the whole list with just print(inventory)",
+    "Make sure to use quotation marks around the string items in your list"
+  ],
+  "validationTests": [
+    {
+      "type": "code_contains",
+      "value": "inventory",
+      "description": "Code should define a variable named 'inventory'"
+    },
+    {
+      "type": "code_contains",
+      "value": "[",
+      "description": "Code should use square brackets to create a list"
+    },
+    {
+      "type": "output_contains",
+      "value": "sword",
+      "description": "Output should contain 'sword'"
+    },
+    {
+      "type": "output_contains",
+      "value": "potion",
+      "description": "Output should contain 'potion'"
+    },
+    {
+      "type": "output_line_count",
+      "min": 3,
+      "description": "Should print at least 3 lines"
+    }
+  ],
+  "learningObjectives": [
+    "Understand what lists are and why they're useful",
+    "Create a list with multiple items",
+    "Access list items using index numbers",
+    "Remember that list indices start at 0"
+  ],
+  "previousLessonId": 5,
+  "nextLessonId": 7,
+  "tags": ["lists", "arrays", "indexing", "data-structures"]
+}

@@ -21,6 +21,8 @@ function App() {
   const code = useAppStore((state) => state.code)
   const currentLesson = useAppStore((state) => state.currentLesson)
   const chatOpen = useAppStore((state) => state.chatOpen)
+  const completeLesson = useAppStore((state) => state.completeLesson)
+  const isLessonCompleted = useAppStore((state) => state.isLessonCompleted)
 
   // Store last execution result for validation
   const lastExecutionResult = useRef<ExecutionResult | undefined>()
@@ -112,10 +114,23 @@ function App() {
 
     // Display summary
     if (summary.allPassed) {
-      addConsoleMessage({
-        type: 'system',
-        content: `🎉 All tests passed! (${summary.passed}/${summary.total}) - Earned ${currentLesson.xpReward} XP!`,
-      })
+      // Check if lesson was already completed
+      const alreadyCompleted = isLessonCompleted(currentLesson.id)
+
+      if (!alreadyCompleted) {
+        // Mark lesson as complete and award XP
+        completeLesson(currentLesson.id, currentLesson.xpReward)
+
+        addConsoleMessage({
+          type: 'system',
+          content: `🎉 All tests passed! (${summary.passed}/${summary.total}) - Earned ${currentLesson.xpReward} XP!`,
+        })
+      } else {
+        addConsoleMessage({
+          type: 'system',
+          content: `✅ All tests passed! (${summary.passed}/${summary.total}) - Lesson already completed.`,
+        })
+      }
     } else {
       addConsoleMessage({
         type: 'system',

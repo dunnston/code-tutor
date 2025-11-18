@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react'
 import { useAppStore } from '@/lib/store'
 import { getNextLesson, getPreviousLesson } from '@/lib/lessons'
+import { isLessonUnlocked } from '@/lib/storage'
 
 export function LessonPanel() {
   const currentLesson = useAppStore((state) => state.currentLesson)
   const setCurrentLesson = useAppStore((state) => state.setCurrentLesson)
+  const isLessonCompleted = useAppStore((state) => state.isLessonCompleted)
   const [hintsRevealed, setHintsRevealed] = useState(0)
 
   // Reset hints when lesson changes
@@ -31,10 +33,23 @@ export function LessonPanel() {
     if (currentLesson?.nextLessonId) {
       const nextLesson = getNextLesson(currentLesson.id)
       if (nextLesson) {
-        setCurrentLesson(nextLesson)
+        // Check if next lesson is unlocked
+        const unlocked = isLessonUnlocked(nextLesson.id, nextLesson.previousLessonId)
+        if (unlocked) {
+          setCurrentLesson(nextLesson)
+        }
       }
     }
   }
+
+  // Check if next lesson is unlocked
+  const nextLesson = currentLesson?.nextLessonId ? getNextLesson(currentLesson.id) : null
+  const isNextLessonUnlocked = nextLesson
+    ? isLessonUnlocked(nextLesson.id, nextLesson.previousLessonId)
+    : false
+
+  // Check if current lesson is completed
+  const currentLessonCompleted = currentLesson ? isLessonCompleted(currentLesson.id) : false
 
   if (!currentLesson) {
     return (
@@ -71,9 +86,28 @@ export function LessonPanel() {
       <div className="p-6 max-w-3xl">
         {/* Title */}
         <div className="mb-6">
-          <h2 className="text-3xl font-bold text-white mb-2">
-            {currentLesson.title}
-          </h2>
+          <div className="flex items-center gap-3">
+            <h2 className="text-3xl font-bold text-white mb-2">
+              {currentLesson.title}
+            </h2>
+            {currentLessonCompleted && (
+              <div className="flex-shrink-0 w-8 h-8 bg-green-500/20 rounded-full flex items-center justify-center mb-2" title="Lesson completed!">
+                <svg
+                  className="w-5 h-5 text-green-500"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M5 13l4 4L19 7"
+                  />
+                </svg>
+              </div>
+            )}
+          </div>
           {currentLesson.subtitle && (
             <p className="text-lg text-accent-500">{currentLesson.subtitle}</p>
           )}
@@ -241,23 +275,48 @@ export function LessonPanel() {
           </button>
           <button
             onClick={handleNext}
-            disabled={!currentLesson.nextLessonId}
-            className="px-4 py-2 bg-accent-500 hover:bg-accent-600 text-white rounded-lg transition-colors disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-2"
+            disabled={!currentLesson.nextLessonId || !isNextLessonUnlocked}
+            className={`px-4 py-2 rounded-lg transition-colors flex items-center gap-2 ${
+              currentLesson.nextLessonId && isNextLessonUnlocked
+                ? 'bg-accent-500 hover:bg-accent-600 text-white'
+                : 'bg-navy-800 text-gray-500 cursor-not-allowed opacity-50'
+            }`}
+            title={
+              currentLesson.nextLessonId && !isNextLessonUnlocked
+                ? 'Complete this lesson to unlock'
+                : undefined
+            }
           >
             Next Lesson
-            <svg
-              className="w-4 h-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9 5l7 7-7 7"
-              />
-            </svg>
+            {currentLesson.nextLessonId && !isNextLessonUnlocked ? (
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                />
+              </svg>
+            ) : (
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 5l7 7-7 7"
+                />
+              </svg>
+            )}
           </button>
         </div>
       </div>

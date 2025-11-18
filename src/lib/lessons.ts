@@ -6,6 +6,11 @@ import lesson2 from '../../docs/lessons/python-02-variables-of-power.json'
 import lesson3 from '../../docs/lessons/python-03-conditional-path.json'
 import lesson4 from '../../docs/lessons/python-04-loop-of-destiny.json'
 import lesson5 from '../../docs/lessons/python-05-function-forge.json'
+import lesson6 from '../../docs/lessons/python-06-list-quest.json'
+import lesson7 from '../../docs/lessons/python-07-list-magic.json'
+import lesson8 from '../../docs/lessons/python-08-dictionary-codex.json'
+import lesson9 from '../../docs/lessons/python-09-scroll-keeper.json'
+import lesson10 from '../../docs/lessons/python-10-class-blueprint.json'
 
 /**
  * All available lessons
@@ -16,6 +21,11 @@ const ALL_LESSONS: Lesson[] = [
   lesson3 as Lesson,
   lesson4 as Lesson,
   lesson5 as Lesson,
+  lesson6 as Lesson,
+  lesson7 as Lesson,
+  lesson8 as Lesson,
+  lesson9 as Lesson,
+  lesson10 as Lesson,
 ]
 
 /**

@@ -2,8 +2,12 @@
 
 **Status**: Development (Active)
 **Last Updated**: 2025-11-18
-**Current Phase**: Phase 1 (Core IDE Interface)
-**Phase 0 Completed**: ✅ 2025-11-18
+**Current Phase**: Phase 3 Complete → Phase 4 (Progress & Gamification)
+**Phases Completed**:
+- ✅ Phase 0: Foundation (2025-11-18)
+- ✅ Phase 1: Core IDE Interface (2025-11-18)
+- ✅ Phase 2: AI Tutor Integration (2025-11-18)
+- ✅ Phase 3: Curriculum System (2025-11-18)
 
 ---
 
@@ -133,9 +137,9 @@ This document tracks the development roadmap for Code Tutor, an interactive codi
 
 ---
 
-## Phase 3: Curriculum System 📚 (Mostly Complete)
+## Phase 3: Curriculum System 📚 ✅ COMPLETE
 **Goal**: Build lesson data structure, navigation, and validation
-**Status**: CORE COMPLETE (completed in Phase 1)
+**Status**: COMPLETE (2025-11-18)
 
 ### 3.1 Lesson Data Structure ✅
 - [x] Design JSON schema for lessons
@@ -143,7 +147,7 @@ This document tracks the development roadmap for Code Tutor, an interactive codi
   - [x] Starter code, solution code
   - [x] Validation criteria (output matching, code checks)
   - [x] XP reward, prerequisites
-  - [ ] Hints array (progressive difficulty) - TO DO
+  - [x] Hints array (progressive difficulty)
 - [x] Create lesson loader utility (lib/lessons.ts)
 - [x] Implement lesson parser and validator
 
@@ -153,15 +157,19 @@ This document tracks the development roadmap for Code Tutor, an interactive codi
 - [x] Display assignment instructions clearly
 - [x] Show lesson progress (current/total lessons)
 - [x] Add previous/next navigation buttons
-- [ ] Add image/video embedding support - OPTIONAL
+- [ ] Add image/video embedding support - OPTIONAL (deferred)
 
-### 3.3 Python Track (Beginner) - IN PROGRESS
+### 3.3 Python Track (Beginner) ✅
 - [x] Lesson 1: "The Scroll of Print" (print statements)
 - [x] Lesson 2: "Variables of Power" (variables & data types)
 - [x] Lesson 3: "The Conditional Path" (if/else statements)
 - [x] Lesson 4: "The Loop of Destiny" (for/while loops)
 - [x] Lesson 5: "The Function Forge" (defining functions)
-- [ ] Lessons 6-15: Expand to cover lists, dicts, file I/O, classes - TO DO
+- [x] Lesson 6: "The List Quest" (lists & arrays basics)
+- [x] Lesson 7: "The List Magic" (list operations & methods)
+- [x] Lesson 8: "The Dictionary Codex" (dictionaries basics)
+- [x] Lesson 9: "The Scroll Keeper" (file I/O operations)
+- [x] Lesson 10: "The Class Blueprint" (classes & objects)
 
 ### 3.4 Exercise Validation ✅
 - [x] Implement output matching (expected vs. actual)
@@ -169,10 +177,10 @@ This document tracks the development roadmap for Code Tutor, an interactive codi
 - [x] Implement code structure checks (lib/validation.ts)
 - [x] Create visual feedback (success/error messages in console)
 - [x] Award XP on successful completion
-- [ ] Unlock next lesson after validation passes - TO DO
+- [x] Unlock next lesson after validation passes
 
 ### 3.5 Hint System ✅
-- [x] Add hints array to lesson JSON structure (already in schema)
+- [x] Add hints array to lesson JSON structure
 - [x] Display hints progressively (1 → 2 → 3) in LessonPanel
 - [x] Show hint count (revealed/total)
 - [x] Progressive reveal with "Show Next Hint" button
@@ -181,7 +189,16 @@ This document tracks the development roadmap for Code Tutor, an interactive codi
 - [ ] Track hint usage in progress data (Phase 4)
 - [ ] Add XP penalty for using too many hints (optional - Phase 4)
 
-**Remaining Work**: Lesson unlocking, more lessons (6-15)
+### 3.6 Progress & Unlocking System ✅
+- [x] Create progress tracking data structure (UserProgress)
+- [x] Implement local storage for progress (loadProgress, saveProgress)
+- [x] Add progress state to Zustand store
+- [x] Implement lesson completion tracking (markLessonComplete)
+- [x] Create lesson unlocking logic (isLessonUnlocked)
+- [x] Update LessonPanel to show locked/unlocked lessons
+- [x] Display checkmark for completed lessons
+- [x] Show total XP earned in Header
+- [x] Disable "Next Lesson" button with lock icon if locked
 
 ---
 

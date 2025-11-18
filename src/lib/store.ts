@@ -2,7 +2,15 @@ import { create } from 'zustand'
 import type { Lesson } from '@types/lesson'
 import type { ConsoleMessage, ExecutionStatus } from '@types/execution'
 import type { ChatMessage, AIProviderType } from '@types/ai'
-import { loadUserCode, saveUserCode, clearUserCode } from './storage'
+import {
+  loadUserCode,
+  saveUserCode,
+  clearUserCode,
+  loadProgress,
+  saveProgress,
+  markLessonComplete,
+  type UserProgress
+} from './storage'
 
 interface AppState {
   // Current lesson
@@ -22,6 +30,12 @@ interface AppState {
   // Execution state
   executionStatus: ExecutionStatus
   setExecutionStatus: (status: ExecutionStatus) => void
+
+  // Progress tracking
+  progress: UserProgress
+  completeLesson: (lessonId: number, xpReward: number) => void
+  isLessonCompleted: (lessonId: number) => boolean
+  refreshProgress: () => void
 
   // AI Chat
   chatMessages: ChatMessage[]
@@ -97,6 +111,20 @@ export const useAppStore = create<AppState>((set, get) => ({
   // Execution state
   executionStatus: 'idle',
   setExecutionStatus: (status) => set({ executionStatus: status }),
+
+  // Progress state
+  progress: loadProgress(),
+  completeLesson: (lessonId, xpReward) => {
+    markLessonComplete(lessonId, xpReward)
+    set({ progress: loadProgress() })
+  },
+  isLessonCompleted: (lessonId) => {
+    const { progress } = get()
+    return progress.completedLessons.includes(lessonId)
+  },
+  refreshProgress: () => {
+    set({ progress: loadProgress() })
+  },
 
   // AI Chat state
   chatMessages: [],
