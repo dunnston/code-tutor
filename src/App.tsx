@@ -6,9 +6,12 @@ import { CodeEditor } from '@components/CodeEditor'
 import { Console } from '@components/Console'
 import { ActionBar } from '@components/ActionBar'
 import { ChatPanel } from '@components/ChatPanel'
+import { NotificationContainer } from '@components/NotificationToast'
+import { ProgressDashboard } from '@components/ProgressDashboard'
 import { useAppStore } from '@/lib/store'
 import { executePythonCode } from '@/lib/tauri'
 import { validateCode, getValidationSummary } from '@/lib/validation'
+import { updateStreak, recordLessonAttempt } from '@/lib/storage'
 import type { ExecutionResult } from '@types/execution'
 
 // Lesson utilities
@@ -23,17 +26,22 @@ function App() {
   const chatOpen = useAppStore((state) => state.chatOpen)
   const completeLesson = useAppStore((state) => state.completeLesson)
   const isLessonCompleted = useAppStore((state) => state.isLessonCompleted)
+  const hintsRevealed = useAppStore((state) => state.hintsRevealed)
+  const refreshProgress = useAppStore((state) => state.refreshProgress)
 
   // Store last execution result for validation
   const lastExecutionResult = useRef<ExecutionResult | undefined>()
 
-  // Load first lesson on mount
+  // Initialize on mount: load first lesson and update streak
   useEffect(() => {
     const firstLesson = getFirstLesson('python')
     if (firstLesson) {
       setCurrentLesson(firstLesson)
     }
-  }, [setCurrentLesson])
+    // Update streak on app load
+    updateStreak()
+    refreshProgress()
+  }, [setCurrentLesson, refreshProgress])
 
   const handleRun = async () => {
     try {
@@ -90,6 +98,9 @@ function App() {
       return
     }
 
+    // Record this attempt
+    recordLessonAttempt(currentLesson.id, hintsRevealed)
+
     addConsoleMessage({
       type: 'system',
       content: '🔍 Validating your solution...',
@@ -118,8 +129,8 @@ function App() {
       const alreadyCompleted = isLessonCompleted(currentLesson.id)
 
       if (!alreadyCompleted) {
-        // Mark lesson as complete and award XP
-        completeLesson(currentLesson.id, currentLesson.xpReward)
+        // Mark lesson as complete and award XP (also triggers badge checks and notifications)
+        completeLesson(currentLesson.id, currentLesson.xpReward, hintsRevealed)
 
         addConsoleMessage({
           type: 'system',
@@ -209,6 +220,10 @@ function App() {
         onSubmit={handleSubmit}
         onShowSolution={handleShowSolution}
       />
+
+      {/* Gamification UI */}
+      <NotificationContainer />
+      <ProgressDashboard />
     </div>
   )
 }

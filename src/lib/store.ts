@@ -9,8 +9,33 @@ import {
   loadProgress,
   saveProgress,
   markLessonComplete,
-  type UserProgress
+  updateStreak,
+  recordLessonAttempt,
+  trackLessonTime,
+  type UserProgress,
+  type BadgeId,
 } from './storage'
+
+// Notification types for gamification
+export interface Notification {
+  id: string
+  type: 'level-up' | 'badge' | 'streak'
+  title: string
+  message: string
+  timestamp: Date
+}
+
+export interface LevelUpData {
+  oldLevel: number
+  newLevel: number
+}
+
+export interface BadgeData {
+  badgeId: BadgeId
+  name: string
+  description: string
+  icon: string
+}
 
 interface AppState {
   // Current lesson
@@ -33,9 +58,20 @@ interface AppState {
 
   // Progress tracking
   progress: UserProgress
-  completeLesson: (lessonId: number, xpReward: number) => void
+  completeLesson: (lessonId: number, xpReward: number, hintsUsed: number) => void
   isLessonCompleted: (lessonId: number) => boolean
   refreshProgress: () => void
+
+  // Gamification
+  notifications: Notification[]
+  addNotification: (notification: Omit<Notification, 'id' | 'timestamp'>) => void
+  dismissNotification: (id: string) => void
+  hintsRevealed: number
+  revealNextHint: () => void
+  resetHints: () => void
+  lessonStartTime: number | null
+  startLessonTimer: () => void
+  stopLessonTimer: () => void
 
   // AI Chat
   chatMessages: ChatMessage[]
@@ -49,6 +85,8 @@ interface AppState {
   // UI state
   sidebarCollapsed: boolean
   toggleSidebar: () => void
+  dashboardOpen: boolean
+  toggleDashboard: () => void
 }
 
 // Auto-save timeout
@@ -58,11 +96,20 @@ export const useAppStore = create<AppState>((set, get) => ({
   // Lesson state
   currentLesson: null,
   setCurrentLesson: (lesson) => {
+    // Stop timer for previous lesson
+    const { stopLessonTimer, resetHints, startLessonTimer } = get()
+    stopLessonTimer()
+
     set({ currentLesson: lesson })
+
     // Load saved code or use starter code when lesson changes
     if (lesson) {
       const savedCode = loadUserCode(lesson.id)
       set({ code: savedCode || lesson.starterCode })
+
+      // Reset hints and start timer for new lesson
+      resetHints()
+      startLessonTimer()
     }
   },
 
@@ -114,9 +161,39 @@ export const useAppStore = create<AppState>((set, get) => ({
 
   // Progress state
   progress: loadProgress(),
-  completeLesson: (lessonId, xpReward) => {
-    markLessonComplete(lessonId, xpReward)
+  completeLesson: (lessonId, xpReward, hintsUsed) => {
+    const { hintsRevealed, addNotification, stopLessonTimer } = get()
+
+    // Stop lesson timer and record time
+    stopLessonTimer()
+
+    // Mark lesson complete and get results
+    const result = markLessonComplete(lessonId, xpReward, hintsUsed || hintsRevealed)
     set({ progress: loadProgress() })
+
+    // Show level-up notification
+    if (result.leveledUp) {
+      addNotification({
+        type: 'level-up',
+        title: 'Level Up!',
+        message: `Congratulations! You've reached Level ${result.newLevel}!`,
+      })
+    }
+
+    // Show badge notifications
+    if (result.newBadges.length > 0) {
+      // Import BADGES here to avoid circular dependency
+      import('./storage').then(({ BADGES }) => {
+        result.newBadges.forEach((badgeId) => {
+          const badge = BADGES[badgeId]
+          get().addNotification({
+            type: 'badge',
+            title: 'Badge Earned!',
+            message: `${badge.icon} ${badge.name}: ${badge.description}`,
+          })
+        })
+      })
+    }
   },
   isLessonCompleted: (lessonId) => {
     const { progress } = get()
@@ -124,6 +201,46 @@ export const useAppStore = create<AppState>((set, get) => ({
   },
   refreshProgress: () => {
     set({ progress: loadProgress() })
+    // Update streak on app load
+    updateStreak()
+  },
+
+  // Gamification state
+  notifications: [],
+  addNotification: (notification) =>
+    set((state) => ({
+      notifications: [
+        ...state.notifications,
+        {
+          ...notification,
+          id: Math.random().toString(36).substring(7),
+          timestamp: new Date(),
+        },
+      ],
+    })),
+  dismissNotification: (id) =>
+    set((state) => ({
+      notifications: state.notifications.filter((n) => n.id !== id),
+    })),
+
+  hintsRevealed: 0,
+  revealNextHint: () =>
+    set((state) => ({
+      hintsRevealed: state.hintsRevealed + 1,
+    })),
+  resetHints: () => set({ hintsRevealed: 0 }),
+
+  lessonStartTime: null,
+  startLessonTimer: () => {
+    set({ lessonStartTime: Date.now() })
+  },
+  stopLessonTimer: () => {
+    const { lessonStartTime, currentLesson } = get()
+    if (lessonStartTime && currentLesson) {
+      const timeSpent = Date.now() - lessonStartTime
+      trackLessonTime(currentLesson.id, timeSpent)
+      set({ lessonStartTime: null })
+    }
   },
 
   // AI Chat state
@@ -148,4 +265,6 @@ export const useAppStore = create<AppState>((set, get) => ({
   // UI state
   sidebarCollapsed: false,
   toggleSidebar: () => set((state) => ({ sidebarCollapsed: !state.sidebarCollapsed })),
+  dashboardOpen: false,
+  toggleDashboard: () => set((state) => ({ dashboardOpen: !state.dashboardOpen })),
 }))

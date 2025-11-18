@@ -1,4 +1,3 @@
-import { useState, useEffect } from 'react'
 import { useAppStore } from '@/lib/store'
 import { getNextLesson, getPreviousLesson } from '@/lib/lessons'
 import { isLessonUnlocked } from '@/lib/storage'
@@ -7,16 +6,12 @@ export function LessonPanel() {
   const currentLesson = useAppStore((state) => state.currentLesson)
   const setCurrentLesson = useAppStore((state) => state.setCurrentLesson)
   const isLessonCompleted = useAppStore((state) => state.isLessonCompleted)
-  const [hintsRevealed, setHintsRevealed] = useState(0)
-
-  // Reset hints when lesson changes
-  useEffect(() => {
-    setHintsRevealed(0)
-  }, [currentLesson?.id])
+  const hintsRevealed = useAppStore((state) => state.hintsRevealed)
+  const revealNextHint = useAppStore((state) => state.revealNextHint)
 
   const handleShowNextHint = () => {
     if (currentLesson && hintsRevealed < currentLesson.hints.length) {
-      setHintsRevealed(hintsRevealed + 1)
+      revealNextHint()
     }
   }
 
