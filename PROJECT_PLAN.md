@@ -40,44 +40,45 @@ This document tracks the development roadmap for Code Tutor, an interactive codi
 
 ## Phase 1: Core IDE Interface 💻
 **Goal**: Build the split-panel IDE with code editing and execution
+**Status**: 🟢 In Progress (Core features complete, refinements pending)
 
 ### 1.1 Layout & Navigation
-- [ ] Create main app shell (header, split panels, footer)
-- [ ] Implement split-panel component (resizable)
-- [ ] Add lesson navigation (previous/next buttons)
-- [ ] Create progress indicator in header
+- [x] Create main app shell (header, split panels, footer)
+- [x] Implement split-panel component (resizable with react-resizable-panels)
+- [x] Add lesson navigation (previous/next buttons in LessonPanel)
+- [x] Create progress indicator in header
 - [ ] Add settings menu (theme toggle, AI provider selection)
 
 ### 1.2 Monaco Editor Integration
-- [ ] Integrate Monaco Editor component
-- [ ] Configure Python syntax highlighting
-- [ ] Set up dark theme matching design system
-- [ ] Add line numbers and basic editor features
+- [x] Integrate Monaco Editor component
+- [x] Configure Python syntax highlighting
+- [x] Set up dark theme matching design system
+- [x] Add line numbers and basic editor features
 - [ ] Implement code save/load to local storage
-- [ ] Add "Reset Code" functionality
+- [x] Add "Reset Code" functionality
 
 ### 1.3 Console Output
-- [ ] Create console output component (below editor)
-- [ ] Display stdout in real-time
-- [ ] Display stderr with error styling (red text)
-- [ ] Add "Clear Console" button
-- [ ] Implement auto-scroll to latest output
+- [x] Create console output component (below editor)
+- [x] Display stdout in real-time
+- [x] Display stderr with error styling (red text)
+- [x] Add "Clear Console" button
+- [x] Implement auto-scroll to latest output
 
 ### 1.4 Code Execution Engine (Rust Backend)
-- [ ] Create Tauri command for Python execution
-- [ ] Implement sandboxed process spawning in Rust
+- [x] Create Tauri command for Python execution
+- [x] Implement process spawning in Rust
 - [ ] Add execution timeout (5 seconds default)
 - [ ] Add resource limits (memory, CPU)
-- [ ] Handle process errors gracefully
-- [ ] Return stdout, stderr, and exit code to frontend
-- [ ] Add "Run" button with loading state
+- [x] Handle process errors gracefully
+- [x] Return stdout, stderr, exit code, and execution time to frontend
+- [x] Wire up "Run" button with loading state
 
 ### 1.5 Action Buttons
-- [ ] Implement "Run" button (execute code)
-- [ ] Implement "Submit" button (validate solution)
-- [ ] Implement "Reset" button (restore starter code)
-- [ ] Add "Solution" button (gated, initially hidden)
-- [ ] Add keyboard shortcuts (Ctrl+Enter to run)
+- [x] Implement "Run" button (execute code via Tauri)
+- [x] Implement "Submit" button (placeholder for validation)
+- [x] Implement "Reset" button (restore starter code)
+- [x] Add "Solution" button (placeholder, gated)
+- [x] Add keyboard shortcuts (Ctrl+Enter to run)
 
 ---
 
