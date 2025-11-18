@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import type { Lesson } from '@types/lesson'
 import type { ConsoleMessage, ExecutionStatus } from '@types/execution'
+import { loadUserCode, saveUserCode, clearUserCode } from './storage'
 
 interface AppState {
   // Current lesson
@@ -9,7 +10,7 @@ interface AppState {
 
   // Code editor
   code: string
-  setCode: (code: string) => void
+  setCode: (code: string, autoSave?: boolean) => void
   resetCode: () => void
 
   // Console
@@ -26,24 +27,45 @@ interface AppState {
   toggleSidebar: () => void
 }
 
+// Auto-save timeout
+let autoSaveTimeout: NodeJS.Timeout | null = null
+
 export const useAppStore = create<AppState>((set, get) => ({
   // Lesson state
   currentLesson: null,
   setCurrentLesson: (lesson) => {
     set({ currentLesson: lesson })
-    // Reset code to starter code when lesson changes
+    // Load saved code or use starter code when lesson changes
     if (lesson) {
-      set({ code: lesson.starterCode })
+      const savedCode = loadUserCode(lesson.id)
+      set({ code: savedCode || lesson.starterCode })
     }
   },
 
   // Code state
   code: '',
-  setCode: (code) => set({ code }),
+  setCode: (code, autoSave = true) => {
+    set({ code })
+
+    // Auto-save to local storage with debounce
+    if (autoSave) {
+      const { currentLesson } = get()
+      if (currentLesson) {
+        if (autoSaveTimeout) {
+          clearTimeout(autoSaveTimeout)
+        }
+        autoSaveTimeout = setTimeout(() => {
+          saveUserCode(currentLesson.id, code)
+        }, 1000) // 1 second debounce
+      }
+    }
+  },
   resetCode: () => {
     const { currentLesson } = get()
     if (currentLesson) {
       set({ code: currentLesson.starterCode })
+      // Clear saved code from local storage
+      clearUserCode(currentLesson.id)
     }
   },
 

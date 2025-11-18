@@ -1,7 +1,27 @@
 import { useAppStore } from '@/lib/store'
+import { getNextLesson, getPreviousLesson } from '@/lib/lessons'
 
 export function LessonPanel() {
   const currentLesson = useAppStore((state) => state.currentLesson)
+  const setCurrentLesson = useAppStore((state) => state.setCurrentLesson)
+
+  const handlePrevious = () => {
+    if (currentLesson?.previousLessonId) {
+      const prevLesson = getPreviousLesson(currentLesson.id)
+      if (prevLesson) {
+        setCurrentLesson(prevLesson)
+      }
+    }
+  }
+
+  const handleNext = () => {
+    if (currentLesson?.nextLessonId) {
+      const nextLesson = getNextLesson(currentLesson.id)
+      if (nextLesson) {
+        setCurrentLesson(nextLesson)
+      }
+    }
+  }
 
   if (!currentLesson) {
     return (
@@ -129,6 +149,7 @@ export function LessonPanel() {
         {/* Navigation */}
         <div className="flex justify-between pt-6 border-t border-navy-700">
           <button
+            onClick={handlePrevious}
             disabled={!currentLesson.previousLessonId}
             className="px-4 py-2 bg-navy-800 hover:bg-navy-700 text-gray-300 rounded-lg transition-colors disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-2"
           >
@@ -148,6 +169,7 @@ export function LessonPanel() {
             Previous Lesson
           </button>
           <button
+            onClick={handleNext}
             disabled={!currentLesson.nextLessonId}
             className="px-4 py-2 bg-accent-500 hover:bg-accent-600 text-white rounded-lg transition-colors disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-2"
           >

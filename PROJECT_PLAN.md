@@ -54,7 +54,7 @@ This document tracks the development roadmap for Code Tutor, an interactive codi
 - [x] Configure Python syntax highlighting
 - [x] Set up dark theme matching design system
 - [x] Add line numbers and basic editor features
-- [ ] Implement code save/load to local storage
+- [x] Implement code save/load to local storage (auto-save with 1s debounce)
 - [x] Add "Reset Code" functionality
 
 ### 1.3 Console Output
@@ -67,18 +67,25 @@ This document tracks the development roadmap for Code Tutor, an interactive codi
 ### 1.4 Code Execution Engine (Rust Backend)
 - [x] Create Tauri command for Python execution
 - [x] Implement process spawning in Rust
-- [ ] Add execution timeout (5 seconds default)
-- [ ] Add resource limits (memory, CPU)
+- [x] Add execution timeout (5 seconds default, configurable)
+- [ ] Add resource limits (memory, CPU) - *deferred to Phase 2*
 - [x] Handle process errors gracefully
 - [x] Return stdout, stderr, exit code, and execution time to frontend
 - [x] Wire up "Run" button with loading state
 
 ### 1.5 Action Buttons
 - [x] Implement "Run" button (execute code via Tauri)
-- [x] Implement "Submit" button (placeholder for validation)
-- [x] Implement "Reset" button (restore starter code)
+- [x] Implement "Submit" button (with validation system)
+- [x] Implement "Reset" button (restore starter code + clear storage)
 - [x] Add "Solution" button (placeholder, gated)
 - [x] Add keyboard shortcuts (Ctrl+Enter to run)
+
+### 1.6 Lesson System & Navigation
+- [x] Create lesson loader utility (loads all 5 Python lessons)
+- [x] Implement lesson navigation (previous/next buttons)
+- [x] Create validation system (output checks, code checks)
+- [x] Display validation results in console
+- [x] Award XP on successful completion
 
 ---
 

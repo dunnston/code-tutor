@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
 import { Header } from '@components/Header'
 import { LessonPanel } from '@components/LessonPanel'
@@ -7,19 +7,28 @@ import { Console } from '@components/Console'
 import { ActionBar } from '@components/ActionBar'
 import { useAppStore } from '@/lib/store'
 import { executePythonCode } from '@/lib/tauri'
+import { validateCode, getValidationSummary } from '@/lib/validation'
+import type { ExecutionResult } from '@types/execution'
 
-// Mock lesson data for testing
-import lesson1 from '../docs/lessons/python-01-scroll-of-print.json'
+// Lesson utilities
+import { getFirstLesson } from '@/lib/lessons'
 
 function App() {
   const setCurrentLesson = useAppStore((state) => state.setCurrentLesson)
   const addConsoleMessage = useAppStore((state) => state.addConsoleMessage)
   const setExecutionStatus = useAppStore((state) => state.setExecutionStatus)
   const code = useAppStore((state) => state.code)
+  const currentLesson = useAppStore((state) => state.currentLesson)
 
-  // Load first lesson on mount (temporary for testing)
+  // Store last execution result for validation
+  const lastExecutionResult = useRef<ExecutionResult | undefined>()
+
+  // Load first lesson on mount
   useEffect(() => {
-    setCurrentLesson(lesson1 as any)
+    const firstLesson = getFirstLesson('python')
+    if (firstLesson) {
+      setCurrentLesson(firstLesson)
+    }
   }, [setCurrentLesson])
 
   const handleRun = async () => {
@@ -32,6 +41,9 @@ function App() {
 
       // Execute Python code via Tauri backend
       const result = await executePythonCode(code)
+
+      // Store result for validation
+      lastExecutionResult.current = result
 
       // Display stdout
       if (result.stdout) {
@@ -65,11 +77,49 @@ function App() {
     }
   }
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    if (!currentLesson) {
+      addConsoleMessage({
+        type: 'error',
+        content: '❌ No lesson loaded',
+      })
+      return
+    }
+
     addConsoleMessage({
       type: 'system',
-      content: 'Validation not yet implemented. Submit functionality coming soon!',
+      content: '🔍 Validating your solution...',
     })
+
+    // Run validation tests
+    const results = await validateCode(
+      code,
+      currentLesson.validationTests,
+      lastExecutionResult.current
+    )
+
+    const summary = getValidationSummary(results)
+
+    // Display each test result
+    results.forEach((result) => {
+      addConsoleMessage({
+        type: result.passed ? 'stdout' : 'stderr',
+        content: result.message,
+      })
+    })
+
+    // Display summary
+    if (summary.allPassed) {
+      addConsoleMessage({
+        type: 'system',
+        content: `🎉 All tests passed! (${summary.passed}/${summary.total}) - Earned ${currentLesson.xpReward} XP!`,
+      })
+    } else {
+      addConsoleMessage({
+        type: 'system',
+        content: `⚠️ ${summary.passed}/${summary.total} tests passed. ${summary.failed} test(s) failed. Keep trying!`,
+      })
+    }
   }
 
   const handleShowSolution = () => {
