@@ -1,0 +1,70 @@
+{
+  "id": 3,
+  "trackId": 1,
+  "language": "python",
+  "title": "The Conditional Path",
+  "subtitle": "Making Decisions with If/Else",
+  "difficulty": 2,
+  "estimatedTime": "15-20 minutes",
+  "xpReward": 200,
+  "description": "# The Conditional Path: Making Decisions\n\nWelcome back, adventurer! Your journey continues to a fork in the road where you must make choices.\n\nIn programming, we often need code to make decisions:\n- If the player has enough gold, buy the sword\n- If health is below 20, show a warning\n- If the door is locked, ask for a key\n\n## The If Statement\n\nThe `if` statement checks a condition and runs code only if it's True:\n\n```python\nhealth = 15\n\nif health < 20:\n    print(\"Warning: Low health!\")\n```\n\n**How it works:**\n- `if` starts the condition check\n- `health < 20` is the condition (is health less than 20?)\n- The `:` colon means \"here comes the code to run\"\n- **The indented line** runs only if the condition is True\n\n## Comparison Operators\n\nUse these to compare values:\n- `<` less than\n- `>` greater than\n- `<=` less than or equal\n- `>=` greater than or equal\n- `==` equal to (two equals signs!)\n- `!=` not equal to\n\n## The Else Statement\n\nUse `else` to handle what happens when the condition is False:\n\n```python\ngold = 100\n\nif gold >= 50:\n    print(\"You can afford the sword!\")\nelse:\n    print(\"Not enough gold yet.\")\n```\n\n## Indentation is Magic!\n\n⚠️ **Important:** Python uses indentation (spaces) to know which code belongs to the if/else.\n\nPress `Tab` or use 4 spaces to indent:\n\n```python\nif age >= 18:\n    print(\"Adult\")      # This runs if True\n    print(\"Welcome!\")   # This also runs if True\nprint(\"Done\")           # This ALWAYS runs (not indented)\n```\n\n## Your Quest\n\nYou encounter a magical door that requires a password.\n\n1. Create a variable called `password` with the value `\"dragon\"`\n2. Create a variable called `user_input` with the value `\"dragon\"`\n3. Write an if statement:\n   - If `user_input == password`, print: `\"Access granted!\"`\n   - Otherwise (else), print: `\"Access denied!\"`\n\n**Test both paths:** Try changing `user_input` to something else to see the else branch!",
+  "starterCode": "# Create your variables\npassword = \"dragon\"\nuser_input = \"dragon\"\n\n# Write your if/else statement below\n\n",
+  "solutionCode": "# Create your variables\npassword = \"dragon\"\nuser_input = \"dragon\"\n\n# Write your if/else statement below\nif user_input == password:\n    print(\"Access granted!\")\nelse:\n    print(\"Access denied!\")",
+  "hints": [
+    "Use two equals signs to check equality: user_input == password",
+    "Don't forget the colon : at the end of if and else lines",
+    "Indent the print statements (press Tab before the print)",
+    "The if and else should NOT be indented, but the prints inside them should be",
+    "Make sure you use == (comparison) not = (assignment)"
+  ],
+  "validationTests": [
+    {
+      "type": "code_contains",
+      "value": "if ",
+      "description": "Code should contain an if statement"
+    },
+    {
+      "type": "code_contains",
+      "value": "else:",
+      "description": "Code should contain an else statement"
+    },
+    {
+      "type": "output_contains",
+      "value": "Access granted!",
+      "description": "Should print 'Access granted!' when passwords match"
+    },
+    {
+      "type": "code_structure",
+      "check": "proper_indentation",
+      "description": "Code should use proper indentation for if/else blocks"
+    }
+  ],
+  "bonus": {
+    "description": "After submitting, change `user_input` to `\"wizard\"` and run again to see the else branch!",
+    "xpReward": 50
+  },
+  "learningObjectives": [
+    "Understand how if statements make decisions",
+    "Use comparison operators (==, <, >, etc.)",
+    "Learn the importance of indentation in Python",
+    "Use else to handle alternative outcomes",
+    "Test different conditions to see branching behavior"
+  ],
+  "commonMistakes": [
+    {
+      "mistake": "Using = instead of ==",
+      "explanation": "One equals (=) assigns a value. Two equals (==) compares values."
+    },
+    {
+      "mistake": "Forgetting the colon :",
+      "explanation": "The colon tells Python 'here comes a block of code'. Always add it after if/else."
+    },
+    {
+      "mistake": "No indentation",
+      "explanation": "Python requires indentation (Tab or 4 spaces) for code inside if/else blocks."
+    }
+  ],
+  "previousLessonId": 2,
+  "nextLessonId": 4,
+  "tags": ["beginner", "conditionals", "if-else", "comparison", "logic"]
+}

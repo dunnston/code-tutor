@@ -1,0 +1,70 @@
+{
+  "id": 2,
+  "trackId": 1,
+  "language": "python",
+  "title": "Variables of Power",
+  "subtitle": "Storing Magic in Containers",
+  "difficulty": 1,
+  "estimatedTime": "10-15 minutes",
+  "xpReward": 150,
+  "description": "# Variables: Containers for Magic\n\nGreat work, adventurer! Now you'll learn about **variables** - magical containers that store values.\n\nThink of variables as labeled bottles that hold different types of magic:\n- A bottle labeled `health` might hold the number `100`\n- A bottle labeled `player_name` might hold the text `\"Aria\"`\n- A bottle labeled `has_sword` might hold `True` or `False`\n\n## Creating Variables\n\nTo create a variable in Python, use the equals sign `=`:\n\n```python\nplayer_name = \"Thorin\"\nhealth = 100\nlevel = 1\n```\n\n**The equals sign means \"store this value\"**\n- Left side: the variable name\n- Right side: the value to store\n\n## Using Variables\n\nOnce you create a variable, you can use it with print:\n\n```python\nprint(player_name)  # Displays: Thorin\nprint(health)       # Displays: 100\n```\n\n## Variable Naming Rules\n\n✅ **Good names:**\n- `player_name` (use underscores for spaces)\n- `max_health`\n- `gold_amount`\n\n❌ **Bad names:**\n- `player name` (no spaces!)\n- `123gold` (can't start with numbers)\n- `max-health` (dashes not allowed)\n\n## Your Quest\n\nCreate a character for your adventure:\n\n1. Create a variable called `hero_name` with YOUR name (as text in quotes)\n2. Create a variable called `starting_gold` with the value `50`\n3. Create a variable called `quest_active` with the value `True`\n4. Print all three variables on separate lines\n\n**Tip:** Don't put quotes around numbers or True/False!",
+  "starterCode": "# Create your character's variables here\n\n# Print your variables below\n\n",
+  "solutionCode": "# Create your character's variables here\nhero_name = \"Ryan\"\nstarting_gold = 50\nquest_active = True\n\n# Print your variables below\nprint(hero_name)\nprint(starting_gold)\nprint(quest_active)",
+  "hints": [
+    "Variable names use lowercase and underscores: hero_name",
+    "Text (strings) needs quotation marks: \"like this\"",
+    "Numbers DON'T need quotation marks: 50",
+    "True and False are special keywords (no quotes, capital first letter)",
+    "Use print() to display each variable: print(hero_name)"
+  ],
+  "validationTests": [
+    {
+      "type": "variable_exists",
+      "value": "hero_name",
+      "description": "Variable 'hero_name' should be defined"
+    },
+    {
+      "type": "variable_exists",
+      "value": "starting_gold",
+      "description": "Variable 'starting_gold' should be defined"
+    },
+    {
+      "type": "variable_exists",
+      "value": "quest_active",
+      "description": "Variable 'quest_active' should be defined"
+    },
+    {
+      "type": "variable_type",
+      "variable": "hero_name",
+      "expectedType": "str",
+      "description": "hero_name should be a string (text)"
+    },
+    {
+      "type": "variable_value",
+      "variable": "starting_gold",
+      "expectedValue": 50,
+      "description": "starting_gold should equal 50"
+    },
+    {
+      "type": "variable_value",
+      "variable": "quest_active",
+      "expectedValue": true,
+      "description": "quest_active should be True"
+    },
+    {
+      "type": "output_line_count",
+      "min": 3,
+      "description": "Should print at least 3 lines"
+    }
+  ],
+  "learningObjectives": [
+    "Understand what variables are and why they're useful",
+    "Learn to create variables with the = operator",
+    "Know the difference between strings, numbers, and booleans",
+    "Follow Python variable naming conventions",
+    "Print variable values to see what's stored"
+  ],
+  "previousLessonId": 1,
+  "nextLessonId": 3,
+  "tags": ["beginner", "variables", "assignment", "data-types"]
+}
