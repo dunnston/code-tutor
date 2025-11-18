@@ -1,0 +1,45 @@
+{
+  "id": 23,
+  "trackId": 4,
+  "language": "javascript",
+  "title": "The Decision Crossroads",
+  "subtitle": "Making Choices with if/else",
+  "difficulty": 2,
+  "estimatedTime": "10-15 minutes",
+  "xpReward": 150,
+  "description": "# Making Decisions in Code\n\nPrograms need to make decisions based on conditions. JavaScript uses `if`, `else if`, and `else` statements.\n\n## Basic if Statement\n\n```javascript\nconst age = 18;\nif (age >= 18) {\n  console.log(\"You can vote!\");\n}\n```\n\n## if-else Statement\n\n```javascript\nconst temperature = 25;\nif (temperature > 30) {\n  console.log(\"It's hot!\");\n} else {\n  console.log(\"It's comfortable!\");\n}\n```\n\n## else if for Multiple Conditions\n\n```javascript\nconst score = 85;\nif (score >= 90) {\n  console.log(\"Grade: A\");\n} else if (score >= 80) {\n  console.log(\"Grade: B\");\n} else if (score >= 70) {\n  console.log(\"Grade: C\");\n} else {\n  console.log(\"Grade: F\");\n}\n```\n\n## Comparison Operators\n\n- `===` - Equal to (strict)\n- `!==` - Not equal to\n- `>` - Greater than\n- `<` - Less than\n- `>=` - Greater than or equal to\n- `<=` - Less than or equal to\n\n**Note:** Use `===` instead of `==` for strict equality checking!\n\n## Your Quest\n\nCreate a variable called `health` with a number value, then:\n\n1. If health is greater than 75, print: **You are in great shape!**\n2. If health is between 50 and 75 (inclusive), print: **You are doing okay.**\n3. If health is between 25 and 49 (inclusive), print: **You need healing!**\n4. If health is below 25, print: **Critical condition!**\n\nTest with `health = 60` - it should print: **You are doing okay.**",
+  "starterCode": "// Create a health check system\n// Use if, else if, and else statements\n\nconst health = 60;\n\n",
+  "solutionCode": "// Create a health check system\nconst health = 60;\n\nif (health > 75) {\n  console.log(\"You are in great shape!\");\n} else if (health >= 50) {\n  console.log(\"You are doing okay.\");\n} else if (health >= 25) {\n  console.log(\"You need healing!\");\n} else {\n  console.log(\"Critical condition!\");\n}",
+  "hints": [
+    "Start with the highest condition (health > 75)",
+    "Use else if for the middle ranges",
+    "Remember: 50-75 means >= 50 and <= 75",
+    "The conditions should be checked in order from highest to lowest",
+    "Don't forget the curly braces { } for each block"
+  ],
+  "validationTests": [
+    {
+      "type": "output_contains",
+      "value": "You are doing okay.",
+      "description": "With health=60, should print 'You are doing okay.'"
+    },
+    {
+      "type": "code_contains",
+      "value": "if",
+      "description": "Code should use if statement"
+    },
+    {
+      "type": "code_contains",
+      "value": "else",
+      "description": "Code should use else statement"
+    }
+  ],
+  "learningObjectives": [
+    "Understand if/else if/else statements",
+    "Use comparison operators correctly",
+    "Create multi-condition logic",
+    "Handle different ranges of values"
+  ],
+  "nextLessonId": 24,
+  "tags": ["beginner", "javascript", "conditionals", "if-else", "logic"]
+}

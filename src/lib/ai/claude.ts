@@ -1,5 +1,6 @@
-import type { AIProvider, ChatContext } from '@types/ai'
+import type { AIProvider, ChatContext } from '@/types/ai'
 import { SYSTEM_PROMPT, buildChatPrompt } from './prompts'
+import { invoke } from '@tauri-apps/api/core'
 
 /**
  * Claude API provider (Anthropic)
@@ -10,7 +11,7 @@ export class ClaudeProvider implements AIProvider {
   private apiKey: string
   private model: string
 
-  constructor(apiKey: string, model: string = 'claude-3-5-sonnet-20241022') {
+  constructor(apiKey: string, model: string = 'claude-4-sonnet-20250514') {
     this.apiKey = apiKey
     this.model = model
   }
@@ -25,98 +26,45 @@ export class ClaudeProvider implements AIProvider {
   /**
    * Send a message to Claude
    */
-  async sendMessage(prompt: string, context: ChatContext): Promise<string> {
+  async sendMessage(
+    prompt: string,
+    context: ChatContext,
+    systemPrompt?: string
+  ): Promise<string> {
     const messages = this.buildMessages(prompt, context)
 
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'x-api-key': this.apiKey,
-        'anthropic-version': '2023-06-01',
-        'content-type': 'application/json',
-      },
-      body: JSON.stringify({
+    try {
+      console.log('🔍 Calling Claude API via Tauri backend...')
+      const response = await invoke<string>('call_claude_api', {
+        apiKey: this.apiKey,
         model: this.model,
-        max_tokens: 2048,
-        system: SYSTEM_PROMPT,
-        messages,
-      }),
-    })
-
-    if (!response.ok) {
-      const error = await response.text()
-      throw new Error(`Claude API request failed: ${error}`)
+        systemPrompt: systemPrompt || SYSTEM_PROMPT,
+        messages: messages.map((msg) => ({
+          role: msg.role,
+          content: msg.content,
+        })),
+      })
+      console.log('✅ Claude API call successful!')
+      return response
+    } catch (error) {
+      console.error('❌ Claude API error:', error)
+      throw new Error(`Claude API error: ${error}`)
     }
-
-    const data = await response.json()
-    return data.content[0]?.text || 'No response from Claude'
   }
 
   /**
    * Stream a message from Claude (for real-time responses)
+   * Note: Streaming not yet implemented via Tauri
    */
   async streamMessage(
     prompt: string,
     context: ChatContext,
-    onChunk: (text: string) => void
+    onChunk: (text: string) => void,
+    systemPrompt?: string
   ): Promise<void> {
-    const messages = this.buildMessages(prompt, context)
-
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'x-api-key': this.apiKey,
-        'anthropic-version': '2023-06-01',
-        'content-type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: this.model,
-        max_tokens: 2048,
-        system: SYSTEM_PROMPT,
-        messages,
-        stream: true,
-      }),
-    })
-
-    if (!response.ok) {
-      throw new Error(`Claude API request failed: ${response.statusText}`)
-    }
-
-    const reader = response.body?.getReader()
-    if (!reader) {
-      throw new Error('No response body')
-    }
-
-    const decoder = new TextDecoder()
-    let buffer = ''
-
-    while (true) {
-      const { done, value } = await reader.read()
-      if (done) break
-
-      buffer += decoder.decode(value, { stream: true })
-      const lines = buffer.split('\n')
-      buffer = lines.pop() || ''
-
-      for (const line of lines) {
-        if (line.startsWith('data: ')) {
-          const jsonStr = line.substring(6)
-          if (jsonStr.trim() === '[DONE]') continue
-
-          try {
-            const data = JSON.parse(jsonStr)
-            if (data.type === 'content_block_delta') {
-              const text = data.delta?.text
-              if (text) {
-                onChunk(text)
-              }
-            }
-          } catch (e) {
-            console.error('Failed to parse chunk:', e)
-          }
-        }
-      }
-    }
+    // For now, fall back to non-streaming
+    const response = await this.sendMessage(prompt, context, systemPrompt)
+    onChunk(response)
   }
 
   private buildMessages(

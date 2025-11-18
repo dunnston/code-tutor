@@ -1,0 +1,51 @@
+{
+  "id": 12,
+  "trackId": 1,
+  "language": "python",
+  "title": "The Operator's Arsenal",
+  "subtitle": "Mathematical Magic & Comparisons",
+  "difficulty": 3,
+  "estimatedTime": "10-15 minutes",
+  "xpReward": 120,
+  "description": "# The Operator's Arsenal\n\nYou've unlocked access to the Operator's Guild, where mathematical magic and comparison spells are taught to aspiring code-mages.\n\n## Arithmetic Operators\n\nPython provides many mathematical operators:\n\n```python\n# Basic math\nattack = 10 + 5  # 15 (addition)\ndefense = 20 - 5  # 15 (subtraction)\ndamage = 5 * 3  # 15 (multiplication)\nhealth_share = 100 / 4  # 25.0 (division)\n\n# Advanced operators\nremainder = 17 % 5  # 2 (modulo - gets remainder)\npower = 2 ** 3  # 8 (exponentiation - 2 to the power of 3)\n```\n\n## Comparison Operators\n\nCompare values to get True or False:\n\n```python\nis_stronger = 50 > 30  # True\nis_equal = 10 == 10  # True\nis_different = 5 != 3  # True\n```\n\n## Your Quest\n\nCalculate battle statistics:\n\n1. Create a variable `base_damage` = 25\n2. Create `critical_multiplier` = 2\n3. Calculate `critical_damage` (base_damage * critical_multiplier)\n4. Calculate `is_critical` - check if critical_damage is greater than 40\n5. Print critical_damage and is_critical\n\nExpected output:\n```\n50\nTrue\n```",
+  "starterCode": "# Set base damage and multiplier\nbase_damage = 25\ncritical_multiplier = 2\n\n# Calculate critical damage\n\n\n# Check if it's greater than 40\n\n\n# Display the results\n\n",
+  "solutionCode": "# Set base damage and multiplier\nbase_damage = 25\ncritical_multiplier = 2\n\n# Calculate critical damage\ncritical_damage = base_damage * critical_multiplier\n\n# Check if it's greater than 40\nis_critical = critical_damage > 40\n\n# Display the results\nprint(critical_damage)\nprint(is_critical)",
+  "hints": [
+    "Use the * operator to multiply base_damage by critical_multiplier",
+    "Use the > operator to compare critical_damage with 40",
+    "Remember that > returns True or False",
+    "Store the multiplication result in critical_damage first",
+    "The final answer: critical_damage = base_damage * critical_multiplier, then is_critical = critical_damage > 40"
+  ],
+  "validationTests": [
+    {
+      "type": "output_contains",
+      "value": "50",
+      "description": "Should output the critical damage value"
+    },
+    {
+      "type": "output_contains",
+      "value": "True",
+      "description": "Should output True for the comparison"
+    },
+    {
+      "type": "code_contains",
+      "value": "*",
+      "description": "Code should use multiplication operator"
+    },
+    {
+      "type": "code_contains",
+      "value": ">",
+      "description": "Code should use greater-than comparison"
+    }
+  ],
+  "learningObjectives": [
+    "Master arithmetic operators (+, -, *, /)",
+    "Understand comparison operators (>, <, ==, !=)",
+    "Learn that comparisons return boolean values",
+    "Practice combining operators with variables"
+  ],
+  "nextLessonId": 13,
+  "previousLessonId": 11,
+  "tags": ["operators", "arithmetic", "comparison", "math", "intermediate"]
+}

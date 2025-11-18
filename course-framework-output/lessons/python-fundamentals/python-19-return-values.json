@@ -1,0 +1,46 @@
+{
+  "id": 19,
+  "trackId": 1,
+  "language": "python",
+  "title": "Return Values",
+  "subtitle": "Getting Results from Functions",
+  "difficulty": 5,
+  "estimatedTime": "15-20 minutes",
+  "xpReward": 150,
+  "description": "# Return Values\n\nFunctions can do more than just print - they can send values back to you using the `return` statement!\n\n## Returning Values\n\n```python\ndef calculate_damage(attack, defense):\n    damage = attack - defense\n    return damage  # Send the value back\n\ntotal = calculate_damage(50, 10)  # Store the returned value\nprint(f\"Damage: {total}\")  # 40\n```\n\n## Why Return?\n\nReturning makes functions more flexible:\n\n```python\ndef double(num):\n    return num * 2\n\nresult = double(5) + double(3)  # 10 + 6 = 16\nprint(result)\n```\n\n## Your Quest\n\nCreate a function that calculates total gold after a quest:\n\n1. Define a function called `calculate_total_gold`\n2. It takes two parameters: `base_gold` and `bonus_gold`\n3. Return the sum of both values (don't print, return!)\n4. Call the function with 100 and 50\n5. Store the result in a variable called `total`\n6. Print \"Total gold: \" followed by total\n\nExpected output:\n```\nTotal gold: 150\n```",
+  "starterCode": "# Define the function that returns the sum\n\n\n# Call the function and store the result\n\n\n# Print the total\n\n",
+  "solutionCode": "# Define the function that returns the sum\ndef calculate_total_gold(base_gold, bonus_gold):\n    return base_gold + bonus_gold\n\n# Call the function and store the result\ntotal = calculate_total_gold(100, 50)\n\n# Print the total\nprint(\"Total gold: \" + str(total))",
+  "hints": [
+    "Use def calculate_total_gold(base_gold, bonus_gold):",
+    "Inside the function, return base_gold + bonus_gold",
+    "Call the function and store the result: total = calculate_total_gold(100, 50)",
+    "Don't print inside the function - use return instead",
+    "Then print the message with the total value"
+  ],
+  "validationTests": [
+    {
+      "type": "output_contains",
+      "value": "Total gold: 150",
+      "description": "Should output the correct total"
+    },
+    {
+      "type": "code_contains",
+      "value": "return",
+      "description": "Function should use return statement"
+    },
+    {
+      "type": "code_contains",
+      "value": "def calculate_total_gold",
+      "description": "Should define the calculate_total_gold function"
+    }
+  ],
+  "learningObjectives": [
+    "Understand the return statement",
+    "Learn the difference between return and print",
+    "Practice capturing returned values",
+    "See how return makes functions more flexible"
+  ],
+  "nextLessonId": 20,
+  "previousLessonId": 18,
+  "tags": ["functions", "return", "return-values", "intermediate"]
+}

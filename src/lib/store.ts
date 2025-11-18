@@ -1,20 +1,20 @@
 import { create } from 'zustand'
-import type { Lesson } from '@types/lesson'
-import type { ConsoleMessage, ExecutionStatus } from '@types/execution'
-import type { ChatMessage, AIProviderType } from '@types/ai'
+import type { Lesson } from '@/types/lesson'
+import type { ConsoleMessage, ExecutionStatus } from '@/types/execution'
+import type { ChatMessage, AIProviderType } from '@/types/ai'
+import type { UserSettings } from '@components/SettingsModal'
 import {
   loadUserCode,
   saveUserCode,
   clearUserCode,
   loadProgress,
-  saveProgress,
   markLessonComplete,
   updateStreak,
-  recordLessonAttempt,
   trackLessonTime,
   type UserProgress,
   type BadgeId,
 } from './storage'
+import { loadPreferences, savePreferences, applyTheme } from './preferences'
 
 // Notification types for gamification
 export interface Notification {
@@ -87,6 +87,14 @@ interface AppState {
   toggleSidebar: () => void
   dashboardOpen: boolean
   toggleDashboard: () => void
+  settingsOpen: boolean
+  toggleSettings: () => void
+  currentView: 'dashboard' | 'learning'
+  setCurrentView: (view: 'dashboard' | 'learning') => void
+
+  // Settings & Preferences
+  settings: UserSettings
+  updateSettings: (settings: UserSettings) => void
 }
 
 // Auto-save timeout
@@ -110,6 +118,9 @@ export const useAppStore = create<AppState>((set, get) => ({
       // Reset hints and start timer for new lesson
       resetHints()
       startLessonTimer()
+
+      // Switch to learning view
+      set({ currentView: 'learning' })
     }
   },
 
@@ -267,4 +278,31 @@ export const useAppStore = create<AppState>((set, get) => ({
   toggleSidebar: () => set((state) => ({ sidebarCollapsed: !state.sidebarCollapsed })),
   dashboardOpen: false,
   toggleDashboard: () => set((state) => ({ dashboardOpen: !state.dashboardOpen })),
+  settingsOpen: false,
+  toggleSettings: () => set((state) => ({ settingsOpen: !state.settingsOpen })),
+  currentView: 'dashboard',
+  setCurrentView: (view) => set({ currentView: view }),
+
+  // Settings & Preferences
+  settings: loadPreferences(),
+  updateSettings: async (settings) => {
+    savePreferences(settings)
+    applyTheme(settings.theme)
+
+    // Initialize AI provider
+    const { aiService } = await import('./ai')
+    if (settings.aiProvider !== 'none') {
+      try {
+        await aiService.setProvider(settings.aiProvider, {
+          claudeApiKey: settings.claudeApiKey,
+        })
+      } catch (error) {
+        console.error('Failed to set AI provider:', error)
+      }
+    } else {
+      await aiService.setProvider('none')
+    }
+
+    set({ settings, aiProvider: settings.aiProvider })
+  },
 }))

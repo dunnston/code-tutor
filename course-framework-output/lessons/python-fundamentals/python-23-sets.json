@@ -1,0 +1,51 @@
+{
+  "id": 23,
+  "trackId": 1,
+  "language": "python",
+  "title": "Set Operations",
+  "subtitle": "Unique Collections",
+  "difficulty": 7,
+  "estimatedTime": "15-20 minutes",
+  "xpReward": 180,
+  "description": "# Set Operations\n\nSets are unordered collections that automatically remove duplicates. They're perfect for tracking unique items!\n\n## Creating Sets\n\nUse curly braces (like dictionaries, but without keys):\n\n```python\nunique_items = {\"sword\", \"shield\", \"potion\"}\n```\n\n## Sets Remove Duplicates\n\n```python\nfound_items = {\"sword\", \"potion\", \"sword\", \"shield\", \"potion\"}\nprint(found_items)  # {\"sword\", \"potion\", \"shield\"}\n```\n\n## Adding to Sets\n\n```python\ninventory = {\"sword\", \"shield\"}\ninventory.add(\"potion\")  # Adds potion\ninventory.add(\"sword\")  # Already exists, no change\n```\n\n## Why Use Sets?\n\n- Remove duplicates from a list\n- Fast membership testing (item in set)\n- Mathematical set operations (union, intersection)\n\n## Your Quest\n\nTrack unique enemies defeated:\n\n1. Create a list: `enemies = [\"goblin\", \"orc\", \"goblin\", \"dragon\", \"orc\", \"goblin\"]`\n2. Convert it to a set called `unique_enemies`\n3. Print \"Unique enemies defeated: \" + str(len(unique_enemies))\n4. Add \"troll\" to the set\n5. Print the updated set\n\nExpected output (set order may vary):\n```\nUnique enemies defeated: 3\n{'goblin', 'orc', 'dragon', 'troll'}\n```",
+  "starterCode": "# List of enemies (with duplicates)\nenemies = [\"goblin\", \"orc\", \"goblin\", \"dragon\", \"orc\", \"goblin\"]\n\n# Convert to set to get unique enemies\n\n\n# Print count of unique enemies\n\n\n# Add a new enemy\n\n\n# Print the updated set\n\n",
+  "solutionCode": "# List of enemies (with duplicates)\nenemies = [\"goblin\", \"orc\", \"goblin\", \"dragon\", \"orc\", \"goblin\"]\n\n# Convert to set to get unique enemies\nunique_enemies = set(enemies)\n\n# Print count of unique enemies\nprint(\"Unique enemies defeated: \" + str(len(unique_enemies)))\n\n# Add a new enemy\nunique_enemies.add(\"troll\")\n\n# Print the updated set\nprint(unique_enemies)",
+  "hints": [
+    "Convert list to set with: unique_enemies = set(enemies)",
+    "Use len() to count items in a set",
+    "Use .add() to add an item to a set",
+    "Sets automatically remove duplicates",
+    "Set order is not guaranteed (may print in different order)"
+  ],
+  "validationTests": [
+    {
+      "type": "output_contains",
+      "value": "Unique enemies defeated: 3",
+      "description": "Should count 3 unique enemies"
+    },
+    {
+      "type": "output_contains",
+      "value": "troll",
+      "description": "Should include troll in the set"
+    },
+    {
+      "type": "code_contains",
+      "value": "set(",
+      "description": "Should convert list to set"
+    },
+    {
+      "type": "code_contains",
+      "value": ".add(",
+      "description": "Should use .add() method"
+    }
+  ],
+  "learningObjectives": [
+    "Understand what sets are and why they're useful",
+    "Learn how sets automatically remove duplicates",
+    "Practice converting lists to sets",
+    "Use set operations like add()"
+  ],
+  "nextLessonId": 24,
+  "previousLessonId": 22,
+  "tags": ["sets", "data-structures", "unique", "advanced"]
+}

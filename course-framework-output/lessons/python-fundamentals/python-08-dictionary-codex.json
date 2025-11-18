@@ -1,0 +1,62 @@
+{
+  "id": 8,
+  "trackId": 1,
+  "language": "python",
+  "title": "The Dictionary Codex",
+  "subtitle": "Key-Value Pairs of Power",
+  "difficulty": 5,
+  "estimatedTime": "15-20 minutes",
+  "xpReward": 200,
+  "description": "# The Ancient Codex\n\nYou've discovered an ancient codex that stores information in **key-value pairs**. In Python, we call this a **dictionary**!\n\n## What is a Dictionary?\n\nA dictionary stores data as pairs: a **key** and its **value**. Think of it like a real dictionary where you look up a word (key) to find its definition (value).\n\n```python\nhero = {\n    \"name\": \"Aria\",\n    \"level\": 5,\n    \"class\": \"Mage\"\n}\n```\n\n**Key concepts:**\n- Dictionaries use curly braces `{}`\n- Each entry has a key and a value, separated by a colon `:`\n- Entries are separated by commas `,`\n- Keys are usually strings, values can be any type\n\n## Accessing Dictionary Values\n\nUse the key to get its value:\n\n```python\nhero = {\"name\": \"Aria\", \"level\": 5}\nprint(hero[\"name\"])   # Prints: Aria\nprint(hero[\"level\"])  # Prints: 5\n```\n\n## Adding or Updating Values\n\n```python\nhero = {\"name\": \"Aria\"}\nhero[\"level\"] = 5      # Adds a new key-value pair\nhero[\"name\"] = \"Aria the Brave\"  # Updates existing value\n```\n\n## Your Quest\n\n1. Create a dictionary called `character` with these keys:\n   - `\"name\"` with value `\"Valor\"`\n   - `\"health\"` with value `100`\n   - `\"weapon\"` with value `\"Excalibur\"`\n2. Print the character's name\n3. Print the character's weapon\n4. Add a new key `\"armor\"` with value `\"Plate Mail\"`\n5. Update the health to `150`\n6. Print the entire dictionary",
+  "starterCode": "# Create your character dictionary\n# character = {...}\n\n# Print the character's name\n\n\n# Print the character's weapon\n\n\n# Add armor\n\n\n# Update health to 150\n\n\n# Print the entire dictionary\n\n",
+  "solutionCode": "# Create your character dictionary\ncharacter = {\n    \"name\": \"Valor\",\n    \"health\": 100,\n    \"weapon\": \"Excalibur\"\n}\n\n# Print the character's name\nprint(character[\"name\"])\n\n# Print the character's weapon\nprint(character[\"weapon\"])\n\n# Add armor\ncharacter[\"armor\"] = \"Plate Mail\"\n\n# Update health to 150\ncharacter[\"health\"] = 150\n\n# Print the entire dictionary\nprint(character)",
+  "hints": [
+    "Dictionaries use curly braces { } with key: value pairs",
+    "Access values with dictionary_name[\"key\"]",
+    "Add new entries with dictionary_name[\"new_key\"] = value",
+    "Update existing values the same way you add new ones",
+    "Don't forget quotation marks around string keys!"
+  ],
+  "validationTests": [
+    {
+      "type": "code_contains",
+      "value": "{",
+      "description": "Code should use curly braces to create a dictionary"
+    },
+    {
+      "type": "code_contains",
+      "value": "character",
+      "description": "Code should define a variable named 'character'"
+    },
+    {
+      "type": "output_contains",
+      "value": "Valor",
+      "description": "Output should contain 'Valor'"
+    },
+    {
+      "type": "output_contains",
+      "value": "Excalibur",
+      "description": "Output should contain 'Excalibur'"
+    },
+    {
+      "type": "output_contains",
+      "value": "150",
+      "description": "Output should contain the updated health value 150"
+    },
+    {
+      "type": "output_contains",
+      "value": "Plate Mail",
+      "description": "Output should contain 'Plate Mail' (the armor)"
+    }
+  ],
+  "learningObjectives": [
+    "Understand what dictionaries are and when to use them",
+    "Create a dictionary with multiple key-value pairs",
+    "Access dictionary values using keys",
+    "Add new key-value pairs to a dictionary",
+    "Update existing values in a dictionary"
+  ],
+  "previousLessonId": 7,
+  "nextLessonId": 9,
+  "tags": ["dictionaries", "key-value", "data-structures", "hash-maps"]
+}

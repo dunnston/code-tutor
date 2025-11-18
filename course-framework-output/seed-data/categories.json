@@ -1,0 +1,23 @@
+[
+  {
+    "id": "backend",
+    "name": "Backend Development",
+    "description": "Server-side programming, databases, APIs",
+    "icon": "🖥️",
+    "order_index": 1
+  },
+  {
+    "id": "gamedev",
+    "name": "Game Development",
+    "description": "Build 2D and 3D games",
+    "icon": "🎮",
+    "order_index": 2
+  },
+  {
+    "id": "frontend",
+    "name": "Frontend Development",
+    "description": "Web interfaces, user experiences",
+    "icon": "🌐",
+    "order_index": 3
+  }
+]

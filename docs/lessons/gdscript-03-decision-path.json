@@ -1,0 +1,51 @@
+{
+  "id": 13,
+  "trackId": 2,
+  "language": "gdscript",
+  "title": "The Decision Path",
+  "subtitle": "If/Else Logic",
+  "difficulty": 2,
+  "estimatedTime": "15-20 minutes",
+  "xpReward": 200,
+  "description": "# Conditional Logic in GDScript\n\nGames are full of decisions: *Is the player alive? Did they collect enough coins? Is the enemy in range?*\n\n**Conditional statements** let your code make decisions!\n\n## The if Statement\n\n```gdscript\nvar health = 100\n\nif health > 0:\n    print(\"Player is alive!\")\n```\n\n**Important:** GDScript uses **indentation** (tabs or spaces) to define code blocks, just like Python!\n\n## if/else\n\n```gdscript\nif health > 50:\n    print(\"Healthy!\")\nelse:\n    print(\"Low health!\")\n```\n\n## if/elif/else\n\n```gdscript\nif score >= 100:\n    print(\"Gold medal!\")\nelif score >= 50:\n    print(\"Silver medal!\")\nelse:\n    print(\"Keep trying!\")\n```\n\n## Comparison Operators\n- `==` equals\n- `!=` not equals\n- `>` greater than\n- `<` less than\n- `>=` greater than or equal\n- `<=` less than or equal\n\n## Your Quest\n\nCreate a treasure checker!\n\n1. Create a variable `gold_coins` with value `75`\n2. Write conditional logic:\n   - If `gold_coins >= 100`: print \"You are rich!\"\n   - Else if `gold_coins >= 50`: print \"You have some treasure!\"\n   - Else: print \"Keep searching for gold!\"",
+  "starterCode": "# Create the gold_coins variable\n\n\n# Write your conditional logic below\n",
+  "solutionCode": "# Create the gold_coins variable\nvar gold_coins = 75\n\n# Write your conditional logic below\nif gold_coins >= 100:\n    print(\"You are rich!\")\nelif gold_coins >= 50:\n    print(\"You have some treasure!\")\nelse:\n    print(\"Keep searching for gold!\")",
+  "hints": [
+    "Start by declaring: var gold_coins = 75",
+    "Use if/elif/else for multiple conditions",
+    "Don't forget the colon : after each condition",
+    "Indent the print statements (use Tab key)",
+    "Check conditions from highest to lowest (>= 100, then >= 50)"
+  ],
+  "validationTests": [
+    {
+      "type": "output_contains",
+      "value": "You have some treasure!",
+      "description": "With 75 coins, should print 'You have some treasure!'"
+    },
+    {
+      "type": "code_contains",
+      "value": "if ",
+      "description": "Code should use an if statement"
+    },
+    {
+      "type": "code_contains",
+      "value": "elif ",
+      "description": "Code should use elif for multiple conditions"
+    },
+    {
+      "type": "code_contains",
+      "value": "gold_coins",
+      "description": "Code should use the gold_coins variable"
+    }
+  ],
+  "learningObjectives": [
+    "Understand if/elif/else conditional statements",
+    "Learn comparison operators (>=, >, <, ==, etc.)",
+    "Master indentation in GDScript",
+    "Make your code respond to different conditions"
+  ],
+  "previousLessonId": 12,
+  "nextLessonId": 14,
+  "tags": ["beginner", "gdscript", "conditionals", "if-else", "logic"]
+}

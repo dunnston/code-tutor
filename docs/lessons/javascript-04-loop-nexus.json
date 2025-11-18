@@ -1,0 +1,55 @@
+{
+  "id": 24,
+  "trackId": 4,
+  "language": "javascript",
+  "title": "The Loop Nexus",
+  "subtitle": "Repeating Actions with Loops",
+  "difficulty": 2,
+  "estimatedTime": "15-20 minutes",
+  "xpReward": 180,
+  "description": "# The Power of Loops\n\nLoops let you repeat code multiple times. JavaScript has several types of loops.\n\n## for Loop\n\nThe most common loop - great when you know how many times to repeat:\n\n```javascript\nfor (let i = 1; i <= 5; i++) {\n  console.log(`Count: ${i}`);\n}\n// Output: Count: 1, Count: 2, ... Count: 5\n```\n\n## while Loop\n\nRepeats while a condition is true:\n\n```javascript\nlet countdown = 3;\nwhile (countdown > 0) {\n  console.log(countdown);\n  countdown--;\n}\nconsole.log(\"Blast off!\");\n```\n\n## Looping Through Arrays\n\nJavaScript has modern array methods:\n\n```javascript\nconst fruits = [\"apple\", \"banana\", \"orange\"];\n\n// Traditional for loop\nfor (let i = 0; i < fruits.length; i++) {\n  console.log(fruits[i]);\n}\n\n// Modern forEach\nfruits.forEach(fruit => {\n  console.log(fruit);\n});\n\n// for...of loop (modern and clean)\nfor (const fruit of fruits) {\n  console.log(fruit);\n}\n```\n\n## Your Quest\n\nCreate an array called `levels` containing the numbers 1, 2, 3, 4, 5.\n\nThen use a **for loop** to iterate through the array and print:\n\n**Level 1 complete!**  \n**Level 2 complete!**  \n**Level 3 complete!**  \n**Level 4 complete!**  \n**Level 5 complete!**\n\nAfter the loop, print: **All levels conquered!**\n\n**Tip:** Access array items with `levels[i]` where i is the loop counter.",
+  "starterCode": "// Create a level completion tracker\n// Use a for loop to iterate through levels\n\n",
+  "solutionCode": "// Create a level completion tracker\nconst levels = [1, 2, 3, 4, 5];\n\nfor (let i = 0; i < levels.length; i++) {\n  console.log(`Level ${levels[i]} complete!`);\n}\n\nconsole.log(\"All levels conquered!\");",
+  "hints": [
+    "Create an array: const levels = [1, 2, 3, 4, 5]",
+    "Use a for loop: for (let i = 0; i < levels.length; i++)",
+    "Access array items with levels[i]",
+    "Use template literals: `Level ${levels[i]} complete!`",
+    "Don't forget the final message after the loop"
+  ],
+  "validationTests": [
+    {
+      "type": "output_contains",
+      "value": "Level 1 complete!",
+      "description": "Should print Level 1 complete!"
+    },
+    {
+      "type": "output_contains",
+      "value": "Level 5 complete!",
+      "description": "Should print Level 5 complete!"
+    },
+    {
+      "type": "output_contains",
+      "value": "All levels conquered!",
+      "description": "Should print final message"
+    },
+    {
+      "type": "code_contains",
+      "value": "for",
+      "description": "Code should use a for loop"
+    },
+    {
+      "type": "output_line_count",
+      "min": 6,
+      "description": "Should print at least 6 lines"
+    }
+  ],
+  "learningObjectives": [
+    "Understand for loops and iteration",
+    "Work with arrays",
+    "Use loop counters to access array elements",
+    "Combine loops with template literals"
+  ],
+  "nextLessonId": 25,
+  "tags": ["beginner", "javascript", "loops", "for-loop", "arrays"]
+}

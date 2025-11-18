@@ -1,0 +1,55 @@
+{
+  "id": 29,
+  "trackId": 5,
+  "language": "ruby",
+  "title": "The Iteration Realm",
+  "subtitle": "Loops and Blocks in Ruby",
+  "difficulty": 2,
+  "estimatedTime": "15-20 minutes",
+  "xpReward": 180,
+  "description": "# Loops in Ruby\n\nRuby offers beautiful ways to iterate! Blocks are Ruby's secret weapon for elegant loops.\n\n## Traditional Loops\n\n```ruby\n# while loop\ncount = 1\nwhile count <= 5\n  puts count\n  count += 1\nend\n\n# for loop (less common in Ruby)\nfor i in 1..5\n  puts i\nend\n```\n\n## Ruby's Elegant Iterator Methods\n\nRuby prefers using blocks with iterators:\n\n```ruby\n# times - repeat N times\n5.times do |i|\n  puts \"Count: #{i}\"\nend\n\n# Shorter version with curly braces\n5.times { |i| puts \"Count: #{i}\" }\n```\n\n## Arrays and each\n\nThe most Ruby way to loop through collections:\n\n```ruby\nfruits = [\"apple\", \"banana\", \"orange\"]\n\n# Long form\nfruits.each do |fruit|\n  puts fruit\nend\n\n# Short form\nfruits.each { |fruit| puts fruit }\n```\n\n## Ranges\n\nRuby has powerful range syntax:\n\n```ruby\n(1..5).each { |i| puts i }      # 1, 2, 3, 4, 5\n(1...5).each { |i| puts i }     # 1, 2, 3, 4 (excludes 5)\n```\n\n## Your Quest\n\nCreate an array called `dungeons` containing the numbers 1, 2, 3, 4, 5.\n\nThen use the `.each` method with a block to iterate through the array and print:\n\n**Dungeon 1 cleared!**  \n**Dungeon 2 cleared!**  \n**Dungeon 3 cleared!**  \n**Dungeon 4 cleared!**  \n**Dungeon 5 cleared!**\n\nAfter the loop, print: **All dungeons conquered!**\n\n**Tip:** Use a block variable like `|dungeon|` to access each number.",
+  "starterCode": "# Create a dungeon clearing tracker\n# Use .each with a block to iterate\n\n",
+  "solutionCode": "# Create a dungeon clearing tracker\ndungeons = [1, 2, 3, 4, 5]\n\ndungeons.each do |dungeon|\n  puts \"Dungeon #{dungeon} cleared!\"\nend\n\nputs \"All dungeons conquered!\"",
+  "hints": [
+    "Create an array: dungeons = [1, 2, 3, 4, 5]",
+    "Use .each with a block: dungeons.each do |dungeon|",
+    "Block variables go between pipe symbols: |dungeon|",
+    "Use string interpolation: \"Dungeon #{dungeon} cleared!\"",
+    "Don't forget to close the block with 'end'"
+  ],
+  "validationTests": [
+    {
+      "type": "output_contains",
+      "value": "Dungeon 1 cleared!",
+      "description": "Should print Dungeon 1 cleared!"
+    },
+    {
+      "type": "output_contains",
+      "value": "Dungeon 5 cleared!",
+      "description": "Should print Dungeon 5 cleared!"
+    },
+    {
+      "type": "output_contains",
+      "value": "All dungeons conquered!",
+      "description": "Should print final message"
+    },
+    {
+      "type": "code_contains",
+      "value": "each",
+      "description": "Code should use .each iterator"
+    },
+    {
+      "type": "output_line_count",
+      "min": 6,
+      "description": "Should print at least 6 lines"
+    }
+  ],
+  "learningObjectives": [
+    "Understand Ruby's block syntax",
+    "Use .each iterator for arrays",
+    "Work with block variables |var|",
+    "Learn Ruby's idiomatic iteration style"
+  ],
+  "nextLessonId": 30,
+  "tags": ["beginner", "ruby", "loops", "blocks", "each", "arrays"]
+}

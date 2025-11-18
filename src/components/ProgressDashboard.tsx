@@ -1,6 +1,5 @@
 import { useAppStore } from '@/lib/store'
 import {
-  calculateLevel,
   xpForNextLevel,
   xpProgressToNextLevel,
   BADGES,

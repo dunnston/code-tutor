@@ -1,0 +1,51 @@
+{
+  "id": 18,
+  "trackId": 3,
+  "language": "csharp",
+  "title": "The Decision Gate",
+  "subtitle": "Conditional Logic",
+  "difficulty": 2,
+  "estimatedTime": "15-20 minutes",
+  "xpReward": 200,
+  "description": "# Conditional Statements in C#\n\nPrograms need to make decisions based on conditions. C# provides powerful tools for this!\n\n## The if Statement\n\n```csharp\nint health = 100;\n\nif (health > 0)\n{\n    Console.WriteLine(\"Player is alive!\");\n}\n```\n\n**C# Style Notes:**\n- Conditions are in parentheses `()`\n- Code blocks are in curly braces `{}`\n- Braces are optional for single statements, but recommended\n\n## if/else\n\n```csharp\nif (score >= 100)\n{\n    Console.WriteLine(\"Victory!\");\n}\nelse\n{\n    Console.WriteLine(\"Try again!\");\n}\n```\n\n## if/else if/else\n\n```csharp\nif (temperature > 30)\n{\n    Console.WriteLine(\"Hot!\");\n}\nelse if (temperature > 20)\n{\n    Console.WriteLine(\"Warm\");\n}\nelse\n{\n    Console.WriteLine(\"Cold!\");\n}\n```\n\n## Comparison Operators\n\n- `==` equals (note: double equals for comparison!)\n- `!=` not equals\n- `>` greater than\n- `<` less than\n- `>=` greater than or equal\n- `<=` less than or equal\n- `&&` logical AND\n- `||` logical OR\n- `!` logical NOT\n\n## Your Quest\n\nCreate an item rarity checker!\n\n1. Create an `int itemValue = 750`\n2. Write conditional logic:\n   - If `itemValue >= 1000`: print \"Legendary Item!\"\n   - Else if `itemValue >= 500`: print \"Rare Item!\"\n   - Else if `itemValue >= 100`: print \"Common Item\"\n   - Else: print \"Junk Item\"\n\n**Expected output:**\n```\nRare Item!\n```",
+  "starterCode": "// Create the itemValue variable\n\n\n// Write your conditional logic\n",
+  "solutionCode": "// Create the itemValue variable\nint itemValue = 750;\n\n// Write your conditional logic\nif (itemValue >= 1000)\n{\n    Console.WriteLine(\"Legendary Item!\");\n}\nelse if (itemValue >= 500)\n{\n    Console.WriteLine(\"Rare Item!\");\n}\nelse if (itemValue >= 100)\n{\n    Console.WriteLine(\"Common Item\");\n}\nelse\n{\n    Console.WriteLine(\"Junk Item\");\n}",
+  "hints": [
+    "Declare: int itemValue = 750;",
+    "Use if/else if/else for multiple conditions",
+    "Put conditions in parentheses: if (itemValue >= 1000)",
+    "Use curly braces {} for each code block",
+    "Check conditions from highest to lowest"
+  ],
+  "validationTests": [
+    {
+      "type": "output_contains",
+      "value": "Rare Item!",
+      "description": "With value 750, should print 'Rare Item!'"
+    },
+    {
+      "type": "code_contains",
+      "value": "if",
+      "description": "Code should use if statement"
+    },
+    {
+      "type": "code_contains",
+      "value": "else",
+      "description": "Code should use else statement"
+    },
+    {
+      "type": "code_contains",
+      "value": "itemValue",
+      "description": "Code should use itemValue variable"
+    }
+  ],
+  "learningObjectives": [
+    "Understand if/else if/else statements in C#",
+    "Learn comparison operators",
+    "Use curly braces for code blocks",
+    "Make programs respond to different conditions"
+  ],
+  "previousLessonId": 17,
+  "nextLessonId": 19,
+  "tags": ["beginner", "csharp", "conditionals", "if-else", "logic"]
+}

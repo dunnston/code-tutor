@@ -1,0 +1,46 @@
+{
+  "id": 24,
+  "trackId": 1,
+  "language": "python",
+  "title": "Properties & Methods",
+  "subtitle": "Object Attributes and Behaviors",
+  "difficulty": 7,
+  "estimatedTime": "20-25 minutes",
+  "xpReward": 190,
+  "description": "# Properties & Methods\n\nClasses have properties (data) and methods (functions). Together, they define what an object knows and what it can do!\n\n## Properties (Attributes)\n\nData stored in objects:\n\n```python\nclass Weapon:\n    def __init__(self, name, damage):\n        self.name = name  # Property\n        self.damage = damage  # Property\n\nsword = Weapon(\"Excalibur\", 50)\nprint(sword.name)  # Access property\nprint(sword.damage)  # Access property\n```\n\n## Methods (Functions)\n\nActions objects can perform:\n\n```python\nclass Character:\n    def __init__(self, name, health):\n        self.name = name\n        self.health = health\n    \n    def take_damage(self, amount):  # Method\n        self.health -= amount\n        print(f\"{self.name} took {amount} damage!\")\n\nhero = Character(\"Hero\", 100)\nhero.take_damage(20)  # Call method\n```\n\n## Your Quest\n\nEnhance the Character class from lesson 10:\n\n1. Add a method called `heal` that takes `amount` as parameter\n2. Inside `heal`, add amount to self.health\n3. Print \"[name] healed [amount] HP!\"\n4. Create a character with name \"Warrior\" and health 50\n5. Call heal(30) on it\n6. Print the character's final health\n\nExpected output:\n```\nWarrior healed 30 HP!\nFinal health: 80\n```",
+  "starterCode": "class Character:\n    def __init__(self, name, health):\n        self.name = name\n        self.health = health\n    \n    # Add the heal method here\n    \n\n# Create a character\n\n\n# Use the heal method\n\n\n# Print final health\n\n",
+  "solutionCode": "class Character:\n    def __init__(self, name, health):\n        self.name = name\n        self.health = health\n    \n    def heal(self, amount):\n        self.health += amount\n        print(f\"{self.name} healed {amount} HP!\")\n\n# Create a character\nwarrior = Character(\"Warrior\", 50)\n\n# Use the heal method\nwarrior.heal(30)\n\n# Print final health\nprint(\"Final health: \" + str(warrior.health))",
+  "hints": [
+    "Define the method inside the class with: def heal(self, amount):",
+    "Use self.health += amount to increase health",
+    "Use self.name in the print statement",
+    "Call the method with: warrior.heal(30)",
+    "Access the health property with: warrior.health"
+  ],
+  "validationTests": [
+    {
+      "type": "output_contains",
+      "value": "Warrior healed 30 HP!",
+      "description": "Should print healing message"
+    },
+    {
+      "type": "output_contains",
+      "value": "Final health: 80",
+      "description": "Should print correct final health"
+    },
+    {
+      "type": "code_contains",
+      "value": "def heal",
+      "description": "Should define heal method"
+    }
+  ],
+  "learningObjectives": [
+    "Understand properties vs methods",
+    "Learn to add methods to classes",
+    "Practice using self to access properties",
+    "See how methods modify object state"
+  ],
+  "nextLessonId": 25,
+  "previousLessonId": 23,
+  "tags": ["oop", "classes", "methods", "properties", "advanced"]
+}

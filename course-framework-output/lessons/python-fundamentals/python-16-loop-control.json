@@ -1,0 +1,51 @@
+{
+  "id": 16,
+  "trackId": 1,
+  "language": "python",
+  "title": "Loop Control Mastery",
+  "subtitle": "Break and Continue Commands",
+  "difficulty": 5,
+  "estimatedTime": "15-20 minutes",
+  "xpReward": 150,
+  "description": "# Loop Control Mastery\n\nYou've learned to command loops with powerful control statements: `break` and `continue`. These give you fine control over loop execution!\n\n## Break - Exit Early\n\n`break` immediately exits the loop:\n\n```python\nfor item in [\"sword\", \"key\", \"shield\", \"potion\"]:\n    if item == \"key\":\n        print(\"Found the key!\")\n        break  # Stop searching\n    print(f\"Checking {item}...\")\n```\n\n## Continue - Skip to Next\n\n`continue` skips the rest of the current iteration:\n\n```python\nfor num in [1, 2, 3, 4, 5]:\n    if num % 2 == 0:\n        continue  # Skip even numbers\n    print(num)  # Only prints odd numbers\n```\n\n## Your Quest\n\nSearch through a treasure chest for a rare gem:\n\n1. Create a list: `items = [\"coin\", \"gem\", \"ring\", \"crown\"]`\n2. Use a for loop to iterate through items\n3. Skip \"coin\" using continue (print \"Skipping coin\")\n4. When you find \"gem\", print \"Found the rare gem!\" and break\n5. For other items, print \"Checking \" + item\n\nExpected output:\n```\nSkipping coin\nFound the rare gem!\n```",
+  "starterCode": "# Treasure chest contents\nitems = [\"coin\", \"gem\", \"ring\", \"crown\"]\n\n# Search for the rare gem\n\n",
+  "solutionCode": "# Treasure chest contents\nitems = [\"coin\", \"gem\", \"ring\", \"crown\"]\n\n# Search for the rare gem\nfor item in items:\n    if item == \"coin\":\n        print(\"Skipping coin\")\n        continue\n    if item == \"gem\":\n        print(\"Found the rare gem!\")\n        break\n    print(\"Checking \" + item)",
+  "hints": [
+    "Use a for loop to iterate: for item in items:",
+    "Check if item == \"coin\" and use continue to skip it",
+    "Check if item == \"gem\" and use break to stop the loop",
+    "The break means \"ring\" and \"crown\" are never checked",
+    "Remember to print the appropriate message for each case"
+  ],
+  "validationTests": [
+    {
+      "type": "output_contains",
+      "value": "Skipping coin",
+      "description": "Should skip the coin"
+    },
+    {
+      "type": "output_contains",
+      "value": "Found the rare gem!",
+      "description": "Should find the gem"
+    },
+    {
+      "type": "code_contains",
+      "value": "break",
+      "description": "Code should use break statement"
+    },
+    {
+      "type": "code_contains",
+      "value": "continue",
+      "description": "Code should use continue statement"
+    }
+  ],
+  "learningObjectives": [
+    "Master the break statement to exit loops early",
+    "Understand continue to skip iterations",
+    "Learn when to use break vs continue",
+    "Practice combining conditionals with loop control"
+  ],
+  "nextLessonId": 17,
+  "previousLessonId": 15,
+  "tags": ["break", "continue", "loop-control", "intermediate"]
+}

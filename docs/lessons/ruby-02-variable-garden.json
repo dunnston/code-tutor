@@ -1,0 +1,50 @@
+{
+  "id": 27,
+  "trackId": 5,
+  "language": "ruby",
+  "title": "The Variable Garden",
+  "subtitle": "Growing Data in Ruby",
+  "difficulty": 1,
+  "estimatedTime": "10-15 minutes",
+  "xpReward": 120,
+  "description": "# Variables in Ruby\n\nVariables in Ruby are simple and intuitive. You don't need special keywords - just assign values!\n\n## Creating Variables\n\n```ruby\nname = \"Ruby\"\nage = 30\nis_awesome = true\n```\n\n**Ruby Conventions:**\n- Use `snake_case` for variable names (not camelCase)\n- Constants use `SCREAMING_SNAKE_CASE`\n- Variables starting with `@` are instance variables (you'll learn later)\n\n## String Interpolation\n\nRuby makes it easy to embed variables in strings using `#{}` inside double quotes:\n\n```ruby\nname = \"Alice\"\nage = 25\nputs \"My name is #{name} and I'm #{age} years old\"\n# Output: My name is Alice and I'm 25 years old\n```\n\n**Important:** String interpolation only works with double quotes `\"`!\n\n## Data Types\n\nRuby has several basic types:\n\n```ruby\nmessage = \"Hello\"        # String\nscore = 100              # Integer  \nprice = 19.99            # Float\nis_valid = true          # Boolean (TrueClass)\nis_valid = false         # Boolean (FalseClass)\nnothing = nil            # Nil (Ruby's null)\n```\n\n## Everything is an Object\n\nIn Ruby, even numbers and booleans are objects:\n\n```ruby\nputs 5.class      # Integer\nputs \"hi\".class   # String\nputs true.class   # TrueClass\n```\n\n## Your Quest\n\nCreate three variables:\n1. A variable called `hero_name` with your name as a string\n2. A variable called `level` with the number 1\n3. A variable called `gems` with the number 50\n\nThen print a message using string interpolation:\n\n**[Your Name] (Level 1) - Gems: 50**\n\nExample output: **Ruby Warrior (Level 1) - Gems: 50**",
+  "starterCode": "# Create your hero's stats!\n# Use snake_case for variable names\n\n",
+  "solutionCode": "# Create your hero's stats!\nhero_name = \"Ruby Warrior\"\nlevel = 1\ngems = 50\n\nputs \"#{hero_name} (Level #{level}) - Gems: #{gems}\"",
+  "hints": [
+    "Use snake_case: hero_name (not heroName)",
+    "String interpolation uses #{} inside double quotes",
+    "The format is: name (Level number) - Gems: number",
+    "Make sure to use double quotes \" for interpolation",
+    "Variables in Ruby don't need let, const, or var"
+  ],
+  "validationTests": [
+    {
+      "type": "output_contains",
+      "value": "Level 1",
+      "description": "Output should show Level 1"
+    },
+    {
+      "type": "output_contains",
+      "value": "Gems: 50",
+      "description": "Output should show Gems: 50"
+    },
+    {
+      "type": "code_contains",
+      "value": "hero_name",
+      "description": "Code should use snake_case variable naming"
+    },
+    {
+      "type": "code_contains",
+      "value": "puts",
+      "description": "Code should use puts for output"
+    }
+  ],
+  "learningObjectives": [
+    "Create variables without special keywords",
+    "Use snake_case naming convention",
+    "Understand string interpolation with #{}",
+    "Learn that everything in Ruby is an object"
+  ],
+  "nextLessonId": 28,
+  "tags": ["beginner", "ruby", "variables", "interpolation", "snake-case"]
+}

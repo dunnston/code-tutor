@@ -1,0 +1,50 @@
+{
+  "id": 21,
+  "trackId": 4,
+  "language": "javascript",
+  "title": "The Console Awakens",
+  "subtitle": "Your First JavaScript Program",
+  "difficulty": 1,
+  "estimatedTime": "5-10 minutes",
+  "xpReward": 100,
+  "description": "# Welcome to JavaScript Programming!\n\nYou've entered the world of **JavaScript** - the language of the web! JavaScript powers interactive websites, mobile apps, servers (Node.js), and even game engines.\n\n## Your First JavaScript Statement\n\nIn JavaScript, you display text to the console using `console.log()`:\n\n```javascript\nconsole.log(\"Hello, World!\");\n```\n\n**JavaScript Basics:**\n- Statements can end with semicolons `;` (optional but recommended)\n- JavaScript is **case-sensitive**: `console` is different from `Console`\n- Strings can use single `'` or double `\"` quotes\n- JavaScript is **dynamically-typed** (variables can change types)\n\n## Template Literals\n\nJavaScript also has template literals (backticks) for easy string formatting:\n\n```javascript\nconst name = \"Developer\";\nconsole.log(`Hello, ${name}!`); // Hello, Developer!\n```\n\n## Your Quest\n\nWrite a JavaScript program that displays:\n\n**Welcome to JavaScript!**\n\nThen on a new line:\n\n**Let's code the future!**\n\n**Note:** This code runs in Node.js, which allows JavaScript to execute outside the browser.",
+  "starterCode": "// Your first JavaScript program!\n// Use console.log() to print messages\n\n",
+  "solutionCode": "// Your first JavaScript program!\nconsole.log(\"Welcome to JavaScript!\");\nconsole.log(\"Let's code the future!\");",
+  "hints": [
+    "Use console.log() twice - once for each message",
+    "Semicolons are optional in JavaScript, but it's good practice to use them",
+    "JavaScript is case-sensitive: use console (lowercase c), not Console",
+    "You can use single 'quotes' or double \"quotes\" for strings",
+    "Check the exact spelling of the messages"
+  ],
+  "validationTests": [
+    {
+      "type": "output_contains",
+      "value": "Welcome to JavaScript!",
+      "description": "Output should contain 'Welcome to JavaScript!'"
+    },
+    {
+      "type": "output_contains",
+      "value": "Let's code the future!",
+      "description": "Output should contain 'Let's code the future!'"
+    },
+    {
+      "type": "output_line_count",
+      "min": 2,
+      "description": "Should print at least 2 lines"
+    },
+    {
+      "type": "code_contains",
+      "value": "console.log",
+      "description": "Code should use console.log()"
+    }
+  ],
+  "learningObjectives": [
+    "Understand console.log() for output",
+    "Learn JavaScript syntax basics",
+    "Recognize JavaScript is case-sensitive",
+    "Write your first working JavaScript program"
+  ],
+  "nextLessonId": 22,
+  "tags": ["beginner", "javascript", "console", "output", "hello-world"]
+}

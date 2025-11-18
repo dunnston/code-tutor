@@ -1,0 +1,51 @@
+{
+  "id": 25,
+  "trackId": 1,
+  "language": "python",
+  "title": "Constructor Mastery",
+  "subtitle": "Initializing Objects",
+  "difficulty": 7,
+  "estimatedTime": "20-25 minutes",
+  "xpReward": 190,
+  "description": "# Constructor Mastery\n\nThe `__init__` method is the constructor - it's called automatically when creating a new object. Master it to create well-initialized objects!\n\n## The Constructor\n\n```python\nclass Enemy:\n    def __init__(self, name, health, damage):\n        # Initialize properties\n        self.name = name\n        self.health = health\n        self.damage = damage\n        self.is_alive = True  # Default value\n        print(f\"Created enemy: {name}\")\n\ngoblin = Enemy(\"Goblin\", 30, 5)  # __init__ is called\n```\n\n## Default Values in Constructor\n\n```python\nclass Player:\n    def __init__(self, name, level=1):\n        self.name = name\n        self.level = level\n        self.xp = 0  # Always starts at 0\n\np1 = Player(\"Hero\")  # level defaults to 1\np2 = Player(\"Warrior\", 5)  # custom level\n```\n\n## Your Quest\n\nCreate an Item class with validation:\n\n1. Create class Item with __init__(self, name, value, quantity=1)\n2. Set self.name, self.value, and self.quantity\n3. If value < 0, set self.value = 0 (validation!)\n4. Print \"Created item: [name] x[quantity]\"\n5. Create Item(\"Potion\", 50, 3)\n6. Create Item(\"Cursed Ring\", -10) and verify value becomes 0\n\nExpected output:\n```\nCreated item: Potion x3\nCreated item: Cursed Ring x1\nCursed Ring value: 0\n```",
+  "starterCode": "# Create the Item class\n\n\n# Create a potion\n\n\n# Create a cursed ring (negative value)\n\n\n# Verify the cursed ring value was corrected\n\n",
+  "solutionCode": "# Create the Item class\nclass Item:\n    def __init__(self, name, value, quantity=1):\n        self.name = name\n        self.quantity = quantity\n        \n        # Validate value\n        if value < 0:\n            self.value = 0\n        else:\n            self.value = value\n        \n        print(f\"Created item: {name} x{quantity}\")\n\n# Create a potion\npotion = Item(\"Potion\", 50, 3)\n\n# Create a cursed ring (negative value)\nring = Item(\"Cursed Ring\", -10)\n\n# Verify the cursed ring value was corrected\nprint(f\"Cursed Ring value: {ring.value}\")",
+  "hints": [
+    "Define __init__ with parameters: name, value, quantity=1",
+    "Use if value < 0: to check for negative values",
+    "Set self.value = 0 if invalid, otherwise self.value = value",
+    "Use an f-string in print: f\"Created item: {name} x{quantity}\"",
+    "The negative value should automatically be corrected to 0"
+  ],
+  "validationTests": [
+    {
+      "type": "output_contains",
+      "value": "Created item: Potion x3",
+      "description": "Should create potion correctly"
+    },
+    {
+      "type": "output_contains",
+      "value": "Created item: Cursed Ring x1",
+      "description": "Should create cursed ring with default quantity"
+    },
+    {
+      "type": "output_contains",
+      "value": "Cursed Ring value: 0",
+      "description": "Should validate and correct negative value"
+    },
+    {
+      "type": "code_contains",
+      "value": "__init__",
+      "description": "Should define constructor"
+    }
+  ],
+  "learningObjectives": [
+    "Master the __init__ constructor method",
+    "Learn to validate data in constructors",
+    "Practice using default parameter values",
+    "Understand constructor execution timing"
+  ],
+  "nextLessonId": 26,
+  "previousLessonId": 24,
+  "tags": ["oop", "classes", "constructor", "__init__", "advanced"]
+}

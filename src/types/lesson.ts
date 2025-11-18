@@ -14,8 +14,8 @@ export interface Lesson {
   hints: string[]
   validationTests: ValidationTest[]
   learningObjectives: string[]
-  previousLessonId?: number
-  nextLessonId?: number
+  previousLessonId?: number | null
+  nextLessonId?: number | null
   tags: string[]
   bonus?: {
     description: string
@@ -46,6 +46,7 @@ export interface ValidationTest {
   args?: unknown[]
   expectedReturn?: unknown
   expectedType?: string
+  expectedValue?: string | number | boolean
   min?: number
   max?: number
   check?: string

@@ -1,0 +1,51 @@
+{
+  "id": 11,
+  "trackId": 1,
+  "language": "python",
+  "title": "String Manipulation Mastery",
+  "subtitle": "The Art of Text Crafting",
+  "difficulty": 3,
+  "estimatedTime": "10-15 minutes",
+  "xpReward": 120,
+  "description": "# The Ancient Art of String Manipulation\n\nYou've discovered a tome containing powerful string manipulation techniques. As a coder-mage, mastering these skills will allow you to transform, combine, and reshape text with ease.\n\n## String Methods\n\nStrings in Python come with many built-in methods:\n\n```python\nmessage = \"Welcome, Hero!\"\n\n# Transform case\nuppercase = message.upper()  # \"WELCOME, HERO!\"\nlowercase = message.lower()  # \"welcome, hero!\"\n\n# Replace text\nnew_message = message.replace(\"Hero\", \"Warrior\")  # \"Welcome, Warrior!\"\n\n# Split into parts\nwords = message.split(\", \")  # [\"Welcome\", \"Hero!\"]\n```\n\n## Your Quest\n\nA magical scroll contains the message: `\"dragon slayer\"`\n\nYour task:\n1. Create a variable `message` with the value `\"dragon slayer\"`\n2. Transform it to uppercase and store in `battle_cry`\n3. Replace \"dragon\" with \"goblin\" and store in `new_quest`\n4. Print both `battle_cry` and `new_quest`\n\nExpected output:\n```\nDRAGON SLAYER\ngoblin slayer\n```",
+  "starterCode": "# The magical scroll message\nmessage = \"dragon slayer\"\n\n# Transform to uppercase for your battle cry\n\n\n# Replace dragon with goblin for a new quest\n\n\n# Display both messages\n\n",
+  "solutionCode": "# The magical scroll message\nmessage = \"dragon slayer\"\n\n# Transform to uppercase for your battle cry\nbattle_cry = message.upper()\n\n# Replace dragon with goblin for a new quest\nnew_quest = message.replace(\"dragon\", \"goblin\")\n\n# Display both messages\nprint(battle_cry)\nprint(new_quest)",
+  "hints": [
+    "Use .upper() method to convert a string to uppercase",
+    "Use .replace(old, new) to substitute text in a string",
+    "Remember to store the results in the specified variable names",
+    "Don't forget to print both battle_cry and new_quest",
+    "The complete code: battle_cry = message.upper() and new_quest = message.replace(\"dragon\", \"goblin\")"
+  ],
+  "validationTests": [
+    {
+      "type": "output_contains",
+      "value": "DRAGON SLAYER",
+      "description": "Output should contain the uppercase battle cry"
+    },
+    {
+      "type": "output_contains",
+      "value": "goblin slayer",
+      "description": "Output should contain the modified quest"
+    },
+    {
+      "type": "code_contains",
+      "value": ".upper()",
+      "description": "Code should use the .upper() method"
+    },
+    {
+      "type": "code_contains",
+      "value": ".replace(",
+      "description": "Code should use the .replace() method"
+    }
+  ],
+  "learningObjectives": [
+    "Learn to use string methods like .upper() and .lower()",
+    "Understand how .replace() substitutes text",
+    "Practice storing method results in variables",
+    "See how strings can be transformed without changing the original"
+  ],
+  "nextLessonId": 12,
+  "previousLessonId": 10,
+  "tags": ["strings", "methods", "text-manipulation", "intermediate"]
+}

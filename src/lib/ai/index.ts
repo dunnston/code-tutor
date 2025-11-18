@@ -1,4 +1,4 @@
-import type { AIProvider, AIProviderType, ChatContext } from '@types/ai'
+import type { AIProvider, AIProviderType, ChatContext } from '@/types/ai'
 import { OllamaProvider } from './ollama'
 import { ClaudeProvider } from './claude'
 
@@ -67,7 +67,11 @@ export class AIService {
   /**
    * Send a message to the current provider
    */
-  async sendMessage(prompt: string, context: ChatContext): Promise<string> {
+  async sendMessage(
+    prompt: string,
+    context: ChatContext,
+    systemPrompt?: string
+  ): Promise<string> {
     if (!this.currentProvider) {
       throw new Error('No AI provider selected')
     }
@@ -77,7 +81,7 @@ export class AIService {
       throw new Error(`${this.currentProvider.name} is not available`)
     }
 
-    return this.currentProvider.sendMessage(prompt, context)
+    return this.currentProvider.sendMessage(prompt, context, systemPrompt)
   }
 
   /**
@@ -86,7 +90,8 @@ export class AIService {
   async streamMessage(
     prompt: string,
     context: ChatContext,
-    onChunk: (text: string) => void
+    onChunk: (text: string) => void,
+    systemPrompt?: string
   ): Promise<void> {
     if (!this.currentProvider) {
       throw new Error('No AI provider selected')
@@ -94,12 +99,12 @@ export class AIService {
 
     if (!this.currentProvider.streamMessage) {
       // If streaming is not supported, fall back to regular message
-      const response = await this.sendMessage(prompt, context)
+      const response = await this.sendMessage(prompt, context, systemPrompt)
       onChunk(response)
       return
     }
 
-    return this.currentProvider.streamMessage(prompt, context, onChunk)
+    return this.currentProvider.streamMessage(prompt, context, onChunk, systemPrompt)
   }
 }
 

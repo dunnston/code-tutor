@@ -1,0 +1,240 @@
+[
+  {
+    "id": "variables-and-types",
+    "name": "Variables & Data Types",
+    "description": "Storing and working with different types of data",
+    "category": "fundamentals",
+    "difficulty": 1
+  },
+  {
+    "id": "operators",
+    "name": "Operators",
+    "description": "Math, comparison, and logical operations",
+    "category": "fundamentals",
+    "difficulty": 2
+  },
+  {
+    "id": "string-manipulation",
+    "name": "String Manipulation",
+    "description": "Working with text data",
+    "category": "fundamentals",
+    "difficulty": 2
+  },
+  {
+    "id": "input-output",
+    "name": "User Input/Output",
+    "description": "Getting input from users and displaying results",
+    "category": "fundamentals",
+    "difficulty": 1
+  },
+  {
+    "id": "comments",
+    "name": "Comments & Documentation",
+    "description": "Documenting your code",
+    "category": "fundamentals",
+    "difficulty": 1
+  },
+  {
+    "id": "if-statements",
+    "name": "If Statements",
+    "description": "Making decisions in code",
+    "category": "control_flow",
+    "difficulty": 2
+  },
+  {
+    "id": "if-else",
+    "name": "If/Else Branching",
+    "description": "Two-way decision making",
+    "category": "control_flow",
+    "difficulty": 2
+  },
+  {
+    "id": "multiple-conditions",
+    "name": "Multiple Conditions",
+    "description": "Handling multiple cases with elif/else if",
+    "category": "control_flow",
+    "difficulty": 3
+  },
+  {
+    "id": "for-loops",
+    "name": "For Loops",
+    "description": "Repeating actions a specific number of times",
+    "category": "control_flow",
+    "difficulty": 3
+  },
+  {
+    "id": "while-loops",
+    "name": "While Loops",
+    "description": "Repeating while a condition is true",
+    "category": "control_flow",
+    "difficulty": 3
+  },
+  {
+    "id": "loop-control",
+    "name": "Loop Control",
+    "description": "Breaking out and skipping iterations",
+    "category": "control_flow",
+    "difficulty": 4
+  },
+  {
+    "id": "nested-loops",
+    "name": "Nested Loops",
+    "description": "Loops inside loops",
+    "category": "control_flow",
+    "difficulty": 4
+  },
+  {
+    "id": "function-basics",
+    "name": "Function Basics",
+    "description": "Creating reusable code blocks",
+    "category": "functions",
+    "difficulty": 3
+  },
+  {
+    "id": "parameters-arguments",
+    "name": "Parameters & Arguments",
+    "description": "Passing data to functions",
+    "category": "functions",
+    "difficulty": 3
+  },
+  {
+    "id": "return-values",
+    "name": "Return Values",
+    "description": "Getting results from functions",
+    "category": "functions",
+    "difficulty": 3
+  },
+  {
+    "id": "scope",
+    "name": "Variable Scope",
+    "description": "Where variables are accessible",
+    "category": "functions",
+    "difficulty": 4
+  },
+  {
+    "id": "default-parameters",
+    "name": "Default Parameters",
+    "description": "Optional function parameters",
+    "category": "functions",
+    "difficulty": 4
+  },
+  {
+    "id": "lists-arrays",
+    "name": "Lists/Arrays",
+    "description": "Ordered collections of items",
+    "category": "data_structures",
+    "difficulty": 3
+  },
+  {
+    "id": "dictionaries-objects",
+    "name": "Dictionaries/Objects",
+    "description": "Key-value pair collections",
+    "category": "data_structures",
+    "difficulty": 4
+  },
+  {
+    "id": "tuples",
+    "name": "Tuples/Records",
+    "description": "Immutable ordered collections",
+    "category": "data_structures",
+    "difficulty": 4
+  },
+  {
+    "id": "sets",
+    "name": "Sets",
+    "description": "Unique item collections",
+    "category": "data_structures",
+    "difficulty": 4
+  },
+  {
+    "id": "classes-objects",
+    "name": "Classes & Objects",
+    "description": "Creating custom data types",
+    "category": "oop",
+    "difficulty": 5
+  },
+  {
+    "id": "properties-methods",
+    "name": "Properties & Methods",
+    "description": "Object attributes and behaviors",
+    "category": "oop",
+    "difficulty": 5
+  },
+  {
+    "id": "constructors",
+    "name": "Constructors",
+    "description": "Initializing objects",
+    "category": "oop",
+    "difficulty": 5
+  },
+  {
+    "id": "inheritance",
+    "name": "Inheritance",
+    "description": "Creating specialized classes",
+    "category": "oop",
+    "difficulty": 6
+  },
+  {
+    "id": "polymorphism",
+    "name": "Polymorphism",
+    "description": "Objects taking multiple forms",
+    "category": "oop",
+    "difficulty": 7
+  },
+  {
+    "id": "reading-files",
+    "name": "Reading Files",
+    "description": "Loading data from files",
+    "category": "file_data",
+    "difficulty": 4
+  },
+  {
+    "id": "writing-files",
+    "name": "Writing Files",
+    "description": "Saving data to files",
+    "category": "file_data",
+    "difficulty": 4
+  },
+  {
+    "id": "json-handling",
+    "name": "JSON Handling",
+    "description": "Working with JSON data",
+    "category": "file_data",
+    "difficulty": 5
+  },
+  {
+    "id": "csv-parsing",
+    "name": "CSV/Data Parsing",
+    "description": "Working with structured data files",
+    "category": "file_data",
+    "difficulty": 5
+  },
+  {
+    "id": "error-handling",
+    "name": "Error Handling",
+    "description": "Gracefully handling errors",
+    "category": "advanced",
+    "difficulty": 5
+  },
+  {
+    "id": "async-basics",
+    "name": "Async/Callbacks",
+    "description": "Non-blocking code execution",
+    "category": "advanced",
+    "difficulty": 7
+  },
+  {
+    "id": "regular-expressions",
+    "name": "Regular Expressions",
+    "description": "Pattern matching in text",
+    "category": "advanced",
+    "difficulty": 7
+  },
+  {
+    "id": "testing-basics",
+    "name": "Testing Basics",
+    "description": "Writing tests for your code",
+    "category": "advanced",
+    "difficulty": 6
+  }
+]

@@ -1,0 +1,61 @@
+{
+  "id": 14,
+  "trackId": 2,
+  "language": "gdscript",
+  "title": "The Loop Dimension",
+  "subtitle": "Repeating Actions",
+  "difficulty": 2,
+  "estimatedTime": "15-20 minutes",
+  "xpReward": 200,
+  "description": "# Loops in GDScript\n\nIn games, you often need to repeat actions: spawn multiple enemies, iterate through inventory items, or update every frame.\n\n**Loops** let you repeat code without writing it over and over!\n\n## The for Loop\n\nPerfect for repeating a specific number of times:\n\n```gdscript\nfor i in range(5):\n    print(\"Wave \", i)\n```\n\nThis prints:\n```\nWave 0\nWave 1\nWave 2\nWave 3\nWave 4\n```\n\n## Looping Through Lists\n\n```gdscript\nvar weapons = [\"Sword\", \"Bow\", \"Staff\"]\n\nfor weapon in weapons:\n    print(weapon)\n```\n\n## The while Loop\n\nRepeats while a condition is true:\n\n```gdscript\nvar health = 100\n\nwhile health > 0:\n    health -= 10\n    print(\"Health:\", health)\n```\n\n**Warning:** Make sure while loops eventually stop, or they'll run forever!\n\n## Your Quest\n\nCreate a countdown timer!\n\n1. Use a `for` loop with `range(5, 0, -1)` to count down from 5 to 1\n2. Print each number\n3. After the loop, print \"Blast off!\"\n\n**Expected output:**\n```\n5\n4\n3\n2\n1\nBlast off!\n```\n\n**Tip:** `range(start, stop, step)` lets you control the sequence. A negative step counts backwards!",
+  "starterCode": "# Create a countdown from 5 to 1\n# Then print \"Blast off!\"\n\n",
+  "solutionCode": "# Create a countdown from 5 to 1\nfor i in range(5, 0, -1):\n    print(i)\n\n# Then print \"Blast off!\"\nprint(\"Blast off!\")",
+  "hints": [
+    "Use: for i in range(5, 0, -1):",
+    "Don't forget the colon after the for statement",
+    "Indent the print(i) statement inside the loop",
+    "Print 'Blast off!' AFTER the loop (no indentation)",
+    "range(5, 0, -1) counts from 5 down to 1 (stops before 0)"
+  ],
+  "validationTests": [
+    {
+      "type": "output_contains",
+      "value": "5",
+      "description": "Output should contain 5"
+    },
+    {
+      "type": "output_contains",
+      "value": "4",
+      "description": "Output should contain 4"
+    },
+    {
+      "type": "output_contains",
+      "value": "1",
+      "description": "Output should contain 1"
+    },
+    {
+      "type": "output_contains",
+      "value": "Blast off!",
+      "description": "Output should end with 'Blast off!'"
+    },
+    {
+      "type": "code_contains",
+      "value": "for ",
+      "description": "Code should use a for loop"
+    },
+    {
+      "type": "code_contains",
+      "value": "range",
+      "description": "Code should use range() function"
+    }
+  ],
+  "learningObjectives": [
+    "Understand for loops and range()",
+    "Learn to count backwards with negative steps",
+    "Master loop indentation",
+    "Create countdown sequences"
+  ],
+  "previousLessonId": 13,
+  "nextLessonId": 15,
+  "tags": ["beginner", "gdscript", "loops", "for-loop", "range"]
+}

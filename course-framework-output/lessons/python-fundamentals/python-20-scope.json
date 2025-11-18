@@ -1,0 +1,51 @@
+{
+  "id": 20,
+  "trackId": 1,
+  "language": "python",
+  "title": "Variable Scope",
+  "subtitle": "Understanding Where Variables Live",
+  "difficulty": 6,
+  "estimatedTime": "15-20 minutes",
+  "xpReward": 160,
+  "description": "# Variable Scope\n\nVariables have a \"scope\" - the region of code where they can be accessed. Understanding scope prevents mysterious errors!\n\n## Local vs Global Scope\n\n```python\n# Global variable (accessible everywhere)\nplayer_name = \"Hero\"\n\ndef greet():\n    # Local variable (only exists inside this function)\n    greeting = \"Hello\"\n    print(f\"{greeting}, {player_name}!\")  # Can access both\n\ngreet()  # Works!\n# print(greeting)  # ERROR! greeting doesn't exist outside the function\n```\n\n## Function Parameters are Local\n\n```python\ndef calculate_damage(attack):  # attack is local\n    damage = attack * 2  # damage is also local\n    return damage\n\nresult = calculate_damage(10)\n# print(attack)  # ERROR! attack doesn't exist here\n```\n\n## Your Quest\n\nUnderstand scope by creating variables in different scopes:\n\n1. Create a global variable `game_title` = \"Fantasy Quest\"\n2. Define a function called `show_info`\n3. Inside the function, create a local variable `level` = 5\n4. Print game_title (global) and level (local) inside the function\n5. Call the function\n6. After the function, print game_title (it still exists!)\n\nExpected output:\n```\nGame: Fantasy Quest\nLevel: 5\nGame: Fantasy Quest\n```",
+  "starterCode": "# Global variable\ngame_title = \"Fantasy Quest\"\n\n# Define function with local variable\n\n\n# Call the function\n\n\n# Access global variable outside function\n\n",
+  "solutionCode": "# Global variable\ngame_title = \"Fantasy Quest\"\n\n# Define function with local variable\ndef show_info():\n    level = 5  # Local variable\n    print(\"Game: \" + game_title)\n    print(\"Level: \" + str(level))\n\n# Call the function\nshow_info()\n\n# Access global variable outside function\nprint(\"Game: \" + game_title)",
+  "hints": [
+    "Global variables are defined outside all functions",
+    "Local variables are defined inside functions",
+    "Functions can read global variables",
+    "game_title can be accessed both inside and outside the function",
+    "level only exists inside the show_info function"
+  ],
+  "validationTests": [
+    {
+      "type": "output_contains",
+      "value": "Game: Fantasy Quest",
+      "description": "Should print the game title"
+    },
+    {
+      "type": "output_contains",
+      "value": "Level: 5",
+      "description": "Should print the level"
+    },
+    {
+      "type": "code_contains",
+      "value": "def show_info",
+      "description": "Should define the show_info function"
+    },
+    {
+      "type": "output_line_count",
+      "min": 3,
+      "description": "Should print 3 lines total"
+    }
+  ],
+  "learningObjectives": [
+    "Understand the difference between local and global scope",
+    "Learn that variables inside functions are local",
+    "See that functions can access global variables",
+    "Recognize why local variables can't be accessed outside their function"
+  ],
+  "nextLessonId": 21,
+  "previousLessonId": 19,
+  "tags": ["scope", "variables", "local", "global", "intermediate"]
+}

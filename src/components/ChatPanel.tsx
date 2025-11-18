@@ -2,6 +2,9 @@ import { useState, useRef, useEffect } from 'react'
 import { useAppStore } from '@/lib/store'
 import { aiService } from '@/lib/ai'
 import type { AIProviderType } from '@/types/ai'
+import { MarkdownRenderer } from './MarkdownRenderer'
+import { buildPromptContext } from '@/lib/ai/promptContext'
+import { buildPrompt, detectPromptType } from '@/lib/ai/prompts'
 
 export function ChatPanel() {
   const {
@@ -13,6 +16,10 @@ export function ChatPanel() {
     setAIProvider,
     currentLesson,
     code,
+    progress,
+    hintsRevealed,
+    lessonStartTime,
+    consoleMessages,
   } = useAppStore()
 
   const [input, setInput] = useState('')
@@ -32,7 +39,7 @@ export function ChatPanel() {
   }, [chatMessages])
 
   const handleSend = async () => {
-    if (!input.trim() || isSending) return
+    if (!input.trim() || isSending || !currentLesson) return
 
     const userMessage = input.trim()
     setInput('')
@@ -45,16 +52,63 @@ export function ChatPanel() {
     })
 
     try {
-      // Prepare context
-      const context = {
-        lessonId: currentLesson?.id || 0,
-        lessonTitle: currentLesson?.title || '',
+      // Get last console output for context
+      const lastOutput = consoleMessages
+        .filter((msg) => msg.type === 'output')
+        .slice(-3)
+        .map((msg) => msg.text)
+        .join('\n')
+
+      const lastError = consoleMessages
+        .filter((msg) => msg.type === 'error')
+        .slice(-1)
+        .map((msg) => msg.text)
+        .join('\n')
+
+      // Build comprehensive prompt context
+      const promptContext = buildPromptContext({
+        lesson: currentLesson,
+        userCode: code,
+        progress,
+        chatHistory: chatMessages,
+        executionOutput: lastOutput || undefined,
+        errorMessage: lastError || null,
+        hintsRevealed,
+        lessonStartTime,
+      })
+
+      // Detect appropriate prompt type
+      const promptType = detectPromptType(userMessage, promptContext)
+      console.log(`🎯 Detected prompt type: ${promptType}`)
+
+      // Build the complete prompt
+      const { systemPrompt, userPrompt } = buildPrompt(
+        promptType,
+        userMessage,
+        promptContext
+      )
+      console.log(`📋 System prompt length: ${systemPrompt.length} chars`)
+      console.log(`💬 User prompt length: ${userPrompt.length} chars`)
+
+      // Get current provider
+      const provider = aiService.getCurrentProvider()
+      if (!provider) {
+        throw new Error('No AI provider configured. Please select one in settings.')
+      }
+
+      // Send message with enhanced context and dynamic system prompt
+      const legacyContext = {
+        lessonTitle: currentLesson.title,
+        lessonDescription: currentLesson.description,
         userCode: code,
         chatHistory: chatMessages,
       }
 
-      // Get AI response
-      const response = await aiService.sendMessage(userMessage, context)
+      const response = await aiService.sendMessage(
+        userPrompt,
+        legacyContext,
+        systemPrompt
+      )
 
       // Add AI response
       addChatMessage({
@@ -99,7 +153,7 @@ export function ChatPanel() {
     return (
       <button
         onClick={toggleChat}
-        className="fixed right-4 bottom-4 w-14 h-14 bg-accent-500 hover:bg-accent-400 text-white rounded-full shadow-lg flex items-center justify-center transition-colors z-50"
+        className="fixed right-6 bottom-20 w-14 h-14 bg-accent-500 hover:bg-accent-400 text-white rounded-full shadow-lg flex items-center justify-center transition-colors z-50"
         aria-label="Open AI Tutor"
       >
         <svg
@@ -274,7 +328,13 @@ export function ChatPanel() {
                   : 'bg-navy-700 text-gray-100'
               }`}
             >
-              <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+              {message.role === 'user' ? (
+                <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+              ) : (
+                <div className="text-sm prose prose-invert max-w-none">
+                  <MarkdownRenderer content={message.content} />
+                </div>
+              )}
               <p className="text-xs opacity-70 mt-1">
                 {new Date(message.timestamp).toLocaleTimeString()}
               </p>

@@ -1,0 +1,51 @@
+{
+  "id": 28,
+  "trackId": 1,
+  "language": "python",
+  "title": "Error Handling",
+  "subtitle": "Graceful Failure Recovery",
+  "difficulty": 8,
+  "estimatedTime": "20-25 minutes",
+  "xpReward": 210,
+  "description": "# Error Handling\n\nErrors happen! Learn to handle them gracefully so your programs don't crash unexpectedly.\n\n## Try-Except Blocks\n\n```python\ntry:\n    number = int(input(\"Enter a number: \"))\n    result = 100 / number\n    print(f\"Result: {result}\")\nexcept ValueError:\n    print(\"That's not a valid number!\")\nexcept ZeroDivisionError:\n    print(\"Cannot divide by zero!\")\n```\n\n## Why Handle Errors?\n\n- Prevents program crashes\n- Provides helpful messages to users\n- Allows recovery from problems\n\n## Common Exceptions\n\n- `ValueError`: Invalid value conversion\n- `ZeroDivisionError`: Division by zero\n- `FileNotFoundError`: File doesn't exist\n- `KeyError`: Dictionary key doesn't exist\n\n## Your Quest\n\nCreate a safe division function:\n\n1. Define function `safe_divide(a, b)`\n2. Use try-except to handle ZeroDivisionError\n3. If successful, return a / b\n4. If error, print \"Error: Cannot divide by zero!\" and return 0\n5. Test with safe_divide(10, 2) and safe_divide(10, 0)\n\nExpected output:\n```\n5.0\nError: Cannot divide by zero!\n0\n```",
+  "starterCode": "# Define safe division function\n\n\n# Test the function\nprint(safe_divide(10, 2))\nprint(safe_divide(10, 0))",
+  "solutionCode": "# Define safe division function\ndef safe_divide(a, b):\n    try:\n        return a / b\n    except ZeroDivisionError:\n        print(\"Error: Cannot divide by zero!\")\n        return 0\n\n# Test the function\nprint(safe_divide(10, 2))\nprint(safe_divide(10, 0))",
+  "hints": [
+    "Use try: to wrap the division operation",
+    "Use except ZeroDivisionError: to catch division by zero",
+    "Return a / b in the try block",
+    "Return 0 in the except block",
+    "The function should print the error message before returning 0"
+  ],
+  "validationTests": [
+    {
+      "type": "output_contains",
+      "value": "5.0",
+      "description": "Should divide 10 by 2 successfully"
+    },
+    {
+      "type": "output_contains",
+      "value": "Error: Cannot divide by zero!",
+      "description": "Should catch and handle zero division"
+    },
+    {
+      "type": "code_contains",
+      "value": "try:",
+      "description": "Should use try block"
+    },
+    {
+      "type": "code_contains",
+      "value": "except",
+      "description": "Should use except block"
+    }
+  ],
+  "learningObjectives": [
+    "Understand try-except error handling",
+    "Learn to catch specific exceptions",
+    "Practice preventing program crashes",
+    "See how to provide fallback behavior"
+  ],
+  "nextLessonId": 29,
+  "previousLessonId": 27,
+  "tags": ["error-handling", "try-except", "exceptions", "advanced"]
+}

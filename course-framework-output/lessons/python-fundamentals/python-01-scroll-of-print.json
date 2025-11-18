@@ -1,0 +1,45 @@
+{
+  "id": 1,
+  "trackId": 1,
+  "language": "python",
+  "title": "The Scroll of Print",
+  "subtitle": "Your First Spell",
+  "difficulty": 1,
+  "estimatedTime": "5-10 minutes",
+  "xpReward": 100,
+  "description": "# Welcome to Fantasy Quest!\n\nYou've discovered an ancient scroll that contains the most fundamental spell in all of programming: **the print spell**.\n\nThis spell allows you to display messages to the console - a magical window where your code speaks to you.\n\n## The Print Spell\n\nIn Python, the print spell looks like this:\n\n```python\nprint(\"Hello, adventurer!\")\n```\n\n**How it works:**\n- `print` is the spell name\n- The parentheses `()` hold the message you want to display\n- The quotation marks `\"\"` tell Python this is text (called a **string**)\n\n## Your Quest\n\nCast the print spell to display the message:\n\n**Welcome to Fantasy Quest!**\n\nThen, on a new line, cast another print spell to display:\n\n**I am ready to learn coding!**",
+  "starterCode": "# Cast your print spells here\n# Remember: print(\"your message\")\n\n",
+  "solutionCode": "# Cast your print spells here\nprint(\"Welcome to Fantasy Quest!\")\nprint(\"I am ready to learn coding!\")",
+  "hints": [
+    "Use the print() function twice - once for each message",
+    "Don't forget the quotation marks around your text: print(\"like this\")",
+    "Make sure each print statement is on its own line",
+    "Check your spelling - 'print' is all lowercase",
+    "Copy the exact messages: 'Welcome to Fantasy Quest!' and 'I am ready to learn coding!'"
+  ],
+  "validationTests": [
+    {
+      "type": "output_contains",
+      "value": "Welcome to Fantasy Quest!",
+      "description": "Output should contain 'Welcome to Fantasy Quest!'"
+    },
+    {
+      "type": "output_contains",
+      "value": "I am ready to learn coding!",
+      "description": "Output should contain 'I am ready to learn coding!'"
+    },
+    {
+      "type": "output_line_count",
+      "min": 2,
+      "description": "Should print at least 2 lines"
+    }
+  ],
+  "learningObjectives": [
+    "Understand what the print() function does",
+    "Learn to use quotation marks for strings",
+    "See immediate output from your code",
+    "Write your first working Python program"
+  ],
+  "nextLessonId": 2,
+  "tags": ["beginner", "print", "strings", "hello-world"]
+}

@@ -1,0 +1,50 @@
+{
+  "id": 28,
+  "trackId": 5,
+  "language": "ruby",
+  "title": "The Conditional Flow",
+  "subtitle": "Making Decisions in Ruby",
+  "difficulty": 2,
+  "estimatedTime": "10-15 minutes",
+  "xpReward": 150,
+  "description": "# Conditional Statements in Ruby\n\nRuby's conditionals are clean and readable, making your code almost like reading English!\n\n## if Statement\n\n```ruby\nage = 18\nif age >= 18\n  puts \"You can vote!\"\nend\n```\n\n**Note:** Ruby uses `end` to close blocks (not curly braces).\n\n## if-else Statement\n\n```ruby\ntemperature = 25\nif temperature > 30\n  puts \"It's hot!\"\nelse\n  puts \"It's comfortable!\"\nend\n```\n\n## elsif for Multiple Conditions\n\n```ruby\nscore = 85\nif score >= 90\n  puts \"Grade: A\"\nelsif score >= 80\n  puts \"Grade: B\"\nelsif score >= 70\n  puts \"Grade: C\"\nelse\n  puts \"Grade: F\"\nend\n```\n\n**Note:** Ruby uses `elsif` (not `else if` or `elif`).\n\n## Ruby's Elegant Modifiers\n\nRuby allows one-line conditionals:\n\n```ruby\nputs \"It's hot!\" if temperature > 30\nputs \"It's cold!\" unless temperature > 20  # unless = if not\n```\n\n## Comparison Operators\n\n- `==` - Equal to\n- `!=` - Not equal to\n- `>` - Greater than\n- `<` - Less than\n- `>=` - Greater than or equal to\n- `<=` - Less than or equal to\n\n## Your Quest\n\nCreate a variable called `mana` with a number value, then:\n\n1. If mana is greater than 75, print: **Mana overflowing!**\n2. If mana is between 50 and 75 (inclusive), print: **Mana sufficient.**\n3. If mana is between 25 and 49 (inclusive), print: **Mana running low.**\n4. If mana is below 25, print: **Mana depleted!**\n\nTest with `mana = 60` - it should print: **Mana sufficient.**",
+  "starterCode": "# Create a mana check system\n# Use if, elsif, and else statements\n\nmana = 60\n\n",
+  "solutionCode": "# Create a mana check system\nmana = 60\n\nif mana > 75\n  puts \"Mana overflowing!\"\nelsif mana >= 50\n  puts \"Mana sufficient.\"\nelsif mana >= 25\n  puts \"Mana running low.\"\nelse\n  puts \"Mana depleted!\"\nend",
+  "hints": [
+    "Start with the highest condition (mana > 75)",
+    "Use elsif (not else if) for middle conditions",
+    "Remember to close with 'end'",
+    "50-75 means >= 50 (since higher values are caught earlier)",
+    "Ruby reads naturally: if condition, do something, end"
+  ],
+  "validationTests": [
+    {
+      "type": "output_contains",
+      "value": "Mana sufficient.",
+      "description": "With mana=60, should print 'Mana sufficient.'"
+    },
+    {
+      "type": "code_contains",
+      "value": "if",
+      "description": "Code should use if statement"
+    },
+    {
+      "type": "code_contains",
+      "value": "elsif",
+      "description": "Code should use elsif statement"
+    },
+    {
+      "type": "code_contains",
+      "value": "end",
+      "description": "Code should use end to close the block"
+    }
+  ],
+  "learningObjectives": [
+    "Understand if/elsif/else statements",
+    "Learn Ruby's end keyword for blocks",
+    "Use comparison operators correctly",
+    "Create readable conditional logic"
+  ],
+  "nextLessonId": 29,
+  "tags": ["beginner", "ruby", "conditionals", "if-elsif-else", "logic"]
+}

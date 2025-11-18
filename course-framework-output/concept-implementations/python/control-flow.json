@@ -1,0 +1,58 @@
+[
+  {
+    "concept_id": "if-statements",
+    "language_id": "python",
+    "explanation": "If statements let you execute code only when a condition is true. Python uses indentation (4 spaces) to define code blocks. The condition must be followed by a colon.",
+    "code_example": "# Basic if statement\nhealth = 50\n\nif health < 30:\n    print(\"Warning: Low health!\")\n    print(\"Find a health potion!\")\n\n# Multiple conditions with comparison operators\nlevel = 5\n\nif level >= 10:\n    print(\"You've reached expert status!\")\n\nif level == 5:\n    print(\"Halfway to level 10!\")\n\n# Checking if values exist\ninventory = [\"sword\", \"shield\"]\n\nif \"sword\" in inventory:\n    print(\"You are armed!\")",
+    "syntax_notes": "Always end the if line with a colon (:). Indent the code block by 4 spaces. Python is strict about indentation.",
+    "common_mistakes": "[\"Forgetting the colon after the condition\", \"Inconsistent indentation\", \"Using = instead of == for comparison\", \"Not indenting the code block\"]"
+  },
+  {
+    "concept_id": "if-else",
+    "language_id": "python",
+    "explanation": "The else clause provides an alternative path when the if condition is false. This creates a two-way branch in your code.",
+    "code_example": "# Basic if-else\nhealth = 80\n\nif health > 50:\n    print(\"You're in good shape!\")\nelse:\n    print(\"You need healing!\")\n\n# With different actions\nhas_key = True\n\nif has_key:\n    print(\"You unlock the door\")\n    print(\"The treasure awaits!\")\nelse:\n    print(\"The door is locked\")\n    print(\"You need to find a key\")\n\n# Returning different values\ndef get_rank(score):\n    if score >= 90:\n        return \"Gold\"\n    else:\n        return \"Silver\"",
+    "syntax_notes": "else must be at the same indentation level as the if. else also requires a colon. The else block is executed only if the if condition is False.",
+    "common_mistakes": "[\"Putting a condition after else (use elif for that)\", \"Mismatching indentation between if and else\", \"Forgetting the colon after else\"]"
+  },
+  {
+    "concept_id": "multiple-conditions",
+    "language_id": "python",
+    "explanation": "Use elif (else if) to check multiple conditions in sequence. Python evaluates them from top to bottom and executes only the first true condition.",
+    "code_example": "# Multiple conditions with elif\nscore = 75\n\nif score >= 90:\n    grade = \"A\"\nelif score >= 80:\n    grade = \"B\"\nelif score >= 70:\n    grade = \"C\"\nelif score >= 60:\n    grade = \"D\"\nelse:\n    grade = \"F\"\n\nprint(f\"Your grade is: {grade}\")\n\n# Game example\nhealth = 25\n\nif health >= 80:\n    status = \"Excellent\"\n    print(\"You're in great shape!\")\nelif health >= 50:\n    status = \"Good\"\n    print(\"You're doing well\")\nelif health >= 20:\n    status = \"Warning\"\n    print(\"Health is low!\")\nelse:\n    status = \"Critical\"\n    print(\"Find health immediately!\")\n\n# Combining with logical operators\nlevel = 5\nhas_quest = True\n\nif level >= 10 and has_quest:\n    print(\"You can start the epic quest!\")\nelif level >= 10:\n    print(\"You're high level but need a quest\")\nelif has_quest:\n    print(\"You have a quest but need more levels\")\nelse:\n    print(\"Keep leveling up!\")",
+    "syntax_notes": "elif is short for 'else if'. You can have as many elif blocks as needed. Only the first true condition executes. else is optional and catches everything else.",
+    "common_mistakes": "[\"Writing 'else if' instead of 'elif'\", \"Putting conditions in the wrong order (more specific should come first)\", \"Forgetting that only ONE block executes\"]"
+  },
+  {
+    "concept_id": "for-loops",
+    "language_id": "python",
+    "explanation": "For loops iterate over sequences (lists, ranges, strings, etc.). Use range() to loop a specific number of times. The loop variable takes each value in the sequence.",
+    "code_example": "# Looping with range()\nfor i in range(5):\n    print(f\"Count: {i}\")  # Prints 0, 1, 2, 3, 4\n\n# range(start, stop, step)\nfor i in range(1, 11):\n    print(f\"Level {i}\")  # Prints 1 through 10\n\nfor i in range(0, 10, 2):\n    print(i)  # Prints 0, 2, 4, 6, 8\n\n# Looping over a list\ninventory = [\"sword\", \"shield\", \"potion\"]\n\nfor item in inventory:\n    print(f\"You have: {item}\")\n\n# Looping over a string\nword = \"HERO\"\n\nfor letter in word:\n    print(letter)  # Prints H, E, R, O (each on a line)\n\n# Using enumerate for index and value\nweapons = [\"sword\", \"bow\", \"staff\"]\n\nfor index, weapon in enumerate(weapons):\n    print(f\"Weapon {index + 1}: {weapon}\")\n\n# Accumulating values\ntotal_damage = 0\nattacks = [10, 15, 20, 12]\n\nfor damage in attacks:\n    total_damage += damage\n\nprint(f\"Total damage: {total_damage}\")  # 57",
+    "syntax_notes": "range(n) goes from 0 to n-1. range(start, stop) goes from start to stop-1. Use enumerate() when you need both index and value. The loop variable is temporary and only exists inside the loop.",
+    "common_mistakes": "[\"Expecting range(5) to include 5 (it goes 0-4)\", \"Trying to modify a list while iterating over it\", \"Forgetting the colon after the for statement\", \"Not indenting the loop body\"]"
+  },
+  {
+    "concept_id": "while-loops",
+    "language_id": "python",
+    "explanation": "While loops repeat as long as a condition is true. Be careful to ensure the condition eventually becomes false, or you'll create an infinite loop.",
+    "code_example": "# Basic while loop\nhealth = 100\npotions = 3\n\nwhile health < 100 and potions > 0:\n    health += 20\n    potions -= 1\n    print(f\"Used potion! Health: {health}, Potions left: {potions}\")\n\n# Counting with while\ncount = 0\n\nwhile count < 5:\n    print(f\"Count: {count}\")\n    count += 1  # IMPORTANT: Increment to avoid infinite loop\n\n# User input loop\ncommand = \"\"\n\nwhile command != \"quit\":\n    command = input(\"Enter command (or 'quit' to exit): \")\n    if command == \"attack\":\n        print(\"You attack the enemy!\")\n    elif command == \"defend\":\n        print(\"You raise your shield!\")\n\n# Infinite loop with break (covered in loop-control)\nwhile True:\n    answer = input(\"Are you ready? (yes/no): \")\n    if answer == \"yes\":\n        break  # Exit the loop\n    print(\"Take your time...\")",
+    "syntax_notes": "The condition is checked before each iteration. If it starts false, the loop never runs. Make sure the condition can become false (update variables inside the loop).",
+    "common_mistakes": "[\"Forgetting to update the loop variable (infinite loop)\", \"Using = instead of == in the condition\", \"Not considering when the loop will end\", \"Forgetting the colon\"]"
+  },
+  {
+    "concept_id": "loop-control",
+    "language_id": "python",
+    "explanation": "Use 'break' to exit a loop early and 'continue' to skip the rest of the current iteration and move to the next one. These give you fine control over loop execution.",
+    "code_example": "# break - exit the loop immediately\ninventory = [\"sword\", \"potion\", \"shield\", \"key\", \"armor\"]\n\nfor item in inventory:\n    if item == \"key\":\n        print(\"Found the key!\")\n        break  # Stop searching\n    print(f\"Checking {item}...\")\n\n# continue - skip to next iteration\nfor number in range(1, 11):\n    if number % 2 == 0:\n        continue  # Skip even numbers\n    print(number)  # Only prints odd numbers\n\n# Practical example: validating input\nwhile True:\n    age = input(\"Enter your age: \")\n    \n    if not age.isdigit():\n        print(\"Please enter a number!\")\n        continue  # Ask again\n    \n    age = int(age)\n    \n    if age < 0:\n        print(\"Age cannot be negative!\")\n        continue  # Ask again\n    \n    if age > 120:\n        print(\"Please enter a realistic age!\")\n        continue  # Ask again\n    \n    # If we get here, input is valid\n    print(f\"Thank you! Age recorded: {age}\")\n    break  # Exit the loop\n\n# Using both break and continue\nenemies = [5, 10, 0, 15, 20]\n\nfor damage in enemies:\n    if damage == 0:\n        print(\"Enemy missed!\")\n        continue  # Skip to next enemy\n    \n    if damage >= 20:\n        print(\"Critical hit! You fainted!\")\n        break  # End combat\n    \n    print(f\"Took {damage} damage\")",
+    "syntax_notes": "break exits the innermost loop completely. continue skips to the next iteration. Both can be used in for and while loops. Use them to make code more readable, but don't overuse them.",
+    "common_mistakes": "[\"Using break/continue outside of loops\", \"Forgetting that continue skips code below it\", \"Breaking out of the wrong loop in nested loops\", \"Using break when continue would be clearer\"]"
+  },
+  {
+    "concept_id": "nested-loops",
+    "language_id": "python",
+    "explanation": "Loops can be placed inside other loops. The inner loop completes all its iterations for each iteration of the outer loop. Useful for working with 2D structures or combinations.",
+    "code_example": "# Basic nested loop\nfor i in range(3):\n    for j in range(3):\n        print(f\"i={i}, j={j}\")\n\n# Creating a multiplication table\nfor i in range(1, 6):\n    for j in range(1, 6):\n        print(f\"{i} x {j} = {i * j}\")\n    print()  # Blank line between rows\n\n# 2D grid pattern\nfor row in range(5):\n    for col in range(5):\n        print(\"*\", end=\" \")  # Print in same line\n    print()  # New line after each row\n\n# Working with 2D lists (matrix)\nmap_grid = [\n    [\".\", \".\", \"T\"],  # T = treasure\n    [\".\", \"X\", \".\"],  # X = obstacle\n    [\".\", \".\", \".\"]\n]\n\nfor row in range(len(map_grid)):\n    for col in range(len(map_grid[row])):\n        cell = map_grid[row][col]\n        if cell == \"T\":\n            print(f\"Treasure found at ({row}, {col})!\")\n\n# Finding all combinations\nweapons = [\"sword\", \"bow\"]\narmor = [\"leather\", \"plate\"]\n\nfor weapon in weapons:\n    for armor_type in armor:\n        print(f\"{weapon} + {armor_type}\")\n\n# Nested loop with break (only breaks inner loop)\nfor i in range(3):\n    for j in range(3):\n        if j == 1:\n            break  # Only breaks inner loop\n        print(f\"({i}, {j})\")",
+    "syntax_notes": "Each loop needs its own indentation level. Break only exits the innermost loop. Be mindful of performance - nested loops can be slow with large datasets (O(n²) complexity).",
+    "common_mistakes": "[\"Using the same loop variable name for both loops\", \"Expecting break to exit all loops (it only exits the innermost)\", \"Forgetting about performance with large datasets\", \"Confusing loop order\"]"
+  }
+]

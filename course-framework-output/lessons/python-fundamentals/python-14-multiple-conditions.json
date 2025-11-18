@@ -1,0 +1,46 @@
+{
+  "id": 14,
+  "trackId": 1,
+  "language": "python",
+  "title": "The Maze of Many Paths",
+  "subtitle": "Multiple Conditions with elif",
+  "difficulty": 4,
+  "estimatedTime": "15-20 minutes",
+  "xpReward": 140,
+  "description": "# The Maze of Many Paths\n\nYou've entered a magical maze with many branching paths. Each path leads to a different outcome. To navigate it, you must master `elif` (else-if)!\n\n## Multiple Conditions with elif\n\nWhen you have more than two possible outcomes:\n\n```python\nscore = 85\n\nif score >= 90:\n    grade = \"A\"\nelif score >= 80:\n    grade = \"B\"\nelif score >= 70:\n    grade = \"C\"\nelse:\n    grade = \"F\"\n\nprint(f\"Your grade: {grade}\")\n```\n\nPython checks each condition from top to bottom and executes only the first true block.\n\n## Your Quest\n\nDetermine an adventurer's rank based on their level:\n- Level 10 or higher: \"Master\"\n- Level 5 to 9: \"Expert\"\n- Level 1 to 4: \"Novice\"\n- Level 0: \"Beginner\"\n\n1. Create a variable `level` = 7\n2. Use if/elif/else to check the level\n3. Store the rank in a variable `rank`\n4. Print: \"Your rank: \" followed by the rank\n\nExpected output:\n```\nYour rank: Expert\n```",
+  "starterCode": "# Adventurer level\nlevel = 7\n\n# Determine rank based on level\n\n\n# Print the rank\n\n",
+  "solutionCode": "# Adventurer level\nlevel = 7\n\n# Determine rank based on level\nif level >= 10:\n    rank = \"Master\"\nelif level >= 5:\n    rank = \"Expert\"\nelif level >= 1:\n    rank = \"Novice\"\nelse:\n    rank = \"Beginner\"\n\n# Print the rank\nprint(\"Your rank: \" + rank)",
+  "hints": [
+    "Use if for the first condition (level >= 10)",
+    "Use elif for the middle conditions (level >= 5 and level >= 1)",
+    "Use else for the final condition (level 0)",
+    "Put conditions in order from highest to lowest",
+    "Remember: only the FIRST true condition executes"
+  ],
+  "validationTests": [
+    {
+      "type": "output_contains",
+      "value": "Your rank: Expert",
+      "description": "Should output the correct rank for level 7"
+    },
+    {
+      "type": "code_contains",
+      "value": "elif",
+      "description": "Code should use elif for multiple conditions"
+    },
+    {
+      "type": "code_contains",
+      "value": "else",
+      "description": "Code should have an else clause"
+    }
+  ],
+  "learningObjectives": [
+    "Master the elif statement for multiple conditions",
+    "Understand that only one branch executes",
+    "Learn to order conditions from specific to general",
+    "Practice building multi-path logic"
+  ],
+  "nextLessonId": 15,
+  "previousLessonId": 13,
+  "tags": ["elif", "multiple-conditions", "conditionals", "intermediate"]
+}

@@ -1,0 +1,50 @@
+{
+  "id": 26,
+  "trackId": 5,
+  "language": "ruby",
+  "title": "The Puts Awakening",
+  "subtitle": "Your First Ruby Program",
+  "difficulty": 1,
+  "estimatedTime": "5-10 minutes",
+  "xpReward": 100,
+  "description": "# Welcome to Ruby Programming!\n\nYou've discovered **Ruby** - a beautiful language designed for programmer happiness! Ruby is known for its elegant syntax and is used for web development (Rails), automation, and scripting.\n\n## Your First Ruby Statement\n\nIn Ruby, you display text using `puts` (put string):\n\n```ruby\nputs \"Hello, World!\"\n```\n\n**Ruby Basics:**\n- Parentheses are optional for method calls\n- Strings can use single `'` or double `\"` quotes\n- Ruby is **dynamically typed** and everything is an object\n- Ruby values **readability** and **expressiveness**\n\n## puts vs print\n\n```ruby\nputs \"Hello\"   # Prints with newline\nprint \"Hello\"  # Prints without newline\np \"Hello\"      # Prints with inspect (shows quotes)\n```\n\n## Ruby Philosophy\n\nRuby follows the principle of **\"Matz is nice, so we are nice\"** (MINASWAN). The creator, Yukihiro Matsumoto, designed Ruby to be enjoyable to write.\n\n## Your Quest\n\nWrite a Ruby program that displays:\n\n**Welcome to Ruby!**\n\nThen on a new line:\n\n**Designed for programmer happiness!**\n\n**Note:** Ruby code is known for being almost like reading English!",
+  "starterCode": "# Your first Ruby program!\n# Use puts to print messages\n\n",
+  "solutionCode": "# Your first Ruby program!\nputs \"Welcome to Ruby!\"\nputs \"Designed for programmer happiness!\"",
+  "hints": [
+    "Use puts twice - once for each message",
+    "Parentheses are optional: puts \"text\" works",
+    "Ruby is case-sensitive: use puts (lowercase)",
+    "You can use single 'quotes' or double \"quotes\"",
+    "Check the exact spelling of the messages"
+  ],
+  "validationTests": [
+    {
+      "type": "output_contains",
+      "value": "Welcome to Ruby!",
+      "description": "Output should contain 'Welcome to Ruby!'"
+    },
+    {
+      "type": "output_contains",
+      "value": "Designed for programmer happiness!",
+      "description": "Output should contain 'Designed for programmer happiness!'"
+    },
+    {
+      "type": "output_line_count",
+      "min": 2,
+      "description": "Should print at least 2 lines"
+    },
+    {
+      "type": "code_contains",
+      "value": "puts",
+      "description": "Code should use puts"
+    }
+  ],
+  "learningObjectives": [
+    "Understand puts for output",
+    "Learn Ruby's friendly syntax",
+    "Recognize Ruby values readability",
+    "Write your first working Ruby program"
+  ],
+  "nextLessonId": 27,
+  "tags": ["beginner", "ruby", "puts", "output", "hello-world"]
+}

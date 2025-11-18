@@ -1,0 +1,51 @@
+{
+  "id": 17,
+  "trackId": 1,
+  "language": "python",
+  "title": "Nested Loop Patterns",
+  "subtitle": "Loops Within Loops",
+  "difficulty": 6,
+  "estimatedTime": "15-20 minutes",
+  "xpReward": 160,
+  "description": "# Nested Loop Patterns\n\nYou've discovered that loops can contain other loops - this is called nesting! Nested loops are powerful for working with grids, combinations, and multi-dimensional data.\n\n## Nested Loops\n\nA loop inside another loop:\n\n```python\nfor row in range(3):\n    for col in range(3):\n        print(f\"Position ({row}, {col})\")\n```\n\nThe inner loop completes ALL its iterations for EACH iteration of the outer loop.\n\n## Creating Patterns\n\n```python\nfor i in range(3):\n    for j in range(3):\n        print(\"*\", end=\" \")  # Print in same line\n    print()  # New line after each row\n```\n\nOutput:\n```\n* * *\n* * *\n* * *\n```\n\n## Your Quest\n\nCreate a dungeon map grid:\n\n1. Use a nested loop: outer loop for rows (0 to 2), inner loop for cols (0 to 2)\n2. For each position, print \"[X]\" (represents a dungeon room)\n3. Use `end=\" \"` in print to stay on the same line\n4. After each row (inner loop completes), print an empty line\n\nExpected output:\n```\n[X] [X] [X]\n[X] [X] [X]\n[X] [X] [X]\n```",
+  "starterCode": "# Create a 3x3 dungeon map\n# Outer loop for rows\n\n    # Inner loop for columns\n    \n        # Print a room marker\n        \n    # New line after each row\n    \n",
+  "solutionCode": "# Create a 3x3 dungeon map\n# Outer loop for rows\nfor row in range(3):\n    # Inner loop for columns\n    for col in range(3):\n        # Print a room marker\n        print(\"[X]\", end=\" \")\n    # New line after each row\n    print()",
+  "hints": [
+    "Use range(3) for both the outer and inner loops",
+    "Print '[X]' with end=' ' to stay on the same line",
+    "After the inner loop completes, print() with no arguments creates a new line",
+    "The outer loop runs 3 times, and the inner loop runs 3 times for each outer iteration (9 total rooms)",
+    "Structure: for row in range(3): then for col in range(3):"
+  ],
+  "validationTests": [
+    {
+      "type": "output_contains",
+      "value": "[X]",
+      "description": "Should print dungeon room markers"
+    },
+    {
+      "type": "code_contains",
+      "value": "for",
+      "description": "Code should use for loops"
+    },
+    {
+      "type": "code_contains",
+      "value": "range(3)",
+      "description": "Code should use range(3)"
+    },
+    {
+      "type": "output_line_count",
+      "min": 3,
+      "description": "Should have 3 rows of output"
+    }
+  ],
+  "learningObjectives": [
+    "Understand how nested loops work",
+    "Learn that inner loops complete fully for each outer iteration",
+    "Practice creating grid patterns",
+    "Use print with end parameter to control output formatting"
+  ],
+  "nextLessonId": 18,
+  "previousLessonId": 16,
+  "tags": ["nested-loops", "loops", "patterns", "grids", "intermediate"]
+}

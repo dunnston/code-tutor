@@ -1,0 +1,37 @@
+[
+  {
+    "id": "python",
+    "name": "Python",
+    "description": "Versatile, beginner-friendly language",
+    "icon": "🐍",
+    "file_extension": ".py"
+  },
+  {
+    "id": "gdscript",
+    "name": "GDScript",
+    "description": "Godot's game development language",
+    "icon": "🎲",
+    "file_extension": ".gd"
+  },
+  {
+    "id": "csharp",
+    "name": "C#",
+    "description": "Powerful for games and enterprise",
+    "icon": "🔷",
+    "file_extension": ".cs"
+  },
+  {
+    "id": "javascript",
+    "name": "JavaScript",
+    "description": "Language of the web",
+    "icon": "📜",
+    "file_extension": ".js"
+  },
+  {
+    "id": "ruby",
+    "name": "Ruby",
+    "description": "Elegant and expressive programming",
+    "icon": "💎",
+    "file_extension": ".rb"
+  }
+]

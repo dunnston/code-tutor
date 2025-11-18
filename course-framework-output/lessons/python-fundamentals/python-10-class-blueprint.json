@@ -1,0 +1,72 @@
+{
+  "id": 10,
+  "trackId": 1,
+  "language": "python",
+  "title": "The Class Blueprint",
+  "subtitle": "Creating Your Own Objects",
+  "difficulty": 7,
+  "estimatedTime": "25-30 minutes",
+  "xpReward": 300,
+  "description": "# The Master Craftsman\n\nYou've reached a pivotal moment in your journey! It's time to learn **Object-Oriented Programming** - the art of creating your own custom types of things.\n\n## What is a Class?\n\nA **class** is like a blueprint or template for creating objects. Think of it as a cookie cutter that defines the shape, while objects are the actual cookies!\n\n```python\nclass Hero:\n    def __init__(self, name, level):\n        self.name = name\n        self.level = level\n    \n    def introduce(self):\n        print(f\"I am {self.name}, level {self.level}!\")\n\n# Create a hero object\nmy_hero = Hero(\"Aria\", 10)\nmy_hero.introduce()  # Prints: I am Aria, level 10!\n```\n\n## Key Concepts\n\n**__init__()** - The constructor method that runs when you create an object\n- `self` refers to the object being created\n- Parameters after `self` are values you pass when creating the object\n\n**Attributes** - Variables that belong to the object (self.name, self.level)\n\n**Methods** - Functions that belong to the class (like introduce())\n\n## Creating Objects\n\n```python\nhero1 = Hero(\"Valor\", 5)\nhero2 = Hero(\"Luna\", 8)\n```\n\nEach object has its own attributes!\n\n## Your Quest\n\n1. Create a class called `Weapon` with:\n   - An `__init__()` method that takes `name` and `damage`\n   - Store these as attributes (self.name and self.damage)\n   - Create a method called `attack()` that prints: `\"{name} strikes for {damage} damage!\"`\n\n2. Create two weapon objects:\n   - `sword` with name \"Excalibur\" and damage 50\n   - `axe` with name \"Stormbreaker\" and damage 75\n\n3. Call the `attack()` method on both weapons",
+  "starterCode": "# Define the Weapon class\nclass Weapon:\n    def __init__(self, name, damage):\n        # Store the name and damage as attributes\n        pass\n    \n    def attack(self):\n        # Print the attack message\n        pass\n\n# Create a sword object\n\n\n# Create an axe object\n\n\n# Call attack() on both weapons\n\n\n",
+  "solutionCode": "# Define the Weapon class\nclass Weapon:\n    def __init__(self, name, damage):\n        # Store the name and damage as attributes\n        self.name = name\n        self.damage = damage\n    \n    def attack(self):\n        # Print the attack message\n        print(f\"{self.name} strikes for {self.damage} damage!\")\n\n# Create a sword object\nsword = Weapon(\"Excalibur\", 50)\n\n# Create an axe object\naxe = Weapon(\"Stormbreaker\", 75)\n\n# Call attack() on both weapons\nsword.attack()\naxe.attack()",
+  "hints": [
+    "Classes start with 'class ClassName:' - remember the colon!",
+    "The __init__ method always takes 'self' as the first parameter",
+    "Store attributes with self.attribute_name = value",
+    "Methods are just functions inside a class, and they need 'self' as first parameter",
+    "Create objects with: variable_name = ClassName(arguments)"
+  ],
+  "validationTests": [
+    {
+      "type": "code_contains",
+      "value": "class Weapon",
+      "description": "Code should define a class named 'Weapon'"
+    },
+    {
+      "type": "code_contains",
+      "value": "__init__",
+      "description": "Class should have an __init__ method"
+    },
+    {
+      "type": "code_contains",
+      "value": "self.name",
+      "description": "Code should use self.name attribute"
+    },
+    {
+      "type": "code_contains",
+      "value": "self.damage",
+      "description": "Code should use self.damage attribute"
+    },
+    {
+      "type": "output_contains",
+      "value": "Excalibur",
+      "description": "Output should contain 'Excalibur'"
+    },
+    {
+      "type": "output_contains",
+      "value": "50 damage",
+      "description": "Output should show 50 damage for Excalibur"
+    },
+    {
+      "type": "output_contains",
+      "value": "Stormbreaker",
+      "description": "Output should contain 'Stormbreaker'"
+    },
+    {
+      "type": "output_contains",
+      "value": "75 damage",
+      "description": "Output should show 75 damage for Stormbreaker"
+    }
+  ],
+  "learningObjectives": [
+    "Understand what classes and objects are",
+    "Create a class with __init__ constructor",
+    "Define attributes using self",
+    "Create methods that use class attributes",
+    "Instantiate (create) objects from a class",
+    "Call methods on objects"
+  ],
+  "previousLessonId": 9,
+  "tags": ["oop", "classes", "objects", "methods", "attributes", "constructor"]
+}

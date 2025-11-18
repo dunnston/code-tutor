@@ -1,5 +1,10 @@
-import type { AIProvider, ChatContext } from '@types/ai'
+import type { AIProvider, ChatContext } from '@/types/ai'
 import { SYSTEM_PROMPT, buildChatPrompt } from './prompts'
+
+// Check if running in Tauri (runtime check)
+function isTauriAvailable(): boolean {
+  return typeof window !== 'undefined' && '__TAURI__' in window
+}
 
 /**
  * Ollama local LLM provider
@@ -18,6 +23,17 @@ export class OllamaProvider implements AIProvider {
    * Check if Ollama is running and available
    */
   async isAvailable(): Promise<boolean> {
+    // Use Tauri backend check if available (more reliable)
+    if (isTauriAvailable()) {
+      try {
+        const { invoke } = await import('@tauri-apps/api/core')
+        return await invoke<boolean>('check_ollama_available')
+      } catch {
+        // Fall through to browser check
+      }
+    }
+
+    // Browser fallback (works fine for Ollama since it's local)
     try {
       const controller = new AbortController()
       const timeout = setTimeout(() => controller.abort(), 2000)
@@ -36,7 +52,11 @@ export class OllamaProvider implements AIProvider {
   /**
    * Send a message to Ollama
    */
-  async sendMessage(prompt: string, context: ChatContext): Promise<string> {
+  async sendMessage(
+    prompt: string,
+    context: ChatContext,
+    systemPrompt?: string
+  ): Promise<string> {
     const fullPrompt = this.buildPrompt(prompt, context)
 
     const response = await fetch(`${this.baseUrl}/api/generate`, {
@@ -46,7 +66,7 @@ export class OllamaProvider implements AIProvider {
         model: this.model,
         prompt: fullPrompt,
         stream: false,
-        system: SYSTEM_PROMPT,
+        system: systemPrompt || SYSTEM_PROMPT,
       }),
     })
 
@@ -64,7 +84,8 @@ export class OllamaProvider implements AIProvider {
   async streamMessage(
     prompt: string,
     context: ChatContext,
-    onChunk: (text: string) => void
+    onChunk: (text: string) => void,
+    systemPrompt?: string
   ): Promise<void> {
     const fullPrompt = this.buildPrompt(prompt, context)
 
@@ -75,7 +96,7 @@ export class OllamaProvider implements AIProvider {
         model: this.model,
         prompt: fullPrompt,
         stream: true,
-        system: SYSTEM_PROMPT,
+        system: systemPrompt || SYSTEM_PROMPT,
       }),
     })
 

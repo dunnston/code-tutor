@@ -1,0 +1,46 @@
+{
+  "id": 22,
+  "trackId": 1,
+  "language": "python",
+  "title": "Tuple Adventures",
+  "subtitle": "Immutable Ordered Collections",
+  "difficulty": 6,
+  "estimatedTime": "15-20 minutes",
+  "xpReward": 170,
+  "description": "# Tuple Adventures\n\nTuples are like lists, but they cannot be changed after creation (immutable). They're perfect for fixed data like coordinates or RGB colors!\n\n## Creating Tuples\n\nUse parentheses instead of square brackets:\n\n```python\nposition = (10, 20)  # x, y coordinates\nrgb_color = (255, 128, 0)  # Red, Green, Blue\n```\n\n## Accessing Elements\n\n```python\nx = position[0]  # 10\ny = position[1]  # 20\n```\n\n## Unpacking Tuples\n\n```python\nx, y = position  # x=10, y=20\nred, green, blue = rgb_color  # red=255, green=128, blue=0\n```\n\n## Tuples are Immutable\n\n```python\n# position[0] = 15  # ERROR! Can't modify tuples\n```\n\n## Your Quest\n\nWork with player coordinates:\n\n1. Create a tuple `start_pos` = (0, 0)\n2. Create a tuple `end_pos` = (10, 5)\n3. Unpack start_pos into variables `x1` and `y1`\n4. Unpack end_pos into variables `x2` and `y2`\n5. Print \"Start: (\" + x1 + \", \" + y1 + \")\"\n6. Print \"End: (\" + x2 + \", \" + y2 + \")\"\n\nExpected output:\n```\nStart: (0, 0)\nEnd: (10, 5)\n```",
+  "starterCode": "# Create tuples for positions\n\n\n# Unpack the tuples\n\n\n# Print the coordinates\n\n",
+  "solutionCode": "# Create tuples for positions\nstart_pos = (0, 0)\nend_pos = (10, 5)\n\n# Unpack the tuples\nx1, y1 = start_pos\nx2, y2 = end_pos\n\n# Print the coordinates\nprint(\"Start: (\" + str(x1) + \", \" + str(y1) + \")\")\nprint(\"End: (\" + str(x2) + \", \" + str(y2) + \")\")",
+  "hints": [
+    "Create tuples with parentheses: (value1, value2)",
+    "Unpack with: x1, y1 = start_pos",
+    "Convert numbers to strings with str() when printing",
+    "Tuples use the same indexing as lists: position[0]",
+    "Remember tuples are immutable - you can't change them after creation"
+  ],
+  "validationTests": [
+    {
+      "type": "output_contains",
+      "value": "Start: (0, 0)",
+      "description": "Should print the start position"
+    },
+    {
+      "type": "output_contains",
+      "value": "End: (10, 5)",
+      "description": "Should print the end position"
+    },
+    {
+      "type": "code_contains",
+      "value": "=",
+      "description": "Should unpack tuples into variables"
+    }
+  ],
+  "learningObjectives": [
+    "Understand what tuples are",
+    "Learn the difference between tuples and lists",
+    "Practice tuple unpacking",
+    "See when to use tuples vs lists"
+  ],
+  "nextLessonId": 23,
+  "previousLessonId": 21,
+  "tags": ["tuples", "data-structures", "immutable", "advanced"]
+}

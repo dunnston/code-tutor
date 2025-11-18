@@ -1,0 +1,50 @@
+{
+  "id": 20,
+  "trackId": 3,
+  "language": "csharp",
+  "title": "Methods of Power",
+  "subtitle": "Functions and Return Types",
+  "difficulty": 2,
+  "estimatedTime": "15-20 minutes",
+  "xpReward": 250,
+  "description": "# Methods in C#\n\n**Methods** (also called functions) are reusable blocks of code that perform specific tasks. They're essential for organizing code!\n\n## Defining Methods\n\n```csharp\nvoid Greet()\n{\n    Console.WriteLine(\"Hello, adventurer!\");\n}\n\n// Call the method\nGreet();\n```\n\n**Method anatomy:**\n- `void` - return type (void = returns nothing)\n- `Greet` - method name (PascalCase convention)\n- `()` - parameter list (empty here)\n- `{}` - method body\n\n## Methods with Parameters\n\n```csharp\nvoid DealDamage(int amount)\n{\n    Console.WriteLine($\"Dealt {amount} damage!\");\n}\n\nDealDamage(50);  // Prints: Dealt 50 damage!\n```\n\n## Methods that Return Values\n\n```csharp\nint CalculateDamage(int baseDamage, int multiplier)\n{\n    return baseDamage * multiplier;\n}\n\nint totalDamage = CalculateDamage(10, 3);\nConsole.WriteLine($\"Total: {totalDamage}\");  // Total: 30\n```\n\n## C# Naming Conventions\n\n- Methods use **PascalCase**: `CalculateScore()`, not `calculateScore()`\n- Parameters use **camelCase**: `playerName`, not `PlayerName`\n\n## Your Quest\n\nCreate a battle power calculator!\n\n1. Write a method called `CalculatePower` that:\n   - Takes two `int` parameters: `level` and `strength`\n   - Returns an `int`: `level * strength + 20`\n2. Call the method with level `7` and strength `12`\n3. Store result in `int totalPower`\n4. Print: \"Battle Power: [result]\"\n\n**Expected output:**\n```\nBattle Power: 104\n```\n\n**Calculation:** 7 * 12 + 20 = 84 + 20 = 104",
+  "starterCode": "// Define the CalculatePower method\n\n\n// Call the method and store the result\n\n\n// Print the battle power\n",
+  "solutionCode": "// Define the CalculatePower method\nint CalculatePower(int level, int strength)\n{\n    return level * strength + 20;\n}\n\n// Call the method and store the result\nint totalPower = CalculatePower(7, 12);\n\n// Print the battle power\nConsole.WriteLine($\"Battle Power: {totalPower}\");",
+  "hints": [
+    "Method signature: int CalculatePower(int level, int strength)",
+    "Return: return level * strength + 20;",
+    "Call it: int totalPower = CalculatePower(7, 12);",
+    "Use string interpolation: $\"Battle Power: {totalPower}\"",
+    "Methods in C# use PascalCase (capital first letter)"
+  ],
+  "validationTests": [
+    {
+      "type": "output_contains",
+      "value": "104",
+      "description": "Output should contain the calculated power 104"
+    },
+    {
+      "type": "output_contains",
+      "value": "Battle Power",
+      "description": "Output should contain 'Battle Power'"
+    },
+    {
+      "type": "code_contains",
+      "value": "int CalculatePower",
+      "description": "Should define CalculatePower method returning int"
+    },
+    {
+      "type": "code_contains",
+      "value": "return",
+      "description": "Method should return a value"
+    }
+  ],
+  "learningObjectives": [
+    "Understand how to define methods in C#",
+    "Learn method parameters and return types",
+    "Use PascalCase naming for methods",
+    "Create reusable calculation logic"
+  ],
+  "previousLessonId": 19,
+  "tags": ["beginner", "csharp", "methods", "functions", "return-types"]
+}

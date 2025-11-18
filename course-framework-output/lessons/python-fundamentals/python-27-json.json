@@ -1,0 +1,51 @@
+{
+  "id": 27,
+  "trackId": 1,
+  "language": "python",
+  "title": "The JSON Spellbook",
+  "subtitle": "Structured Data Storage",
+  "difficulty": 8,
+  "estimatedTime": "20-25 minutes",
+  "xpReward": 210,
+  "description": "# The JSON Spellbook\n\nJSON (JavaScript Object Notation) is a universal format for storing structured data. It's perfect for saving game data, configurations, and more!\n\n## JSON Basics\n\nJSON looks like Python dictionaries:\n\n```json\n{\n  \"name\": \"Hero\",\n  \"level\": 5,\n  \"inventory\": [\"sword\", \"shield\"]\n}\n```\n\n## Writing JSON\n\n```python\nimport json\n\nplayer_data = {\n    \"name\": \"Hero\",\n    \"level\": 5,\n    \"health\": 100\n}\n\nwith open('player.json', 'w') as file:\n    json.dump(player_data, file, indent=4)\n```\n\n## Reading JSON\n\n```python\nimport json\n\nwith open('player.json', 'r') as file:\n    data = json.load(file)\n    print(data[\"name\"])  # Access like a dict\n```\n\n## Your Quest\n\nSave and load character data as JSON:\n\n1. Import json module\n2. Create dict: `character = {\"name\": \"Mage\", \"level\": 3, \"spells\": [\"Fireball\", \"Heal\"]}`\n3. Save to 'character.json' using json.dump with indent=4\n4. Load it back with json.load\n5. Print loaded character's name and first spell\n\nExpected output:\n```\nLoaded: Mage\nFirst spell: Fireball\n```",
+  "starterCode": "import json\n\n# Create character data\n\n\n# Save to JSON file\n\n\n# Load from JSON file\n\n\n# Print character info\n\n",
+  "solutionCode": "import json\n\n# Create character data\ncharacter = {\n    \"name\": \"Mage\",\n    \"level\": 3,\n    \"spells\": [\"Fireball\", \"Heal\"]\n}\n\n# Save to JSON file\nwith open('character.json', 'w') as file:\n    json.dump(character, file, indent=4)\n\n# Load from JSON file\nwith open('character.json', 'r') as file:\n    loaded_char = json.load(file)\n\n# Print character info\nprint(\"Loaded: \" + loaded_char[\"name\"])\nprint(\"First spell: \" + loaded_char[\"spells\"][0])",
+  "hints": [
+    "Import json at the top of your file",
+    "Use json.dump(data, file, indent=4) to write",
+    "Use json.load(file) to read",
+    "The loaded data is a Python dictionary",
+    "Access list items with [0] for the first element"
+  ],
+  "validationTests": [
+    {
+      "type": "output_contains",
+      "value": "Loaded: Mage",
+      "description": "Should load and print character name"
+    },
+    {
+      "type": "output_contains",
+      "value": "First spell: Fireball",
+      "description": "Should access nested list data"
+    },
+    {
+      "type": "code_contains",
+      "value": "import json",
+      "description": "Should import json module"
+    },
+    {
+      "type": "code_contains",
+      "value": "json.dump",
+      "description": "Should use json.dump to save"
+    }
+  ],
+  "learningObjectives": [
+    "Understand JSON format",
+    "Learn to save Python data as JSON",
+    "Practice loading JSON data",
+    "See how JSON preserves structure"
+  ],
+  "nextLessonId": 28,
+  "previousLessonId": 26,
+  "tags": ["json", "data", "serialization", "advanced"]
+}

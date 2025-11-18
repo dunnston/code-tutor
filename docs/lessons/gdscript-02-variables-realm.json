@@ -1,0 +1,61 @@
+{
+  "id": 12,
+  "trackId": 2,
+  "language": "gdscript",
+  "title": "Variables of the Realm",
+  "subtitle": "Storing Game Data",
+  "difficulty": 1,
+  "estimatedTime": "10-15 minutes",
+  "xpReward": 150,
+  "description": "# Variables in GDScript\n\nIn game development, you need to store information like player health, score, position, and more. **Variables** are containers that hold this data!\n\n## Creating Variables\n\nIn GDScript, you use the `var` keyword:\n\n```gdscript\nvar player_name = \"Hero\"\nvar health = 100\nvar speed = 5.5\nvar is_alive = true\n```\n\n**Variable types in GDScript:**\n- **String**: Text in quotes (`\"Hello\"`)\n- **int**: Whole numbers (`42`, `-10`)\n- **float**: Decimal numbers (`3.14`, `9.8`)\n- **bool**: True or False values\n\n## Type Hints (Optional but Recommended)\n\nYou can specify the type explicitly:\n\n```gdscript\nvar player_name: String = \"Hero\"\nvar health: int = 100\n```\n\n## Your Quest\n\nCreate a character profile with these variables:\n1. `hero_name` with the value `\"Aragorn\"`\n2. `level` with the value `5`\n3. `health` with the value `100`\n4. `mana` with the value `50`\n\nThen print each variable on its own line like this:\n```\nHero: Aragorn\nLevel: 5\nHealth: 100\nMana: 50\n```\n\n**Tip:** You can combine strings and variables using commas in print: `print(\"Hero:\", hero_name)`",
+  "starterCode": "# Create your character variables here\n\n\n# Print the character stats\n",
+  "solutionCode": "# Create your character variables here\nvar hero_name = \"Aragorn\"\nvar level = 5\nvar health = 100\nvar mana = 50\n\n# Print the character stats\nprint(\"Hero:\", hero_name)\nprint(\"Level:\", level)\nprint(\"Health:\", health)\nprint(\"Mana:\", mana)",
+  "hints": [
+    "Use 'var' to declare each variable: var hero_name = \"Aragorn\"",
+    "Strings need quotation marks, but numbers don't",
+    "Use print() with commas to combine text and variables",
+    "Make sure to create all 4 variables before printing",
+    "The print format is: print(\"Label:\", variable_name)"
+  ],
+  "validationTests": [
+    {
+      "type": "output_contains",
+      "value": "Aragorn",
+      "description": "Output should contain the hero name 'Aragorn'"
+    },
+    {
+      "type": "output_contains",
+      "value": "Level:",
+      "description": "Output should contain 'Level:'"
+    },
+    {
+      "type": "output_contains",
+      "value": "5",
+      "description": "Output should contain the level '5'"
+    },
+    {
+      "type": "output_contains",
+      "value": "100",
+      "description": "Output should contain health '100'"
+    },
+    {
+      "type": "output_contains",
+      "value": "50",
+      "description": "Output should contain mana '50'"
+    },
+    {
+      "type": "code_contains",
+      "value": "var ",
+      "description": "Code should use 'var' keyword to declare variables"
+    }
+  ],
+  "learningObjectives": [
+    "Understand how to declare variables with 'var'",
+    "Learn about different data types (String, int, float, bool)",
+    "Combine strings and variables in print statements",
+    "Create a simple character profile in GDScript"
+  ],
+  "previousLessonId": 11,
+  "nextLessonId": 13,
+  "tags": ["beginner", "gdscript", "variables", "data-types", "print"]
+}

@@ -1,0 +1,61 @@
+{
+  "id": 17,
+  "trackId": 3,
+  "language": "csharp",
+  "title": "Variables and Types",
+  "subtitle": "Storing Typed Data",
+  "difficulty": 1,
+  "estimatedTime": "10-15 minutes",
+  "xpReward": 150,
+  "description": "# Variables in C#\n\nC# is a **strongly-typed** language, meaning every variable has a specific type that must be declared.\n\n## Declaring Variables\n\n```csharp\nint health = 100;              // Integer (whole numbers)\nstring playerName = \"Hero\";    // String (text)\ndouble speed = 5.5;            // Double (decimal numbers)\nbool isAlive = true;           // Boolean (true/false)\n```\n\n## Common C# Types\n\n- **int** - whole numbers (-2,147,483,648 to 2,147,483,647)\n- **long** - larger integers\n- **float** - decimal numbers (add `f`: `3.14f`)\n- **double** - more precise decimals\n- **decimal** - for financial calculations (add `m`: `19.99m`)\n- **string** - text in double quotes\n- **char** - single character in single quotes (`'A'`)\n- **bool** - true or false\n\n## Type Inference with var\n\nC# can infer the type:\n\n```csharp\nvar name = \"Alice\";    // Compiler knows this is a string\nvar score = 100;       // Compiler knows this is an int\n```\n\n## String Interpolation\n\nCombine strings and variables elegantly:\n\n```csharp\nstring hero = \"Link\";\nint hearts = 3;\nConsole.WriteLine($\"Hero: {hero}, Hearts: {hearts}\");\n// Output: Hero: Link, Hearts: 3\n```\n\n## Your Quest\n\nCreate a character profile:\n\n1. Declare `string characterName` with value `\"Gandalf\"`\n2. Declare `int level` with value `10`\n3. Declare `double mana` with value `85.5`\n4. Declare `bool isWizard` with value `true`\n\nThen print using string interpolation:\n```\nCharacter: Gandalf\nLevel: 10\nMana: 85.5\nWizard: True\n```",
+  "starterCode": "// Declare your character variables\n\n\n// Print the character profile using string interpolation\n",
+  "solutionCode": "// Declare your character variables\nstring characterName = \"Gandalf\";\nint level = 10;\ndouble mana = 85.5;\nbool isWizard = true;\n\n// Print the character profile using string interpolation\nConsole.WriteLine($\"Character: {characterName}\");\nConsole.WriteLine($\"Level: {level}\");\nConsole.WriteLine($\"Mana: {mana}\");\nConsole.WriteLine($\"Wizard: {isWizard}\");",
+  "hints": [
+    "Declare variables with type first: string characterName = \"Gandalf\";",
+    "Use string interpolation with $\"\" and {variableName}",
+    "Example: Console.WriteLine($\"Character: {characterName}\");",
+    "bool values display as True or False (capitalized)",
+    "Don't forget semicolons at the end of each statement"
+  ],
+  "validationTests": [
+    {
+      "type": "output_contains",
+      "value": "Gandalf",
+      "description": "Output should contain 'Gandalf'"
+    },
+    {
+      "type": "output_contains",
+      "value": "10",
+      "description": "Output should contain level 10"
+    },
+    {
+      "type": "output_contains",
+      "value": "85.5",
+      "description": "Output should contain mana 85.5"
+    },
+    {
+      "type": "output_contains",
+      "value": "True",
+      "description": "Output should contain 'True' for isWizard"
+    },
+    {
+      "type": "code_contains",
+      "value": "string",
+      "description": "Code should declare a string variable"
+    },
+    {
+      "type": "code_contains",
+      "value": "int",
+      "description": "Code should declare an int variable"
+    }
+  ],
+  "learningObjectives": [
+    "Understand C#'s strong typing system",
+    "Learn to declare typed variables (int, string, double, bool)",
+    "Use string interpolation with $\"\" syntax",
+    "Combine variables and text in output"
+  ],
+  "previousLessonId": 16,
+  "nextLessonId": 18,
+  "tags": ["beginner", "csharp", "variables", "types", "string-interpolation"]
+}

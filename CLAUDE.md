@@ -16,6 +16,11 @@
 - Merge to main via PR/merge only
 - Branch naming: `feature/`, `fix/`, `refactor/`
 
+## Development Workflow
+- **NEVER run `npm run dev` automatically** - The dev server is always running
+- If testing is needed, ask the user to refresh their browser or restart the dev server
+- Focus on code changes and let the user handle the dev server
+
 ## Project Tracking
 - **Check and update PROJECT_PLAN.md as you complete tasks**
 - Mark tasks with `[x]` when done

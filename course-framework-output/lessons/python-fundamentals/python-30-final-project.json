@@ -1,0 +1,56 @@
+{
+  "id": 30,
+  "trackId": 1,
+  "language": "python",
+  "title": "Final Quest: Inventory System",
+  "subtitle": "Your Grand Challenge",
+  "difficulty": 10,
+  "estimatedTime": "30-45 minutes",
+  "xpReward": 500,
+  "description": "# Final Quest: Inventory System\n\nCongratulations, adventurer! You've learned the fundamentals of Python. Now it's time to prove your skills with a final project that combines everything you've learned!\n\n## Your Challenge\n\nCreate a complete inventory management system for an RPG game.\n\n## Requirements\n\n### 1. Item Class\n- Properties: name, value, quantity\n- Method: get_total_value() returns value * quantity\n\n### 2. Inventory Class\n- Property: items (list of Item objects)\n- Method: add_item(item) - adds to list\n- Method: get_total_value() - sums all items\n- Method: list_items() - prints all items\n\n### 3. Test Your System\n- Create 3 items: Sword (100, qty 1), Potion (50, qty 5), Gold (1, qty 250)\n- Create an Inventory\n- Add all items\n- List all items\n- Print total inventory value\n\n## Expected Output\n\n```\nInventory:\n- Sword x1 (Total: 100 gold)\n- Potion x5 (Total: 250 gold)\n- Gold x250 (Total: 250 gold)\nTotal inventory value: 600 gold\n```\n\n## Tips\n- Use classes and methods you've learned\n- Use for loops to iterate through items\n- Use string formatting for nice output\n- Test each class separately first\n\nGood luck, brave coder!",
+  "starterCode": "# Create the Item class\nclass Item:\n    # Your code here\n    pass\n\n# Create the Inventory class\nclass Inventory:\n    # Your code here\n    pass\n\n# Test your system\n# Create items\n\n\n# Create inventory\n\n\n# Add items\n\n\n# Display results\n\n",
+  "solutionCode": "# Create the Item class\nclass Item:\n    def __init__(self, name, value, quantity):\n        self.name = name\n        self.value = value\n        self.quantity = quantity\n    \n    def get_total_value(self):\n        return self.value * self.quantity\n\n# Create the Inventory class\nclass Inventory:\n    def __init__(self):\n        self.items = []\n    \n    def add_item(self, item):\n        self.items.append(item)\n    \n    def get_total_value(self):\n        total = 0\n        for item in self.items:\n            total += item.get_total_value()\n        return total\n    \n    def list_items(self):\n        print(\"Inventory:\")\n        for item in self.items:\n            total = item.get_total_value()\n            print(f\"- {item.name} x{item.quantity} (Total: {total} gold)\")\n\n# Test your system\n# Create items\nsword = Item(\"Sword\", 100, 1)\npotion = Item(\"Potion\", 50, 5)\ngold = Item(\"Gold\", 1, 250)\n\n# Create inventory\ninventory = Inventory()\n\n# Add items\ninventory.add_item(sword)\ninventory.add_item(potion)\ninventory.add_item(gold)\n\n# Display results\ninventory.list_items()\nprint(f\"Total inventory value: {inventory.get_total_value()} gold\")",
+  "hints": [
+    "Item class needs __init__ and get_total_value() methods",
+    "Inventory class needs __init__ to create empty items list",
+    "Use self.items.append(item) to add items",
+    "Loop through self.items and call get_total_value() on each",
+    "Use f-strings for formatted output"
+  ],
+  "validationTests": [
+    {
+      "type": "output_contains",
+      "value": "Inventory:",
+      "description": "Should print inventory header"
+    },
+    {
+      "type": "output_contains",
+      "value": "Sword x1",
+      "description": "Should list sword item"
+    },
+    {
+      "type": "output_contains",
+      "value": "Total inventory value: 600 gold",
+      "description": "Should calculate total correctly"
+    },
+    {
+      "type": "code_contains",
+      "value": "class Item",
+      "description": "Should define Item class"
+    },
+    {
+      "type": "code_contains",
+      "value": "class Inventory",
+      "description": "Should define Inventory class"
+    }
+  ],
+  "learningObjectives": [
+    "Combine multiple Python concepts in one project",
+    "Design and implement multiple interacting classes",
+    "Practice problem-solving and code organization",
+    "Build confidence in your Python abilities"
+  ],
+  "nextLessonId": null,
+  "previousLessonId": 29,
+  "tags": ["project", "oop", "classes", "final", "comprehensive"]
+}

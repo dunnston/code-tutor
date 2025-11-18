@@ -1,0 +1,61 @@
+{
+  "id": 7,
+  "trackId": 1,
+  "language": "python",
+  "title": "The List Magic",
+  "subtitle": "Manipulating Your Inventory",
+  "difficulty": 4,
+  "estimatedTime": "15-20 minutes",
+  "xpReward": 175,
+  "description": "# Mastering List Operations\n\nYour inventory is growing! Now you need to learn how to add, remove, and modify items in your lists. Python provides powerful **methods** to work with lists.\n\n## Adding Items to Lists\n\n### append() - Add to the end\n```python\nitems = [\"sword\", \"shield\"]\nitems.append(\"potion\")  # Adds potion to the end\nprint(items)  # ['sword', 'shield', 'potion']\n```\n\n### insert() - Add at a specific position\n```python\nitems = [\"sword\", \"shield\"]\nitems.insert(1, \"helmet\")  # Inserts helmet at index 1\nprint(items)  # ['sword', 'helmet', 'shield']\n```\n\n## Removing Items from Lists\n\n### remove() - Remove by value\n```python\nitems = [\"sword\", \"shield\", \"potion\"]\nitems.remove(\"shield\")  # Removes the shield\nprint(items)  # ['sword', 'potion']\n```\n\n## Finding List Length\n\n```python\nitems = [\"sword\", \"shield\", \"potion\"]\ncount = len(items)  # Returns 3\nprint(f\"You have {count} items\")\n```\n\n## Your Quest\n\n1. Create a list called `backpack` with: `\"map\"`, `\"compass\"`\n2. Use `append()` to add `\"rope\"` to the backpack\n3. Use `insert()` to add `\"lantern\"` at the **beginning** (index 0)\n4. Print the number of items using `len()`\n5. Remove `\"compass\"` from the backpack\n6. Print the final backpack",
+  "starterCode": "# Create your backpack list\n# backpack = [...]\n\n# Add rope to the end\n\n\n# Insert lantern at the beginning (index 0)\n\n\n# Print the number of items\n\n\n# Remove compass\n\n\n# Print the final backpack\n\n",
+  "solutionCode": "# Create your backpack list\nbackpack = [\"map\", \"compass\"]\n\n# Add rope to the end\nbackpack.append(\"rope\")\n\n# Insert lantern at the beginning (index 0)\nbackpack.insert(0, \"lantern\")\n\n# Print the number of items\nprint(len(backpack))\n\n# Remove compass\nbackpack.remove(\"compass\")\n\n# Print the final backpack\nprint(backpack)",
+  "hints": [
+    "Use list_name.append(item) to add an item to the end of a list",
+    "Use list_name.insert(0, item) to add an item at the beginning",
+    "The len() function returns the number of items in a list",
+    "Use list_name.remove(item) to remove a specific item by its value",
+    "After all operations, the backpack should have: ['lantern', 'map', 'rope']"
+  ],
+  "validationTests": [
+    {
+      "type": "code_contains",
+      "value": "append",
+      "description": "Code should use the append() method"
+    },
+    {
+      "type": "code_contains",
+      "value": "insert",
+      "description": "Code should use the insert() method"
+    },
+    {
+      "type": "code_contains",
+      "value": "len",
+      "description": "Code should use the len() function"
+    },
+    {
+      "type": "code_contains",
+      "value": "remove",
+      "description": "Code should use the remove() method"
+    },
+    {
+      "type": "output_contains",
+      "value": "4",
+      "description": "Output should show 4 items after insertions"
+    },
+    {
+      "type": "output_contains",
+      "value": "lantern",
+      "description": "Final output should contain 'lantern'"
+    }
+  ],
+  "learningObjectives": [
+    "Add items to lists using append() and insert()",
+    "Remove items from lists using remove()",
+    "Get the length of a list using len()",
+    "Understand how list operations modify the list in place"
+  ],
+  "previousLessonId": 6,
+  "nextLessonId": 8,
+  "tags": ["lists", "methods", "append", "remove", "insert"]
+}

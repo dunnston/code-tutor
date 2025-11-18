@@ -1,5 +1,7 @@
 import { Editor } from '@monaco-editor/react'
 import { useAppStore } from '@/lib/store'
+import { getLanguageConfig } from '@/lib/languageRegistry'
+import type { SupportedLanguage } from '@/types/language'
 
 export function CodeEditor() {
   const code = useAppStore((state) => state.code)
@@ -10,6 +12,12 @@ export function CodeEditor() {
     setCode(value || '')
   }
 
+  // Get language configuration
+  const language = (currentLesson?.language || 'python') as SupportedLanguage
+  const languageConfig = getLanguageConfig(language)
+  const monacoLanguage = languageConfig.monacoLanguage
+  const fileExtension = languageConfig.extension
+
   return (
     <div className="h-full bg-navy-900 flex flex-col">
       {/* Editor toolbar */}
@@ -17,7 +25,7 @@ export function CodeEditor() {
         <div className="flex items-center gap-2 text-sm text-gray-300">
           <div className="w-3 h-3 bg-green-500 rounded-full"></div>
           <span className="font-mono">
-            {currentLesson?.language || 'python'}.py
+            {languageConfig.icon} {languageConfig.name} {fileExtension}
           </span>
         </div>
         <div className="text-xs text-gray-400">
@@ -29,8 +37,8 @@ export function CodeEditor() {
       <div className="flex-1">
         <Editor
           height="100%"
-          defaultLanguage={currentLesson?.language || 'python'}
-          language={currentLesson?.language || 'python'}
+          defaultLanguage={monacoLanguage}
+          language={monacoLanguage}
           value={code}
           onChange={handleEditorChange}
           theme="vs-dark"

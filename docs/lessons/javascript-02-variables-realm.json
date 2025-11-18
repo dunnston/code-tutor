@@ -1,0 +1,50 @@
+{
+  "id": 22,
+  "trackId": 4,
+  "language": "javascript",
+  "title": "Variables of the Realm",
+  "subtitle": "Storing Data with let, const, and var",
+  "difficulty": 1,
+  "estimatedTime": "10-15 minutes",
+  "xpReward": 120,
+  "description": "# Storing Data with Variables\n\nVariables are like containers that hold information. In JavaScript, you have three ways to declare variables:\n\n## let, const, and var\n\n```javascript\nlet age = 25;           // Can be reassigned\nconst name = \"Alex\";    // Cannot be reassigned (constant)\nvar oldWay = \"legacy\";  // Old style (avoid in modern code)\n```\n\n**Modern JavaScript uses:**\n- `const` for values that won't change (use this by default)\n- `let` for values that will change\n- Avoid `var` (it has confusing scoping rules)\n\n## Data Types\n\nJavaScript has several data types:\n\n```javascript\nlet message = \"Hello\";        // String\nlet score = 100;               // Number\nlet isComplete = true;         // Boolean\nlet nothing = null;            // Null\nlet notDefined;                // Undefined\n```\n\n## String Interpolation\n\nUse template literals (backticks) to embed variables:\n\n```javascript\nconst name = \"Hero\";\nconst level = 5;\nconsole.log(`${name} is level ${level}!`);\n// Output: Hero is level 5!\n```\n\n## Your Quest\n\nCreate three variables:\n1. A constant called `heroName` with your name as a string\n2. A variable called `level` with the number 1\n3. A variable called `xp` with the number 0\n\nThen print a message using template literals:\n\n**[Your Name] - Level 1 (XP: 0)**\n\nExample output: **Alex - Level 1 (XP: 0)**",
+  "starterCode": "// Create your hero!\n// Use const for heroName, let for level and xp\n\n",
+  "solutionCode": "// Create your hero!\nconst heroName = \"Alex\";\nlet level = 1;\nlet xp = 0;\n\nconsole.log(`${heroName} - Level ${level} (XP: ${xp})`);",
+  "hints": [
+    "Use const for heroName since names don't change",
+    "Use let for level and xp since they might change later",
+    "Use template literals with backticks: `text ${variable} more text`",
+    "The format is: name - Level number (XP: number)",
+    "Don't forget the dollar sign and curly braces: ${variable}"
+  ],
+  "validationTests": [
+    {
+      "type": "output_contains",
+      "value": "Level 1",
+      "description": "Output should show Level 1"
+    },
+    {
+      "type": "output_contains",
+      "value": "XP: 0",
+      "description": "Output should show XP: 0"
+    },
+    {
+      "type": "code_contains",
+      "value": "const",
+      "description": "Code should use 'const' for constants"
+    },
+    {
+      "type": "code_contains",
+      "value": "let",
+      "description": "Code should use 'let' for variables"
+    }
+  ],
+  "learningObjectives": [
+    "Understand the difference between let, const, and var",
+    "Learn to create and use variables",
+    "Use template literals for string interpolation",
+    "Work with different data types"
+  ],
+  "nextLessonId": 23,
+  "tags": ["beginner", "javascript", "variables", "const", "let", "template-literals"]
+}

@@ -1,0 +1,56 @@
+{
+  "id": 30,
+  "trackId": 5,
+  "language": "ruby",
+  "title": "Method Mastery",
+  "subtitle": "Creating Reusable Code with Methods",
+  "difficulty": 2,
+  "estimatedTime": "15-20 minutes",
+  "xpReward": 200,
+  "description": "# Methods in Ruby\n\nRuby calls functions \"methods\" because everything is an object. Methods in Ruby are clean and expressive!\n\n## Defining Methods\n\n```ruby\ndef greet(name)\n  \"Hello, #{name}!\"\nend\n\nputs greet(\"Alice\")  # Hello, Alice!\n```\n\n**Ruby Method Conventions:**\n- Use `snake_case` for method names\n- Parentheses are optional for calls\n- Methods have **implicit returns** (last expression is returned)\n- Use `def` to define, `end` to close\n\n## Implicit Returns\n\nRuby automatically returns the last evaluated expression:\n\n```ruby\ndef add(a, b)\n  a + b  # Automatically returned\nend\n\n# Same as:\ndef add(a, b)\n  return a + b\nend\n```\n\n## Multiple Parameters\n\n```ruby\ndef calculate_damage(base, critical, weapon)\n  damage = base\n  damage *= 2 if critical\n  damage + weapon\nend\n\nputs calculate_damage(50, true, 10)  # 110\n```\n\n## Default Parameters\n\n```ruby\ndef greet(name, greeting = \"Hello\")\n  \"#{greeting}, #{name}!\"\nend\n\nputs greet(\"Alice\")           # Hello, Alice!\nputs greet(\"Bob\", \"Hi\")       # Hi, Bob!\n```\n\n## Methods with Blocks\n\nRuby methods can take blocks:\n\n```ruby\ndef repeat(times)\n  times.times do\n    yield  # Calls the block\n  end\nend\n\nrepeat(3) { puts \"Hello!\" }\n```\n\n## Your Quest\n\nCreate a method called `calculate_total_damage` that takes three parameters:\n- `base_damage` (number)\n- `is_critical` (boolean)\n- `strength_bonus` (number)\n\nThe method should:\n1. If `is_critical` is true, double the `base_damage`\n2. Add the `strength_bonus` to the result\n3. Return the total damage (implicit return - no return keyword needed!)\n\nThen test your method with these calls:\n```ruby\nputs calculate_total_damage(40, true, 15)   # Should print: 95\nputs calculate_total_damage(40, false, 15)  # Should print: 55\n```\n\n**Ruby Tip:** Use an inline if modifier for elegance!",
+  "starterCode": "# Create a damage calculation method\n# Use implicit return and snake_case\n\n",
+  "solutionCode": "# Create a damage calculation method\ndef calculate_total_damage(base_damage, is_critical, strength_bonus)\n  damage = base_damage\n  damage *= 2 if is_critical\n  damage + strength_bonus\nend\n\nputs calculate_total_damage(40, true, 15)   # 95\nputs calculate_total_damage(40, false, 15)  # 55",
+  "hints": [
+    "Start with: def calculate_total_damage(base_damage, is_critical, strength_bonus)",
+    "Store damage in a variable first",
+    "Use inline if: damage *= 2 if is_critical",
+    "The last line is automatically returned",
+    "Remember to close with 'end'"
+  ],
+  "validationTests": [
+    {
+      "type": "output_contains",
+      "value": "95",
+      "description": "Should output 95 for critical hit"
+    },
+    {
+      "type": "output_contains",
+      "value": "55",
+      "description": "Should output 55 for normal hit"
+    },
+    {
+      "type": "code_contains",
+      "value": "def",
+      "description": "Code should define a method"
+    },
+    {
+      "type": "code_contains",
+      "value": "calculate_total_damage",
+      "description": "Method should use snake_case naming"
+    },
+    {
+      "type": "code_contains",
+      "value": "if",
+      "description": "Should use if statement for critical hit logic"
+    }
+  ],
+  "learningObjectives": [
+    "Understand method definition with def/end",
+    "Use implicit returns (Ruby's automatic return)",
+    "Apply snake_case naming convention",
+    "Combine methods with conditionals",
+    "Write clean, readable Ruby code"
+  ],
+  "nextLessonId": null,
+  "tags": ["beginner", "ruby", "methods", "implicit-return", "snake-case", "def"]
+}

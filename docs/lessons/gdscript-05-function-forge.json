@@ -1,0 +1,55 @@
+{
+  "id": 15,
+  "trackId": 2,
+  "language": "gdscript",
+  "title": "The Function Forge",
+  "subtitle": "Creating Reusable Code",
+  "difficulty": 2,
+  "estimatedTime": "15-20 minutes",
+  "xpReward": 250,
+  "description": "# Functions in GDScript\n\n**Functions** are reusable blocks of code that perform specific tasks. They're essential in game development!\n\n## Creating Functions\n\nIn GDScript, use the `func` keyword:\n\n```gdscript\nfunc greet_player():\n    print(\"Welcome, hero!\")\n\n# Call the function\ngreet_player()\n```\n\n## Functions with Parameters\n\nFunctions can accept input:\n\n```gdscript\nfunc deal_damage(amount):\n    print(\"Dealt \", amount, \" damage!\")\n\ndeal_damage(50)  # Prints: Dealt 50 damage!\n```\n\n## Functions that Return Values\n\nUse `return` to send data back:\n\n```gdscript\nfunc calculate_damage(base_damage, multiplier):\n    return base_damage * multiplier\n\nvar damage = calculate_damage(10, 2.5)\nprint(\"Total damage:\", damage)  # Prints: Total damage: 25\n```\n\n## Type Hints (Recommended)\n\n```gdscript\nfunc add_numbers(a: int, b: int) -> int:\n    return a + b\n```\n\n## Your Quest\n\nCreate a character power calculator!\n\n1. Write a function called `calculate_power` that:\n   - Takes two parameters: `level` and `strength`\n   - Returns `level * strength + 10`\n2. Call the function with level `5` and strength `8`\n3. Store the result in a variable called `total_power`\n4. Print: \"Total Power: [result]\"\n\n**Expected output:**\n```\nTotal Power: 50\n```\n\n**Calculation:** 5 * 8 + 10 = 40 + 10 = 50",
+  "starterCode": "# Define the calculate_power function\n\n\n# Call the function and store the result\n\n\n# Print the total power\n",
+  "solutionCode": "# Define the calculate_power function\nfunc calculate_power(level, strength):\n    return level * strength + 10\n\n# Call the function and store the result\nvar total_power = calculate_power(5, 8)\n\n# Print the total power\nprint(\"Total Power:\", total_power)",
+  "hints": [
+    "Start with: func calculate_power(level, strength):",
+    "Inside the function, use: return level * strength + 10",
+    "Call it with: var total_power = calculate_power(5, 8)",
+    "Print with: print(\"Total Power:\", total_power)",
+    "Don't forget to indent the return statement inside the function"
+  ],
+  "validationTests": [
+    {
+      "type": "output_contains",
+      "value": "50",
+      "description": "Output should contain the calculated power 50"
+    },
+    {
+      "type": "output_contains",
+      "value": "Total Power",
+      "description": "Output should contain 'Total Power'"
+    },
+    {
+      "type": "code_contains",
+      "value": "func ",
+      "description": "Code should define a function with 'func'"
+    },
+    {
+      "type": "code_contains",
+      "value": "return ",
+      "description": "Function should return a value"
+    },
+    {
+      "type": "code_contains",
+      "value": "calculate_power",
+      "description": "Function should be named 'calculate_power'"
+    }
+  ],
+  "learningObjectives": [
+    "Understand how to define functions with 'func'",
+    "Learn to pass parameters to functions",
+    "Master returning values from functions",
+    "Create reusable game logic"
+  ],
+  "previousLessonId": 14,
+  "tags": ["beginner", "gdscript", "functions", "return", "parameters"]
+}

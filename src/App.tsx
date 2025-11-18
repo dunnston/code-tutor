@@ -1,6 +1,7 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
 import { Header } from '@components/Header'
+import { Dashboard } from '@components/Dashboard'
 import { LessonPanel } from '@components/LessonPanel'
 import { CodeEditor } from '@components/CodeEditor'
 import { Console } from '@components/Console'
@@ -8,42 +9,120 @@ import { ActionBar } from '@components/ActionBar'
 import { ChatPanel } from '@components/ChatPanel'
 import { NotificationContainer } from '@components/NotificationToast'
 import { ProgressDashboard } from '@components/ProgressDashboard'
+import { WelcomeScreen } from '@components/WelcomeScreen'
+import { SettingsModal } from '@components/SettingsModal'
+import { ProfileSelector } from '@components/ProfileSelector'
+import { SolutionConfirmModal } from '@components/SolutionConfirmModal'
 import { useAppStore } from '@/lib/store'
-import { executePythonCode } from '@/lib/tauri'
+import { executeCode } from '@/lib/tauri'
 import { validateCode, getValidationSummary } from '@/lib/validation'
-import { updateStreak, recordLessonAttempt } from '@/lib/storage'
-import type { ExecutionResult } from '@types/execution'
-
-// Lesson utilities
-import { getFirstLesson } from '@/lib/lessons'
+import { updateStreak, recordLessonAttempt, clearAllData } from '@/lib/storage'
+import { hasCompletedOnboarding, completeOnboarding, resetOnboarding } from '@/lib/preferences'
+import { getCurrentProfile, type UserProfile } from '@/lib/profiles'
+import { aiService } from '@/lib/ai'
+import type { ExecutionResult } from '@/types/execution'
+import type { LanguageId } from '@/types/language'
 
 function App() {
-  const setCurrentLesson = useAppStore((state) => state.setCurrentLesson)
   const addConsoleMessage = useAppStore((state) => state.addConsoleMessage)
   const setExecutionStatus = useAppStore((state) => state.setExecutionStatus)
   const code = useAppStore((state) => state.code)
+  const setCode = useAppStore((state) => state.setCode)
   const currentLesson = useAppStore((state) => state.currentLesson)
   const chatOpen = useAppStore((state) => state.chatOpen)
   const completeLesson = useAppStore((state) => state.completeLesson)
   const isLessonCompleted = useAppStore((state) => state.isLessonCompleted)
   const hintsRevealed = useAppStore((state) => state.hintsRevealed)
   const refreshProgress = useAppStore((state) => state.refreshProgress)
+  const settingsOpen = useAppStore((state) => state.settingsOpen)
+  const toggleSettings = useAppStore((state) => state.toggleSettings)
+  const settings = useAppStore((state) => state.settings)
+  const updateSettings = useAppStore((state) => state.updateSettings)
+  const currentView = useAppStore((state) => state.currentView)
+
+  // Profile & Onboarding state
+  const [currentProfile, setCurrentProfile] = useState<UserProfile | null>(getCurrentProfile())
+  const [showWelcome, setShowWelcome] = useState(false)
+  const [showSolutionModal, setShowSolutionModal] = useState(false)
 
   // Store last execution result for validation
   const lastExecutionResult = useRef<ExecutionResult | undefined>()
 
-  // Initialize on mount: load first lesson and update streak
+  // Handle profile selection
+  const handleProfileSelected = (profile: UserProfile) => {
+    setCurrentProfile(profile)
+
+    // Clear current lesson to prevent stale data
+    const setCurrentLesson = useAppStore.getState().setCurrentLesson
+    setCurrentLesson(null)
+
+    // Refresh progress data for the new profile
+    refreshProgress()
+
+    // Check if this profile has completed onboarding
+    setShowWelcome(!hasCompletedOnboarding())
+  }
+
+  // Handle onboarding completion
+  const handleOnboardingComplete = (selectedLanguage: LanguageId) => {
+    completeOnboarding(selectedLanguage)
+    setShowWelcome(false)
+    // Navigate to dashboard instead of loading a lesson
+    // User will activate courses from the dashboard
+  }
+
+  // Handle reset progress
+  const handleResetProgress = () => {
+    clearAllData()
+    resetOnboarding()
+    refreshProgress()
+    toggleSettings()
+    // Reload the page to restart onboarding
+    window.location.reload()
+  }
+
+  // Handle logout
+  const handleLogout = () => {
+    // Clear current profile from localStorage
+    localStorage.removeItem('code-tutor-current-profile')
+    // Set current profile to null to show ProfileSelector
+    setCurrentProfile(null)
+    // Reset to dashboard view for when user logs back in
+    const setCurrentView = useAppStore.getState().setCurrentView
+    setCurrentView('dashboard')
+  }
+
+  // Initialize on mount: update streak, refresh progress, and set up AI provider
   useEffect(() => {
-    const firstLesson = getFirstLesson('python')
-    if (firstLesson) {
-      setCurrentLesson(firstLesson)
-    }
+    // Don't auto-load lesson anymore - users start from dashboard
     // Update streak on app load
     updateStreak()
     refreshProgress()
-  }, [setCurrentLesson, refreshProgress])
+
+    // Initialize AI provider based on saved settings
+    const initAI = async () => {
+      if (settings.aiProvider !== 'none') {
+        try {
+          await aiService.setProvider(settings.aiProvider, {
+            claudeApiKey: settings.claudeApiKey,
+          })
+        } catch (error) {
+          console.error('Failed to initialize AI provider:', error)
+        }
+      }
+    }
+    initAI()
+  }, [refreshProgress])
 
   const handleRun = async () => {
+    if (!currentLesson) {
+      addConsoleMessage({
+        type: 'error',
+        content: '❌ No lesson loaded',
+      })
+      return
+    }
+
     try {
       setExecutionStatus('running')
       addConsoleMessage({
@@ -51,8 +130,8 @@ function App() {
         content: '▶ Running code...',
       })
 
-      // Execute Python code via Tauri backend
-      const result = await executePythonCode(code)
+      // Execute code in the lesson's language via Tauri backend
+      const result = await executeCode(currentLesson.language, code)
 
       // Store result for validation
       lastExecutionResult.current = result
@@ -151,10 +230,40 @@ function App() {
   }
 
   const handleShowSolution = () => {
-    addConsoleMessage({
-      type: 'system',
-      content: 'Solution view not yet implemented. Coming soon!',
-    })
+    if (!currentLesson) return
+    setShowSolutionModal(true)
+  }
+
+  const handleConfirmShowSolution = () => {
+    if (!currentLesson) return
+
+    // Close the modal
+    setShowSolutionModal(false)
+
+    // Set the code to the solution
+    setCode(currentLesson.solutionCode, false) // false = don't auto-save
+
+    // Check if lesson was already completed
+    const alreadyCompleted = isLessonCompleted(currentLesson.id)
+
+    if (!alreadyCompleted) {
+      // Complete the lesson with 0 XP
+      completeLesson(currentLesson.id, 0, hintsRevealed)
+
+      addConsoleMessage({
+        type: 'system',
+        content: '📖 Solution revealed. Lesson completed with 0 XP.',
+      })
+    } else {
+      addConsoleMessage({
+        type: 'system',
+        content: '📖 Solution revealed. (Lesson already completed)',
+      })
+    }
+  }
+
+  const handleCancelShowSolution = () => {
+    setShowSolutionModal(false)
   }
 
   // Keyboard shortcut: Ctrl/Cmd + Enter to run
@@ -170,60 +279,91 @@ function App() {
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [code])
 
+  // Show profile selector if no profile is active
+  if (!currentProfile) {
+    return <ProfileSelector onProfileSelected={handleProfileSelected} />
+  }
+
   return (
     <div className="h-screen flex flex-col bg-navy-900">
-      <Header />
+      {/* Show Header only in learning view */}
+      {currentView === 'learning' && <Header />}
 
-      <div className="flex-1 overflow-hidden">
-        <PanelGroup direction="horizontal">
-          {/* Left: Lesson content panel */}
-          <Panel defaultSize={chatOpen ? 30 : 40} minSize={20}>
-            <LessonPanel />
-          </Panel>
+      {/* Dashboard View */}
+      {currentView === 'dashboard' && <Dashboard onLogout={handleLogout} />}
 
-          <PanelResizeHandle className="w-1 bg-navy-700 hover:bg-accent-500 transition-colors cursor-col-resize" />
-
-          {/* Middle: Code editor + console panel */}
-          <Panel defaultSize={chatOpen ? 40 : 60} minSize={30}>
-            <PanelGroup direction="vertical">
-              {/* Top: Code editor */}
-              <Panel defaultSize={65} minSize={30}>
-                <CodeEditor />
+      {/* Learning View */}
+      {currentView === 'learning' && (
+        <>
+          <div className="flex-1 overflow-hidden">
+            <PanelGroup direction="horizontal">
+              {/* Left: Lesson content panel */}
+              <Panel defaultSize={chatOpen ? 30 : 40} minSize={20}>
+                <LessonPanel />
               </Panel>
 
-              <PanelResizeHandle className="h-1 bg-navy-700 hover:bg-accent-500 transition-colors cursor-row-resize" />
-
-              {/* Bottom: Console */}
-              <Panel defaultSize={35} minSize={20}>
-                <Console />
-              </Panel>
-            </PanelGroup>
-          </Panel>
-
-          {/* Right: AI Chat panel (conditional) */}
-          {chatOpen && (
-            <>
               <PanelResizeHandle className="w-1 bg-navy-700 hover:bg-accent-500 transition-colors cursor-col-resize" />
-              <Panel defaultSize={30} minSize={20}>
-                <ChatPanel />
+
+              {/* Middle: Code editor + console panel */}
+              <Panel defaultSize={chatOpen ? 40 : 60} minSize={30}>
+                <PanelGroup direction="vertical">
+                  {/* Top: Code editor */}
+                  <Panel defaultSize={65} minSize={30}>
+                    <CodeEditor />
+                  </Panel>
+
+                  <PanelResizeHandle className="h-1 bg-navy-700 hover:bg-accent-500 transition-colors cursor-row-resize" />
+
+                  {/* Bottom: Console */}
+                  <Panel defaultSize={35} minSize={20}>
+                    <Console />
+                  </Panel>
+                </PanelGroup>
               </Panel>
-            </>
-          )}
-        </PanelGroup>
-      </div>
 
-      {/* Floating chat button when closed */}
-      {!chatOpen && <ChatPanel />}
+              {/* Right: AI Chat panel (conditional) */}
+              {chatOpen && (
+                <>
+                  <PanelResizeHandle className="w-1 bg-navy-700 hover:bg-accent-500 transition-colors cursor-col-resize" />
+                  <Panel defaultSize={30} minSize={20}>
+                    <ChatPanel />
+                  </Panel>
+                </>
+              )}
+            </PanelGroup>
+          </div>
 
-      <ActionBar
-        onRun={handleRun}
-        onSubmit={handleSubmit}
-        onShowSolution={handleShowSolution}
-      />
+          {/* Floating chat button when closed */}
+          {!chatOpen && <ChatPanel />}
+
+          <ActionBar
+            onRun={handleRun}
+            onSubmit={handleSubmit}
+            onShowSolution={handleShowSolution}
+          />
+        </>
+      )}
 
       {/* Gamification UI */}
       <NotificationContainer />
       <ProgressDashboard />
+
+      {/* Onboarding & Settings */}
+      {showWelcome && <WelcomeScreen onComplete={handleOnboardingComplete} />}
+      <SettingsModal
+        isOpen={settingsOpen}
+        onClose={toggleSettings}
+        currentSettings={settings}
+        onSave={updateSettings}
+        onResetProgress={handleResetProgress}
+      />
+
+      {/* Solution Confirmation Modal */}
+      <SolutionConfirmModal
+        isOpen={showSolutionModal}
+        onConfirm={handleConfirmShowSolution}
+        onCancel={handleCancelShowSolution}
+      />
     </div>
   )
 }

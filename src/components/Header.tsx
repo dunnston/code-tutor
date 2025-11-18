@@ -1,10 +1,15 @@
 import { useAppStore } from '@/lib/store'
 import { xpForNextLevel, xpProgressToNextLevel } from '@/lib/storage'
+import { getCurrentProfile } from '@/lib/profiles'
 
 export function Header() {
   const currentLesson = useAppStore((state) => state.currentLesson)
   const progress = useAppStore((state) => state.progress)
   const toggleDashboard = useAppStore((state) => state.toggleDashboard)
+  const toggleSettings = useAppStore((state) => state.toggleSettings)
+  const setCurrentView = useAppStore((state) => state.setCurrentView)
+
+  const currentProfile = getCurrentProfile()
 
   const currentLevel = progress.level
   const currentXP = progress.xpEarned
@@ -18,40 +23,30 @@ export function Header() {
       {/* Logo */}
       <div className="flex items-center gap-6">
         <div className="flex items-center gap-3">
+          <button
+            onClick={() => setCurrentView('dashboard')}
+            className="p-2 hover:bg-navy-700 rounded-lg transition-colors group"
+            title="Back to Dashboard"
+          >
+            <svg
+              className="w-5 h-5 text-gray-400 group-hover:text-accent-500"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M10 19l-7-7m0 0l7-7m-7 7h18"
+              />
+            </svg>
+          </button>
           <div className="w-8 h-8 bg-accent-500 rounded-lg flex items-center justify-center font-bold text-white">
             CT
           </div>
           <h1 className="text-xl font-bold text-white">Code Tutor</h1>
         </div>
-
-        {/* Level & XP Progress */}
-        <button
-          onClick={toggleDashboard}
-          className="flex items-center gap-3 px-3 py-1.5 bg-navy-900 rounded-lg border border-navy-700 hover:border-accent-500 transition-colors cursor-pointer group"
-          title="Click to view progress dashboard"
-        >
-          {/* Level Badge */}
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-gradient-to-br from-orange-500 to-orange-600 rounded-full flex items-center justify-center">
-              <span className="text-white font-bold text-sm">{currentLevel}</span>
-            </div>
-            <div className="text-xs text-gray-400 group-hover:text-gray-300">Level</div>
-          </div>
-
-          {/* XP Progress Bar */}
-          <div className="flex flex-col gap-1 min-w-[120px]">
-            <div className="flex justify-between text-xs">
-              <span className="text-gray-400">{xpInLevel} XP</span>
-              <span className="text-gray-500">{xpNeeded} XP</span>
-            </div>
-            <div className="bg-navy-700 rounded-full h-1.5">
-              <div
-                className="bg-gradient-to-r from-orange-500 to-orange-600 rounded-full h-1.5 transition-all duration-300"
-                style={{ width: `${xpProgress * 100}%` }}
-              />
-            </div>
-          </div>
-        </button>
 
         {/* Streak Counter */}
         {progress.streak.currentStreak > 0 && (
@@ -134,7 +129,51 @@ export function Header() {
 
       {/* Actions */}
       <div className="flex items-center gap-3">
+        {/* Level & XP Progress */}
         <button
+          onClick={toggleDashboard}
+          className="flex items-center gap-3 px-3 py-1.5 bg-navy-900 rounded-lg border border-navy-700 hover:border-accent-500 transition-colors cursor-pointer group"
+          title="Click to view progress dashboard"
+        >
+          {/* Level Badge */}
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 bg-gradient-to-br from-orange-500 to-orange-600 rounded-full flex items-center justify-center">
+              <span className="text-white font-bold text-sm">{currentLevel}</span>
+            </div>
+            <div className="text-xs text-gray-400 group-hover:text-gray-300">Level</div>
+          </div>
+
+          {/* XP Progress Bar */}
+          <div className="flex flex-col gap-1 min-w-[120px]">
+            <div className="flex justify-between text-xs">
+              <span className="text-gray-400">{xpInLevel} XP</span>
+              <span className="text-gray-500">{xpNeeded} XP</span>
+            </div>
+            <div className="bg-navy-700 rounded-full h-1.5">
+              <div
+                className="bg-gradient-to-r from-orange-500 to-orange-600 rounded-full h-1.5 transition-all duration-300"
+                style={{ width: `${xpProgress * 100}%` }}
+              />
+            </div>
+          </div>
+        </button>
+
+        {/* Current Profile */}
+        {currentProfile && (
+          <div className="flex items-center gap-2 px-3 py-1.5 bg-navy-900 rounded-lg border border-navy-700">
+            <div className="w-8 h-8 rounded-full overflow-hidden ring-2 ring-navy-600">
+              <img
+                src={currentProfile.avatar}
+                alt={currentProfile.name}
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <span className="text-sm text-gray-300">{currentProfile.name}</span>
+          </div>
+        )}
+
+        <button
+          onClick={toggleSettings}
           className="p-2 hover:bg-navy-700 rounded-lg transition-colors"
           title="Settings"
         >

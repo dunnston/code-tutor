@@ -1,0 +1,62 @@
+{
+  "id": 9,
+  "trackId": 1,
+  "language": "python",
+  "title": "The Scroll Keeper",
+  "subtitle": "Reading and Writing Files",
+  "difficulty": 6,
+  "estimatedTime": "20-25 minutes",
+  "xpReward": 225,
+  "description": "# The Ancient Archives\n\nAs a keeper of knowledge, you must learn to read and write scrolls (files) to preserve information across your adventures!\n\n## Writing to Files\n\nTo write to a file, use the `open()` function with mode `'w'` (write):\n\n```python\nwith open('quest_log.txt', 'w') as file:\n    file.write('Day 1: Started my adventure\\n')\n    file.write('Day 2: Found a magic sword\\n')\n```\n\n**Important:**\n- The `with` statement ensures the file is properly closed\n- Mode `'w'` creates a new file or **overwrites** an existing one\n- Use `\\n` to create new lines\n\n## Reading from Files\n\nTo read a file, use mode `'r'` (read):\n\n```python\nwith open('quest_log.txt', 'r') as file:\n    content = file.read()\n    print(content)\n```\n\n## Reading Line by Line\n\n```python\nwith open('quest_log.txt', 'r') as file:\n    for line in file:\n        print(line.strip())  # strip() removes extra whitespace\n```\n\n## Your Quest\n\n1. Write a file called `'hero_story.txt'` with three lines:\n   - `\"Chapter 1: The Beginning\"`\n   - `\"Our hero starts their journey\"`\n   - `\"The quest awaits!\"`\n2. Read the file and print its contents\n3. Count and print the number of lines in the file\n\n**Note:** For this lesson, the code will simulate file operations. In a real environment, files would be created on your computer!",
+  "starterCode": "# Write to the file 'hero_story.txt'\n# with open('hero_story.txt', 'w') as file:\n#     file.write(...)\n\n# Read from the file and print contents\n# with open('hero_story.txt', 'r') as file:\n#     ...\n\n# Count and print the number of lines\n\n",
+  "solutionCode": "# Write to the file 'hero_story.txt'\nwith open('hero_story.txt', 'w') as file:\n    file.write('Chapter 1: The Beginning\\n')\n    file.write('Our hero starts their journey\\n')\n    file.write('The quest awaits!\\n')\n\n# Read from the file and print contents\nwith open('hero_story.txt', 'r') as file:\n    content = file.read()\n    print(content)\n\n# Count and print the number of lines\nwith open('hero_story.txt', 'r') as file:\n    lines = file.readlines()\n    print(f'Total lines: {len(lines)}')",
+  "hints": [
+    "Use 'with open(filename, mode) as file:' to open files safely",
+    "Mode 'w' is for writing, 'r' is for reading",
+    "Don't forget to add \\n at the end of each line when writing",
+    "Use file.read() to read the entire file content",
+    "Use file.readlines() to get a list of all lines for counting"
+  ],
+  "validationTests": [
+    {
+      "type": "code_contains",
+      "value": "open",
+      "description": "Code should use the open() function"
+    },
+    {
+      "type": "code_contains",
+      "value": "with",
+      "description": "Code should use 'with' statement for proper file handling"
+    },
+    {
+      "type": "code_contains",
+      "value": "'w'",
+      "description": "Code should use write mode 'w'"
+    },
+    {
+      "type": "code_contains",
+      "value": "'r'",
+      "description": "Code should use read mode 'r'"
+    },
+    {
+      "type": "output_contains",
+      "value": "Chapter 1",
+      "description": "Output should contain 'Chapter 1: The Beginning'"
+    },
+    {
+      "type": "output_contains",
+      "value": "3",
+      "description": "Output should show 3 lines counted"
+    }
+  ],
+  "learningObjectives": [
+    "Understand how to open and close files safely using 'with'",
+    "Write data to files using write mode 'w'",
+    "Read data from files using read mode 'r'",
+    "Count lines in a file",
+    "Use proper file handling to avoid resource leaks"
+  ],
+  "previousLessonId": 8,
+  "nextLessonId": 10,
+  "tags": ["files", "io", "reading", "writing", "file-handling"]
+}

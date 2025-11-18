@@ -1,0 +1,51 @@
+{
+  "id": 15,
+  "trackId": 1,
+  "language": "python",
+  "title": "The While Loop Chamber",
+  "subtitle": "Repeating Until a Condition is Met",
+  "difficulty": 5,
+  "estimatedTime": "15-20 minutes",
+  "xpReward": 150,
+  "description": "# The While Loop Chamber\n\nYou've discovered an ancient chamber that repeats its trials until you succeed. This is the essence of the while loop - repeating actions as long as a condition remains true!\n\n## While Loops\n\nUnlike for loops that iterate a specific number of times, while loops continue as long as a condition is True:\n\n```python\nhealth = 3\n\nwhile health > 0:\n    print(f\"Health: {health}\")\n    health -= 1  # Decrease health\n\nprint(\"Game over!\")\n```\n\n**Warning**: Always ensure the condition eventually becomes False, or you'll create an infinite loop!\n\n## Your Quest\n\nYou're gathering resources until you have enough:\n\n1. Create a variable `resources` = 0\n2. Create a variable `needed` = 5\n3. Use a while loop that runs while `resources < needed`\n4. Inside the loop:\n   - Add 1 to resources\n   - Print \"Gathered resource. Total: \" followed by the resources count\n5. After the loop, print \"Quest complete!\"\n\nExpected output:\n```\nGathered resource. Total: 1\nGathered resource. Total: 2\nGathered resource. Total: 3\nGathered resource. Total: 4\nGathered resource. Total: 5\nQuest complete!\n```",
+  "starterCode": "# Starting resources and goal\nresources = 0\nneeded = 5\n\n# Gather resources until you have enough\n\n\n# Quest complete message\n\n",
+  "solutionCode": "# Starting resources and goal\nresources = 0\nneeded = 5\n\n# Gather resources until you have enough\nwhile resources < needed:\n    resources += 1\n    print(\"Gathered resource. Total: \" + str(resources))\n\n# Quest complete message\nprint(\"Quest complete!\")",
+  "hints": [
+    "The while loop condition should be: resources < needed",
+    "Inside the loop, increment resources: resources += 1",
+    "Print the message with the current resources count",
+    "The loop will run 5 times (until resources reaches 5)",
+    "Don't forget to print 'Quest complete!' after the loop ends"
+  ],
+  "validationTests": [
+    {
+      "type": "output_contains",
+      "value": "Total: 5",
+      "description": "Should gather 5 resources"
+    },
+    {
+      "type": "output_contains",
+      "value": "Quest complete!",
+      "description": "Should print completion message"
+    },
+    {
+      "type": "code_contains",
+      "value": "while",
+      "description": "Code should use a while loop"
+    },
+    {
+      "type": "output_line_count",
+      "min": 6,
+      "description": "Should print 6 lines (5 gatherings + completion)"
+    }
+  ],
+  "learningObjectives": [
+    "Understand how while loops work",
+    "Learn the difference between for and while loops",
+    "Practice incrementing variables",
+    "Recognize the importance of exit conditions"
+  ],
+  "nextLessonId": 16,
+  "previousLessonId": 14,
+  "tags": ["while-loops", "loops", "conditions", "intermediate"]
+}

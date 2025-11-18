@@ -1,0 +1,46 @@
+{
+  "id": 21,
+  "trackId": 1,
+  "language": "python",
+  "title": "Default Parameters",
+  "subtitle": "Optional Function Arguments",
+  "difficulty": 6,
+  "estimatedTime": "15-20 minutes",
+  "xpReward": 170,
+  "description": "# Default Parameters\n\nMake your functions more flexible by providing default values for parameters. If a user doesn't provide a value, the default is used!\n\n## Default Parameter Values\n\n```python\ndef greet(name=\"Adventurer\"):\n    print(f\"Hello, {name}!\")\n\ngreet(\"Hero\")  # Hello, Hero!\ngreet()  # Hello, Adventurer! (uses default)\n```\n\n## Multiple Defaults\n\n```python\ndef create_character(name, level=1, health=100):\n    print(f\"{name}: Level {level}, HP {health}\")\n\ncreate_character(\"Wizard\")  # Uses default level and health\ncreate_character(\"Warrior\", 5)  # Custom level, default health\ncreate_character(\"Archer\", 3, 80)  # Custom all values\n```\n\n**Note**: Default parameters must come AFTER required parameters!\n\n## Your Quest\n\nCreate a function to cast spells with optional mana cost:\n\n1. Define function `cast_spell` with parameters: `spell_name`, `mana_cost=10`\n2. Print \"Casting \" + spell_name + \"! Mana cost: \" + str(mana_cost)\n3. Call it with \"Fireball\" and 25\n4. Call it with just \"Heal\" (uses default mana_cost)\n\nExpected output:\n```\nCasting Fireball! Mana cost: 25\nCasting Heal! Mana cost: 10\n```",
+  "starterCode": "# Define function with default parameter\n\n\n# Call with custom mana cost\n\n\n# Call with default mana cost\n\n",
+  "solutionCode": "# Define function with default parameter\ndef cast_spell(spell_name, mana_cost=10):\n    print(\"Casting \" + spell_name + \"! Mana cost: \" + str(mana_cost))\n\n# Call with custom mana cost\ncast_spell(\"Fireball\", 25)\n\n# Call with default mana cost\ncast_spell(\"Heal\")",
+  "hints": [
+    "Define the function: def cast_spell(spell_name, mana_cost=10):",
+    "spell_name is required, mana_cost has a default of 10",
+    "When calling with one argument, only spell_name is provided",
+    "When calling with two arguments, both are provided",
+    "Default parameters let you skip arguments when calling"
+  ],
+  "validationTests": [
+    {
+      "type": "output_contains",
+      "value": "Casting Fireball! Mana cost: 25",
+      "description": "Should cast Fireball with custom cost"
+    },
+    {
+      "type": "output_contains",
+      "value": "Casting Heal! Mana cost: 10",
+      "description": "Should cast Heal with default cost"
+    },
+    {
+      "type": "code_contains",
+      "value": "mana_cost=10",
+      "description": "Should use default parameter syntax"
+    }
+  ],
+  "learningObjectives": [
+    "Understand default parameters",
+    "Learn to make function parameters optional",
+    "See how defaults make functions more flexible",
+    "Practice calling functions with and without all arguments"
+  ],
+  "nextLessonId": 22,
+  "previousLessonId": 20,
+  "tags": ["functions", "default-parameters", "advanced"]
+}

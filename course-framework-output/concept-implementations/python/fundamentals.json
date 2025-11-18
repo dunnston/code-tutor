@@ -1,0 +1,42 @@
+[
+  {
+    "concept_id": "variables-and-types",
+    "language_id": "python",
+    "explanation": "In Python, variables are created by assignment. You don't need to declare the type - Python figures it out automatically (dynamic typing). Python has several built-in data types: int (integers), float (decimals), str (text), bool (True/False), and more.",
+    "code_example": "# Creating variables\nname = \"Hero\"  # String\nage = 25  # Integer\nheight = 5.9  # Float\nis_active = True  # Boolean\nhealth = 100  # Integer\n\n# Python automatically determines the type\nprint(type(name))  # <class 'str'>\nprint(type(age))  # <class 'int'>\nprint(type(height))  # <class 'float'>\nprint(type(is_active))  # <class 'bool'>",
+    "syntax_notes": "Variable names must start with a letter or underscore. Use snake_case for variable names (Python convention). Python is case-sensitive: 'health' and 'Health' are different variables.",
+    "common_mistakes": "[\"Starting variable names with numbers\", \"Using reserved keywords (class, for, if, etc.)\", \"Forgetting quotes around strings\", \"Using camelCase instead of snake_case\"]"
+  },
+  {
+    "concept_id": "operators",
+    "language_id": "python",
+    "explanation": "Python supports arithmetic operators (+, -, *, /, //, %, **), comparison operators (==, !=, <, >, <=, >=), and logical operators (and, or, not). The // operator performs integer division, and ** is for exponentiation.",
+    "code_example": "# Arithmetic operators\nsum_value = 10 + 5  # 15\ndifference = 10 - 5  # 5\nproduct = 10 * 5  # 50\nquotient = 10 / 5  # 2.0 (float division)\ninteger_div = 10 // 3  # 3 (integer division)\nremainder = 10 % 3  # 1 (modulo)\npower = 2 ** 3  # 8 (2 to the power of 3)\n\n# Comparison operators\nis_equal = 10 == 10  # True\nis_greater = 10 > 5  # True\nis_not_equal = 10 != 5  # True\n\n# Logical operators\nresult = True and False  # False\nresult = True or False  # True\nresult = not True  # False",
+    "syntax_notes": "Division (/) always returns a float. Use // for integer division. Logical operators use words (and, or, not) instead of symbols.",
+    "common_mistakes": "[\"Confusing = (assignment) with == (comparison)\", \"Using & or | instead of 'and' and 'or'\", \"Expecting / to do integer division\"]"
+  },
+  {
+    "concept_id": "string-manipulation",
+    "language_id": "python",
+    "explanation": "Strings in Python are sequences of characters enclosed in quotes. You can use single quotes, double quotes, or triple quotes. Python provides many built-in string methods for manipulation.",
+    "code_example": "# Creating strings\ngreeting = \"Hello, Hero!\"\nquote = 'The adventure begins'\nmultiline = \"\"\"This is a\nmultiline string\"\"\"\n\n# String concatenation\nfull_name = \"Sir\" + \" \" + \"Lancelot\"  # \"Sir Lancelot\"\n\n# String formatting\nname = \"Hero\"\nlevel = 5\nmessage = f\"Welcome, {name}! You are level {level}\"  # f-strings (Python 3.6+)\n\n# Common string methods\nuppercase = greeting.upper()  # \"HELLO, HERO!\"\nlowercase = greeting.lower()  # \"hello, hero!\"\nreplaced = greeting.replace(\"Hero\", \"Warrior\")  # \"Hello, Warrior!\"\nsplit_words = greeting.split(\", \")  # [\"Hello\", \"Hero!\"]\n\n# String indexing\nfirst_char = greeting[0]  # \"H\"\nlast_char = greeting[-1]  # \"!\"\nsubstring = greeting[0:5]  # \"Hello\"",
+    "syntax_notes": "Strings are immutable (cannot be changed after creation). Use f-strings (f\"...\") for easy string formatting. Indexing starts at 0, negative indices count from the end.",
+    "common_mistakes": "[\"Trying to modify strings directly (they're immutable)\", \"Forgetting the 'f' prefix in f-strings\", \"Confusing + (concatenation) with , (which doesn't concatenate)\"]"
+  },
+  {
+    "concept_id": "input-output",
+    "language_id": "python",
+    "explanation": "Python uses print() to display output and input() to get user input. The input() function always returns a string, so you may need to convert it to other types.",
+    "code_example": "# Outputting to console\nprint(\"Welcome to the game!\")\nprint(\"Your health:\", 100)\nprint(f\"Level {5} unlocked!\")  # Using f-strings\n\n# Multiple items in one print\nprint(\"Name:\", \"Hero\", \"Level:\", 5)  # Automatically adds spaces\n\n# Getting user input\nname = input(\"Enter your name: \")\nprint(f\"Hello, {name}!\")\n\n# Converting input to numbers\nage_str = input(\"Enter your age: \")\nage = int(age_str)  # Convert string to integer\n\n# Or in one line\nhealth = int(input(\"Enter your health: \"))\n\n# For decimals\nheight = float(input(\"Enter your height: \"))",
+    "syntax_notes": "print() automatically adds a newline at the end. Use sep parameter to change separator between items. Use end parameter to change what's printed at the end.",
+    "common_mistakes": "[\"Forgetting to convert input() to int/float for numbers\", \"Trying to do math with string numbers\", \"Not including a prompt message in input()\"]"
+  },
+  {
+    "concept_id": "comments",
+    "language_id": "python",
+    "explanation": "Comments are notes in your code that Python ignores. Use # for single-line comments and triple quotes for multi-line comments (docstrings). Good comments explain WHY, not WHAT.",
+    "code_example": "# This is a single-line comment\n\n# Calculate damage dealt to enemy\ndamage = attack_power * 2  # Apply 2x multiplier\n\n\"\"\"\nThis is a multi-line comment (docstring).\nUsed for longer explanations or function documentation.\nOften used at the start of functions and classes.\n\"\"\"\n\ndef calculate_damage(attack, defense):\n    \"\"\"\n    Calculate damage after defense reduction.\n    \n    Args:\n        attack: The attack power value\n        defense: The defense value to reduce damage\n    \n    Returns:\n        Final damage dealt\n    \"\"\"\n    return max(0, attack - defense)  # Ensure damage is not negative\n\n# Good comment - explains WHY\n# We multiply by 1.5 because critical hits do 50% more damage\ncritical_damage = base_damage * 1.5\n\n# Bad comment - just restates the code\n# Set health to 100\nhealth = 100",
+    "syntax_notes": "Use # for inline and single-line comments. Triple quotes (\"\"\" or ''') for docstrings at the start of functions, classes, and modules. Comments should add value, not clutter.",
+    "common_mistakes": "[\"Over-commenting obvious code\", \"Writing comments that contradict the code\", \"Forgetting to update comments when code changes\", \"Using comments instead of writing clear code\"]"
+  }
+]

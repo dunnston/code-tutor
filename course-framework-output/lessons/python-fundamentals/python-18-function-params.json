@@ -1,0 +1,51 @@
+{
+  "id": 18,
+  "trackId": 1,
+  "language": "python",
+  "title": "Function Parameters",
+  "subtitle": "Passing Data to Functions",
+  "difficulty": 5,
+  "estimatedTime": "15-20 minutes",
+  "xpReward": 150,
+  "description": "# Function Parameters\n\nYou've mastered basic functions, now it's time to make them more powerful by passing data to them using parameters!\n\n## Parameters and Arguments\n\nParameters are variables that receive values when a function is called:\n\n```python\ndef greet(name):  # 'name' is a parameter\n    print(f\"Hello, {name}!\")\n\ngreet(\"Hero\")  # \"Hero\" is an argument\ngreet(\"Wizard\")  # \"Wizard\" is an argument\n```\n\n## Multiple Parameters\n\n```python\ndef calculate_damage(attack, defense):\n    damage = attack - defense\n    print(f\"Damage dealt: {damage}\")\n\ncalculate_damage(50, 10)  # attack=50, defense=10\n```\n\n## Your Quest\n\nCreate a function that introduces a character:\n\n1. Define a function called `introduce_character`\n2. It should take two parameters: `name` and `character_class`\n3. Print: \"Behold, \" + name + \" the \" + character_class + \"!\"\n4. Call the function with \"Aragorn\" and \"Ranger\"\n5. Call it again with \"Gandalf\" and \"Wizard\"\n\nExpected output:\n```\nBehold, Aragorn the Ranger!\nBehold, Gandalf the Wizard!\n```",
+  "starterCode": "# Define the function with two parameters\n\n\n# Call the function twice with different characters\n\n",
+  "solutionCode": "# Define the function with two parameters\ndef introduce_character(name, character_class):\n    print(\"Behold, \" + name + \" the \" + character_class + \"!\")\n\n# Call the function twice with different characters\nintroduce_character(\"Aragorn\", \"Ranger\")\nintroduce_character(\"Gandalf\", \"Wizard\")",
+  "hints": [
+    "Define the function: def introduce_character(name, character_class):",
+    "Inside the function, print the formatted message",
+    "Call the function twice with the specified arguments",
+    "Arguments must be in the same order as parameters",
+    "Make sure the output message matches exactly, including punctuation"
+  ],
+  "validationTests": [
+    {
+      "type": "output_contains",
+      "value": "Behold, Aragorn the Ranger!",
+      "description": "Should introduce Aragorn correctly"
+    },
+    {
+      "type": "output_contains",
+      "value": "Behold, Gandalf the Wizard!",
+      "description": "Should introduce Gandalf correctly"
+    },
+    {
+      "type": "code_contains",
+      "value": "def introduce_character",
+      "description": "Should define the introduce_character function"
+    },
+    {
+      "type": "output_line_count",
+      "min": 2,
+      "description": "Should print two introductions"
+    }
+  ],
+  "learningObjectives": [
+    "Understand function parameters",
+    "Learn the difference between parameters and arguments",
+    "Practice defining functions with multiple parameters",
+    "See how parameters make functions reusable with different data"
+  ],
+  "nextLessonId": 19,
+  "previousLessonId": 17,
+  "tags": ["functions", "parameters", "arguments", "intermediate"]
+}

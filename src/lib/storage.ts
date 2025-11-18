@@ -1,6 +1,9 @@
 /**
  * Local storage utilities for persisting user code and progress
+ * All data is scoped by profile to support multi-user profiles
  */
+
+import { getProfileStorageKey } from './profiles'
 
 const STORAGE_PREFIX = 'code-tutor:'
 
@@ -72,7 +75,7 @@ export interface UserProgress {
  */
 export function saveUserCode(lessonId: number, code: string): void {
   try {
-    const key = `${STORAGE_PREFIX}lesson-${lessonId}-code`
+    const key = getProfileStorageKey(`${STORAGE_PREFIX}lesson-${lessonId}-code`)
     localStorage.setItem(key, code)
   } catch (error) {
     console.error('Failed to save code to local storage:', error)
@@ -84,7 +87,7 @@ export function saveUserCode(lessonId: number, code: string): void {
  */
 export function loadUserCode(lessonId: number): string | null {
   try {
-    const key = `${STORAGE_PREFIX}lesson-${lessonId}-code`
+    const key = getProfileStorageKey(`${STORAGE_PREFIX}lesson-${lessonId}-code`)
     return localStorage.getItem(key)
   } catch (error) {
     console.error('Failed to load code from local storage:', error)
@@ -97,7 +100,7 @@ export function loadUserCode(lessonId: number): string | null {
  */
 export function clearUserCode(lessonId: number): void {
   try {
-    const key = `${STORAGE_PREFIX}lesson-${lessonId}-code`
+    const key = getProfileStorageKey(`${STORAGE_PREFIX}lesson-${lessonId}-code`)
     localStorage.removeItem(key)
   } catch (error) {
     console.error('Failed to clear code from local storage:', error)
@@ -156,7 +159,7 @@ export function xpProgressToNextLevel(xp: number): number {
  */
 export function loadProgress(): UserProgress {
   try {
-    const key = `${STORAGE_PREFIX}progress`
+    const key = getProfileStorageKey(`${STORAGE_PREFIX}progress`)
     const data = localStorage.getItem(key)
 
     if (data) {
@@ -167,7 +170,7 @@ export function loadProgress(): UserProgress {
       if (!progress.badges) progress.badges = []
       if (!progress.streak) {
         progress.streak = {
-          lastLoginDate: new Date().toISOString().split('T')[0],
+          lastLoginDate: new Date().toISOString().split('T')[0]!,
           currentStreak: 0,
           longestStreak: 0,
           totalDaysActive: 0,
@@ -182,7 +185,7 @@ export function loadProgress(): UserProgress {
   }
 
   // Return default progress if none exists
-  const today = new Date().toISOString().split('T')[0]
+  const today = new Date().toISOString().split('T')[0]!
   return {
     completedLessons: [],
     xpEarned: 0,
@@ -205,7 +208,7 @@ export function loadProgress(): UserProgress {
  */
 export function saveProgress(progress: UserProgress): void {
   try {
-    const key = `${STORAGE_PREFIX}progress`
+    const key = getProfileStorageKey(`${STORAGE_PREFIX}progress`)
     progress.lastUpdated = new Date().toISOString()
     localStorage.setItem(key, JSON.stringify(progress))
   } catch (error) {
@@ -303,7 +306,7 @@ export function isLessonCompleted(lessonId: number): boolean {
  * - It has no previous lesson (it's the first lesson), OR
  * - Its previous lesson has been completed
  */
-export function isLessonUnlocked(lessonId: number, previousLessonId?: number): boolean {
+export function isLessonUnlocked(_lessonId: number, previousLessonId?: number): boolean {
   // First lesson is always unlocked
   if (!previousLessonId) {
     return true
@@ -318,7 +321,7 @@ export function isLessonUnlocked(lessonId: number, previousLessonId?: number): b
  */
 export function resetProgress(): void {
   try {
-    const key = `${STORAGE_PREFIX}progress`
+    const key = getProfileStorageKey(`${STORAGE_PREFIX}progress`)
     localStorage.removeItem(key)
   } catch (error) {
     console.error('Failed to reset progress:', error)
@@ -396,7 +399,7 @@ export const BADGES: Record<BadgeId, Omit<Badge, 'earnedAt'>> = {
  */
 export function updateStreak(): void {
   const progress = loadProgress()
-  const today = new Date().toISOString().split('T')[0]
+  const today = new Date().toISOString().split('T')[0]!
   const lastLogin = progress.streak.lastLoginDate
 
   // Same day - no change
@@ -521,4 +524,26 @@ export function recordLessonAttempt(lessonId: number, hintsUsed: number): void {
 export function exportProgress(): string {
   const progress = loadProgress()
   return JSON.stringify(progress, null, 2)
+}
+
+/**
+ * Clear all user data (progress, saved code, etc.)
+ * Use with caution - this is destructive!
+ */
+export function clearAllData(): void {
+  try {
+    // Get all keys that start with our prefix
+    const keysToRemove: string[] = []
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i)
+      if (key && key.startsWith(STORAGE_PREFIX)) {
+        keysToRemove.push(key)
+      }
+    }
+
+    // Remove all our data
+    keysToRemove.forEach((key) => localStorage.removeItem(key))
+  } catch (error) {
+    console.error('Failed to clear all data:', error)
+  }
 }

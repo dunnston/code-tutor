@@ -25,8 +25,8 @@
     },
     {
       "type": "code_contains",
-      "value": "range(5)",
-      "description": "Should use range(5) for the arrow crafting loop"
+      "value": "range(",
+      "description": "Should use range() for the arrow crafting loop"
     },
     {
       "type": "output_contains",

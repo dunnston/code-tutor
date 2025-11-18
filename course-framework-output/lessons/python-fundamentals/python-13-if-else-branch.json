@@ -1,0 +1,46 @@
+{
+  "id": 13,
+  "trackId": 1,
+  "language": "python",
+  "title": "The Two-Path Choice",
+  "subtitle": "If-Else Branching",
+  "difficulty": 4,
+  "estimatedTime": "12-15 minutes",
+  "xpReward": 130,
+  "description": "# The Two-Path Choice\n\nYou stand at a crossroads. The path ahead splits in two. Your choices will determine your fate. This is the power of if-else branching!\n\n## If-Else Statements\n\nWhen you need to handle both outcomes:\n\n```python\nhealth = 75\n\nif health > 50:\n    print(\"You are healthy!\")\nelse:\n    print(\"You need healing!\")\n```\n\nThe `else` clause provides an alternative when the condition is False.\n\n## Your Quest\n\nA merchant offers you a magical item, but only if you have enough gold.\n\n1. Create a variable `gold` = 150\n2. Create a variable `item_cost` = 100\n3. Use if-else to check if `gold >= item_cost`\n4. If yes: print \"You purchased the enchanted sword!\"\n5. If no: print \"Not enough gold!\"\n\n**Note**: Since you have 150 gold and the item costs 100, you should be able to buy it!",
+  "starterCode": "# Your current gold\ngold = 150\nitem_cost = 100\n\n# Check if you can afford the item\n\n",
+  "solutionCode": "# Your current gold\ngold = 150\nitem_cost = 100\n\n# Check if you can afford the item\nif gold >= item_cost:\n    print(\"You purchased the enchanted sword!\")\nelse:\n    print(\"Not enough gold!\")",
+  "hints": [
+    "Use >= to check if gold is greater than or equal to item_cost",
+    "Put the purchase message in the if block",
+    "Put the 'not enough' message in the else block",
+    "Make sure both print statements match exactly",
+    "Structure: if gold >= item_cost: then else:"
+  ],
+  "validationTests": [
+    {
+      "type": "output_contains",
+      "value": "You purchased the enchanted sword!",
+      "description": "Should output the purchase message"
+    },
+    {
+      "type": "code_contains",
+      "value": "if",
+      "description": "Code should use an if statement"
+    },
+    {
+      "type": "code_contains",
+      "value": "else",
+      "description": "Code should use an else clause"
+    }
+  ],
+  "learningObjectives": [
+    "Understand if-else branching",
+    "Learn to provide alternative paths in code",
+    "Practice using comparison in conditions",
+    "See how only one branch executes"
+  ],
+  "nextLessonId": 14,
+  "previousLessonId": 12,
+  "tags": ["if-else", "conditionals", "branching", "intermediate"]
+}

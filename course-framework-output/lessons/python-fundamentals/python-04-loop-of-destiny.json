@@ -1,0 +1,90 @@
+{
+  "id": 4,
+  "trackId": 1,
+  "language": "python",
+  "title": "The Loop of Destiny",
+  "subtitle": "Repeating Actions with For Loops",
+  "difficulty": 2,
+  "estimatedTime": "15-20 minutes",
+  "xpReward": 250,
+  "description": "# The Loop of Destiny\n\nGreetings, adventurer! Today you'll learn one of the most powerful spells: **the for loop**.\n\nImagine you need to:\n- Count from 1 to 10\n- Check each item in your inventory\n- Attack 5 enemies in a row\n\nYou *could* write the same code over and over:\n\n```python\nprint(\"Attack 1\")\nprint(\"Attack 2\")\nprint(\"Attack 3\")\nprint(\"Attack 4\")\nprint(\"Attack 5\")\n```\n\nBut there's a better way: **loops**! Loops repeat code automatically.\n\n## The For Loop\n\nA for loop repeats code a specific number of times:\n\n```python\nfor i in range(5):\n    print(\"Attack\", i + 1)\n```\n\n**Output:**\n```\nAttack 1\nAttack 2\nAttack 3\nAttack 4\nAttack 5\n```\n\n## How It Works\n\n**The anatomy of a for loop:**\n\n```python\nfor i in range(5):\n    print(i)\n```\n\n- `for` - starts the loop\n- `i` - a variable that changes each time (0, 1, 2, 3, 4)\n- `in range(5)` - \"repeat 5 times\"\n- `:` - colon (always needed!)\n- **Indented code** - runs each time through the loop\n\n## Understanding range()\n\n`range()` creates a sequence of numbers:\n\n- `range(5)` → 0, 1, 2, 3, 4 (5 numbers, starting at 0)\n- `range(1, 6)` → 1, 2, 3, 4, 5 (start at 1, stop before 6)\n- `range(0, 10, 2)` → 0, 2, 4, 6, 8 (start, stop, step by 2)\n\n## Looping Through Lists\n\nYou can loop through items in a list:\n\n```python\nitems = [\"sword\", \"shield\", \"potion\"]\n\nfor item in items:\n    print(\"You have a\", item)\n```\n\n**Output:**\n```\nYou have a sword\nYou have a shield\nYou have a potion\n```\n\n## Your Quest\n\nYou're preparing for battle and need to craft 5 arrows.\n\n**Part 1:** Use a for loop with `range(5)` to print:\n```\nCrafting arrow 1\nCrafting arrow 2\nCrafting arrow 3\nCrafting arrow 4\nCrafting arrow 5\n```\n\n**Hint:** `range(5)` gives you 0-4, but you want 1-5. Add 1 to the loop variable!\n\n**Part 2:** Create a list called `weapons` with: `[\"sword\", \"bow\", \"staff\"]`\n\nThen use a for loop to print each weapon like:\n```\nEquipping sword\nEquipping bow\nEquipping staff\n```",
+  "starterCode": "# Part 1: Craft 5 arrows\nfor i in range(5):\n    # Your code here\n    pass\n\n# Part 2: Create weapons list and equip each one\nweapons = [\"sword\", \"bow\", \"staff\"]\n# Your loop here\n\n",
+  "solutionCode": "# Part 1: Craft 5 arrows\nfor i in range(5):\n    print(\"Crafting arrow\", i + 1)\n\n# Part 2: Create weapons list and equip each one\nweapons = [\"sword\", \"bow\", \"staff\"]\nfor weapon in weapons:\n    print(\"Equipping\", weapon)",
+  "hints": [
+    "For Part 1: range(5) gives 0, 1, 2, 3, 4. Add 1 to get 1, 2, 3, 4, 5",
+    "Use print(\"Crafting arrow\", i + 1) to combine text and numbers",
+    "For Part 2: loop through the weapons list with 'for weapon in weapons:'",
+    "Don't forget to indent the code inside each loop!",
+    "The colon : is required at the end of each for statement"
+  ],
+  "validationTests": [
+    {
+      "type": "code_contains",
+      "value": "for ",
+      "description": "Code should contain at least one for loop"
+    },
+    {
+      "type": "code_contains",
+      "value": "range(5)",
+      "description": "Should use range(5) for the arrow crafting loop"
+    },
+    {
+      "type": "output_contains",
+      "value": "Crafting arrow 1",
+      "description": "Should print 'Crafting arrow 1'"
+    },
+    {
+      "type": "output_contains",
+      "value": "Crafting arrow 5",
+      "description": "Should print 'Crafting arrow 5'"
+    },
+    {
+      "type": "output_contains",
+      "value": "Equipping sword",
+      "description": "Should print 'Equipping sword'"
+    },
+    {
+      "type": "output_contains",
+      "value": "Equipping bow",
+      "description": "Should print 'Equipping bow'"
+    },
+    {
+      "type": "output_contains",
+      "value": "Equipping staff",
+      "description": "Should print 'Equipping staff'"
+    },
+    {
+      "type": "output_line_count",
+      "min": 8,
+      "description": "Should print at least 8 lines total"
+    }
+  ],
+  "bonus": {
+    "description": "Advanced Challenge: Use range(1, 6) instead of range(5) and remove the + 1. Does it still work?",
+    "xpReward": 75
+  },
+  "learningObjectives": [
+    "Understand how for loops repeat code",
+    "Use range() to control loop iterations",
+    "Loop through lists of items",
+    "Combine loop variables with text in print statements",
+    "Recognize when loops make code more efficient"
+  ],
+  "commonMistakes": [
+    {
+      "mistake": "Forgetting to indent",
+      "explanation": "Code inside a loop must be indented (Tab or 4 spaces). Otherwise, Python doesn't know what to repeat."
+    },
+    {
+      "mistake": "Off-by-one errors",
+      "explanation": "range(5) gives 0-4, not 1-5. Add 1 or use range(1, 6) to get 1-5."
+    },
+    {
+      "mistake": "Using 'i' in list loops",
+      "explanation": "When looping through items, use a descriptive name like 'weapon' or 'item', not 'i'."
+    }
+  ],
+  "previousLessonId": 3,
+  "nextLessonId": 5,
+  "tags": ["beginner", "loops", "for-loop", "range", "iteration", "lists"]
+}

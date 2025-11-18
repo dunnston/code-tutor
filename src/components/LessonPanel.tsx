@@ -1,6 +1,7 @@
 import { useAppStore } from '@/lib/store'
 import { getNextLesson, getPreviousLesson } from '@/lib/lessons'
 import { isLessonUnlocked } from '@/lib/storage'
+import { MarkdownRenderer } from './MarkdownRenderer'
 
 export function LessonPanel() {
   const currentLesson = useAppStore((state) => state.currentLesson)
@@ -8,6 +9,7 @@ export function LessonPanel() {
   const isLessonCompleted = useAppStore((state) => state.isLessonCompleted)
   const hintsRevealed = useAppStore((state) => state.hintsRevealed)
   const revealNextHint = useAppStore((state) => state.revealNextHint)
+  const progress = useAppStore((state) => state.progress) // Add progress to trigger re-renders
 
   const handleShowNextHint = () => {
     if (currentLesson && hintsRevealed < currentLesson.hints.length) {
@@ -29,7 +31,7 @@ export function LessonPanel() {
       const nextLesson = getNextLesson(currentLesson.id)
       if (nextLesson) {
         // Check if next lesson is unlocked
-        const unlocked = isLessonUnlocked(nextLesson.id, nextLesson.previousLessonId)
+        const unlocked = isLessonUnlocked(nextLesson.id, nextLesson.previousLessonId ?? undefined)
         if (unlocked) {
           setCurrentLesson(nextLesson)
         }
@@ -38,9 +40,10 @@ export function LessonPanel() {
   }
 
   // Check if next lesson is unlocked
+  // Using progress state to ensure component re-renders when progress changes
   const nextLesson = currentLesson?.nextLessonId ? getNextLesson(currentLesson.id) : null
   const isNextLessonUnlocked = nextLesson
-    ? isLessonUnlocked(nextLesson.id, nextLesson.previousLessonId)
+    ? (nextLesson.previousLessonId ? progress.completedLessons.includes(nextLesson.previousLessonId) : true)
     : false
 
   // Check if current lesson is completed
@@ -141,21 +144,7 @@ export function LessonPanel() {
 
         {/* Description (Markdown content) */}
         <div className="prose prose-invert prose-orange max-w-none mb-6">
-          <div
-            className="text-gray-300 leading-relaxed"
-            dangerouslySetInnerHTML={{
-              __html: currentLesson.description
-                .replace(/^# (.*$)/gim, '<h1 class="text-2xl font-bold text-white mb-4">$1</h1>')
-                .replace(/^## (.*$)/gim, '<h2 class="text-xl font-bold text-white mb-3 mt-6">$1</h2>')
-                .replace(/^### (.*$)/gim, '<h3 class="text-lg font-semibold text-white mb-2 mt-4">$1</h3>')
-                .replace(/\*\*(.*?)\*\*/g, '<strong class="text-white font-semibold">$1</strong>')
-                .replace(/`(.*?)`/g, '<code class="px-1.5 py-0.5 bg-navy-800 text-accent-500 rounded text-sm font-mono">$1</code>')
-                .replace(/```python\n([\s\S]*?)\n```/g, '<pre class="bg-navy-800 p-4 rounded-lg overflow-x-auto mb-4"><code class="text-sm font-mono text-gray-300">$1</code></pre>')
-                .replace(/```\n([\s\S]*?)\n```/g, '<pre class="bg-navy-800 p-4 rounded-lg overflow-x-auto mb-4"><code class="text-sm font-mono text-gray-300">$1</code></pre>')
-                .replace(/\n\n/g, '</p><p class="mb-4">')
-                .replace(/^(.+)$/gm, '<p class="mb-4">$1</p>'),
-            }}
-          />
+          <MarkdownRenderer content={currentLesson.description} />
         </div>
 
         {/* Learning objectives */}

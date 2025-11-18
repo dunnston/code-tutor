@@ -1,0 +1,56 @@
+{
+  "id": 19,
+  "trackId": 3,
+  "language": "csharp",
+  "title": "The Loop Chamber",
+  "subtitle": "Iteration and Repetition",
+  "difficulty": 2,
+  "estimatedTime": "15-20 minutes",
+  "xpReward": 200,
+  "description": "# Loops in C#\n\nLoops let you repeat code efficiently - essential for processing collections, generating sequences, and game logic!\n\n## The for Loop\n\nPerfect when you know how many times to repeat:\n\n```csharp\nfor (int i = 0; i < 5; i++)\n{\n    Console.WriteLine($\"Count: {i}\");\n}\n// Prints: Count: 0, Count: 1, ... Count: 4\n```\n\n**for loop anatomy:**\n- `int i = 0` - initialize counter\n- `i < 5` - condition (loop while true)\n- `i++` - increment (i++ means i = i + 1)\n\n## The while Loop\n\nRepeats while a condition is true:\n\n```csharp\nint health = 100;\nwhile (health > 0)\n{\n    health -= 10;\n    Console.WriteLine($\"Health: {health}\");\n}\n```\n\n## The foreach Loop\n\nIterates through collections:\n\n```csharp\nstring[] weapons = { \"Sword\", \"Bow\", \"Staff\" };\nforeach (string weapon in weapons)\n{\n    Console.WriteLine(weapon);\n}\n```\n\n## do-while Loop\n\nRuns at least once, then checks condition:\n\n```csharp\ndo\n{\n    Console.WriteLine(\"This runs at least once\");\n} while (false);\n```\n\n## Your Quest\n\nCreate a rocket countdown!\n\n1. Use a `for` loop that counts from 5 down to 1\n2. Print each number\n3. After the loop, print \"Liftoff!\"\n\n**Expected output:**\n```\n5\n4\n3\n2\n1\nLiftoff!\n```\n\n**Hint:** To count backwards, use: `for (int i = 5; i >= 1; i--)`",
+  "starterCode": "// Create a countdown loop from 5 to 1\n\n\n// Print \"Liftoff!\" after the loop\n",
+  "solutionCode": "// Create a countdown loop from 5 to 1\nfor (int i = 5; i >= 1; i--)\n{\n    Console.WriteLine(i);\n}\n\n// Print \"Liftoff!\" after the loop\nConsole.WriteLine(\"Liftoff!\");",
+  "hints": [
+    "Use: for (int i = 5; i >= 1; i--)",
+    "i-- means subtract 1 from i (counts backwards)",
+    "Put Console.WriteLine(i); inside the loop",
+    "Don't forget curly braces {} for the loop body",
+    "Print 'Liftoff!' AFTER the loop (outside the braces)"
+  ],
+  "validationTests": [
+    {
+      "type": "output_contains",
+      "value": "5",
+      "description": "Output should contain 5"
+    },
+    {
+      "type": "output_contains",
+      "value": "1",
+      "description": "Output should contain 1"
+    },
+    {
+      "type": "output_contains",
+      "value": "Liftoff!",
+      "description": "Output should end with 'Liftoff!'"
+    },
+    {
+      "type": "code_contains",
+      "value": "for",
+      "description": "Code should use a for loop"
+    },
+    {
+      "type": "code_contains",
+      "value": "i--",
+      "description": "Should decrement the counter (i--)"
+    }
+  ],
+  "learningObjectives": [
+    "Understand for loops with initialization, condition, increment",
+    "Learn to count backwards with i--",
+    "Master loop syntax with curly braces",
+    "Create countdown sequences"
+  ],
+  "previousLessonId": 18,
+  "nextLessonId": 20,
+  "tags": ["beginner", "csharp", "loops", "for-loop", "iteration"]
+}

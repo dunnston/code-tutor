@@ -2,13 +2,22 @@
 
 **Status**: Development (Active)
 **Last Updated**: 2025-11-18
-**Current Phase**: Phase 4 Complete → Phase 5 (Multi-Language Support)
+**Current Phase**: Phase 7 (Polish & Deployment) - 🟡 In Progress
 **Phases Completed**:
 - ✅ Phase 0: Foundation (2025-11-18)
 - ✅ Phase 1: Core IDE Interface (2025-11-18)
 - ✅ Phase 2: AI Tutor Integration (2025-11-18)
 - ✅ Phase 3: Curriculum System (2025-11-18)
 - ✅ Phase 4: Progress & Gamification (2025-11-18)
+- ✅ Phase 5: Multi-Language Support (2025-11-18)
+  - ✅ Phase 5.1: Language Abstraction
+  - ✅ Phase 5.2: GDScript Support
+  - ✅ Phase 5.3: C# Support
+  - ✅ Phase 5.4: JavaScript Support
+  - ✅ Phase 5.5: Ruby Support
+- 🟡 Phase 7: Polish & Deployment (In Progress)
+  - ✅ Phase 7.1: Onboarding Flow
+  - ✅ Phase 7.2: Settings & Preferences
 
 ---
 
@@ -258,39 +267,72 @@ This document tracks the development roadmap for Code Tutor, an interactive codi
 
 ---
 
-## Phase 5: Multi-Language Support 🌐
+## Phase 5: Multi-Language Support 🌐 ✅ COMPLETE
 **Goal**: Expand beyond Python to GDScript, C#, React/JS, Ruby
+**Status**: ✅ COMPLETE (All 5 languages implemented with 30 total lessons!)
 
-### 5.1 Language Abstraction
-- [ ] Refactor execution engine to support multiple languages
-- [ ] Create language registry (Python, GDScript, C#, JS, Ruby)
-- [ ] Add language-specific syntax highlighting in Monaco
-- [ ] Implement language switcher in lesson metadata
+### 5.1 Language Abstraction ✅
+- [x] Refactor execution engine to support multiple languages
+  - [x] Create LanguageConfig in Rust backend with inline/file execution modes
+  - [x] Implement execute_code command supporting all languages
+  - [x] Add fallback command support (python/python3)
+  - [x] Implement temp file execution for GDScript and C#
+- [x] Create language registry (Python, GDScript, C#, JS, Ruby)
+  - [x] Define LanguageConfig type with execution settings
+  - [x] Create languageRegistry.ts with all language configurations
+  - [x] Add Monaco language ID mappings
+- [x] Add language-specific syntax highlighting in Monaco
+  - [x] Update CodeEditor to use languageRegistry
+  - [x] Display correct file extensions and language icons
+- [x] Implement language switcher in lesson metadata
+  - [x] Update frontend to use lesson.language for execution
+  - [x] Add check_language_runtime command for runtime verification
 
-### 5.2 GDScript Support
-- [ ] Add Godot runtime requirement check
-- [ ] Implement GDScript execution via Godot CLI
-- [ ] Create GDScript starter lessons (5-10 lessons)
-- [ ] Add GDScript-specific validation
+### 5.2 GDScript Support ✅ COMPLETE
+- [x] Add Godot runtime requirement check
+- [x] Implement GDScript execution via Godot CLI (godot --headless --script)
+- [x] Create GDScript starter lessons (5 lessons: 11-15)
+  - [x] Lesson 11: The Node Awakens (print & basic syntax)
+  - [x] Lesson 12: Variables of the Realm (var, types)
+  - [x] Lesson 13: The Decision Path (if/else)
+  - [x] Lesson 14: The Loop Dimension (for, while)
+  - [x] Lesson 15: The Function Forge (func, return)
+- [x] Add GDScript-specific validation (uses existing language-agnostic system)
 
-### 5.3 C# Support
-- [ ] Add .NET runtime requirement check
-- [ ] Implement C# execution via `dotnet run`
-- [ ] Create C# starter lessons (5-10 lessons)
-- [ ] Add C# syntax and best practices
+### 5.3 C# Support ✅ COMPLETE
+- [x] Add .NET runtime requirement check
+- [x] Implement C# execution via `dotnet script` (uses .csx files)
+- [x] Create C# starter lessons (5 lessons: 16-20)
+  - [x] Lesson 16: The Console Awakens (Console.WriteLine basics)
+  - [x] Lesson 17: Variables and Types (strongly-typed variables)
+  - [x] Lesson 18: The Decision Gate (if/else, switch)
+  - [x] Lesson 19: The Loop Chamber (for, foreach, while)
+  - [x] Lesson 20: Methods of Power (methods, return types)
+- [x] Add C# syntax and best practices (PascalCase, semicolons, braces)
 
-### 5.4 React/JavaScript Support
-- [ ] Add Node.js runtime requirement check
-- [ ] Implement JS execution via Node
-- [ ] Add JSX preview pane (live rendering)
-- [ ] Create React lessons (5-10 lessons)
-- [ ] Add component sandbox environment
+### 5.4 JavaScript Support ✅ COMPLETE
+- [x] Add Node.js runtime requirement check
+- [x] Implement JS execution via Node
+- [x] Create JavaScript starter lessons (5 lessons: 21-25)
+  - [x] Lesson 21: The Console Awakens (console.log basics)
+  - [x] Lesson 22: Variables of the Realm (let, const, var)
+  - [x] Lesson 23: The Decision Crossroads (if/else)
+  - [x] Lesson 24: The Loop Nexus (for, while, arrays)
+  - [x] Lesson 25: The Function Factory (functions, arrow functions)
+- [ ] Add JSX preview pane (live rendering) - DEFERRED to Phase 6
+- [ ] Create React lessons (5-10 lessons) - DEFERRED to Phase 6
+- [ ] Add component sandbox environment - DEFERRED to Phase 6
 
-### 5.5 Ruby Support
-- [ ] Add Ruby runtime requirement check
-- [ ] Implement Ruby execution via `ruby` CLI
-- [ ] Create Ruby starter lessons (5-10 lessons)
-- [ ] Add Ruby syntax and conventions
+### 5.5 Ruby Support ✅ COMPLETE
+- [x] Add Ruby runtime requirement check
+- [x] Implement Ruby execution via `ruby` CLI
+- [x] Create Ruby starter lessons (5 lessons: 26-30)
+  - [x] Lesson 26: The Puts Awakening (puts, print basics)
+  - [x] Lesson 27: The Variable Garden (variables, string interpolation)
+  - [x] Lesson 28: The Conditional Flow (if/elsif/else)
+  - [x] Lesson 29: The Iteration Realm (each, blocks, arrays)
+  - [x] Lesson 30: Method Mastery (methods, implicit returns)
+- [x] Add Ruby syntax and conventions (snake_case, blocks, implicit returns)
 
 ---
 
@@ -327,22 +369,23 @@ This document tracks the development roadmap for Code Tutor, an interactive codi
 
 ## Phase 7: Polish & Deployment ✨
 **Goal**: Finalize UX, optimize performance, and prepare for release
+**Status**: 🟡 In Progress
 
-### 7.1 Onboarding Flow
-- [ ] Create welcome screen with app intro
-- [ ] Add language selection (starting track)
-- [ ] Implement user profile setup (name, avatar)
-- [ ] Create tutorial overlay for first-time users
-- [ ] Add "Skip Tutorial" option
+### 7.1 Onboarding Flow ✅
+- [x] Create welcome screen with app intro
+- [x] Add language selection (starting track)
+- [ ] Implement user profile setup (name, avatar) - OPTIONAL
+- [ ] Create tutorial overlay for first-time users - OPTIONAL
+- [ ] Add "Skip Tutorial" option - OPTIONAL
 
-### 7.2 Settings & Preferences
-- [ ] Add settings modal/page
-  - [ ] Theme selection (dark/light)
-  - [ ] AI provider (Ollama/Claude)
-  - [ ] Font size, editor preferences
-  - [ ] Notification settings
-- [ ] Implement preference persistence
-- [ ] Add "Reset Progress" option (with confirmation)
+### 7.2 Settings & Preferences ✅
+- [x] Add settings modal/page
+  - [x] Theme selection (dark/light)
+  - [x] AI provider (Ollama/Claude)
+  - [x] Font size, editor preferences
+  - [x] Notification settings
+- [x] Implement preference persistence
+- [x] Add "Reset Progress" option (with confirmation)
 
 ### 7.3 Offline Mode
 - [ ] Cache lessons locally for offline access

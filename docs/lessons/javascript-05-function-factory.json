@@ -1,0 +1,57 @@
+{
+  "id": 25,
+  "trackId": 4,
+  "language": "javascript",
+  "title": "The Function Factory",
+  "subtitle": "Creating Reusable Code with Functions",
+  "difficulty": 2,
+  "estimatedTime": "15-20 minutes",
+  "xpReward": 200,
+  "description": "# The Power of Functions\n\nFunctions are reusable blocks of code that perform specific tasks. JavaScript has multiple ways to create functions.\n\n## Function Declaration\n\nThe traditional way:\n\n```javascript\nfunction greet(name) {\n  return `Hello, ${name}!`;\n}\n\nconsole.log(greet(\"Alex\")); // Hello, Alex!\n```\n\n## Arrow Functions (Modern)\n\nA shorter, modern syntax:\n\n```javascript\nconst greet = (name) => {\n  return `Hello, ${name}!`;\n};\n\n// Even shorter for single expressions:\nconst greet = (name) => `Hello, ${name}!`;\n```\n\n## Parameters and Return Values\n\n```javascript\nfunction add(a, b) {\n  return a + b;\n}\n\nconst sum = add(5, 3);\nconsole.log(sum); // 8\n```\n\n## Multiple Parameters\n\n```javascript\nfunction calculateXP(baseXP, multiplier, bonus) {\n  return (baseXP * multiplier) + bonus;\n}\n\nconst totalXP = calculateXP(100, 1.5, 50);\nconsole.log(`You earned ${totalXP} XP!`);\n// Output: You earned 200 XP!\n```\n\n## Your Quest\n\nCreate a function called `calculateDamage` that takes three parameters:\n- `baseDamage` (number)\n- `criticalHit` (boolean)\n- `weaponBonus` (number)\n\nThe function should:\n1. If `criticalHit` is true, multiply `baseDamage` by 2\n2. Add the `weaponBonus` to the result\n3. Return the total damage\n\nThen test your function with these calls:\n```javascript\nconsole.log(calculateDamage(50, true, 10));  // Should print: 110\nconsole.log(calculateDamage(50, false, 10)); // Should print: 60\n```\n\n**Hint:** Use an if statement inside your function!",
+  "starterCode": "// Create a damage calculation function\n// Use if/else to handle critical hits\n\n",
+  "solutionCode": "// Create a damage calculation function\nfunction calculateDamage(baseDamage, criticalHit, weaponBonus) {\n  let damage = baseDamage;\n  \n  if (criticalHit) {\n    damage = damage * 2;\n  }\n  \n  return damage + weaponBonus;\n}\n\nconsole.log(calculateDamage(50, true, 10));  // 110\nconsole.log(calculateDamage(50, false, 10)); // 60",
+  "hints": [
+    "Start with: function calculateDamage(baseDamage, criticalHit, weaponBonus)",
+    "Create a variable to store the damage calculation",
+    "Use an if statement to check if criticalHit is true",
+    "If critical, multiply damage by 2",
+    "Always add the weaponBonus at the end",
+    "Use return to send the result back"
+  ],
+  "validationTests": [
+    {
+      "type": "output_contains",
+      "value": "110",
+      "description": "Should output 110 for critical hit"
+    },
+    {
+      "type": "output_contains",
+      "value": "60",
+      "description": "Should output 60 for normal hit"
+    },
+    {
+      "type": "code_contains",
+      "value": "function",
+      "description": "Code should define a function"
+    },
+    {
+      "type": "code_contains",
+      "value": "return",
+      "description": "Function should return a value"
+    },
+    {
+      "type": "code_contains",
+      "value": "if",
+      "description": "Should use if statement for critical hit logic"
+    }
+  ],
+  "learningObjectives": [
+    "Understand function declarations and syntax",
+    "Work with function parameters",
+    "Use return statements to send values back",
+    "Combine functions with conditionals",
+    "Call functions with different arguments"
+  ],
+  "nextLessonId": null,
+  "tags": ["beginner", "javascript", "functions", "parameters", "return", "logic"]
+}

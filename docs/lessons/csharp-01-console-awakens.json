@@ -1,0 +1,50 @@
+{
+  "id": 16,
+  "trackId": 3,
+  "language": "csharp",
+  "title": "The Console Awakens",
+  "subtitle": "Your First C# Program",
+  "difficulty": 1,
+  "estimatedTime": "5-10 minutes",
+  "xpReward": 100,
+  "description": "# Welcome to C# Programming!\n\nYou've entered the realm of **C#** (pronounced \"C Sharp\") - a powerful, modern language used for games (Unity), desktop apps, web services, and more!\n\n## Your First C# Statement\n\nIn C#, you display text to the console using `Console.WriteLine()`:\n\n```csharp\nConsole.WriteLine(\"Hello, Developer!\");\n```\n\n**Important C# Rules:**\n- Every statement ends with a semicolon `;`\n- C# is **case-sensitive**: `Console` is different from `console`\n- Strings use double quotes `\"\"`\n- C# is **strongly-typed** (you'll learn more about this soon!)\n\n## Console.Write vs Console.WriteLine\n\n- `Console.WriteLine()` - prints text and moves to a new line\n- `Console.Write()` - prints text on the same line\n\n```csharp\nConsole.WriteLine(\"First line\");\nConsole.WriteLine(\"Second line\");\n```\n\n## Your Quest\n\nWrite a C# program that displays:\n\n**Welcome to C# Programming!**\n\nThen on a new line:\n\n**Let's build amazing software!**\n\n**Note:** This lesson uses C# scripting (`.csx` files) which requires the `dotnet-script` tool or .NET SDK.",
+  "starterCode": "// Your first C# program!\n// Use Console.WriteLine() to print messages\n\n",
+  "solutionCode": "// Your first C# program!\nConsole.WriteLine(\"Welcome to C# Programming!\");\nConsole.WriteLine(\"Let's build amazing software!\");",
+  "hints": [
+    "Use Console.WriteLine() twice - once for each message",
+    "Don't forget the semicolon ; at the end of each line",
+    "C# is case-sensitive: use Console (capital C), not console",
+    "Put your text in double quotes: \"like this\"",
+    "Check the exact spelling of the messages"
+  ],
+  "validationTests": [
+    {
+      "type": "output_contains",
+      "value": "Welcome to C# Programming!",
+      "description": "Output should contain 'Welcome to C# Programming!'"
+    },
+    {
+      "type": "output_contains",
+      "value": "Let's build amazing software!",
+      "description": "Output should contain 'Let's build amazing software!'"
+    },
+    {
+      "type": "output_line_count",
+      "min": 2,
+      "description": "Should print at least 2 lines"
+    },
+    {
+      "type": "code_contains",
+      "value": "Console.WriteLine",
+      "description": "Code should use Console.WriteLine()"
+    }
+  ],
+  "learningObjectives": [
+    "Understand Console.WriteLine() for output",
+    "Learn that C# statements end with semicolons",
+    "Recognize C# is case-sensitive",
+    "Write your first working C# program"
+  ],
+  "nextLessonId": 17,
+  "tags": ["beginner", "csharp", "console", "output", "hello-world"]
+}

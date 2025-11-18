@@ -1,0 +1,45 @@
+{
+  "id": 11,
+  "trackId": 2,
+  "language": "gdscript",
+  "title": "The Node Awakens",
+  "subtitle": "Your First Script",
+  "difficulty": 1,
+  "estimatedTime": "5-10 minutes",
+  "xpReward": 100,
+  "description": "# Welcome to the Game Development Realm!\n\nYou've entered the world of **Godot** and discovered GDScript - a powerful language designed specifically for game creation.\n\nJust like in Python, you can display messages to the console, but in GDScript, you're working within the Godot engine!\n\n## The Print Command\n\nIn GDScript, printing works just like Python:\n\n```gdscript\nprint(\"Hello, Game Developer!\")\n```\n\n**How it works:**\n- `print` is a built-in function\n- Parentheses `()` contain what you want to display\n- Quotation marks `\"\"` define text strings\n- GDScript syntax is Python-inspired and friendly!\n\n## Your Quest\n\nWrite a script that prints two messages:\n\n**Welcome to Godot!**\n\nThen on a new line:\n\n**I am ready to make games!**\n\n**Note:** This lesson teaches GDScript basics. To run GDScript code, you need Godot 4.x installed on your system.",
+  "starterCode": "# Your first GDScript!\n# Print your messages here\n\n",
+  "solutionCode": "# Your first GDScript!\nprint(\"Welcome to Godot!\")\nprint(\"I am ready to make games!\")",
+  "hints": [
+    "Use the print() function twice - one for each message",
+    "GDScript uses the same print syntax as Python",
+    "Don't forget quotation marks around your text",
+    "Each print statement should be on its own line",
+    "Check the exact spelling: 'Welcome to Godot!' and 'I am ready to make games!'"
+  ],
+  "validationTests": [
+    {
+      "type": "output_contains",
+      "value": "Welcome to Godot!",
+      "description": "Output should contain 'Welcome to Godot!'"
+    },
+    {
+      "type": "output_contains",
+      "value": "I am ready to make games!",
+      "description": "Output should contain 'I am ready to make games!'"
+    },
+    {
+      "type": "output_line_count",
+      "min": 2,
+      "description": "Should print at least 2 lines"
+    }
+  ],
+  "learningObjectives": [
+    "Understand GDScript's print() function",
+    "Learn that GDScript syntax is similar to Python",
+    "Write your first GDScript program",
+    "See output from Godot's scripting engine"
+  ],
+  "nextLessonId": 12,
+  "tags": ["beginner", "gdscript", "print", "godot", "hello-world"]
+}

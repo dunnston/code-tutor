@@ -1,0 +1,51 @@
+{
+  "id": 26,
+  "trackId": 1,
+  "language": "python",
+  "title": "Writing to Scrolls",
+  "subtitle": "Saving Data to Files",
+  "difficulty": 7,
+  "estimatedTime": "20-25 minutes",
+  "xpReward": 200,
+  "description": "# Writing to Scrolls\n\nYou've learned to read scrolls (files), now learn to write them! Saving data lets your programs persist information between runs.\n\n## Writing Files\n\nUse `open()` with 'w' mode (write) or 'a' mode (append):\n\n```python\n# Write mode (overwrites existing file)\nwith open('quest_log.txt', 'w') as file:\n    file.write(\"Quest 1: Defeat the dragon\\n\")\n    file.write(\"Quest 2: Find the artifact\\n\")\n```\n\n## Append Mode\n\n```python\n# Append mode (adds to end)\nwith open('quest_log.txt', 'a') as file:\n    file.write(\"Quest 3: Return home\\n\")\n```\n\n## Important!\n\n- 'w' mode **overwrites** the entire file\n- 'a' mode **adds to the end**\n- Always use `with` to automatically close files\n- Remember to add `\\n` for new lines\n\n## Your Quest\n\nCreate a save game file:\n\n1. Create a list: `stats = [\"Player: Hero\", \"Level: 5\", \"Gold: 150\"]`\n2. Open 'save_game.txt' in write mode\n3. Write each stat on a new line (use a for loop)\n4. Then open the same file in read mode\n5. Print all lines to verify they were saved\n\nExpected output:\n```\nPlayer: Hero\nLevel: 5\nGold: 150\n```",
+  "starterCode": "# Player stats to save\nstats = [\"Player: Hero\", \"Level: 5\", \"Gold: 150\"]\n\n# Write stats to file\n\n\n# Read and verify the file\n\n",
+  "solutionCode": "# Player stats to save\nstats = [\"Player: Hero\", \"Level: 5\", \"Gold: 150\"]\n\n# Write stats to file\nwith open('save_game.txt', 'w') as file:\n    for stat in stats:\n        file.write(stat + \"\\n\")\n\n# Read and verify the file\nwith open('save_game.txt', 'r') as file:\n    for line in file:\n        print(line.strip())",
+  "hints": [
+    "Use 'w' mode to write: open('save_game.txt', 'w')",
+    "Loop through stats and write each one",
+    "Add \\n to create new lines: file.write(stat + '\\n')",
+    "Use 'r' mode to read the file back",
+    "Use .strip() to remove the newline when printing"
+  ],
+  "validationTests": [
+    {
+      "type": "output_contains",
+      "value": "Player: Hero",
+      "description": "Should save and read player name"
+    },
+    {
+      "type": "output_contains",
+      "value": "Level: 5",
+      "description": "Should save and read level"
+    },
+    {
+      "type": "output_contains",
+      "value": "Gold: 150",
+      "description": "Should save and read gold"
+    },
+    {
+      "type": "code_contains",
+      "value": "open(",
+      "description": "Should use open() function"
+    }
+  ],
+  "learningObjectives": [
+    "Learn to write data to files",
+    "Understand write ('w') vs append ('a') modes",
+    "Practice using with statements",
+    "Verify data was saved correctly"
+  ],
+  "nextLessonId": 27,
+  "previousLessonId": 25,
+  "tags": ["files", "writing", "save-data", "advanced"]
+}
