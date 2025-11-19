@@ -3,6 +3,7 @@ import { ProfileHeader } from './dashboard/ProfileHeader'
 import { ActiveCourseCard } from './dashboard/ActiveCourseCard'
 import { StatsGrid } from './dashboard/StatsGrid'
 import { PuzzleWidget } from './dashboard/PuzzleWidget'
+import { PlaygroundWidget } from './dashboard/PlaygroundWidget'
 import { CourseCatalog } from './dashboard/CourseCatalog'
 import { AchievementPreview } from './dashboard/AchievementPreview'
 import type { CourseCategory } from '@/types/course'
@@ -35,6 +36,11 @@ export function Dashboard({ onLogout }: DashboardProps) {
         {/* Puzzle Widget */}
         <section className="mt-8">
           <PuzzleWidget />
+        </section>
+
+        {/* Playground Widget */}
+        <section className="mt-8">
+          <PlaygroundWidget />
         </section>
 
         {/* Achievements Preview */}

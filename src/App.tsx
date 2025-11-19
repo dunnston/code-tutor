@@ -16,6 +16,7 @@ import { SolutionConfirmModal } from '@components/SolutionConfirmModal'
 import { PuzzleHub } from '@components/puzzles/PuzzleHub'
 import { PuzzleList } from '@components/puzzles/PuzzleList'
 import { PuzzleSolver } from '@components/puzzles/PuzzleSolver'
+import PlaygroundView from '@components/playground/PlaygroundView'
 import { useAppStore } from '@/lib/store'
 import { executeCode } from '@/lib/tauri'
 import { validateCode, getValidationSummary } from '@/lib/validation'
@@ -309,6 +310,9 @@ function App() {
       {currentView === 'puzzle-solver' && currentPuzzleId && (
         <PuzzleSolver puzzleId={currentPuzzleId} />
       )}
+
+      {/* Playground View */}
+      {currentView === 'playground' && <PlaygroundView />}
 
       {/* Learning View */}
       {currentView === 'learning' && (

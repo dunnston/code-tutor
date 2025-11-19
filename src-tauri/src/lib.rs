@@ -1,6 +1,7 @@
 mod commands;
 mod db;
 mod puzzle_commands;
+mod playground_commands;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -40,6 +41,21 @@ pub fn run() {
       puzzle_commands::record_puzzle_attempt,
       puzzle_commands::record_hint_used,
       puzzle_commands::mark_puzzle_solved,
+      // Playground commands
+      playground_commands::get_playground_projects,
+      playground_commands::get_playground_project,
+      playground_commands::create_playground_project,
+      playground_commands::update_playground_project,
+      playground_commands::delete_playground_project,
+      playground_commands::update_project_last_run,
+      playground_commands::get_playground_templates,
+      playground_commands::get_playground_template,
+      playground_commands::get_playground_snippets,
+      playground_commands::create_playground_snippet,
+      playground_commands::increment_snippet_use_count,
+      playground_commands::get_playground_session,
+      playground_commands::save_playground_session,
+      playground_commands::fork_playground_project,
     ])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");

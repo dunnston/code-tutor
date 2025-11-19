@@ -89,14 +89,22 @@ interface AppState {
   toggleDashboard: () => void
   settingsOpen: boolean
   toggleSettings: () => void
-  currentView: 'dashboard' | 'learning' | 'puzzles' | 'puzzle-list' | 'puzzle-solver'
-  setCurrentView: (view: 'dashboard' | 'learning' | 'puzzles' | 'puzzle-list' | 'puzzle-solver') => void
+  currentView: 'dashboard' | 'learning' | 'puzzles' | 'puzzle-list' | 'puzzle-solver' | 'playground'
+  setCurrentView: (view: 'dashboard' | 'learning' | 'puzzles' | 'puzzle-list' | 'puzzle-solver' | 'playground') => void
 
   // Puzzle state
   currentPuzzleCategoryId: string | null
   setCurrentPuzzleCategoryId: (categoryId: string | null) => void
   currentPuzzleId: string | null
   setCurrentPuzzleId: (puzzleId: string | null) => void
+
+  // Playground state
+  playgroundProjectId: string | null
+  setPlaygroundProjectId: (projectId: string | null) => void
+  playgroundLanguage: string
+  setPlaygroundLanguage: (languageId: string) => void
+  playgroundCode: string
+  setPlaygroundCode: (code: string) => void
 
   // Settings & Preferences
   settings: UserSettings
@@ -294,6 +302,14 @@ export const useAppStore = create<AppState>((set, get) => ({
   setCurrentPuzzleCategoryId: (categoryId) => set({ currentPuzzleCategoryId: categoryId }),
   currentPuzzleId: null,
   setCurrentPuzzleId: (puzzleId) => set({ currentPuzzleId: puzzleId }),
+
+  // Playground state
+  playgroundProjectId: null,
+  setPlaygroundProjectId: (projectId) => set({ playgroundProjectId: projectId }),
+  playgroundLanguage: 'python',
+  setPlaygroundLanguage: (languageId) => set({ playgroundLanguage: languageId }),
+  playgroundCode: '',
+  setPlaygroundCode: (code) => set({ playgroundCode: code }),
 
   // Settings & Preferences
   settings: loadPreferences(),
