@@ -35,6 +35,11 @@ pub fn run() {
       puzzle_commands::get_puzzle,
       puzzle_commands::get_puzzle_implementation,
       puzzle_commands::has_puzzle_implementation,
+      // Puzzle progress commands
+      puzzle_commands::get_puzzle_progress,
+      puzzle_commands::record_puzzle_attempt,
+      puzzle_commands::record_hint_used,
+      puzzle_commands::mark_puzzle_solved,
     ])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");

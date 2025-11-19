@@ -191,3 +191,25 @@ export interface CategoryProgress {
   solvedPuzzles: number
   completionPercentage: number
 }
+
+/**
+ * Test result from running a single test case
+ */
+export interface TestResult {
+  passed: boolean
+  testCase: TestCase
+  actualOutput?: any
+  error?: string
+  executionTime?: number // milliseconds
+}
+
+/**
+ * Complete test validation result
+ */
+export interface ValidationResult {
+  allPassed: boolean
+  passedCount: number
+  totalCount: number
+  testResults: TestResult[]
+  executionError?: string
+}

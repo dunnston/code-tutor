@@ -125,3 +125,105 @@ function mapPuzzleFromRust(puzzle: any): Puzzle {
     optimalLinesOfCode: puzzle.optimal_lines_of_code,
   }
 }
+
+// ============================================================================
+// USER PROGRESS TRACKING
+// ============================================================================
+
+/**
+ * Get user progress for a puzzle
+ */
+export async function getPuzzleProgress(
+  puzzleId: string,
+  languageId: string
+): Promise<import('@/types/puzzle').UserPuzzleProgress | null> {
+  try {
+    const progress = await invoke<any>('get_puzzle_progress', {
+      puzzleId,
+      languageId,
+    })
+
+    if (!progress) return null
+
+    return {
+      id: progress.id,
+      userId: progress.user_id,
+      puzzleId: progress.puzzle_id,
+      languageId: progress.language_id,
+      status: progress.status,
+      attempts: progress.attempts,
+      hintsUsed: progress.hints_used,
+      userSolution: progress.user_solution,
+      solveTime: progress.solve_time,
+      solutionLines: progress.solution_lines,
+      firstAttemptAt: progress.first_attempt_at,
+      solvedAt: progress.solved_at,
+      lastAttemptAt: progress.last_attempt_at,
+      isOptimal: progress.is_optimal,
+    }
+  } catch (error) {
+    console.error(`Failed to get puzzle progress ${puzzleId}/${languageId}:`, error)
+    return null
+  }
+}
+
+/**
+ * Record a puzzle attempt
+ */
+export async function recordPuzzleAttempt(
+  puzzleId: string,
+  languageId: string,
+  userSolution: string
+): Promise<void> {
+  try {
+    await invoke('record_puzzle_attempt', {
+      puzzleId,
+      languageId,
+      userSolution,
+    })
+  } catch (error) {
+    console.error(`Failed to record puzzle attempt ${puzzleId}/${languageId}:`, error)
+    throw error
+  }
+}
+
+/**
+ * Record hint usage
+ */
+export async function recordHintUsed(
+  puzzleId: string,
+  languageId: string
+): Promise<void> {
+  try {
+    await invoke('record_hint_used', {
+      puzzleId,
+      languageId,
+    })
+  } catch (error) {
+    console.error(`Failed to record hint ${puzzleId}/${languageId}:`, error)
+    throw error
+  }
+}
+
+/**
+ * Mark puzzle as solved and award points
+ */
+export async function markPuzzleSolved(
+  puzzleId: string,
+  languageId: string,
+  userSolution: string,
+  solveTimeSeconds: number
+): Promise<number> {
+  try {
+    const points = await invoke<number>('mark_puzzle_solved', {
+      puzzleId,
+      languageId,
+      userSolution,
+      solveTimeSeconds,
+    })
+    return points
+  } catch (error) {
+    console.error(`Failed to mark puzzle solved ${puzzleId}/${languageId}:`, error)
+    throw error
+  }
+}

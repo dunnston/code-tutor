@@ -211,3 +211,207 @@ pub fn has_puzzle_implementation(
 
     Ok(count > 0)
 }
+
+// ============================================================================
+// USER PROGRESS TRACKING
+// ============================================================================
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct UserPuzzleProgress {
+    pub id: i32,
+    pub user_id: i32,
+    pub puzzle_id: String,
+    pub language_id: String,
+    pub status: String,
+    pub attempts: i32,
+    pub hints_used: i32,
+    pub user_solution: Option<String>,
+    pub solve_time: Option<i32>,
+    pub solution_lines: Option<i32>,
+    pub first_attempt_at: Option<String>,
+    pub solved_at: Option<String>,
+    pub last_attempt_at: Option<String>,
+    pub is_optimal: bool,
+}
+
+/// Get user progress for a specific puzzle
+#[tauri::command]
+pub fn get_puzzle_progress(
+    app: AppHandle,
+    puzzle_id: String,
+    language_id: String,
+) -> Result<Option<UserPuzzleProgress>, String> {
+    let conn = db::get_connection(&app)?;
+
+    let result = conn.query_row(
+        "SELECT id, user_id, puzzle_id, language_id, status, attempts, hints_used,
+                user_solution, solve_time, solution_lines,
+                first_attempt_at, solved_at, last_attempt_at, is_optimal
+         FROM user_puzzle_progress
+         WHERE user_id = 1 AND puzzle_id = ?1 AND language_id = ?2",
+        params![puzzle_id, language_id],
+        |row| {
+            Ok(UserPuzzleProgress {
+                id: row.get(0)?,
+                user_id: row.get(1)?,
+                puzzle_id: row.get(2)?,
+                language_id: row.get(3)?,
+                status: row.get(4)?,
+                attempts: row.get(5)?,
+                hints_used: row.get(6)?,
+                user_solution: row.get(7)?,
+                solve_time: row.get(8)?,
+                solution_lines: row.get(9)?,
+                first_attempt_at: row.get(10)?,
+                solved_at: row.get(11)?,
+                last_attempt_at: row.get(12)?,
+                is_optimal: row.get(13)?,
+            })
+        },
+    );
+
+    match result {
+        Ok(progress) => Ok(Some(progress)),
+        Err(rusqlite::Error::QueryReturnedNoRows) => Ok(None),
+        Err(e) => Err(format!("Failed to get puzzle progress: {}", e)),
+    }
+}
+
+/// Record a puzzle attempt
+#[tauri::command]
+pub fn record_puzzle_attempt(
+    app: AppHandle,
+    puzzle_id: String,
+    language_id: String,
+    user_solution: String,
+) -> Result<(), String> {
+    let conn = db::get_connection(&app)?;
+
+    // Check if progress record exists
+    let exists: bool = conn
+        .query_row(
+            "SELECT COUNT(*) > 0 FROM user_puzzle_progress
+             WHERE user_id = 1 AND puzzle_id = ?1 AND language_id = ?2",
+            params![&puzzle_id, &language_id],
+            |row| row.get(0),
+        )
+        .map_err(|e| format!("Failed to check progress: {}", e))?;
+
+    if exists {
+        // Update existing record
+        conn.execute(
+            "UPDATE user_puzzle_progress
+             SET attempts = attempts + 1,
+                 status = CASE WHEN status = 'not_started' THEN 'attempted' ELSE status END,
+                 user_solution = ?3,
+                 last_attempt_at = CURRENT_TIMESTAMP
+             WHERE user_id = 1 AND puzzle_id = ?1 AND language_id = ?2",
+            params![&puzzle_id, &language_id, &user_solution],
+        )
+        .map_err(|e| format!("Failed to update attempt: {}", e))?;
+    } else {
+        // Create new record
+        conn.execute(
+            "INSERT INTO user_puzzle_progress
+             (user_id, puzzle_id, language_id, status, attempts, user_solution,
+              first_attempt_at, last_attempt_at)
+             VALUES (1, ?1, ?2, 'attempted', 1, ?3, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)",
+            params![&puzzle_id, &language_id, &user_solution],
+        )
+        .map_err(|e| format!("Failed to insert attempt: {}", e))?;
+    }
+
+    Ok(())
+}
+
+/// Record hint usage
+#[tauri::command]
+pub fn record_hint_used(
+    app: AppHandle,
+    puzzle_id: String,
+    language_id: String,
+) -> Result<(), String> {
+    let conn = db::get_connection(&app)?;
+
+    conn.execute(
+        "INSERT INTO user_puzzle_progress
+         (user_id, puzzle_id, language_id, hints_used)
+         VALUES (1, ?1, ?2, 1)
+         ON CONFLICT(user_id, puzzle_id, language_id)
+         DO UPDATE SET hints_used = hints_used + 1",
+        params![puzzle_id, language_id],
+    )
+    .map_err(|e| format!("Failed to record hint: {}", e))?;
+
+    Ok(())
+}
+
+/// Mark puzzle as solved and award points
+#[tauri::command]
+pub fn mark_puzzle_solved(
+    app: AppHandle,
+    puzzle_id: String,
+    language_id: String,
+    user_solution: String,
+    solve_time_seconds: i32,
+) -> Result<i32, String> {
+    let conn = db::get_connection(&app)?;
+
+    // Get puzzle points
+    let points: i32 = conn
+        .query_row(
+            "SELECT points FROM puzzles WHERE id = ?1",
+            params![&puzzle_id],
+            |row| row.get(0),
+        )
+        .map_err(|e| format!("Failed to get puzzle points: {}", e))?;
+
+    // Count lines of code
+    let solution_lines = user_solution.lines().filter(|l| !l.trim().is_empty()).count() as i32;
+
+    // Update or insert progress
+    let exists: bool = conn
+        .query_row(
+            "SELECT COUNT(*) > 0 FROM user_puzzle_progress
+             WHERE user_id = 1 AND puzzle_id = ?1 AND language_id = ?2",
+            params![&puzzle_id, &language_id],
+            |row| row.get(0),
+        )
+        .map_err(|e| format!("Failed to check progress: {}", e))?;
+
+    if exists {
+        // Only update if not already solved
+        conn.execute(
+            "UPDATE user_puzzle_progress
+             SET status = 'solved',
+                 user_solution = ?3,
+                 solve_time = ?4,
+                 solution_lines = ?5,
+                 solved_at = CURRENT_TIMESTAMP,
+                 last_attempt_at = CURRENT_TIMESTAMP
+             WHERE user_id = 1 AND puzzle_id = ?1 AND language_id = ?2
+               AND status != 'solved'",
+            params![&puzzle_id, &language_id, &user_solution, solve_time_seconds, solution_lines],
+        )
+        .map_err(|e| format!("Failed to update solved status: {}", e))?;
+    } else {
+        conn.execute(
+            "INSERT INTO user_puzzle_progress
+             (user_id, puzzle_id, language_id, status, attempts, user_solution,
+              solve_time, solution_lines, first_attempt_at, solved_at, last_attempt_at)
+             VALUES (1, ?1, ?2, 'solved', 1, ?3, ?4, ?5,
+                     CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)",
+            params![&puzzle_id, &language_id, &user_solution, solve_time_seconds, solution_lines],
+        )
+        .map_err(|e| format!("Failed to insert solved record: {}", e))?;
+    }
+
+    // Update puzzle solve count
+    conn.execute(
+        "UPDATE puzzles SET solve_count = solve_count + 1 WHERE id = ?1",
+        params![&puzzle_id],
+    )
+    .map_err(|e| format!("Failed to update solve count: {}", e))?;
+
+    Ok(points)
+}

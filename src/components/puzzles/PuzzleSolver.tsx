@@ -1,14 +1,29 @@
 import { useEffect, useState, useRef } from 'react'
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
-import { getPuzzle, getPuzzleImplementation } from '@/lib/puzzles'
+import {
+  getPuzzle,
+  getPuzzleImplementation,
+  getPuzzleProgress,
+  recordPuzzleAttempt,
+  recordHintUsed,
+  markPuzzleSolved,
+} from '@/lib/puzzles'
+import { validatePuzzleSolution, formatTestResults } from '@/lib/puzzleValidation'
 import { useAppStore } from '@/lib/store'
 import { executeCode } from '@/lib/tauri'
-import type { Puzzle, PuzzleImplementation, TestCase, SupportedLanguage } from '@/types/puzzle'
+import type {
+  Puzzle,
+  PuzzleImplementation,
+  SupportedLanguage,
+  ValidationResult,
+} from '@/types/puzzle'
 import type { ExecutionResult } from '@/types/execution'
 import { CodeEditor } from '@/components/CodeEditor'
 import { Console } from '@/components/Console'
 import { PuzzleActionBar } from './PuzzleActionBar'
 import { PuzzleDescriptionPanel } from './PuzzleDescriptionPanel'
+import { PuzzleSuccessModal } from './PuzzleSuccessModal'
+import { PuzzleFailureModal } from './PuzzleFailureModal'
 
 interface PuzzleSolverProps {
   puzzleId: string
@@ -23,11 +38,17 @@ export function PuzzleSolver({ puzzleId }: PuzzleSolverProps) {
   const [error, setError] = useState<string | null>(null)
   const [hintsRevealed, setHintsRevealed] = useState(0)
   const [executing, setExecuting] = useState(false)
+  const [showSuccessModal, setShowSuccessModal] = useState(false)
+  const [showFailureModal, setShowFailureModal] = useState(false)
+  const [validationResult, setValidationResult] = useState<ValidationResult | null>(null)
+  const [pointsEarned, setPointsEarned] = useState(0)
+  const [solveStartTime, setSolveStartTime] = useState<number>(Date.now())
 
   const addConsoleMessage = useAppStore((state) => state.addConsoleMessage)
   const clearConsole = useAppStore((state) => state.clearConsole)
   const setExecutionStatus = useAppStore((state) => state.setExecutionStatus)
   const setCurrentView = useAppStore((state) => state.setCurrentView)
+  const addXP = useAppStore((state) => state.addXP)
 
   const lastExecutionResult = useRef<ExecutionResult | undefined>()
 
@@ -43,8 +64,20 @@ export function PuzzleSolver({ puzzleId }: PuzzleSolverProps) {
 
       const implData = await getPuzzleImplementation(puzzleId, selectedLanguage)
       setImplementation(implData)
-      setCode(implData.starterCode)
 
+      // Load user progress if exists
+      const progress = await getPuzzleProgress(puzzleId, selectedLanguage)
+      if (progress && progress.userSolution) {
+        // Restore previous solution
+        setCode(progress.userSolution)
+        setHintsRevealed(progress.hintsUsed)
+      } else {
+        setCode(implData.starterCode)
+        setHintsRevealed(0)
+      }
+
+      // Reset solve start time
+      setSolveStartTime(Date.now())
       setError(null)
     } catch (err) {
       console.error('Failed to load puzzle:', err)
@@ -77,58 +110,39 @@ export function PuzzleSolver({ puzzleId }: PuzzleSolverProps) {
     })
 
     try {
-      // Execute the user's code
-      const result = await executeCode(code, selectedLanguage)
-      lastExecutionResult.current = result
+      // Validate solution against visible test cases only
+      const validation = await validatePuzzleSolution(
+        code,
+        selectedLanguage,
+        implementation,
+        false // Don't include hidden tests
+      )
 
-      if (result.exitCode !== 0) {
-        addConsoleMessage({
-          type: 'stderr',
-          content: result.stderr || 'Execution failed',
-        })
-        setExecutionStatus('error')
-        return
-      }
+      setValidationResult(validation)
 
-      // Run test cases
-      const visibleTests = implementation.testCases
-      let passedCount = 0
-      let failedCount = 0
+      // Display results
+      const resultText = formatTestResults(validation)
+      addConsoleMessage({
+        type: 'stdout',
+        content: resultText,
+      })
 
-      for (let i = 0; i < visibleTests.length; i++) {
-        const test = visibleTests[i]
-        // TODO: Actually run the test with the function
-        // For now, just display test info
-        addConsoleMessage({
-          type: 'stdout',
-          content: `Test ${i + 1}: ${test.description}`,
-        })
-        addConsoleMessage({
-          type: 'stdout',
-          content: `  Input: ${JSON.stringify(test.input)}`,
-        })
-        addConsoleMessage({
-          type: 'stdout',
-          content: `  Expected: ${JSON.stringify(test.expectedOutput)}`,
-        })
-
-        // Placeholder: Mark as passed for demo
-        passedCount++
-      }
-
-      if (passedCount === visibleTests.length) {
+      if (validation.allPassed) {
         addConsoleMessage({
           type: 'system',
-          content: `✅ All visible tests passed! (${passedCount}/${visibleTests.length})`,
+          content: `✅ All visible tests passed! (${validation.passedCount}/${validation.totalCount})`,
         })
+        setExecutionStatus('success')
       } else {
         addConsoleMessage({
           type: 'system',
-          content: `⚠️ ${passedCount}/${visibleTests.length} tests passed. ${failedCount} failed.`,
+          content: `⚠️ ${validation.passedCount}/${validation.totalCount} tests passed.`,
         })
+        setExecutionStatus('error')
       }
 
-      setExecutionStatus('success')
+      // Record attempt (save progress)
+      await recordPuzzleAttempt(puzzleId, selectedLanguage, code)
     } catch (err) {
       console.error('Execution error:', err)
       addConsoleMessage({
@@ -144,21 +158,84 @@ export function PuzzleSolver({ puzzleId }: PuzzleSolverProps) {
   const handleSubmit = async () => {
     if (!puzzle || !implementation) return
 
-    // Run tests first
-    await handleRunTests()
-
-    // TODO: Validate all tests including hidden ones
-    // TODO: Update user progress
-    // TODO: Award points
-    // TODO: Show success modal
+    setExecuting(true)
+    setExecutionStatus('running')
+    clearConsole()
 
     addConsoleMessage({
       type: 'system',
-      content: '📝 Submission recorded! (Progress tracking coming soon)',
+      content: '📝 Submitting solution...',
     })
+
+    try {
+      // Validate solution against ALL test cases (visible + hidden)
+      const validation = await validatePuzzleSolution(
+        code,
+        selectedLanguage,
+        implementation,
+        true // Include hidden tests
+      )
+
+      setValidationResult(validation)
+
+      // Display results
+      const resultText = formatTestResults(validation)
+      addConsoleMessage({
+        type: 'stdout',
+        content: resultText,
+      })
+
+      if (validation.allPassed) {
+        // Calculate solve time
+        const solveTimeSeconds = Math.floor((Date.now() - solveStartTime) / 1000)
+
+        // Mark as solved and award points
+        const points = await markPuzzleSolved(
+          puzzleId,
+          selectedLanguage,
+          code,
+          solveTimeSeconds
+        )
+
+        setPointsEarned(points)
+
+        // Add XP to user profile
+        addXP(points)
+
+        addConsoleMessage({
+          type: 'system',
+          content: `🎉 Puzzle solved! You earned ${points} points!`,
+        })
+        setExecutionStatus('success')
+
+        // Show success modal
+        setShowSuccessModal(true)
+      } else {
+        addConsoleMessage({
+          type: 'system',
+          content: `❌ ${validation.passedCount}/${validation.totalCount} tests passed. Keep trying!`,
+        })
+        setExecutionStatus('error')
+
+        // Show failure modal
+        setShowFailureModal(true)
+      }
+
+      // Record attempt
+      await recordPuzzleAttempt(puzzleId, selectedLanguage, code)
+    } catch (err) {
+      console.error('Submission error:', err)
+      addConsoleMessage({
+        type: 'stderr',
+        content: `Error: ${err instanceof Error ? err.message : 'Unknown error'}`,
+      })
+      setExecutionStatus('error')
+    } finally {
+      setExecuting(false)
+    }
   }
 
-  const handleShowHint = () => {
+  const handleShowHint = async () => {
     if (!implementation || hintsRevealed >= implementation.hints.length) return
 
     const hint = implementation.hints[hintsRevealed]
@@ -167,6 +244,13 @@ export function PuzzleSolver({ puzzleId }: PuzzleSolverProps) {
       content: `💡 Hint ${hintsRevealed + 1}: ${hint}`,
     })
     setHintsRevealed(hintsRevealed + 1)
+
+    // Record hint usage in database
+    try {
+      await recordHintUsed(puzzleId, selectedLanguage)
+    } catch (err) {
+      console.error('Failed to record hint usage:', err)
+    }
   }
 
   const handleShowSolution = () => {
@@ -300,6 +384,38 @@ export function PuzzleSolver({ puzzleId }: PuzzleSolverProps) {
           </Panel>
         </PanelGroup>
       </div>
+
+      {/* Success Modal */}
+      {showSuccessModal && validationResult && (
+        <PuzzleSuccessModal
+          puzzle={puzzle}
+          validation={validationResult}
+          pointsEarned={pointsEarned}
+          solveTime={Math.floor((Date.now() - solveStartTime) / 1000)}
+          hintsUsed={hintsRevealed}
+          onClose={() => setShowSuccessModal(false)}
+          onNextPuzzle={() => {
+            // TODO: Navigate to next puzzle in category
+            setShowSuccessModal(false)
+          }}
+        />
+      )}
+
+      {/* Failure Modal */}
+      {showFailureModal && validationResult && (
+        <PuzzleFailureModal
+          puzzle={puzzle}
+          validation={validationResult}
+          hintsAvailable={implementation?.hints.length || 0}
+          hintsUsed={hintsRevealed}
+          onClose={() => setShowFailureModal(false)}
+          onShowHint={async () => {
+            setShowFailureModal(false)
+            await handleShowHint()
+          }}
+          onTryAgain={() => setShowFailureModal(false)}
+        />
+      )}
     </div>
   )
 }
