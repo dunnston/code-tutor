@@ -67,6 +67,19 @@ export const LANGUAGE_REGISTRY: Record<SupportedLanguage, LanguageConfig> = {
     description: 'Dynamic, object-oriented programming language',
     executionMode: 'inline',
   },
+  bash: {
+    id: 'bash',
+    name: 'Bash/Git',
+    extension: '.sh',
+    monacoLanguage: 'shell',
+    executionCommand: ['bash', '-c'],
+    fallbackCommand: ['sh', '-c'],
+    checkCommand: ['bash', '--version'],
+    defaultTimeout: 5000,
+    icon: '⚡',
+    description: 'Shell scripting and Git version control',
+    executionMode: 'inline',
+  },
 }
 
 /**

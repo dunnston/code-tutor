@@ -1,0 +1,52 @@
+{
+  "id": 4,
+  "trackId": 1,
+  "language": "bash",
+  "title": "Viewing History",
+  "subtitle": "Time Travel Through Your Commits",
+  "difficulty": 2,
+  "estimatedTime": "15-20 minutes",
+  "xpReward": 150,
+  "description": "# Exploring Your Project History\n\nOne of Git's superpowers is the ability to see everything that happened in your project. Who changed what? When? Why?\n\n## The `git log` Command\n\nThe `git log` command shows you the commit history:\n\n```bash\ngit log\n```\n\nThis displays:\n- Commit ID (a unique hash like `a3f2c1d...`)\n- Author name and email\n- Date and time\n- Commit message\n\n### Useful `git log` Options\n\n```bash\n# Compact one-line view\ngit log --oneline\n\n# Show last 5 commits\ngit log -5\n\n# Show commits with file changes\ngit log --stat\n\n# Visual graph of branches\ngit log --graph --oneline\n```\n\n## The `git diff` Command\n\nWant to see exactly what changed? Use `git diff`:\n\n```bash\n# See unstaged changes\ngit diff\n\n# See staged changes\ngit diff --staged\n\n# Compare two commits\ngit diff commit1 commit2\n```\n\n### Reading Diff Output\n\n```diff\n- This line was removed (red)\n+ This line was added (green)\n  This line stayed the same\n```\n\n## Example Workflow\n\n```bash\n# Make some changes to a file\necho \"Hello Git!\" > greeting.txt\n\n# See what changed (before staging)\ngit diff\n\n# Stage the changes\ngit add greeting.txt\n\n# See staged changes\ngit diff --staged\n\n# Commit\ngit commit -m \"Add greeting file\"\n\n# View commit history\ngit log --oneline\n```\n\n## Your Quest\n\nWrite commands to:\n\n1. View the commit history in a compact format (one line per commit)\n2. See the differences in staged files\n\nPut each command on its own line.",
+  "starterCode": "# View commit history and staged changes\n# First: git log --oneline\n# Second: git diff --staged\n\n",
+  "solutionCode": "git log --oneline\ngit diff --staged",
+  "hints": [
+    "Use 'git log --oneline' for compact history",
+    "Use 'git diff --staged' to see staged changes",
+    "Both commands start with 'git'",
+    "Put git log --oneline on the first line",
+    "Put git diff --staged on the second line"
+  ],
+  "validationTests": [
+    {
+      "type": "code_contains",
+      "value": "git log",
+      "description": "Code should contain 'git log' command"
+    },
+    {
+      "type": "code_contains",
+      "value": "--oneline",
+      "description": "Should use --oneline flag for compact view"
+    },
+    {
+      "type": "code_contains",
+      "value": "git diff",
+      "description": "Code should contain 'git diff' command"
+    },
+    {
+      "type": "code_contains",
+      "value": "--staged",
+      "description": "Should use --staged flag to see staged changes"
+    }
+  ],
+  "learningObjectives": [
+    "Use git log to view commit history",
+    "Understand git log options like --oneline",
+    "Use git diff to see changes",
+    "Differentiate between staged and unstaged changes",
+    "Read diff output to understand what changed"
+  ],
+  "previousLessonId": 3,
+  "nextLessonId": 5,
+  "tags": ["beginner", "git", "log", "diff", "history"]
+}

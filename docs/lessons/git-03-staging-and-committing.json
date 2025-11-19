@@ -1,0 +1,48 @@
+{
+  "id": 33,
+  "trackId": 6,
+  "language": "bash",
+  "title": "Saving Your Work",
+  "subtitle": "Staging and Committing Changes",
+  "difficulty": 2,
+  "estimatedTime": "20-25 minutes",
+  "xpReward": 200,
+  "description": "# Creating Snapshots with Commits\n\nIn Git, saving your work is a two-step process:\n1. **Stage** the changes you want to save\n2. **Commit** those changes with a message\n\nThink of it like packing for a trip:\n- **Staging** = Choosing which items to pack in your suitcase\n- **Committing** = Zipping up the suitcase and labeling it\n\n## The Staging Area\n\nGit has a \"staging area\" (also called the \"index\") where you prepare changes before committing them. This lets you:\n- Choose exactly which changes to include in a commit\n- Review what you're about to save\n- Create logical, organized commits\n\n## The `git add` Command\n\nTo stage files, use:\n\n```bash\n# Stage a specific file\ngit add filename.txt\n\n# Stage all files in current directory\ngit add .\n\n# Stage all changes everywhere\ngit add -A\n```\n\n## The `git commit` Command\n\nOnce files are staged, create a commit with:\n\n```bash\ngit commit -m \"Your commit message here\"\n```\n\nThe `-m` flag lets you add a message describing what you changed.\n\n### Good Commit Messages\n\n✅ **Good:**\n- \"Add user login feature\"\n- \"Fix bug in password validation\"\n- \"Update README with installation steps\"\n\n❌ **Bad:**\n- \"stuff\"\n- \"changes\"\n- \"asdfasdf\"\n\nCommit messages should be clear and describe WHAT changed and WHY.\n\n## Complete Workflow Example\n\n```bash\n# Check what changed\ngit status\n\n# Stage all changes\ngit add .\n\n# Create a commit with a message\ngit commit -m \"Add homepage layout\"\n\n# Verify the commit was created\ngit status\n```\n\n## Your Quest\n\nImagine you've created a file called `README.md`. Write the Git commands to:\n\n1. Stage the README.md file\n2. Commit it with the message \"Add project README\"\n\nPut each command on its own line.",
+  "starterCode": "# Stage and commit README.md\n# First: git add README.md\n# Second: git commit -m \"Add project README\"\n\n",
+  "solutionCode": "git add README.md\ngit commit -m \"Add project README\"",
+  "hints": [
+    "Use 'git add' to stage the file",
+    "Use 'git commit -m' to create a commit with a message",
+    "The file to add is README.md",
+    "The commit message should be: Add project README",
+    "Don't forget the quotes around the commit message",
+    "Solution:\ngit add README.md\ngit commit -m \"Add project README\""
+  ],
+  "validationTests": [
+    {
+      "type": "code_contains",
+      "value": "git add README.md",
+      "description": "Code should stage README.md using 'git add'"
+    },
+    {
+      "type": "code_contains",
+      "value": "git commit",
+      "description": "Code should create a commit using 'git commit'"
+    },
+    {
+      "type": "code_contains",
+      "value": "Add project README",
+      "description": "Commit message should be 'Add project README'"
+    }
+  ],
+  "learningObjectives": [
+    "Understand the staging area concept",
+    "Learn to stage changes with git add",
+    "Create commits with git commit",
+    "Write meaningful commit messages",
+    "Understand the basic save workflow in Git"
+  ],
+  "previousLessonId": 32,
+  "nextLessonId": 34,
+  "tags": ["beginner", "git", "add", "commit", "staging"]
+}

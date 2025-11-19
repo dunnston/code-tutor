@@ -40,6 +40,16 @@ import lesson28 from '../../docs/lessons/ruby-03-conditional-flow.json'
 import lesson29 from '../../docs/lessons/ruby-04-iteration-realm.json'
 import lesson30 from '../../docs/lessons/ruby-05-method-mastery.json'
 
+// Import all Git lessons
+import lesson31 from '../../docs/lessons/git-01-version-control-intro.json'
+import lesson32 from '../../docs/lessons/git-02-init-and-status.json'
+import lesson33 from '../../docs/lessons/git-03-staging-and-committing.json'
+import lesson34 from '../../docs/lessons/git-04-history-and-diffs.json'
+import lesson35 from '../../docs/lessons/git-05-branching-basics.json'
+import lesson36 from '../../docs/lessons/git-06-merging-branches.json'
+import lesson37 from '../../docs/lessons/git-07-working-with-remotes.json'
+import lesson38 from '../../docs/lessons/git-08-undoing-changes.json'
+
 /**
  * All available lessons
  */
@@ -74,6 +84,14 @@ const ALL_LESSONS: Lesson[] = [
   lesson28 as Lesson,
   lesson29 as Lesson,
   lesson30 as Lesson,
+  lesson31 as Lesson,
+  lesson32 as Lesson,
+  lesson33 as Lesson,
+  lesson34 as Lesson,
+  lesson35 as Lesson,
+  lesson36 as Lesson,
+  lesson37 as Lesson,
+  lesson38 as Lesson,
 ]
 
 /**

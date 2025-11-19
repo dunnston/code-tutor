@@ -19,5 +19,12 @@
     "description": "Web interfaces, user experiences",
     "icon": "🌐",
     "order_index": 3
+  },
+  {
+    "id": "devtools",
+    "name": "Developer Tools",
+    "description": "Version control, CLI, and workflow tools",
+    "icon": "🛠️",
+    "order_index": 4
   }
 ]

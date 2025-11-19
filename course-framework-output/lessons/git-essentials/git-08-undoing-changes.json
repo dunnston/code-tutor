@@ -1,0 +1,47 @@
+{
+  "id": 8,
+  "trackId": 1,
+  "language": "bash",
+  "title": "Undoing Changes",
+  "subtitle": "Fix Mistakes and Rewrite History",
+  "difficulty": 4,
+  "estimatedTime": "25-30 minutes",
+  "xpReward": 300,
+  "description": "# The Power to Undo\n\nEveryone makes mistakes. The good news? Git gives you multiple ways to undo them!\n\n## Different Types of \"Undo\"\n\nDepending on what you want to undo, you'll use different commands:\n\n### 1. Discard Unstaged Changes\n\nYou modified a file but haven't staged it yet. You want to throw away those changes.\n\n```bash\n# Discard changes to a specific file\ngit checkout -- filename.txt\n\n# Or with newer Git versions\ngit restore filename.txt\n```\n\n### 2. Unstage Files\n\nYou staged a file but want to unstage it (keep the changes, just remove from staging).\n\n```bash\n# Unstage a file\ngit reset HEAD filename.txt\n\n# Or with newer Git versions\ngit restore --staged filename.txt\n```\n\n### 3. Amend the Last Commit\n\nYou made a commit but forgot to include something or made a typo in the message.\n\n```bash\n# Fix the last commit (add more changes or change message)\ngit commit --amend\n\n# Change just the message\ngit commit --amend -m \"New message\"\n```\n\n⚠️ **Warning:** Only amend commits that haven't been pushed!\n\n### 4. Revert a Commit\n\nYou want to undo a commit but keep it in history (safe for public branches).\n\n```bash\n# Create a new commit that undoes a previous commit\ngit revert commit-hash\n```\n\nThis creates a NEW commit that reverses the changes.\n\n### 5. Reset to a Previous Commit\n\nYou want to go back in time (use with caution!).\n\n```bash\n# Soft reset - Keep changes, just undo commits\ngit reset --soft HEAD~1\n\n# Mixed reset - Unstage changes, keep in working directory\ngit reset HEAD~1\n\n# Hard reset - DESTROY everything (dangerous!)\ngit reset --hard HEAD~1\n```\n\n`HEAD~1` means \"one commit before current\"\n\n## Safety Tips\n\n✅ **Safe operations** (won't lose work):\n- `git revert` - Creates new commit to undo\n- `git reset --soft` - Keeps your changes\n- `git stash` - Temporarily saves changes\n\n⚠️ **Dangerous operations** (can lose work):\n- `git reset --hard` - Destroys uncommitted changes\n- `git clean -f` - Deletes untracked files\n\n## Example: Fixing a Mistake\n\n```bash\n# Oops! Made a commit with a typo\ngit commit -m \"Add lonig feature\"  # Typo!\n\n# Fix it immediately\ngit commit --amend -m \"Add login feature\"\n\n# Or if you forgot to add a file:\necho \"more stuff\" > extra.txt\ngit add extra.txt\ngit commit --amend --no-edit  # Keep same message\n```\n\n## Your Quest\n\nYou've staged a file called `secrets.txt` by mistake and want to unstage it (but keep the file and its changes).\n\nWrite the Git command to unstage this file using the modern `git restore` command.",
+  "starterCode": "# Unstage secrets.txt while keeping the changes\n# Use: git restore --staged secrets.txt\n\n",
+  "solutionCode": "git restore --staged secrets.txt",
+  "hints": [
+    "Use the 'git restore' command with --staged flag",
+    "The file to unstage is 'secrets.txt'",
+    "The --staged flag means 'remove from staging area'",
+    "Format: git restore --staged filename",
+    "Solution: git restore --staged secrets.txt"
+  ],
+  "validationTests": [
+    {
+      "type": "code_contains",
+      "value": "git restore",
+      "description": "Code should use 'git restore' command"
+    },
+    {
+      "type": "code_contains",
+      "value": "--staged",
+      "description": "Should use --staged flag to unstage"
+    },
+    {
+      "type": "code_contains",
+      "value": "secrets.txt",
+      "description": "Should unstage 'secrets.txt'"
+    }
+  ],
+  "learningObjectives": [
+    "Learn multiple ways to undo changes in Git",
+    "Understand git restore for unstaging and discarding",
+    "Use git commit --amend to fix recent commits",
+    "Understand the difference between revert and reset",
+    "Know when operations are safe vs dangerous",
+    "Learn to fix common Git mistakes"
+  ],
+  "previousLessonId": 7,
+  "tags": ["intermediate", "git", "undo", "restore", "reset", "revert", "amend"]
+}

@@ -1,6 +1,6 @@
 // Language registry types
 
-export type SupportedLanguage = 'python' | 'javascript' | 'gdscript' | 'csharp' | 'ruby'
+export type SupportedLanguage = 'python' | 'javascript' | 'gdscript' | 'csharp' | 'ruby' | 'bash'
 
 // Alias for convenience
 export type LanguageId = SupportedLanguage

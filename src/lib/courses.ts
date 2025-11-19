@@ -66,6 +66,18 @@ const COURSE_DEFINITIONS: Omit<Course, 'lessons' | 'lessonCount' | 'xpTotal'>[] 
     featured: false,
     tags: ['beginner', 'ruby', 'backend'],
   },
+  {
+    id: 6,
+    name: 'Git Essentials',
+    description: 'Master version control with Git. Learn to track changes, collaborate with teams, and manage code like a professional developer.',
+    language: 'bash',
+    category: 'general',
+    skillLevel: 'beginner',
+    icon: '🛠️',
+    estimatedHours: 6,
+    featured: true,
+    tags: ['beginner', 'git', 'version-control', 'devtools'],
+  },
 ]
 
 /**

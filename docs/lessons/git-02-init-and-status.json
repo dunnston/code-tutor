@@ -1,0 +1,41 @@
+{
+  "id": 32,
+  "trackId": 6,
+  "language": "bash",
+  "title": "Starting a Git Repository",
+  "subtitle": "Create Your First Time Machine",
+  "difficulty": 1,
+  "estimatedTime": "15-20 minutes",
+  "xpReward": 150,
+  "description": "# Creating Your First Git Repository\n\nEvery Git journey starts with a **repository** (or \"repo\" for short). Think of a repository as a folder that has superpowers - it can track every change made to the files inside it.\n\n## The `git init` Command\n\nTo turn a regular folder into a Git repository, you use:\n\n```bash\ngit init\n```\n\nThis command:\n- Creates a hidden `.git` folder that stores all version history\n- Turns your folder into a time machine for your code\n- Only needs to be run once per project\n\n## Checking Repository Status\n\nOnce you have a repository, you'll constantly want to know: *\"What's the current state of my files?\"*\n\nThe `git status` command is your best friend:\n\n```bash\ngit status\n```\n\nThis tells you:\n- Which files have been modified\n- Which files are ready to be saved (staged)\n- Which files Git isn't tracking yet\n- What branch you're on (we'll learn about branches later)\n\n## Example Workflow\n\n```bash\n# Create a new directory\nmkdir my-project\ncd my-project\n\n# Initialize Git\ngit init\n\n# Check status\ngit status\n```\n\nYou'll see output like:\n```\nInitialized empty Git repository in /path/to/my-project/.git/\n```\n\nAnd when you run `git status`:\n```\nOn branch main\nNo commits yet\nnothing to commit (create/copy files and use \"git add\" to track)\n```\n\n## Your Quest\n\nWrite a series of commands to:\n1. Initialize a new Git repository using `git init`\n2. Check the status of your repository using `git status`\n\nPut each command on its own line.",
+  "starterCode": "# Initialize a Git repository and check its status\n# First: git init\n# Second: git status\n\n",
+  "solutionCode": "git init\ngit status",
+  "hints": [
+    "You need two commands: git init and git status",
+    "Put git init on the first line",
+    "Put git status on the second line",
+    "Make sure both commands are lowercase",
+    "The solution is simply:\ngit init\ngit status"
+  ],
+  "validationTests": [
+    {
+      "type": "code_contains",
+      "value": "git init",
+      "description": "Code should contain 'git init' command"
+    },
+    {
+      "type": "code_contains",
+      "value": "git status",
+      "description": "Code should contain 'git status' command"
+    }
+  ],
+  "learningObjectives": [
+    "Learn what a Git repository is",
+    "Use git init to create a new repository",
+    "Use git status to check repository state",
+    "Understand the basic Git workflow"
+  ],
+  "previousLessonId": 31,
+  "nextLessonId": 33,
+  "tags": ["beginner", "git", "init", "status", "repository"]
+}

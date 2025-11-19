@@ -1,0 +1,42 @@
+{
+  "id": 5,
+  "trackId": 1,
+  "language": "bash",
+  "title": "Working with Branches",
+  "subtitle": "Create Parallel Universes for Your Code",
+  "difficulty": 3,
+  "estimatedTime": "20-25 minutes",
+  "xpReward": 200,
+  "description": "# Understanding Branches\n\nImagine you're writing a book. You want to try a different ending, but you don't want to delete what you already wrote. You could:\n- Make a copy of the entire book\n- Try the new ending in the copy\n- If you like it, use it; if not, keep the original\n\n**That's what branches do in Git!**\n\n## What is a Branch?\n\nA branch is a separate line of development. It lets you:\n- 🧪 **Experiment** without affecting the main code\n- 🔨 **Develop features** in isolation\n- 🐛 **Fix bugs** on a separate timeline\n- 🤝 **Collaborate** without stepping on each other's toes\n\n## The Main Branch\n\nEvery Git repository starts with a default branch, usually called:\n- `main` (modern convention)\n- `master` (older convention)\n\nThis is your \"official\" or \"production\" code.\n\n## Creating and Switching Branches\n\n```bash\n# Create a new branch\ngit branch feature-login\n\n# Switch to a branch\ngit checkout feature-login\n\n# Create AND switch in one command (modern way)\ngit checkout -b feature-login\n\n# Or with newer Git versions\ngit switch -c feature-login\n```\n\n## Viewing Branches\n\n```bash\n# List all branches (* shows current branch)\ngit branch\n\n# List with more details\ngit branch -v\n```\n\n## Example Workflow\n\n```bash\n# Check current branch\ngit branch\n\n# Create and switch to new feature branch\ngit checkout -b add-homepage\n\n# Make changes, stage, and commit\necho \"<h1>Welcome</h1>\" > index.html\ngit add index.html\ngit commit -m \"Add homepage\"\n\n# Switch back to main\ngit checkout main\n```\n\n## Your Quest\n\nYou're about to add a new feature to your project. Write Git commands to:\n\n1. Create a new branch called `new-feature`\n2. Switch to that branch\n\nUse the modern one-command approach with `git checkout -b`.",
+  "starterCode": "# Create and switch to a new branch called 'new-feature'\n# Use: git checkout -b new-feature\n\n",
+  "solutionCode": "git checkout -b new-feature",
+  "hints": [
+    "Use 'git checkout -b' to create and switch in one command",
+    "The branch name should be 'new-feature'",
+    "The -b flag means 'create a new branch'",
+    "Format: git checkout -b branch-name",
+    "Solution: git checkout -b new-feature"
+  ],
+  "validationTests": [
+    {
+      "type": "code_contains",
+      "value": "git checkout -b",
+      "description": "Code should use 'git checkout -b' to create and switch branches"
+    },
+    {
+      "type": "code_contains",
+      "value": "new-feature",
+      "description": "Branch should be named 'new-feature'"
+    }
+  ],
+  "learningObjectives": [
+    "Understand what branches are and why they're useful",
+    "Learn to create new branches with git branch",
+    "Switch between branches with git checkout",
+    "Use git checkout -b to create and switch in one command",
+    "View all branches in a repository"
+  ],
+  "previousLessonId": 4,
+  "nextLessonId": 6,
+  "tags": ["intermediate", "git", "branch", "checkout", "workflow"]
+}

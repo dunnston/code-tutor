@@ -154,5 +154,18 @@
     "prerequisites": null,
     "order_index": 6,
     "is_featured": false
+  },
+  {
+    "id": "git-essentials",
+    "category_id": "devtools",
+    "skill_level_id": "beginner",
+    "language_id": "bash",
+    "name": "Git Essentials",
+    "description": "Master version control with Git - track changes, collaborate with teams, and manage code like a pro",
+    "estimated_hours": 6,
+    "lesson_count": 8,
+    "prerequisites": null,
+    "order_index": 1,
+    "is_featured": true
   }
 ]

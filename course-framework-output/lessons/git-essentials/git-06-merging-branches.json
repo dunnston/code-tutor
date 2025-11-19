@@ -1,0 +1,42 @@
+{
+  "id": 6,
+  "trackId": 1,
+  "language": "bash",
+  "title": "Merging Branches",
+  "subtitle": "Combining Different Lines of Work",
+  "difficulty": 3,
+  "estimatedTime": "20-25 minutes",
+  "xpReward": 250,
+  "description": "# Bringing Branches Together\n\nYou've created a branch, made some changes, and now your feature is ready. How do you bring those changes back into the main branch?\n\n**That's where merging comes in!**\n\n## What is Merging?\n\nMerging combines changes from one branch into another. It's like:\n- Writing a chapter in a separate document\n- When it's done, adding it to the main book\n- The main book now includes your new chapter\n\n## The `git merge` Command\n\nTo merge a branch:\n\n```bash\n# First, switch to the branch you want to merge INTO\ngit checkout main\n\n# Then merge the feature branch INTO main\ngit merge feature-branch\n```\n\n**Key point:** You merge FROM a feature branch INTO your current branch.\n\n## Types of Merges\n\n### Fast-Forward Merge\nIf no changes happened on `main` while you worked on your branch, Git simply moves the `main` pointer forward:\n\n```\nBefore:     main\n              ↓\nA --- B --- C --- D --- E\n                        ↑\n                   feature\n\nAfter:                  main\n                          ↓\nA --- B --- C --- D --- E\n```\n\n### Three-Way Merge\nIf both branches have new commits, Git creates a merge commit:\n\n```\nBefore:         main\n                  ↓\nA --- B --- C --- D\n         \\\n          E --- F\n                ↑\n           feature\n\nAfter:              main\n                      ↓\nA --- B --- C --- D --- G (merge commit)\n         \\             /\n          E --------- F\n```\n\n## Merge Conflicts\n\nSometimes Git can't automatically merge changes (when both branches modified the same lines). You'll need to:\n\n1. Open the conflicted files\n2. Choose which changes to keep\n3. Stage the resolved files\n4. Complete the merge with a commit\n\nWe'll cover conflict resolution in advanced lessons!\n\n## Example Workflow\n\n```bash\n# Create and work on feature branch\ngit checkout -b add-footer\necho \"<footer>© 2024</footer>\" > footer.html\ngit add footer.html\ngit commit -m \"Add footer\"\n\n# Switch back to main\ngit checkout main\n\n# Merge the feature into main\ngit merge add-footer\n\n# Delete the feature branch (optional)\ngit branch -d add-footer\n```\n\n## Your Quest\n\nImagine you've finished working on a branch called `feature-login` and want to merge it into `main`. Write the Git commands to:\n\n1. Switch to the `main` branch\n2. Merge `feature-login` into `main`\n\nPut each command on its own line.",
+  "starterCode": "# Merge feature-login into main\n# First: git checkout main\n# Second: git merge feature-login\n\n",
+  "solutionCode": "git checkout main\ngit merge feature-login",
+  "hints": [
+    "First, you need to switch to the main branch",
+    "Use 'git checkout main' to switch to main",
+    "Then use 'git merge' to merge feature-login",
+    "The format is: git merge branch-name",
+    "Solution:\ngit checkout main\ngit merge feature-login"
+  ],
+  "validationTests": [
+    {
+      "type": "code_contains",
+      "value": "git checkout main",
+      "description": "Should switch to main branch first"
+    },
+    {
+      "type": "code_contains",
+      "value": "git merge feature-login",
+      "description": "Should merge feature-login into main"
+    }
+  ],
+  "learningObjectives": [
+    "Understand what merging does",
+    "Learn the git merge command",
+    "Know to switch to the target branch before merging",
+    "Understand fast-forward vs three-way merges",
+    "Learn basic merge workflow"
+  ],
+  "previousLessonId": 5,
+  "nextLessonId": 7,
+  "tags": ["intermediate", "git", "merge", "workflow", "branches"]
+}

@@ -1,0 +1,48 @@
+{
+  "id": 37,
+  "trackId": 6,
+  "language": "bash",
+  "title": "Working with Remotes",
+  "subtitle": "Collaborate with GitHub, GitLab, and More",
+  "difficulty": 3,
+  "estimatedTime": "25-30 minutes",
+  "xpReward": 250,
+  "description": "# Collaborating with Remote Repositories\n\nSo far, we've been working with Git locally on your computer. But what if you want to:\n- 📤 **Back up your code** to the cloud\n- 🤝 **Collaborate** with other developers\n- 🌍 **Share** your project with the world\n- 💼 **Work** from multiple computers\n\nThat's where **remote repositories** come in!\n\n## What is a Remote?\n\nA remote is a version of your repository hosted on the internet or network. Popular platforms:\n- **GitHub** - Most popular, owned by Microsoft\n- **GitLab** - Open source alternative\n- **Bitbucket** - Popular in enterprise\n\n## Key Commands\n\n### `git clone` - Copy a Remote Repository\n\n```bash\n# Download a repository from GitHub\ngit clone https://github.com/username/repo.git\n```\n\nThis creates a local copy with all history and branches.\n\n### `git remote` - Manage Connections\n\n```bash\n# View remote connections\ngit remote -v\n\n# Add a new remote (usually called 'origin')\ngit remote add origin https://github.com/username/repo.git\n```\n\n### `git push` - Send Changes to Remote\n\n```bash\n# Push changes to remote\ngit push origin main\n\n# Push and set upstream (first time)\ngit push -u origin main\n```\n\n### `git pull` - Get Changes from Remote\n\n```bash\n# Download and merge changes from remote\ngit pull origin main\n\n# Just download without merging\ngit fetch origin\n```\n\n## Common Workflow\n\n### Starting from an Existing Remote\n```bash\n# Clone the repository\ngit clone https://github.com/username/project.git\ncd project\n\n# Make changes\necho \"New feature\" > feature.txt\ngit add feature.txt\ngit commit -m \"Add new feature\"\n\n# Push to remote\ngit push origin main\n```\n\n### Starting from Local Project\n```bash\n# Initialize Git locally\ngit init\ngit add .\ngit commit -m \"Initial commit\"\n\n# Connect to remote (created on GitHub first)\ngit remote add origin https://github.com/username/new-project.git\n\n# Push to remote\ngit push -u origin main\n```\n\n## Understanding Push and Pull\n\n**Push** = Upload your local commits to the remote\n**Pull** = Download remote commits to your local machine\n\nThink of it like:\n- 📤 Push = Saving to the cloud\n- 📥 Pull = Syncing from the cloud\n\n## Your Quest\n\nImagine you've just cloned a repository and made some commits. Now you want to send your changes to the remote repository called `origin` on the `main` branch.\n\nWrite the Git command to push your changes.",
+  "starterCode": "# Push your changes to the remote\n# Use: git push origin main\n\n",
+  "solutionCode": "git push origin main",
+  "hints": [
+    "Use the 'git push' command",
+    "The remote name is 'origin'",
+    "The branch name is 'main'",
+    "Format: git push remote-name branch-name",
+    "Solution: git push origin main"
+  ],
+  "validationTests": [
+    {
+      "type": "code_contains",
+      "value": "git push",
+      "description": "Code should contain 'git push' command"
+    },
+    {
+      "type": "code_contains",
+      "value": "origin",
+      "description": "Should push to 'origin' remote"
+    },
+    {
+      "type": "code_contains",
+      "value": "main",
+      "description": "Should push 'main' branch"
+    }
+  ],
+  "learningObjectives": [
+    "Understand what remote repositories are",
+    "Learn to clone repositories with git clone",
+    "Push changes to remote with git push",
+    "Pull changes from remote with git pull",
+    "Manage remotes with git remote",
+    "Understand the collaboration workflow"
+  ],
+  "previousLessonId": 36,
+  "nextLessonId": 38,
+  "tags": ["intermediate", "git", "remote", "push", "pull", "clone", "github"]
+}

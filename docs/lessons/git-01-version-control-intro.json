@@ -1,0 +1,34 @@
+{
+  "id": 31,
+  "trackId": 6,
+  "language": "bash",
+  "title": "What is Version Control?",
+  "subtitle": "Understanding the Time Machine for Code",
+  "difficulty": 1,
+  "estimatedTime": "10-15 minutes",
+  "xpReward": 100,
+  "description": "# Welcome to Git Essentials!\n\nImagine you're writing a story. You make changes, delete paragraphs, rewrite sentences. What if you could travel back in time to see every version of your story? What if you could work with friends on the same story without overwriting each other's work?\n\n**That's what version control does for code.**\n\n## What is Version Control?\n\nVersion control is a system that tracks changes to your files over time. It's like a time machine that lets you:\n\n- 📸 **Snapshot your work** - Save checkpoints as you progress\n- ⏮️ **Go back in time** - Undo mistakes and recover old versions\n- 🤝 **Collaborate safely** - Multiple people can work on the same project\n- 🔍 **See what changed** - Track who changed what and when\n- 🌿 **Experiment freely** - Try new ideas without fear of breaking things\n\n## Why Git?\n\nGit is the most popular version control system in the world. It's used by:\n- Individual developers for personal projects\n- Small teams collaborating on apps\n- Giant companies like Google, Microsoft, and Facebook\n- Open source projects with thousands of contributors\n\n## Your First Git Command\n\nLet's verify Git is installed on your system. The `git --version` command shows which version of Git you have.\n\n```bash\ngit --version\n```\n\nThis should output something like:\n```\ngit version 2.40.0\n```\n\n## Your Quest\n\nRun the `git --version` command to check if Git is installed and see what version you have.\n\n**Note:** If Git is not installed, you'll see an error. In a real scenario, you'd need to install Git from [git-scm.com](https://git-scm.com), but for this tutorial, we'll simulate the Git environment.",
+  "starterCode": "# Check your Git version\n# Type: git --version\n\n",
+  "solutionCode": "git --version",
+  "hints": [
+    "Type the command exactly as shown: git --version",
+    "Make sure there are two dashes before 'version': --version",
+    "The command is all lowercase",
+    "Just type: git --version"
+  ],
+  "validationTests": [
+    {
+      "type": "code_contains",
+      "value": "git --version",
+      "description": "Code should contain 'git --version' command"
+    }
+  ],
+  "learningObjectives": [
+    "Understand what version control is and why it matters",
+    "Learn what Git is and why it's popular",
+    "Run your first Git command",
+    "Verify Git is installed on your system"
+  ],
+  "nextLessonId": 32,
+  "tags": ["beginner", "git", "version-control", "introduction"]
+}
