@@ -17,6 +17,9 @@ import { PuzzleHub } from '@components/puzzles/PuzzleHub'
 import { PuzzleList } from '@components/puzzles/PuzzleList'
 import { PuzzleSolver } from '@components/puzzles/PuzzleSolver'
 import PlaygroundView from '@components/playground/PlaygroundView'
+import { ShopView } from '@components/shop/ShopView'
+import { InventoryView } from '@components/inventory/InventoryView'
+import { QuestBoardView } from '@components/quests/QuestBoardView'
 import { useAppStore } from '@/lib/store'
 import { executeCode } from '@/lib/tauri'
 import { validateCode, getValidationSummary } from '@/lib/validation'
@@ -313,6 +316,11 @@ function App() {
 
       {/* Playground View */}
       {currentView === 'playground' && <PlaygroundView />}
+
+      {/* Gamification Views */}
+      {currentView === 'shop' && <ShopView />}
+      {currentView === 'inventory' && <InventoryView />}
+      {currentView === 'quests' && <QuestBoardView />}
 
       {/* Learning View */}
       {currentView === 'learning' && (
