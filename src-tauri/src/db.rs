@@ -27,10 +27,20 @@ pub fn initialize_database(app: &AppHandle) -> Result<(), String> {
     conn.execute_batch(schema_sql)
         .map_err(|e| format!("Failed to execute puzzle schema: {}", e))?;
 
-    // Execute seed data
+    // Execute puzzle seed data
     let seed_sql = include_str!("../../course-framework-output/database/puzzles-seed.sql");
     conn.execute_batch(seed_sql)
-        .map_err(|e| format!("Failed to execute seed data: {}", e))?;
+        .map_err(|e| format!("Failed to execute puzzle seed data: {}", e))?;
+
+    // Execute gamification migration
+    let gamification_migration = include_str!("../migrations/007_gamification.sql");
+    conn.execute_batch(gamification_migration)
+        .map_err(|e| format!("Failed to execute gamification migration: {}", e))?;
+
+    // Execute gamification seed data
+    let gamification_seed = include_str!("../../course-framework-output/database/gamification-seed.sql");
+    conn.execute_batch(gamification_seed)
+        .map_err(|e| format!("Failed to execute gamification seed data: {}", e))?;
 
     log::info!("Database initialized successfully at {:?}", db_path);
     Ok(())
