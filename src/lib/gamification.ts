@@ -16,6 +16,8 @@ import type {
   LevelRewardRaw,
   ShopItemCategory,
   QuestType,
+} from '../types/gamification';
+import {
   convertUserCurrency,
   convertShopItem,
   convertInventoryItem,
