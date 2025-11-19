@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { ProfileHeader } from './dashboard/ProfileHeader'
 import { ActiveCourseCard } from './dashboard/ActiveCourseCard'
 import { StatsGrid } from './dashboard/StatsGrid'
+import { GamificationWidget } from './dashboard/GamificationWidget'
 import { PuzzleWidget } from './dashboard/PuzzleWidget'
 import { PlaygroundWidget } from './dashboard/PlaygroundWidget'
 import { CourseCatalog } from './dashboard/CourseCatalog'
@@ -31,6 +32,11 @@ export function Dashboard({ onLogout }: DashboardProps) {
         {/* Stats Grid */}
         <section className="mt-8">
           <StatsGrid />
+        </section>
+
+        {/* Gamification Widget - Shop, Inventory, Quests */}
+        <section className="mt-8">
+          <GamificationWidget />
         </section>
 
         {/* Puzzle Widget */}
