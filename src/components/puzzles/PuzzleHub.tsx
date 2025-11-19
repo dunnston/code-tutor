@@ -14,6 +14,12 @@ export function PuzzleHub() {
     setCurrentView('dashboard')
   }
 
+  const handleCategoryClick = (categoryId: string) => {
+    const setCurrentPuzzleCategoryId = useAppStore.getState().setCurrentPuzzleCategoryId
+    setCurrentPuzzleCategoryId(categoryId)
+    setCurrentView('puzzle-list')
+  }
+
   useEffect(() => {
     loadCategories()
   }, [])
@@ -142,7 +148,11 @@ export function PuzzleHub() {
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {categories.map(category => (
-              <CategoryCard key={category.id} category={category} />
+              <CategoryCard
+                key={category.id}
+                category={category}
+                onClick={() => handleCategoryClick(category.id)}
+              />
             ))}
           </div>
         </div>

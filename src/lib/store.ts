@@ -89,8 +89,14 @@ interface AppState {
   toggleDashboard: () => void
   settingsOpen: boolean
   toggleSettings: () => void
-  currentView: 'dashboard' | 'learning' | 'puzzles'
-  setCurrentView: (view: 'dashboard' | 'learning' | 'puzzles') => void
+  currentView: 'dashboard' | 'learning' | 'puzzles' | 'puzzle-list' | 'puzzle-solver'
+  setCurrentView: (view: 'dashboard' | 'learning' | 'puzzles' | 'puzzle-list' | 'puzzle-solver') => void
+
+  // Puzzle state
+  currentPuzzleCategoryId: string | null
+  setCurrentPuzzleCategoryId: (categoryId: string | null) => void
+  currentPuzzleId: string | null
+  setCurrentPuzzleId: (puzzleId: string | null) => void
 
   // Settings & Preferences
   settings: UserSettings
@@ -282,6 +288,12 @@ export const useAppStore = create<AppState>((set, get) => ({
   toggleSettings: () => set((state) => ({ settingsOpen: !state.settingsOpen })),
   currentView: 'dashboard',
   setCurrentView: (view) => set({ currentView: view }),
+
+  // Puzzle state
+  currentPuzzleCategoryId: null,
+  setCurrentPuzzleCategoryId: (categoryId) => set({ currentPuzzleCategoryId: categoryId }),
+  currentPuzzleId: null,
+  setCurrentPuzzleId: (puzzleId) => set({ currentPuzzleId: puzzleId }),
 
   // Settings & Preferences
   settings: loadPreferences(),
