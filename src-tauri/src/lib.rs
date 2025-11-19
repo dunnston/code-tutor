@@ -2,6 +2,7 @@ mod commands;
 mod db;
 mod puzzle_commands;
 mod playground_commands;
+mod gamification_commands;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -56,6 +57,25 @@ pub fn run() {
       playground_commands::get_playground_session,
       playground_commands::save_playground_session,
       playground_commands::fork_playground_project,
+      // Gamification - Currency commands
+      gamification_commands::get_user_currency,
+      gamification_commands::add_currency,
+      gamification_commands::spend_currency,
+      // Gamification - Shop commands
+      gamification_commands::get_shop_items,
+      gamification_commands::purchase_item,
+      // Gamification - Inventory commands
+      gamification_commands::get_user_inventory,
+      gamification_commands::use_inventory_item,
+      // Gamification - Quest commands
+      gamification_commands::get_quests,
+      gamification_commands::get_user_quest_progress,
+      gamification_commands::update_quest_progress,
+      // Gamification - Effect commands
+      gamification_commands::get_active_effects,
+      // Gamification - Level rewards
+      gamification_commands::get_level_rewards,
+      gamification_commands::claim_level_rewards,
     ])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");

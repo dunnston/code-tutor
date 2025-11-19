@@ -3,6 +3,7 @@ import type { Lesson } from '@/types/lesson'
 import type { ConsoleMessage, ExecutionStatus } from '@/types/execution'
 import type { ChatMessage, AIProviderType } from '@/types/ai'
 import type { UserSettings } from '@components/SettingsModal'
+import type { UserCurrency, InventoryItem, UserQuestProgress, ActiveEffect } from '@/types/gamification'
 import {
   loadUserCode,
   saveUserCode,
@@ -89,8 +90,8 @@ interface AppState {
   toggleDashboard: () => void
   settingsOpen: boolean
   toggleSettings: () => void
-  currentView: 'dashboard' | 'learning' | 'puzzles' | 'puzzle-list' | 'puzzle-solver' | 'playground'
-  setCurrentView: (view: 'dashboard' | 'learning' | 'puzzles' | 'puzzle-list' | 'puzzle-solver' | 'playground') => void
+  currentView: 'dashboard' | 'learning' | 'puzzles' | 'puzzle-list' | 'puzzle-solver' | 'playground' | 'shop' | 'inventory' | 'quests'
+  setCurrentView: (view: 'dashboard' | 'learning' | 'puzzles' | 'puzzle-list' | 'puzzle-solver' | 'playground' | 'shop' | 'inventory' | 'quests') => void
 
   // Puzzle state
   currentPuzzleCategoryId: string | null
@@ -105,6 +106,28 @@ interface AppState {
   setPlaygroundLanguage: (languageId: string) => void
   playgroundCode: string
   setPlaygroundCode: (code: string) => void
+
+  // Gamification - Currency & Shop
+  userCurrency: UserCurrency | null
+  setUserCurrency: (currency: UserCurrency | null) => void
+  refreshCurrency: (userId: number) => Promise<void>
+
+  // Gamification - Inventory
+  inventory: InventoryItem[]
+  setInventory: (inventory: InventoryItem[]) => void
+  refreshInventory: (userId: number) => Promise<void>
+
+  // Gamification - Quests
+  dailyQuests: UserQuestProgress[]
+  weeklyQuests: UserQuestProgress[]
+  setDailyQuests: (quests: UserQuestProgress[]) => void
+  setWeeklyQuests: (quests: UserQuestProgress[]) => void
+  refreshQuests: (userId: number) => Promise<void>
+
+  // Gamification - Active Effects
+  activeEffects: ActiveEffect[]
+  setActiveEffects: (effects: ActiveEffect[]) => void
+  refreshActiveEffects: (userId: number) => Promise<void>
 
   // Settings & Preferences
   settings: UserSettings
@@ -310,6 +333,58 @@ export const useAppStore = create<AppState>((set, get) => ({
   setPlaygroundLanguage: (languageId) => set({ playgroundLanguage: languageId }),
   playgroundCode: '',
   setPlaygroundCode: (code) => set({ playgroundCode: code }),
+
+  // Gamification state
+  userCurrency: null,
+  setUserCurrency: (currency) => set({ userCurrency: currency }),
+  refreshCurrency: async (userId) => {
+    const { getUserCurrency } = await import('./gamification')
+    try {
+      const currency = await getUserCurrency(userId)
+      set({ userCurrency: currency })
+    } catch (error) {
+      console.error('Failed to refresh currency:', error)
+    }
+  },
+
+  inventory: [],
+  setInventory: (inventory) => set({ inventory }),
+  refreshInventory: async (userId) => {
+    const { getUserInventory } = await import('./gamification')
+    try {
+      const inventory = await getUserInventory(userId)
+      set({ inventory })
+    } catch (error) {
+      console.error('Failed to refresh inventory:', error)
+    }
+  },
+
+  dailyQuests: [],
+  weeklyQuests: [],
+  setDailyQuests: (quests) => set({ dailyQuests: quests }),
+  setWeeklyQuests: (quests) => set({ weeklyQuests: quests }),
+  refreshQuests: async (userId) => {
+    const { getUserQuestProgress } = await import('./gamification')
+    try {
+      const daily = await getUserQuestProgress(userId, 'daily')
+      const weekly = await getUserQuestProgress(userId, 'weekly')
+      set({ dailyQuests: daily, weeklyQuests: weekly })
+    } catch (error) {
+      console.error('Failed to refresh quests:', error)
+    }
+  },
+
+  activeEffects: [],
+  setActiveEffects: (effects) => set({ activeEffects: effects }),
+  refreshActiveEffects: async (userId) => {
+    const { getActiveEffects } = await import('./gamification')
+    try {
+      const effects = await getActiveEffects(userId)
+      set({ activeEffects: effects })
+    } catch (error) {
+      console.error('Failed to refresh active effects:', error)
+    }
+  },
 
   // Settings & Preferences
   settings: loadPreferences(),
