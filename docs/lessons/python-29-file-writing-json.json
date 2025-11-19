@@ -1,0 +1,52 @@
+{
+  "id": 57,
+  "trackId": 1,
+  "language": "python",
+  "title": "The Data Scribe",
+  "subtitle": "Writing Files & JSON",
+  "difficulty": 4,
+  "estimatedTime": "30-35 minutes",
+  "xpReward": 250,
+  "description": "# Saving Data to Files\n\nReading is only half the story. Learn to write data to files and work with JSON for structured data storage!\n\n## Writing Text Files\n\n```python\n# Write mode (overwrites file)\nwith open(\"output.txt\", \"w\") as file:\n    file.write(\"Hello, World!\\n\")\n    file.write(\"Second line\\n\")\n\n# Append mode (adds to existing file)\nwith open(\"log.txt\", \"a\") as file:\n    file.write(\"New log entry\\n\")\n```\n\n## Working with JSON\n\nJSON is perfect for storing structured data:\n\n```python\nimport json\n\n# Save data as JSON\nplayer = {\"name\": \"Aria\", \"level\": 10, \"gold\": 500}\n\nwith open(\"save.json\", \"w\") as file:\n    json.dump(player, file)\n\n# Load data from JSON\nwith open(\"save.json\", \"r\") as file:\n    loaded_player = json.load(file)\n    print(loaded_player[\"name\"])  # \"Aria\"\n\n# Convert to/from JSON strings\njson_string = json.dumps(player)  # To JSON string\ndata = json.loads(json_string)    # From JSON string\n```\n\n## Your Quest\n\nCreate a save game system:\n1. Save character data to JSON format\n2. Load character data\n3. Create a high score system\n4. Write game logs",
+  "starterCode": "# Save Game System\n\nimport json\n\n# Character data\ncharacter = {\n    \"name\": \"Aria\",\n    \"level\": 15,\n    \"class\": \"Mage\",\n    \"health\": 100,\n    \"mana\": 150,\n    \"gold\": 500,\n    \"inventory\": [\"Staff\", \"Robe\", \"Potion\", \"Scroll\"]\n}\n\nprint(\"=== SAVING CHARACTER ===\")\n# Convert character to JSON string\njson_string = json.dumps(_____, indent=2)  # indent=2 makes it pretty\nprint(\"Character data as JSON:\")\nprint(json_string)\nprint(\"\\nCharacter saved!\")\n\n# Simulate writing to file (we'll just store in variable)\nsaved_data = json_string\n\nprint(\"\\n=== LOADING CHARACTER ===\")\n# Load character from JSON string\nloaded_character = json.loads(_____)\nprint(f\"Loaded: {loaded_character['name']} the {loaded_character['class']}\")\nprint(f\"Level: {loaded_character['level']}\")\nprint(f\"Gold: {loaded_character['gold']}\")\nprint(f\"Inventory: {', '.join(loaded_character['inventory'])}\")\n\nprint(\"\\n=== HIGH SCORES ===\")\nhigh_scores = [\n    {\"player\": \"Aria\", \"score\": 15000, \"level\": 15},\n    {\"player\": \"Thorin\", \"score\": 12000, \"level\": 12},\n    {\"player\": \"Luna\", \"score\": 18000, \"level\": 18}\n]\n\n# Sort by score (highest first)\nhigh_scores.sort(key=lambda x: x[\"score\"], reverse=True)\n\n# Save high scores as JSON\nhigh_scores_json = json.dumps(_____, indent=2)\nprint(\"High Scores:\")\n\n# Load and display\nscores = json.loads(high_scores_json)\nfor i, score in enumerate(scores, 1):\n    print(f\"{i}. {score['player']} - {score['score']} points (Level {score['level']})\")\n\nprint(\"\\n=== GAME LOG ===\")\n# Create a simple log\nlog_entries = [\n    \"Game started\",\n    \"Player defeated Goblin King\",\n    \"Player found legendary sword\",\n    \"Player reached level 15\",\n    \"Game saved successfully\"\n]\n\n# Join log entries with newlines\nlog_text = \"\\n\".join(_____)\nprint(\"Game Log:\")\nprint(log_text)\nprint(\"\\nLog would be written to: game_log.txt\")\n",
+  "solutionCode": "# Save Game System\n\nimport json\n\n# Character data\ncharacter = {\n    \"name\": \"Aria\",\n    \"level\": 15,\n    \"class\": \"Mage\",\n    \"health\": 100,\n    \"mana\": 150,\n    \"gold\": 500,\n    \"inventory\": [\"Staff\", \"Robe\", \"Potion\", \"Scroll\"]\n}\n\nprint(\"=== SAVING CHARACTER ===\")\n# Convert character to JSON string\njson_string = json.dumps(character, indent=2)\nprint(\"Character data as JSON:\")\nprint(json_string)\nprint(\"\\nCharacter saved!\")\n\n# Simulate writing to file\nsaved_data = json_string\n\nprint(\"\\n=== LOADING CHARACTER ===\")\n# Load character from JSON string\nloaded_character = json.loads(saved_data)\nprint(f\"Loaded: {loaded_character['name']} the {loaded_character['class']}\")\nprint(f\"Level: {loaded_character['level']}\")\nprint(f\"Gold: {loaded_character['gold']}\")\nprint(f\"Inventory: {', '.join(loaded_character['inventory'])}\")\n\nprint(\"\\n=== HIGH SCORES ===\")\nhigh_scores = [\n    {\"player\": \"Aria\", \"score\": 15000, \"level\": 15},\n    {\"player\": \"Thorin\", \"score\": 12000, \"level\": 12},\n    {\"player\": \"Luna\", \"score\": 18000, \"level\": 18}\n]\n\n# Sort by score (highest first)\nhigh_scores.sort(key=lambda x: x[\"score\"], reverse=True)\n\n# Save high scores as JSON\nhigh_scores_json = json.dumps(high_scores, indent=2)\nprint(\"High Scores:\")\n\n# Load and display\nscores = json.loads(high_scores_json)\nfor i, score in enumerate(scores, 1):\n    print(f\"{i}. {score['player']} - {score['score']} points (Level {score['level']})\")\n\nprint(\"\\n=== GAME LOG ===\")\n# Create a simple log\nlog_entries = [\n    \"Game started\",\n    \"Player defeated Goblin King\",\n    \"Player found legendary sword\",\n    \"Player reached level 15\",\n    \"Game saved successfully\"\n]\n\n# Join log entries with newlines\nlog_text = \"\\n\".join(log_entries)\nprint(\"Game Log:\")\nprint(log_text)\nprint(\"\\nLog would be written to: game_log.txt\")\n",
+  "hints": [
+    "Use json.dumps(character, indent=2) to convert to JSON string",
+    "Use json.loads(saved_data) to convert from JSON string back to dictionary",
+    "For high scores, use json.dumps(high_scores, indent=2)",
+    "Use '\\n'.join(log_entries) to join log entries with newlines",
+    "Complete solution:\n\njson_string = json.dumps(character, indent=2)\nloaded_character = json.loads(saved_data)\nhigh_scores_json = json.dumps(high_scores, indent=2)\nscores = json.loads(high_scores_json)\nlog_text = '\\n'.join(log_entries)"
+  ],
+  "validationTests": [
+    {
+      "type": "code_contains",
+      "value": "json.dumps",
+      "description": "Must use json.dumps() to serialize"
+    },
+    {
+      "type": "code_contains",
+      "value": "json.loads",
+      "description": "Must use json.loads() to deserialize"
+    },
+    {
+      "type": "output_contains",
+      "value": "Loaded",
+      "description": "Should load and display character"
+    },
+    {
+      "type": "output_contains",
+      "value": "High Scores",
+      "description": "Should display high scores"
+    }
+  ],
+  "learningObjectives": [
+    "Write data to files (simulated)",
+    "Convert Python data to JSON with json.dumps()",
+    "Parse JSON data with json.loads()",
+    "Work with JSON files for persistence",
+    "Create save/load systems for games"
+  ],
+  "previousLessonId": 28,
+  "nextLessonId": 30,
+  "tags": ["advanced", "files", "json", "serialization", "persistence", "save-system"]
+}

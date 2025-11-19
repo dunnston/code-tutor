@@ -1,0 +1,52 @@
+{
+  "id": 46,
+  "trackId": 1,
+  "language": "python",
+  "title": "The Counter's Mastery",
+  "subtitle": "For Loops with Range",
+  "difficulty": 2,
+  "estimatedTime": "20-25 minutes",
+  "xpReward": 150,
+  "description": "# Counting with Range\n\nYou've learned to loop through lists, but what if you just want to count? That's where the `range()` function shines!\n\n## The range() Function\n\n`range()` generates a sequence of numbers:\n\n```python\n# Count from 0 to 4 (5 numbers total)\nfor i in range(5):\n    print(i)  # Prints: 0, 1, 2, 3, 4\n```\n\n## Range with Start and Stop\n\n```python\n# Count from 1 to 5\nfor i in range(1, 6):\n    print(i)  # Prints: 1, 2, 3, 4, 5\n```\n\n## Range with Step\n\n```python\n# Count by 2s\nfor i in range(0, 11, 2):\n    print(i)  # Prints: 0, 2, 4, 6, 8, 10\n\n# Count backwards\nfor i in range(10, 0, -1):\n    print(i)  # Prints: 10, 9, 8, 7, 6, 5, 4, 3, 2, 1\n```\n\n## Your Quest\n\nCreate a power-up leveling system:\n1. Use range to print levels 1-10\n2. Calculate damage for each level (level * 5)\n3. Use range to create a countdown timer from 5 to 1\n4. Calculate total XP from levels 1-10 (each level gives level * 100 XP)",
+  "starterCode": "# Power-Up Leveling System\n\nprint(\"=== LEVEL UP SEQUENCE ===\")\n# Loop through levels 1 to 10\nfor level in range(___):  # Fix this range\n    damage = ___  # Calculate damage (level * 5)\n    print(f\"Level {level}: {damage} damage\")\n\nprint(\"\\n=== COUNTDOWN TIMER ===\")\n# Create countdown from 5 to 1\nfor count in range(___):  # Fix this range\n    print(f\"{count}...\")\nprint(\"Blast off!\")\n\nprint(\"\\n=== TOTAL XP CALCULATION ===\")\ntotal_xp = 0\n# Calculate total XP from levels 1-10\nfor level in range(___):  # Fix this range\n    xp = ___  # Each level gives level * 100 XP\n    total_xp = ___  # Add to total\n    \nprint(f\"Total XP earned from levels 1-10: {total_xp}\")\n",
+  "solutionCode": "# Power-Up Leveling System\n\nprint(\"=== LEVEL UP SEQUENCE ===\")\n# Loop through levels 1 to 10\nfor level in range(1, 11):\n    damage = level * 5\n    print(f\"Level {level}: {damage} damage\")\n\nprint(\"\\n=== COUNTDOWN TIMER ===\")\n# Create countdown from 5 to 1\nfor count in range(5, 0, -1):\n    print(f\"{count}...\")\nprint(\"Blast off!\")\n\nprint(\"\\n=== TOTAL XP CALCULATION ===\")\ntotal_xp = 0\n# Calculate total XP from levels 1-10\nfor level in range(1, 11):\n    xp = level * 100\n    total_xp = total_xp + xp\n    \nprint(f\"Total XP earned from levels 1-10: {total_xp}\")\n",
+  "hints": [
+    "To count from 1 to 10, use range(1, 11) - the stop value is exclusive",
+    "For a countdown from 5 to 1, use range(5, 0, -1) - negative step counts backwards",
+    "Calculate damage as: damage = level * 5",
+    "Calculate XP as: xp = level * 100, then add it to total_xp",
+    "Complete solution:\n\nfor level in range(1, 11):\n    damage = level * 5\n\nfor count in range(5, 0, -1):\n    print(f'{count}...')\n\ntotal_xp = 0\nfor level in range(1, 11):\n    xp = level * 100\n    total_xp = total_xp + xp"
+  ],
+  "validationTests": [
+    {
+      "type": "code_contains",
+      "value": "range(",
+      "description": "Must use range() function"
+    },
+    {
+      "type": "code_contains",
+      "value": "for",
+      "description": "Must use for loops"
+    },
+    {
+      "type": "output_contains",
+      "value": "Level",
+      "description": "Should print level information"
+    },
+    {
+      "type": "output_line_count",
+      "min": 15,
+      "description": "Should print multiple lines"
+    }
+  ],
+  "learningObjectives": [
+    "Use range() to generate number sequences",
+    "Understand range() parameters: start, stop, step",
+    "Count forwards and backwards",
+    "Perform calculations within loops",
+    "Accumulate values in a total variable"
+  ],
+  "previousLessonId": 4,
+  "nextLessonId": 19,
+  "tags": ["intermediate", "for-loop", "range", "counting", "accumulation"]
+}

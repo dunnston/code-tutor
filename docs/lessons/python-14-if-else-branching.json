@@ -1,0 +1,51 @@
+{
+  "id": 42,
+  "trackId": 1,
+  "language": "python",
+  "title": "The Merchant's Decision",
+  "subtitle": "If/Else Branching",
+  "difficulty": 2,
+  "estimatedTime": "15-20 minutes",
+  "xpReward": 100,
+  "description": "# Making Choices with Else\n\nYou've learned if statements, but what happens when the condition is False? That's where **else** comes in!\n\n## If/Else Structure\n\nThe else block runs when the if condition is False:\n\n```python\ngold = 30\nitem_cost = 50\n\nif gold >= item_cost:\n    print(\"Purchase successful!\")\n    gold = gold - item_cost\nelse:\n    print(\"Not enough gold!\")\n```\n\nOne of these blocks will ALWAYS run - either if or else.\n\n## Comparison Operators\n\nPython supports many comparison operators:\n\n```python\n==  # Equal to\n!=  # Not equal to\n>   # Greater than\n<   # Less than\n>=  # Greater than or equal to\n<=  # Less than or equal to\n```\n\n## Your Quest\n\nCreate a merchant system that checks if a player can afford an item:\n1. Set player's gold amount\n2. Set item cost\n3. Use if/else to check if player has enough gold\n4. If yes: Print success message and show remaining gold\n5. If no: Print how much more gold is needed",
+  "starterCode": "# Merchant Purchase System\n\n# Set up variables\nplayer_gold = 75\nitem_cost = 50\nitem_name = \"Steel Sword\"\n\n# Check if player can afford the item\nif ___:  # Write the condition here\n    # Player has enough gold\n    remaining_gold = ___  # Calculate remaining gold\n    print(f\"Purchase successful! You bought {item_name}.\")\n    print(f\"Gold remaining: {remaining_gold}\")\nelse:\n    # Player doesn't have enough gold\n    gold_needed = ___  # Calculate how much more is needed\n    print(f\"Not enough gold for {item_name}!\")\n    print(f\"You need {gold_needed} more gold.\")\n",
+  "solutionCode": "# Merchant Purchase System\n\n# Set up variables\nplayer_gold = 75\nitem_cost = 50\nitem_name = \"Steel Sword\"\n\n# Check if player can afford the item\nif player_gold >= item_cost:\n    # Player has enough gold\n    remaining_gold = player_gold - item_cost\n    print(f\"Purchase successful! You bought {item_name}.\")\n    print(f\"Gold remaining: {remaining_gold}\")\nelse:\n    # Player doesn't have enough gold\n    gold_needed = item_cost - player_gold\n    print(f\"Not enough gold for {item_name}!\")\n    print(f\"You need {gold_needed} more gold.\")\n",
+  "hints": [
+    "The condition should check if player_gold >= item_cost",
+    "In the if block, calculate remaining_gold = player_gold - item_cost",
+    "In the else block, calculate gold_needed = item_cost - player_gold",
+    "Make sure both blocks print appropriate messages",
+    "Complete solution:\n\nif player_gold >= item_cost:\n    remaining_gold = player_gold - item_cost\n    print(f'Purchase successful! You bought {item_name}.')\n    print(f'Gold remaining: {remaining_gold}')\nelse:\n    gold_needed = item_cost - player_gold\n    print(f'Not enough gold for {item_name}!')\n    print(f'You need {gold_needed} more gold.')"
+  ],
+  "validationTests": [
+    {
+      "type": "code_contains",
+      "value": "if",
+      "description": "Must use if statement"
+    },
+    {
+      "type": "code_contains",
+      "value": "else",
+      "description": "Must use else statement"
+    },
+    {
+      "type": "code_contains",
+      "value": ">=",
+      "description": "Should use >= or > comparison operator"
+    },
+    {
+      "type": "output_line_count",
+      "min": 2,
+      "description": "Should print at least 2 lines"
+    }
+  ],
+  "learningObjectives": [
+    "Understand if/else branching logic",
+    "Use comparison operators for conditions",
+    "Perform calculations in both branches",
+    "Create programs that respond to different situations"
+  ],
+  "previousLessonId": 3,
+  "nextLessonId": 15,
+  "tags": ["intermediate", "if-else", "conditions", "branching", "comparisons"]
+}

@@ -9,14 +9,14 @@ const COURSE_DEFINITIONS: Omit<Course, 'lessons' | 'lessonCount' | 'xpTotal'>[] 
   {
     id: 1,
     name: 'Python Fundamentals',
-    description: 'Master the basics of Python through an epic fantasy adventure. Learn variables, loops, functions, and more!',
+    description: 'Master Python from scratch through an epic fantasy adventure. Learn variables, loops, functions, data structures, files, and build a complete RPG system!',
     language: 'python',
     category: 'backend',
     skillLevel: 'beginner',
     icon: '🐍',
-    estimatedHours: 8,
+    estimatedHours: 25,
     featured: true,
-    tags: ['beginner', 'python', 'fundamentals', 'backend'],
+    tags: ['beginner', 'python', 'fundamentals', 'backend', 'complete'],
   },
   {
     id: 2,

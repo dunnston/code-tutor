@@ -1,0 +1,52 @@
+{
+  "id": 56,
+  "trackId": 1,
+  "language": "python",
+  "title": "The Scroll Reader",
+  "subtitle": "Reading Files",
+  "difficulty": 4,
+  "estimatedTime": "25-30 minutes",
+  "xpReward": 200,
+  "description": "# Reading Data from Files\n\nSo far, all data disappears when your program ends. Learn to read from files to load persistent data!\n\n## Reading Text Files\n\n```python\n# Method 1: Using with (recommended)\nwith open(\"quest_log.txt\", \"r\") as file:\n    content = file.read()  # Read entire file\n    print(content)\n\n# File automatically closes after 'with' block\n```\n\n## Reading Line by Line\n\n```python\n# Read all lines into a list\nwith open(\"items.txt\", \"r\") as file:\n    lines = file.readlines()\n    for line in lines:\n        print(line.strip())  # .strip() removes \\n\n\n# Better: iterate directly\nwith open(\"items.txt\", \"r\") as file:\n    for line in file:\n        print(line.strip())\n```\n\n## Parsing Data\n\n```python\n# If file contains: \"Sword,100,weapon\"\nwith open(\"inventory.txt\", \"r\") as file:\n    for line in file:\n        name, value, item_type = line.strip().split(\",\")\n        print(f\"{name} is worth {value} gold\")\n```\n\n## Your Quest\n\nCreate a quest log reader:\n1. Read quest data from a file\n2. Parse each quest (format: \"Quest Name,Status,Reward\")\n3. Display completed quests\n4. Calculate total rewards",
+  "starterCode": "# Quest Log Reader\n\n# Sample data (in a real scenario, this would be in a file)\nquest_data = '''Defeat the Goblin King,Completed,500\nFind the Lost Artifact,In Progress,1000\nRescue the Village,Completed,300\nExplore the Dark Cave,Not Started,750\nDefeat the Dragon,Completed,2000'''\n\n# Simulate reading from a file by splitting the string\nlines = quest_data.split('\\n')\n\nprint(\"=== ALL QUESTS ===\")\nfor line in ___:  # Loop through lines\n    # Parse the line (split by comma)\n    parts = line.split(___)\n    quest_name = parts[___]  # First part\n    status = parts[___]      # Second part\n    reward = int(parts[___]) # Third part (convert to int)\n    \n    print(f\"{quest_name}: {status} - {reward}g\")\n\nprint(\"\\n=== COMPLETED QUESTS ===\")\ntotal_rewards = 0\n\nfor line in lines:\n    parts = line.split(\",\")\n    quest_name = parts[0]\n    status = parts[1]\n    reward = int(parts[2])\n    \n    if ___:  # Check if status is \"Completed\"\n        print(f\"✓ {quest_name} - Earned {reward}g\")\n        total_rewards += ___  # Add reward to total\n\nprint(f\"\\nTotal rewards earned: {total_rewards}g\")\n\nprint(\"\\n=== QUEST STATISTICS ===\")\ntotal_quests = len(___)\ncompleted_count = 0\n\nfor line in lines:\n    parts = line.split(\",\")\n    if parts[1] == \"Completed\":\n        completed_count += 1\n\ncompletion_rate = (completed_count / total_quests) * 100\nprint(f\"Quests completed: {completed_count}/{total_quests}\")\nprint(f\"Completion rate: {completion_rate:.1f}%\")\n",
+  "solutionCode": "# Quest Log Reader\n\n# Sample data (simulating file content)\nquest_data = '''Defeat the Goblin King,Completed,500\nFind the Lost Artifact,In Progress,1000\nRescue the Village,Completed,300\nExplore the Dark Cave,Not Started,750\nDefeat the Dragon,Completed,2000'''\n\n# Simulate reading from a file\nlines = quest_data.split('\\n')\n\nprint(\"=== ALL QUESTS ===\")\nfor line in lines:\n    parts = line.split(\",\")\n    quest_name = parts[0]\n    status = parts[1]\n    reward = int(parts[2])\n    \n    print(f\"{quest_name}: {status} - {reward}g\")\n\nprint(\"\\n=== COMPLETED QUESTS ===\")\ntotal_rewards = 0\n\nfor line in lines:\n    parts = line.split(\",\")\n    quest_name = parts[0]\n    status = parts[1]\n    reward = int(parts[2])\n    \n    if status == \"Completed\":\n        print(f\"✓ {quest_name} - Earned {reward}g\")\n        total_rewards += reward\n\nprint(f\"\\nTotal rewards earned: {total_rewards}g\")\n\nprint(\"\\n=== QUEST STATISTICS ===\")\ntotal_quests = len(lines)\ncompleted_count = 0\n\nfor line in lines:\n    parts = line.split(\",\")\n    if parts[1] == \"Completed\":\n        completed_count += 1\n\ncompletion_rate = (completed_count / total_quests) * 100\nprint(f\"Quests completed: {completed_count}/{total_quests}\")\nprint(f\"Completion rate: {completion_rate:.1f}%\")\n",
+  "hints": [
+    "Use line.split(',') to split by commas",
+    "Access parts with: parts[0] (name), parts[1] (status), parts[2] (reward)",
+    "Convert reward to int: int(parts[2])",
+    "Check completion: if status == 'Completed':",
+    "Complete solution:\n\nfor line in lines:\n    parts = line.split(',')\n    quest_name = parts[0]\n    status = parts[1]\n    reward = int(parts[2])\n    \n    if status == 'Completed':\n        total_rewards += reward"
+  ],
+  "validationTests": [
+    {
+      "type": "code_contains",
+      "value": "split(",
+      "description": "Must use split() to parse data"
+    },
+    {
+      "type": "code_contains",
+      "value": "int(",
+      "description": "Must convert reward to integer"
+    },
+    {
+      "type": "output_contains",
+      "value": "Completed",
+      "description": "Should display completed quests"
+    },
+    {
+      "type": "output_contains",
+      "value": "Total rewards",
+      "description": "Should calculate total rewards"
+    }
+  ],
+  "learningObjectives": [
+    "Read data from files (simulated)",
+    "Parse CSV-style data with split()",
+    "Convert string data to appropriate types",
+    "Filter and process file data",
+    "Calculate statistics from file content"
+  ],
+  "previousLessonId": 9,
+  "nextLessonId": 29,
+  "tags": ["advanced", "files", "parsing", "strings", "data-processing"]
+}

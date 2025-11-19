@@ -1,0 +1,57 @@
+{
+  "id": 49,
+  "trackId": 1,
+  "language": "python",
+  "title": "⭐ CHALLENGE: The Arena",
+  "subtitle": "Turn-Based Battle Simulator",
+  "difficulty": 4,
+  "estimatedTime": "30-40 minutes",
+  "xpReward": 300,
+  "description": "# Module 3 Challenge!\n\nYou've mastered for loops, while loops, range, break, and continue. Now build a complete turn-based battle system!\n\n## The Quest\n\nCreate a **Turn-Based Battle Simulator** where a player fights multiple enemies.\n\n### Requirements:\n\n1. **Setup:**\n   - Player stats: 100 HP, 20 damage\n   - 3 Enemies with different stats\n   - Track turn number\n\n2. **Battle Loop:**\n   - Fight each enemy in sequence\n   - Each turn:\n     - Player attacks enemy\n     - If enemy still alive, enemy attacks player\n     - Display both health values\n   - Battle continues until enemy defeated or player dies\n   - If player dies, break from all battles\n\n3. **Victory Conditions:**\n   - If player defeats all enemies: Victory!\n   - If player health reaches 0: Defeat!\n\n### Example Output:\n```\n=== BATTLE START ===\nPlayer HP: 100\n\n--- Fighting Goblin (HP: 50) ---\nTurn 1:\n  Player attacks for 20 damage!\n  Goblin HP: 30\n  Goblin attacks for 10 damage!\n  Player HP: 90\n\nTurn 2:\n  Player attacks for 20 damage!\n  Goblin HP: 10\n  Goblin attacks for 10 damage!\n  Player HP: 80\n\nGoblin defeated!\n\n[Continue with next enemy...]\n```\n\n## Success Criteria:\n- ✅ Uses while loop for battle\n- ✅ Uses for loop to iterate enemies\n- ✅ Uses break if player dies\n- ✅ Tracks and displays turn numbers\n- ✅ Calculates damage correctly\n- ✅ Shows clear victory/defeat message",
+  "starterCode": "# CHALLENGE: Turn-Based Battle Simulator\n#\n# Requirements:\n# - Player: 100 HP, 20 damage\n# - Fight 3 enemies in sequence\n# - Turn-based combat\n# - Break if player dies\n# - Display battle progress\n#\n# Start coding below:\n\n",
+  "solutionCode": "# CHALLENGE: Turn-Based Battle Simulator\n\n# Player stats\nplayer_hp = 100\nplayer_damage = 20\n\n# Enemy list\nenemies = [\n    {\"name\": \"Goblin\", \"hp\": 50, \"damage\": 10},\n    {\"name\": \"Orc\", \"hp\": 80, \"damage\": 15},\n    {\"name\": \"Dragon\", \"hp\": 120, \"damage\": 25}\n]\n\nprint(\"=== BATTLE START ===\")\nprint(f\"Player HP: {player_hp}\\n\")\n\n# Fight each enemy\nfor enemy in enemies:\n    print(f\"--- Fighting {enemy['name']} (HP: {enemy['hp']}) ---\")\n    enemy_hp = enemy['hp']\n    enemy_damage = enemy['damage']\n    turn = 1\n    \n    # Battle loop\n    while enemy_hp > 0 and player_hp > 0:\n        print(f\"\\nTurn {turn}:\")\n        \n        # Player attacks\n        enemy_hp -= player_damage\n        print(f\"  Player attacks for {player_damage} damage!\")\n        print(f\"  {enemy['name']} HP: {max(0, enemy_hp)}\")\n        \n        # Check if enemy defeated\n        if enemy_hp <= 0:\n            print(f\"\\n{enemy['name']} defeated!\\n\")\n            break\n        \n        # Enemy attacks\n        player_hp -= enemy_damage\n        print(f\"  {enemy['name']} attacks for {enemy_damage} damage!\")\n        print(f\"  Player HP: {max(0, player_hp)}\")\n        \n        # Check if player defeated\n        if player_hp <= 0:\n            print(\"\\n*** PLAYER DEFEATED ***\")\n            break\n        \n        turn += 1\n    \n    # If player died, stop all battles\n    if player_hp <= 0:\n        break\n\n# Final result\nif player_hp > 0:\n    print(f\"\\n*** VICTORY! ***\")\n    print(f\"Player survived with {player_hp} HP remaining!\")\nelse:\n    print(f\"\\nGame Over. Better luck next time!\")\n",
+  "hints": [
+    "Start with player_hp = 100, player_damage = 20. Create a list of enemy dictionaries with 'name', 'hp', and 'damage' keys",
+    "Use a for loop to iterate through the enemies list",
+    "For each enemy, use a while loop: while enemy_hp > 0 and player_hp > 0:",
+    "Inside the while loop: subtract damage from enemy_hp, then check if enemy is dead. If not, subtract enemy damage from player_hp",
+    "Complete solution structure:\n\nplayer_hp = 100\nplayer_damage = 20\nenemies = [{...}, {...}, {...}]\n\nfor enemy in enemies:\n    enemy_hp = enemy['hp']\n    turn = 1\n    \n    while enemy_hp > 0 and player_hp > 0:\n        # Player attacks\n        enemy_hp -= player_damage\n        if enemy_hp <= 0:\n            break\n        \n        # Enemy attacks  \n        player_hp -= enemy_damage\n        if player_hp <= 0:\n            break\n        \n        turn += 1\n    \n    if player_hp <= 0:\n        break"
+  ],
+  "validationTests": [
+    {
+      "type": "code_contains",
+      "value": "for",
+      "description": "Must use for loop"
+    },
+    {
+      "type": "code_contains",
+      "value": "while",
+      "description": "Must use while loop"
+    },
+    {
+      "type": "code_contains",
+      "value": "break",
+      "description": "Must use break statement"
+    },
+    {
+      "type": "variable_exists",
+      "variable": "player_hp",
+      "description": "Variable 'player_hp' should exist"
+    },
+    {
+      "type": "output_line_count",
+      "min": 10,
+      "description": "Should print multiple lines of battle progress"
+    }
+  ],
+  "learningObjectives": [
+    "Synthesize for loops, while loops, and break",
+    "Manage complex state across multiple battles",
+    "Implement turn-based game logic",
+    "Work with lists of dictionaries",
+    "Create engaging console output"
+  ],
+  "previousLessonId": 20,
+  "nextLessonId": 5,
+  "tags": ["challenge", "advanced", "for-loop", "while-loop", "break", "game-logic", "state-management"]
+}

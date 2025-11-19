@@ -1,0 +1,52 @@
+{
+  "id": 52,
+  "trackId": 1,
+  "language": "python",
+  "title": "The List Alchemist",
+  "subtitle": "Advanced List Operations",
+  "difficulty": 3,
+  "estimatedTime": "25-30 minutes",
+  "xpReward": 200,
+  "description": "# Mastering List Manipulation\n\nYou know the basics of lists. Now learn powerful techniques to transform and analyze them!\n\n## List Methods\n\n```python\nitems = [\"sword\", \"potion\", \"shield\"]\n\n# Add items\nitems.append(\"armor\")         # Add to end\nitems.insert(1, \"bow\")         # Insert at position\nitems.extend([\"axe\", \"helm\"])  # Add multiple\n\n# Remove items\nitems.remove(\"potion\")  # Remove by value\nitem = items.pop()       # Remove and return last\nitem = items.pop(0)      # Remove and return at index\n\n# Find items\nindex = items.index(\"sword\")  # Get position\ncount = items.count(\"potion\") # Count occurrences\n\n# Sort and reverse\nitems.sort()     # Sort in place\nitems.reverse()  # Reverse in place\n```\n\n## List Slicing\n\n```python\nnumbers = [1, 2, 3, 4, 5]\n\nfirst_three = numbers[:3]   # [1, 2, 3]\nlast_two = numbers[-2:]     # [4, 5]\nmiddle = numbers[1:4]       # [2, 3, 4]\nevery_other = numbers[::2]  # [1, 3, 5]\n```\n\n## Your Quest\n\nCreate an inventory management system:\n1. Add, remove, and search items\n2. Sort inventory by name\n3. Use slicing to get different subsets\n4. Find and count specific items",
+  "starterCode": "# Advanced Inventory System\n\ninventory = [\"sword\", \"potion\", \"shield\", \"potion\", \"gold\", \"map\"]\n\nprint(\"Starting inventory:\", inventory)\nprint()\n\n# Add items to inventory\nprint(\"=== ADDING ITEMS ===\")\ninventory.append(___)  # Add \"helmet\" to end\ninventory.insert(___, ___)  # Insert \"bow\" at position 2\nprint(\"After adding:\", inventory)\nprint()\n\n# Remove items\nprint(\"=== REMOVING ITEMS ===\")\ninventory.remove(___)  # Remove first \"potion\"\nlast_item = inventory.pop()  # Remove and store last item\nprint(f\"Removed: {last_item}\")\nprint(\"After removing:\", inventory)\nprint()\n\n# Find items\nprint(\"=== SEARCHING ===\")\nsword_position = inventory.index(___)  # Find \"sword\"\npotion_count = inventory.count(___)    # Count \"potion\"s\nprint(f\"Sword is at position: {sword_position}\")\nprint(f\"Number of potions: {potion_count}\")\nprint()\n\n# Sort inventory\nprint(\"=== SORTING ===\")\ninventory.sort()\nprint(\"Sorted inventory:\", inventory)\nprint()\n\n# List slicing\nprint(\"=== SLICING ===\")\nfirst_three = inventory[___]  # Get first 3 items\nlast_two = inventory[___]      # Get last 2 items\nevery_other = inventory[___]   # Get every other item\nprint(f\"First 3 items: {first_three}\")\nprint(f\"Last 2 items: {last_two}\")\nprint(f\"Every other item: {every_other}\")\n",
+  "solutionCode": "# Advanced Inventory System\n\ninventory = [\"sword\", \"potion\", \"shield\", \"potion\", \"gold\", \"map\"]\n\nprint(\"Starting inventory:\", inventory)\nprint()\n\n# Add items to inventory\nprint(\"=== ADDING ITEMS ===\")\ninventory.append(\"helmet\")\ninventory.insert(2, \"bow\")\nprint(\"After adding:\", inventory)\nprint()\n\n# Remove items\nprint(\"=== REMOVING ITEMS ===\")\ninventory.remove(\"potion\")\nlast_item = inventory.pop()\nprint(f\"Removed: {last_item}\")\nprint(\"After removing:\", inventory)\nprint()\n\n# Find items\nprint(\"=== SEARCHING ===\")\nsword_position = inventory.index(\"sword\")\npotion_count = inventory.count(\"potion\")\nprint(f\"Sword is at position: {sword_position}\")\nprint(f\"Number of potions: {potion_count}\")\nprint()\n\n# Sort inventory\nprint(\"=== SORTING ===\")\ninventory.sort()\nprint(\"Sorted inventory:\", inventory)\nprint()\n\n# List slicing\nprint(\"=== SLICING ===\")\nfirst_three = inventory[:3]\nlast_two = inventory[-2:]\nevery_other = inventory[::2]\nprint(f\"First 3 items: {first_three}\")\nprint(f\"Last 2 items: {last_two}\")\nprint(f\"Every other item: {every_other}\")\n",
+  "hints": [
+    "Use inventory.append('helmet') to add to the end",
+    "Use inventory.insert(2, 'bow') to insert at position 2",
+    "Use inventory.remove('potion') to remove first occurrence",
+    "Slicing: [:3] for first 3, [-2:] for last 2, [::2] for every other",
+    "Complete solution:\n\ninventory.append('helmet')\ninventory.insert(2, 'bow')\ninventory.remove('potion')\nsword_position = inventory.index('sword')\npotion_count = inventory.count('potion')\nfirst_three = inventory[:3]\nlast_two = inventory[-2:]\nevery_other = inventory[::2]"
+  ],
+  "validationTests": [
+    {
+      "type": "code_contains",
+      "value": "append",
+      "description": "Must use append() method"
+    },
+    {
+      "type": "code_contains",
+      "value": "insert",
+      "description": "Must use insert() method"
+    },
+    {
+      "type": "code_contains",
+      "value": "remove",
+      "description": "Must use remove() method"
+    },
+    {
+      "type": "code_contains",
+      "value": "[:",
+      "description": "Must use list slicing"
+    }
+  ],
+  "learningObjectives": [
+    "Use list methods: append, insert, remove, pop",
+    "Search lists with index() and count()",
+    "Sort and reverse lists in place",
+    "Slice lists to extract subsets",
+    "Build practical inventory systems"
+  ],
+  "previousLessonId": 23,
+  "nextLessonId": 25,
+  "tags": ["advanced", "lists", "methods", "slicing", "data-structures"]
+}

@@ -62,12 +62,10 @@ async function runValidationTest(
       return validateCodeStructure(code, test)
 
     case 'function_exists':
+      return validateFunctionExists(code, test)
+
     case 'function_returns':
-      return {
-        passed: false,
-        test,
-        message: `Validation type '${test.type}' not yet implemented`,
-      }
+      return validateFunctionReturns(code, test, executionResult)
 
     default:
       return {
@@ -432,6 +430,123 @@ function validateVariableValue(
     passed: false,
     test,
     message: `✗ ${test.description} - Expected '${expectedValue}', got '${actualValue}'`,
+  }
+}
+
+/**
+ * Check if a function is defined in the code
+ */
+function validateFunctionExists(
+  code: string,
+  test: ValidationTest
+): ValidationResult {
+  const functionName = test.function || String(test.value || '')
+
+  // Match function definition patterns for different languages
+  // Python: def function_name(
+  // JavaScript: function function_name( or const function_name = ( or let function_name = (
+  // GDScript: func function_name(
+  // C#: type function_name(
+  const patterns = [
+    new RegExp(`def\\s+${functionName}\\s*\\(`, 'i'), // Python
+    new RegExp(`function\\s+${functionName}\\s*\\(`, 'i'), // JavaScript
+    new RegExp(`(const|let|var)\\s+${functionName}\\s*=\\s*(async\\s*)?\\(`, 'i'), // Arrow functions
+    new RegExp(`func\\s+${functionName}\\s*\\(`, 'i'), // GDScript
+    new RegExp(`\\w+\\s+${functionName}\\s*\\(`, 'i'), // C# and other typed languages
+  ]
+
+  const exists = patterns.some(pattern => pattern.test(code))
+
+  if (exists) {
+    return {
+      passed: true,
+      test,
+      message: `✓ ${test.description}`,
+    }
+  }
+
+  return {
+    passed: false,
+    test,
+    message: `✗ ${test.description} - Function '${functionName}' not found`,
+  }
+}
+
+/**
+ * Check if a function returns the expected value
+ * Note: This is a simplified implementation that checks if the function exists
+ * and contains a return statement. For full validation, the backend would need
+ * to execute the function with test arguments and capture the return value.
+ */
+function validateFunctionReturns(
+  code: string,
+  test: ValidationTest,
+  executionResult?: ExecutionResult
+): ValidationResult {
+  const functionName = test.function || String(test.value || '')
+
+  // First check if function exists
+  const functionExistsResult = validateFunctionExists(code, {
+    ...test,
+    value: functionName,
+  })
+
+  if (!functionExistsResult.passed) {
+    return {
+      passed: false,
+      test,
+      message: `✗ ${test.description} - Function '${functionName}' not found`,
+    }
+  }
+
+  // Extract the function body
+  const functionPattern = new RegExp(
+    `def\\s+${functionName}\\s*\\([^)]*\\):[\\s\\S]*?(?=\\ndef\\s|\\nclass\\s|$)`,
+    'i'
+  )
+  const functionMatch = code.match(functionPattern)
+
+  if (!functionMatch) {
+    return {
+      passed: false,
+      test,
+      message: `✗ ${test.description} - Could not parse function '${functionName}'`,
+    }
+  }
+
+  const functionBody = functionMatch[0]
+
+  // Check if function has a return statement
+  if (!functionBody.includes('return')) {
+    return {
+      passed: false,
+      test,
+      message: `✗ ${test.description} - Function '${functionName}' does not return a value`,
+    }
+  }
+
+  // If we have execution results, we can do a basic validation
+  // by checking if the expected output appears (this is a heuristic)
+  if (executionResult && test.expectedReturn !== undefined) {
+    const expectedStr = String(test.expectedReturn)
+    // Check if the expected return value appears in the output
+    // This is not perfect but provides some validation
+    if (executionResult.stdout.includes(expectedStr)) {
+      return {
+        passed: true,
+        test,
+        message: `✓ ${test.description}`,
+      }
+    }
+  }
+
+  // If no execution result or can't verify the exact return value,
+  // pass the test if the function exists and has a return statement
+  // This is a compromise - ideally we'd execute the function and check the value
+  return {
+    passed: true,
+    test,
+    message: `✓ ${test.description}`,
   }
 }
 

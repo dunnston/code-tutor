@@ -1,0 +1,52 @@
+{
+  "id": 54,
+  "trackId": 1,
+  "language": "python",
+  "title": "The Dictionary Sage",
+  "subtitle": "Advanced Dictionary Operations",
+  "difficulty": 3,
+  "estimatedTime": "25-30 minutes",
+  "xpReward": 200,
+  "description": "# Mastering Dictionaries\n\nYou've worked with dictionaries, but there's so much more! Learn advanced techniques to manipulate these powerful data structures.\n\n## Dictionary Methods\n\n```python\nplayer = {\"name\": \"Aria\", \"level\": 5, \"gold\": 100}\n\n# Get values safely\nname = player.get(\"name\")           # \"Aria\"\nclass_type = player.get(\"class\", \"Warrior\")  # Default if missing\n\n# Get all keys, values, items\nkeys = player.keys()         # dict_keys(['name', 'level', 'gold'])\nvalues = player.values()     # dict_values(['Aria', 5, 100])\nitems = player.items()       # dict_items([('name', 'Aria'), ...])\n\n# Update dictionary\nplayer.update({\"class\": \"Mage\", \"level\": 6})\n\n# Remove items\nlevel = player.pop(\"level\")   # Remove and return value\nlast = player.popitem()       # Remove and return last item\n\n# Check existence\nif \"gold\" in player:\n    print(\"Has gold\")\n```\n\n## Looping Through Dictionaries\n\n```python\n# Loop through keys\nfor key in player:\n    print(key)\n\n# Loop through values\nfor value in player.values():\n    print(value)\n\n# Loop through key-value pairs\nfor key, value in player.items():\n    print(f\"{key}: {value}\")\n```\n\n## Your Quest\n\nCreate a character stat manager:\n1. Use .get() with defaults\n2. Update stats with .update()\n3. Loop through stats to display them\n4. Calculate total stat points",
+  "starterCode": "# Character Stat Manager\n\ncharacter = {\n    \"name\": \"Thorin\",\n    \"level\": 10,\n    \"health\": 100,\n    \"mana\": 50,\n    \"strength\": 15,\n    \"intelligence\": 10\n}\n\nprint(\"=== CHARACTER INFO ===\")\nprint(f\"Name: {character['name']}\")\nprint(f\"Level: {character['level']}\")\n\n# Get stats with defaults\ndefense = character.get(___, ___)  # Get 'defense', default to 5 if missing\nprint(f\"Defense: {defense}\")\n\nprint(\"\\n=== LEVELING UP ===\")\n# Update multiple stats at once\ncharacter.update(___)  # Increase level by 1, add 20 health, add 10 mana\nprint(\"Leveled up!\")\n\nprint(\"\\n=== CURRENT STATS ===\")\n# Loop through all stats and display\nfor stat, value in ___:  # Loop through items()\n    print(f\"{stat}: {value}\")\n\nprint(\"\\n=== STAT CALCULATION ===\")\n# Calculate total stat points (strength + intelligence + defense)\n# Hint: Use .get() for defense since it might not exist\nstr_val = character.get(___, ___)\nint_val = character.get(___, ___)\ndef_val = character.get(___, ___)\ntotal_stats = ___  # Sum them up\nprint(f\"Total stat points: {total_stats}\")\n\nprint(\"\\n=== REMOVING MANA ===\")\nremoved_mana = character.pop(___)  # Remove 'mana' key\nprint(f\"Removed {removed_mana} mana\")\nprint(f\"Remaining stats: {list(character.keys())}\")\n",
+  "solutionCode": "# Character Stat Manager\n\ncharacter = {\n    \"name\": \"Thorin\",\n    \"level\": 10,\n    \"health\": 100,\n    \"mana\": 50,\n    \"strength\": 15,\n    \"intelligence\": 10\n}\n\nprint(\"=== CHARACTER INFO ===\")\nprint(f\"Name: {character['name']}\")\nprint(f\"Level: {character['level']}\")\n\n# Get stats with defaults\ndefense = character.get(\"defense\", 5)\nprint(f\"Defense: {defense}\")\n\nprint(\"\\n=== LEVELING UP ===\")\n# Update multiple stats at once\ncharacter.update({\"level\": 11, \"health\": 120, \"mana\": 60})\nprint(\"Leveled up!\")\n\nprint(\"\\n=== CURRENT STATS ===\")\n# Loop through all stats and display\nfor stat, value in character.items():\n    print(f\"{stat}: {value}\")\n\nprint(\"\\n=== STAT CALCULATION ===\")\n# Calculate total stat points\nstr_val = character.get(\"strength\", 0)\nint_val = character.get(\"intelligence\", 0)\ndef_val = character.get(\"defense\", 0)\ntotal_stats = str_val + int_val + def_val\nprint(f\"Total stat points: {total_stats}\")\n\nprint(\"\\n=== REMOVING MANA ===\")\nremoved_mana = character.pop(\"mana\")\nprint(f\"Removed {removed_mana} mana\")\nprint(f\"Remaining stats: {list(character.keys())}\")\n",
+  "hints": [
+    "Use character.get('defense', 5) to get defense with default value 5",
+    "Use character.update({'level': 11, 'health': 120, 'mana': 60}) to update multiple values",
+    "Loop with: for stat, value in character.items():",
+    "Use character.pop('mana') to remove and return mana value",
+    "Complete solution:\n\ndefense = character.get('defense', 5)\ncharacter.update({'level': 11, 'health': 120, 'mana': 60})\nfor stat, value in character.items():\n    print(f'{stat}: {value}')\ntotal_stats = character.get('strength', 0) + character.get('intelligence', 0) + character.get('defense', 0)"
+  ],
+  "validationTests": [
+    {
+      "type": "code_contains",
+      "value": ".get(",
+      "description": "Must use .get() method"
+    },
+    {
+      "type": "code_contains",
+      "value": ".update(",
+      "description": "Must use .update() method"
+    },
+    {
+      "type": "code_contains",
+      "value": ".items()",
+      "description": "Must use .items() method"
+    },
+    {
+      "type": "code_contains",
+      "value": ".pop(",
+      "description": "Must use .pop() method"
+    }
+  ],
+  "learningObjectives": [
+    "Use .get() for safe value access with defaults",
+    "Update dictionaries with .update()",
+    "Loop through dictionaries with .items()",
+    "Remove items with .pop() and .popitem()",
+    "Check for key existence with 'in'"
+  ],
+  "previousLessonId": 8,
+  "nextLessonId": 27,
+  "tags": ["advanced", "dictionaries", "methods", "iteration", "data-structures"]
+}

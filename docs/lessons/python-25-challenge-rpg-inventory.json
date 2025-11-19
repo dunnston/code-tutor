@@ -1,0 +1,52 @@
+{
+  "id": 53,
+  "trackId": 1,
+  "language": "python",
+  "title": "⭐ CHALLENGE: The Grand Inventory",
+  "subtitle": "Complete RPG Inventory System",
+  "difficulty": 5,
+  "estimatedTime": "35-45 minutes",
+  "xpReward": 350,
+  "description": "# Module 4-5 Challenge!\n\nYou've mastered functions, parameters, return values, and advanced lists. Build a complete RPG inventory system!\n\n## The Quest\n\nCreate a **Complete RPG Inventory System** with functions to manage items.\n\n### Requirements:\n\n1. **Item Structure:**\n   - Each item is a dictionary: {\"name\": str, \"type\": str, \"value\": int}\n   - Types: \"weapon\", \"armor\", \"potion\", \"misc\"\n\n2. **Required Functions:**\n   - `add_item(inventory, name, item_type, value)` - Add new item\n   - `remove_item(inventory, name)` - Remove item by name, return success/failure\n   - `find_item(inventory, name)` - Find and return item, or None\n   - `get_total_value(inventory)` - Calculate total inventory value\n   - `get_items_by_type(inventory, item_type)` - Return list of matching items\n   - `sort_by_value(inventory)` - Sort inventory by value (high to low)\n\n3. **Main Program:**\n   - Start with 3-4 items\n   - Add 2 new items\n   - Remove 1 item\n   - Find specific item and print details\n   - Print total value\n   - Print all weapons\n   - Sort and display by value\n\n### Example Output:\n```\n=== STARTING INVENTORY ===\n1. Iron Sword (weapon) - 100g\n2. Leather Armor (armor) - 75g\n3. Health Potion (potion) - 25g\n\n=== ADDING ITEMS ===\nAdded Steel Sword\nAdded Magic Ring\n\n=== TOTAL VALUE ===\nTotal inventory value: 325g\n\n=== WEAPONS ===\n- Iron Sword (100g)\n- Steel Sword (150g)\n\n=== SORTED BY VALUE ===\n1. Steel Sword - 150g\n2. Magic Ring - 200g\n...\n```",
+  "starterCode": "# CHALLENGE: Complete RPG Inventory System\n#\n# Requirements:\n# - Create functions for inventory management\n# - Use dictionaries for items\n# - Implement add, remove, find, calculate, filter, sort\n# - Test all functions\n#\n# Start coding below:\n\n",
+  "solutionCode": "# CHALLENGE: Complete RPG Inventory System\n\ndef add_item(inventory, name, item_type, value):\n    \"\"\"Add a new item to inventory\"\"\"\n    item = {\"name\": name, \"type\": item_type, \"value\": value}\n    inventory.append(item)\n    return inventory\n\ndef remove_item(inventory, name):\n    \"\"\"Remove item by name, return True if found, False otherwise\"\"\"\n    for item in inventory:\n        if item[\"name\"] == name:\n            inventory.remove(item)\n            return True\n    return False\n\ndef find_item(inventory, name):\n    \"\"\"Find and return item by name, or None if not found\"\"\"\n    for item in inventory:\n        if item[\"name\"] == name:\n            return item\n    return None\n\ndef get_total_value(inventory):\n    \"\"\"Calculate total value of all items\"\"\"\n    total = 0\n    for item in inventory:\n        total += item[\"value\"]\n    return total\n\ndef get_items_by_type(inventory, item_type):\n    \"\"\"Return list of items matching the type\"\"\"\n    matching = []\n    for item in inventory:\n        if item[\"type\"] == item_type:\n            matching.append(item)\n    return matching\n\ndef sort_by_value(inventory):\n    \"\"\"Sort inventory by value (highest first)\"\"\"\n    # Sort in place by value, descending\n    inventory.sort(key=lambda item: item[\"value\"], reverse=True)\n    return inventory\n\n# Main Program\ninventory = []\n\nprint(\"=== STARTING INVENTORY ===\")\nadd_item(inventory, \"Iron Sword\", \"weapon\", 100)\nadd_item(inventory, \"Leather Armor\", \"armor\", 75)\nadd_item(inventory, \"Health Potion\", \"potion\", 25)\n\nfor i, item in enumerate(inventory, 1):\n    print(f\"{i}. {item['name']} ({item['type']}) - {item['value']}g\")\n\nprint(\"\\n=== ADDING ITEMS ===\")\nadd_item(inventory, \"Steel Sword\", \"weapon\", 150)\nadd_item(inventory, \"Magic Ring\", \"misc\", 200)\nprint(\"Added Steel Sword\")\nprint(\"Added Magic Ring\")\n\nprint(\"\\n=== REMOVING ITEM ===\")\nif remove_item(inventory, \"Health Potion\"):\n    print(\"Removed Health Potion\")\n\nprint(\"\\n=== FINDING ITEM ===\")\nfound = find_item(inventory, \"Iron Sword\")\nif found:\n    print(f\"Found: {found['name']} ({found['type']}) - {found['value']}g\")\n\nprint(\"\\n=== TOTAL VALUE ===\")\ntotal = get_total_value(inventory)\nprint(f\"Total inventory value: {total}g\")\n\nprint(\"\\n=== WEAPONS ===\")\nweapons = get_items_by_type(inventory, \"weapon\")\nfor weapon in weapons:\n    print(f\"- {weapon['name']} ({weapon['value']}g)\")\n\nprint(\"\\n=== SORTED BY VALUE ===\")\nsort_by_value(inventory)\nfor i, item in enumerate(inventory, 1):\n    print(f\"{i}. {item['name']} - {item['value']}g\")\n",
+  "hints": [
+    "Start by defining all 6 functions first, then write the main program",
+    "Each item is a dictionary: {'name': 'Sword', 'type': 'weapon', 'value': 100}",
+    "In add_item, create the dictionary and append to inventory",
+    "In get_total_value, loop through inventory and sum all item['value']",
+    "Complete solution structure:\n\ndef add_item(inventory, name, item_type, value):\n    item = {'name': name, 'type': item_type, 'value': value}\n    inventory.append(item)\n\ndef get_total_value(inventory):\n    total = 0\n    for item in inventory:\n        total += item['value']\n    return total\n\ndef get_items_by_type(inventory, item_type):\n    matching = []\n    for item in inventory:\n        if item['type'] == item_type:\n            matching.append(item)\n    return matching"
+  ],
+  "validationTests": [
+    {
+      "type": "function_exists",
+      "function": "add_item",
+      "description": "Function 'add_item' should exist"
+    },
+    {
+      "type": "function_exists",
+      "function": "get_total_value",
+      "description": "Function 'get_total_value' should exist"
+    },
+    {
+      "type": "code_contains",
+      "value": "def",
+      "description": "Must define multiple functions"
+    },
+    {
+      "type": "output_line_count",
+      "min": 15,
+      "description": "Should produce detailed output"
+    }
+  ],
+  "learningObjectives": [
+    "Design a complete system with multiple functions",
+    "Work with lists of dictionaries",
+    "Implement CRUD operations (Create, Read, Update, Delete)",
+    "Use lambda functions for sorting",
+    "Build practical, reusable code modules"
+  ],
+  "previousLessonId": 24,
+  "nextLessonId": 6,
+  "tags": ["challenge", "advanced", "functions", "lists", "dictionaries", "system-design", "crud"]
+}

@@ -120,8 +120,9 @@ export function Header() {
                       ? '#fb923c'
                       : '#ef4444',
               }}
+              title={`Difficulty: ${currentLesson.difficulty <= 3 ? 'Beginner' : currentLesson.difficulty <= 6 ? 'Intermediate' : 'Advanced'}`}
             >
-              Level {currentLesson.difficulty}
+              Difficulty {currentLesson.difficulty}
             </div>
           </div>
         </div>

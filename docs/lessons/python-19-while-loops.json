@@ -1,0 +1,47 @@
+{
+  "id": 47,
+  "trackId": 1,
+  "language": "python",
+  "title": "The Persistent Guardian",
+  "subtitle": "While Loops",
+  "difficulty": 2,
+  "estimatedTime": "20-25 minutes",
+  "xpReward": 150,
+  "description": "# Looping Until a Condition Changes\n\nA `for` loop runs a set number of times. But what if you don't know how many times to loop? What if you need to keep trying **until** something happens?\n\nThat's where **while loops** come in!\n\n## While Loop Basics\n\nA while loop runs as long as a condition is True:\n\n```python\nhealth = 100\n\nwhile health > 0:\n    print(f\"Still fighting! Health: {health}\")\n    health = health - 20\n\nprint(\"Defeated!\")\n```\n\n**Important:** Make sure the condition eventually becomes False, or you'll have an infinite loop!\n\n## Common While Loop Patterns\n\n### Countdown\n```python\ncount = 5\nwhile count > 0:\n    print(count)\n    count = count - 1\n```\n\n### User Input Validation\n```python\npassword = \"\"\nwhile password != \"secret\":\n    password = input(\"Enter password: \")\nprint(\"Access granted!\")\n```\n\n## Your Quest\n\nCreate a mining simulation:\n1. Start with 0 gold, mine until you have 100+ gold\n2. Each mine action gives 15-25 gold (use 20 for simplicity)\n3. Count how many times you mined\n4. Create a guessing game where player keeps guessing until correct",
+  "starterCode": "# Mining Simulation\n\nprint(\"=== MINING FOR GOLD ===\")\ngold = 0\nmining_attempts = 0\n\n# Mine until you have at least 100 gold\nwhile ___:  # Fix this condition\n    gold = gold + 20  # Each mine gives 20 gold\n    mining_attempts = ___  # Increment counter\n    print(f\"Mined! Total gold: {gold}\")\n\nprint(f\"Mining complete! Mined {mining_attempts} times for {gold} gold.\")\n\nprint(\"\\n=== NUMBER GUESSING GAME ===\")\nsecret_number = 7\nguess = 0\nattempts = 0\n\n# Keep guessing until correct\nwhile ___:  # Fix this condition\n    guess = int(input(\"Guess a number (1-10): \"))\n    attempts = ___  # Increment counter\n    \n    if guess < secret_number:\n        print(\"Too low! Try again.\")\n    elif guess > secret_number:\n        print(\"Too high! Try again.\")\n\nprint(f\"Correct! You guessed it in {attempts} attempts!\")\n",
+  "solutionCode": "# Mining Simulation\n\nprint(\"=== MINING FOR GOLD ===\")\ngold = 0\nmining_attempts = 0\n\n# Mine until you have at least 100 gold\nwhile gold < 100:\n    gold = gold + 20\n    mining_attempts = mining_attempts + 1\n    print(f\"Mined! Total gold: {gold}\")\n\nprint(f\"Mining complete! Mined {mining_attempts} times for {gold} gold.\")\n\nprint(\"\\n=== NUMBER GUESSING GAME ===\")\nsecret_number = 7\nguess = 0\nattempts = 0\n\n# Keep guessing until correct\nwhile guess != secret_number:\n    guess = int(input(\"Guess a number (1-10): \"))\n    attempts = attempts + 1\n    \n    if guess < secret_number:\n        print(\"Too low! Try again.\")\n    elif guess > secret_number:\n        print(\"Too high! Try again.\")\n\nprint(f\"Correct! You guessed it in {attempts} attempts!\")\n",
+  "hints": [
+    "The mining loop should continue while gold < 100",
+    "Increment mining_attempts with: mining_attempts = mining_attempts + 1 (or mining_attempts += 1)",
+    "The guessing loop should continue while guess != secret_number",
+    "Make sure to increment attempts inside the while loop",
+    "Complete solution:\n\nwhile gold < 100:\n    gold = gold + 20\n    mining_attempts = mining_attempts + 1\n\nwhile guess != secret_number:\n    guess = int(input('Guess: '))\n    attempts = attempts + 1\n    if guess < secret_number:\n        print('Too low!')\n    elif guess > secret_number:\n        print('Too high!')"
+  ],
+  "validationTests": [
+    {
+      "type": "code_contains",
+      "value": "while",
+      "description": "Must use while loop"
+    },
+    {
+      "type": "variable_exists",
+      "variable": "gold",
+      "description": "Variable 'gold' should exist"
+    },
+    {
+      "type": "variable_exists",
+      "variable": "mining_attempts",
+      "description": "Variable 'mining_attempts' should exist"
+    }
+  ],
+  "learningObjectives": [
+    "Understand while loop syntax and logic",
+    "Create loops that run until a condition is met",
+    "Avoid infinite loops by ensuring conditions change",
+    "Use counters to track loop iterations",
+    "Validate user input with while loops"
+  ],
+  "previousLessonId": 18,
+  "nextLessonId": 20,
+  "tags": ["intermediate", "while-loop", "conditions", "validation", "user-input"]
+}

@@ -1,0 +1,52 @@
+{
+  "id": 50,
+  "trackId": 1,
+  "language": "python",
+  "title": "The Parameter Wizard",
+  "subtitle": "Advanced Function Parameters",
+  "difficulty": 3,
+  "estimatedTime": "20-25 minutes",
+  "xpReward": 150,
+  "description": "# Mastering Function Parameters\n\nYou've created basic functions, but there's more power in parameters! Learn to create flexible, reusable functions.\n\n## Multiple Parameters\n\nFunctions can accept multiple inputs:\n\n```python\ndef calculate_damage(base_damage, multiplier, armor):\n    damage = base_damage * multiplier - armor\n    return damage\n\nresult = calculate_damage(50, 1.5, 10)\nprint(result)  # 65.0\n```\n\n## Positional vs Keyword Arguments\n\n```python\n# Positional - order matters\ncalculate_damage(50, 1.5, 10)\n\n# Keyword - order doesn't matter\ncalculate_damage(multiplier=1.5, armor=10, base_damage=50)\n```\n\n## Default Parameters\n\nProvide default values for optional parameters:\n\n```python\ndef greet(name, greeting=\"Hello\"):\n    return f\"{greeting}, {name}!\"\n\nprint(greet(\"Aria\"))              # Hello, Aria!\nprint(greet(\"Aria\", \"Welcome\"))   # Welcome, Aria!\n```\n\n## Your Quest\n\nCreate a character creation system with flexible functions:\n1. Function to create a character with name, class, level (default 1)\n2. Function to calculate stats with base, bonus (default 0), multiplier (default 1.0)\n3. Use both positional and keyword arguments",
+  "starterCode": "# Character Creation System\n\n# Create a character with optional level parameter\ndef create_character(name, char_class, level=___):  # Set default level to 1\n    character = {\n        \"name\": ___,\n        \"class\": ___,\n        \"level\": ___\n    }\n    return character\n\n# Calculate stat with optional bonus and multiplier\ndef calculate_stat(base_value, bonus=___, multiplier=___):  # Defaults: 0, 1.0\n    total = ___  # Formula: (base_value + bonus) * multiplier\n    return total\n\nprint(\"=== CHARACTER CREATION ===\")\n\n# Create characters with different parameters\nwarrior = create_character(_____)  # Use positional: \"Thorin\", \"Warrior\", 5\nmage = create_character(_____)     # Use keyword: name=\"Elara\", char_class=\"Mage\"\nrogue = create_character(_____)    # Mix: \"Shadow\", \"Rogue\" (use default level)\n\nprint(f\"Warrior: {warrior}\")\nprint(f\"Mage: {mage}\")\nprint(f\"Rogue: {rogue}\")\n\nprint(\"\\n=== STAT CALCULATIONS ===\")\n\n# Calculate stats with different combinations\nhealth = calculate_stat(100, 20, 1.5)  # All parameters\nstrength = calculate_stat(50, bonus=10)  # Use default multiplier\nmagic = calculate_stat(75)  # Use both defaults\n\nprint(f\"Health: {health}\")\nprint(f\"Strength: {strength}\")\nprint(f\"Magic: {magic}\")\n",
+  "solutionCode": "# Character Creation System\n\n# Create a character with optional level parameter\ndef create_character(name, char_class, level=1):\n    character = {\n        \"name\": name,\n        \"class\": char_class,\n        \"level\": level\n    }\n    return character\n\n# Calculate stat with optional bonus and multiplier\ndef calculate_stat(base_value, bonus=0, multiplier=1.0):\n    total = (base_value + bonus) * multiplier\n    return total\n\nprint(\"=== CHARACTER CREATION ===\")\n\n# Create characters with different parameters\nwarrior = create_character(\"Thorin\", \"Warrior\", 5)\nmage = create_character(name=\"Elara\", char_class=\"Mage\")\nrogue = create_character(\"Shadow\", \"Rogue\")\n\nprint(f\"Warrior: {warrior}\")\nprint(f\"Mage: {mage}\")\nprint(f\"Rogue: {rogue}\")\n\nprint(\"\\n=== STAT CALCULATIONS ===\")\n\n# Calculate stats with different combinations\nhealth = calculate_stat(100, 20, 1.5)\nstrength = calculate_stat(50, bonus=10)\nmagic = calculate_stat(75)\n\nprint(f\"Health: {health}\")\nprint(f\"Strength: {strength}\")\nprint(f\"Magic: {magic}\")\n",
+  "hints": [
+    "For create_character, set level=1 as the default in the function definition",
+    "In the function body, return a dictionary with the three values",
+    "For calculate_stat, set bonus=0 and multiplier=1.0 as defaults",
+    "Formula: (base_value + bonus) * multiplier",
+    "Complete solution:\n\ndef create_character(name, char_class, level=1):\n    return {'name': name, 'class': char_class, 'level': level}\n\ndef calculate_stat(base_value, bonus=0, multiplier=1.0):\n    return (base_value + bonus) * multiplier\n\nwarrior = create_character('Thorin', 'Warrior', 5)\nmage = create_character(name='Elara', char_class='Mage')\nrogue = create_character('Shadow', 'Rogue')"
+  ],
+  "validationTests": [
+    {
+      "type": "function_exists",
+      "function": "create_character",
+      "description": "Function 'create_character' should exist"
+    },
+    {
+      "type": "function_exists",
+      "function": "calculate_stat",
+      "description": "Function 'calculate_stat' should exist"
+    },
+    {
+      "type": "code_contains",
+      "value": "def",
+      "description": "Must define functions"
+    },
+    {
+      "type": "output_line_count",
+      "min": 6,
+      "description": "Should print multiple lines"
+    }
+  ],
+  "learningObjectives": [
+    "Define functions with multiple parameters",
+    "Use default parameter values",
+    "Call functions with positional arguments",
+    "Call functions with keyword arguments",
+    "Create flexible, reusable functions"
+  ],
+  "previousLessonId": 5,
+  "nextLessonId": 23,
+  "tags": ["advanced", "functions", "parameters", "defaults", "keyword-arguments"]
+}

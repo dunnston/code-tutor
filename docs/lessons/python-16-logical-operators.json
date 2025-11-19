@@ -1,0 +1,46 @@
+{
+  "id": 44,
+  "trackId": 1,
+  "language": "python",
+  "title": "The Gatekeeper's Logic",
+  "subtitle": "Logical Operators (and, or, not)",
+  "difficulty": 2,
+  "estimatedTime": "20-25 minutes",
+  "xpReward": 150,
+  "description": "# Combining Conditions\n\nSometimes you need to check multiple things at once. Can the player enter the dungeon? They need BOTH a key AND a high enough level. That's where logical operators shine!\n\n## The Three Logical Operators\n\n### AND - Both must be True\n```python\nhas_key = True\nlevel = 10\n\nif has_key and level >= 5:\n    print(\"Welcome to the dungeon!\")\n```\n\n### OR - At least one must be True  \n```python\nif is_admin or is_moderator:\n    print(\"You have special permissions\")\n```\n\n### NOT - Reverses True/False\n```python\nif not is_dead:\n    print(\"Player is still alive\")\n```\n\n## Combining Multiple Conditions\n\n```python\nif (level >= 10 and has_sword) or is_admin:\n    print(\"Access granted!\")\n```\n\n## Your Quest\n\nCreate a dungeon entrance checker:\n1. Set player level, has_key (True/False), current_health\n2. Check if player can enter (need key AND level >= 5)\n3. Check if they should heal first (health < 50)\n4. Print appropriate messages",
+  "starterCode": "# Dungeon Entrance Checker\n\n# Player stats\nplayer_level = 7\nhas_key = True\ncurrent_health = 30\n\n# Check if player can enter dungeon\nif ___:  # Player has key AND level >= 5\n    print(\"✓ You meet the requirements to enter!\")\n    \n    # Check if player should heal first\n    if ___:  # Health is less than 50\n        print(\"⚠ Warning: Your health is low! Consider healing first.\")\n    else:\n        print(\"✓ Your health is good. Ready for battle!\")\n        \n    print(\"\\nYou may enter the dungeon. Good luck, adventurer!\")\nelse:\n    # Player doesn't meet requirements\n    print(\"✗ You cannot enter the dungeon!\")\n    \n    if ___:  # Player doesn't have the key\n        print(\"  - You need the Dungeon Key\")\n    \n    if ___:  # Player level is too low\n        print(f\"  - Your level ({player_level}) is too low. Need level 5+\")\n",
+  "solutionCode": "# Dungeon Entrance Checker\n\n# Player stats\nplayer_level = 7\nhas_key = True\ncurrent_health = 30\n\n# Check if player can enter dungeon\nif has_key and player_level >= 5:\n    print(\"✓ You meet the requirements to enter!\")\n    \n    # Check if player should heal first\n    if current_health < 50:\n        print(\"⚠ Warning: Your health is low! Consider healing first.\")\n    else:\n        print(\"✓ Your health is good. Ready for battle!\")\n        \n    print(\"\\nYou may enter the dungeon. Good luck, adventurer!\")\nelse:\n    # Player doesn't meet requirements\n    print(\"✗ You cannot enter the dungeon!\")\n    \n    if not has_key:\n        print(\"  - You need the Dungeon Key\")\n    \n    if player_level < 5:\n        print(f\"  - Your level ({player_level}) is too low. Need level 5+\")\n",
+  "hints": [
+    "Use 'and' to check both conditions: has_key and player_level >= 5",
+    "To check if health is low: current_health < 50",
+    "Use 'not' to check if player doesn't have key: not has_key",
+    "Make sure you're checking multiple conditions properly with parentheses if needed",
+    "Complete solution:\n\nif has_key and player_level >= 5:\n    if current_health < 50:\n        print('Warning: Your health is low!')\nelse:\n    if not has_key:\n        print('You need the Dungeon Key')\n    if player_level < 5:\n        print(f'Level too low')"
+  ],
+  "validationTests": [
+    {
+      "type": "code_contains",
+      "value": "and",
+      "description": "Must use 'and' logical operator"
+    },
+    {
+      "type": "code_contains",
+      "value": "if",
+      "description": "Must use if statements"
+    },
+    {
+      "type": "output_line_count",
+      "min": 2,
+      "description": "Should print at least 2 lines"
+    }
+  ],
+  "learningObjectives": [
+    "Use 'and' to combine multiple conditions",
+    "Use 'or' for alternative conditions",
+    "Use 'not' to reverse boolean values",
+    "Create complex conditional logic for game systems"
+  ],
+  "previousLessonId": 15,
+  "nextLessonId": 17,
+  "tags": ["intermediate", "logical-operators", "and", "or", "not", "complex-conditions"]
+}

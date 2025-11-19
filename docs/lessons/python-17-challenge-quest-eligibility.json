@@ -1,0 +1,57 @@
+{
+  "id": 45,
+  "trackId": 1,
+  "language": "python",
+  "title": "⭐ CHALLENGE: The Quest Board",
+  "subtitle": "Quest Eligibility Checker",
+  "difficulty": 3,
+  "estimatedTime": "25-35 minutes",
+  "xpReward": 250,
+  "description": "# Module 2 Challenge!\n\nYou've mastered variables, input, math, if/else, elif, and logical operators. Time to build a complete system!\n\n## The Quest\n\nCreate a **Quest Eligibility Checker** that determines which quests a player can undertake based on their stats.\n\n### Requirements:\n\n1. **Get player information:**\n   - Player level (number)\n   - Has sword? (yes/no input, convert to True/False)\n   - Current health (number)\n\n2. **Check eligibility for three quests:**\n   - **Easy Quest**: level >= 1 (anyone can do it)\n   - **Medium Quest**: level >= 5 AND has sword\n   - **Hard Quest**: level >= 10 AND has sword AND health > 50\n\n3. **Print results:**\n   - List each quest\n   - Show ✓ if eligible or ✗ if not\n   - Explain why they're not eligible (if applicable)\n\n### Example Output:\n```\nEnter your level: 7\nDo you have a sword? (yes/no): yes\nEnter your current health: 45\n\n=== AVAILABLE QUESTS ===\n✓ Easy Quest: Gather herbs\n✓ Medium Quest: Defeat the goblin chief\n✗ Hard Quest: Slay the dragon\n  Reason: Health too low (need 50+, you have 45)\n```\n\n## Success Criteria:\n- ✅ Gets all inputs from user\n- ✅ Converts yes/no to boolean\n- ✅ Uses if/elif/else correctly\n- ✅ Uses logical operators (and)\n- ✅ Shows clear eligibility for each quest\n- ✅ Explains why player isn't eligible",
+  "starterCode": "# CHALLENGE: Quest Eligibility Checker\n#\n# Requirements:\n# 1. Get player level, has sword (yes/no), current health\n# 2. Check three quests:\n#    - Easy: level >= 1\n#    - Medium: level >= 5 AND has sword\n#    - Hard: level >= 10 AND has sword AND health > 50\n# 3. Print eligibility for each quest\n#\n# Start coding below:\n\n",
+  "solutionCode": "# CHALLENGE: Quest Eligibility Checker\n\n# Get player information\nplayer_level = int(input(\"Enter your level: \"))\nsword_input = input(\"Do you have a sword? (yes/no): \").lower()\nhas_sword = (sword_input == \"yes\")\ncurrent_health = int(input(\"Enter your current health: \"))\n\nprint(\"\\n=== AVAILABLE QUESTS ===\")\n\n# Easy Quest - anyone can do it\nif player_level >= 1:\n    print(\"✓ Easy Quest: Gather herbs\")\nelse:\n    print(\"✗ Easy Quest: Gather herbs\")\n    print(\"  Reason: You need to be at least level 1\")\n\n# Medium Quest - needs level 5 and sword\nif player_level >= 5 and has_sword:\n    print(\"✓ Medium Quest: Defeat the goblin chief\")\nelse:\n    print(\"✗ Medium Quest: Defeat the goblin chief\")\n    if player_level < 5:\n        print(f\"  Reason: Level too low (need 5, you are {player_level})\")\n    if not has_sword:\n        print(\"  Reason: You need a sword\")\n\n# Hard Quest - needs level 10, sword, and health > 50\nif player_level >= 10 and has_sword and current_health > 50:\n    print(\"✓ Hard Quest: Slay the dragon\")\nelse:\n    print(\"✗ Hard Quest: Slay the dragon\")\n    if player_level < 10:\n        print(f\"  Reason: Level too low (need 10, you are {player_level})\")\n    if not has_sword:\n        print(\"  Reason: You need a sword\")\n    if current_health <= 50:\n        print(f\"  Reason: Health too low (need 50+, you have {current_health})\")\n",
+  "hints": [
+    "Start by getting all three inputs. Convert level and health to int(). For the sword, check if input == 'yes' to get True/False",
+    "Structure your code with three main if/else blocks - one for each quest difficulty",
+    "For Easy Quest, just check if player_level >= 1",
+    "For Medium Quest, use 'and' to check: player_level >= 5 and has_sword",
+    "Complete solution structure:\n\nplayer_level = int(input('Enter your level: '))\nsword_input = input('Do you have a sword? (yes/no): ').lower()\nhas_sword = (sword_input == 'yes')\ncurrent_health = int(input('Enter your current health: '))\n\nprint('\\n=== AVAILABLE QUESTS ===')\n\nif player_level >= 1:\n    print('✓ Easy Quest')\n\nif player_level >= 5 and has_sword:\n    print('✓ Medium Quest')\nelse:\n    print('✗ Medium Quest')\n    # Add reasons\n\nif player_level >= 10 and has_sword and current_health > 50:\n    print('✓ Hard Quest')\nelse:\n    print('✗ Hard Quest')\n    # Add reasons"
+  ],
+  "validationTests": [
+    {
+      "type": "code_contains",
+      "value": "input(",
+      "description": "Must use input() to get player stats"
+    },
+    {
+      "type": "code_contains",
+      "value": "and",
+      "description": "Must use 'and' logical operator"
+    },
+    {
+      "type": "code_contains",
+      "value": "if",
+      "description": "Must use if statements"
+    },
+    {
+      "type": "output_line_count",
+      "min": 5,
+      "description": "Should print at least 5 lines"
+    },
+    {
+      "type": "output_contains",
+      "value": "Quest",
+      "description": "Output should mention quests"
+    }
+  ],
+  "learningObjectives": [
+    "Synthesize conditional logic with multiple criteria",
+    "Convert user input to boolean values",
+    "Use nested conditions effectively",
+    "Provide detailed feedback to users",
+    "Build a complete decision-making system"
+  ],
+  "previousLessonId": 16,
+  "nextLessonId": 4,
+  "tags": ["challenge", "intermediate", "logical-operators", "conditions", "integration", "input"]
+}

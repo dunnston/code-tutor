@@ -1,0 +1,52 @@
+{
+  "id": 51,
+  "trackId": 1,
+  "language": "python",
+  "title": "The Multi-Result Spell",
+  "subtitle": "Multiple Return Values",
+  "difficulty": 3,
+  "estimatedTime": "20-25 minutes",
+  "xpReward": 150,
+  "description": "# Returning Multiple Values\n\nSometimes you need a function to return more than one value. Python makes this easy!\n\n## Returning Multiple Values\n\n```python\ndef get_player_stats():\n    health = 100\n    mana = 50\n    level = 5\n    return health, mana, level\n\n# Unpack the returned values\nhp, mp, lvl = get_player_stats()\nprint(f\"HP: {hp}, MP: {mp}, Level: {lvl}\")\n```\n\n## Returning as a Tuple\n\n```python\ndef calculate_battle_results(damage_dealt, damage_taken):\n    net_damage = damage_dealt - damage_taken\n    is_victory = damage_dealt > damage_taken\n    return net_damage, is_victory\n\nresult, won = calculate_battle_results(100, 50)\n```\n\n## Your Quest\n\nCreate a dice rolling and stats system:\n1. Function that rolls 2 dice and returns both values\n2. Function that calculates attack damage and critical hit status\n3. Function that analyzes a battle and returns multiple stats",
+  "starterCode": "# Dice Rolling & Combat System\n\nimport random\n\n# Roll two dice and return both values\ndef roll_two_dice():\n    die1 = random.randint(1, 6)\n    die2 = ___  # Roll second die\n    return ___  # Return both values\n\n# Calculate damage and check for critical hit\ndef calculate_attack(base_damage, crit_chance):\n    # Roll for critical hit (random number 1-100)\n    roll = random.randint(1, 100)\n    is_crit = roll <= crit_chance\n    \n    # Double damage on crit\n    if ___:  # Check if critical\n        final_damage = ___  # Double the damage\n    else:\n        final_damage = base_damage\n    \n    return ___  # Return damage and crit status\n\n# Analyze battle results\ndef analyze_battle(player_damage, enemy_damage, player_hp):\n    net_damage = ___  # player_damage - enemy_damage\n    remaining_hp = ___  # player_hp - enemy_damage\n    is_victory = ___  # True if net_damage > 0\n    return ___  # Return all three values\n\nprint(\"=== DICE ROLLING ===\")\ndice1, dice2 = roll_two_dice()\ntotal = dice1 + dice2\nprint(f\"Rolled: {dice1} and {dice2} = {total}\")\n\nprint(\"\\n=== ATTACK CALCULATION ===\")\ndamage, critical = calculate_attack(50, 25)  # 50 damage, 25% crit chance\nif critical:\n    print(f\"CRITICAL HIT! Dealt {damage} damage!\")\nelse:\n    print(f\"Normal hit. Dealt {damage} damage.\")\n\nprint(\"\\n=== BATTLE ANALYSIS ===\")\nnet, hp_left, won = analyze_battle(100, 60, 150)\nprint(f\"Net damage: {net}\")\nprint(f\"HP remaining: {hp_left}\")\nprint(f\"Victory: {won}\")\n",
+  "solutionCode": "# Dice Rolling & Combat System\n\nimport random\n\n# Roll two dice and return both values\ndef roll_two_dice():\n    die1 = random.randint(1, 6)\n    die2 = random.randint(1, 6)\n    return die1, die2\n\n# Calculate damage and check for critical hit\ndef calculate_attack(base_damage, crit_chance):\n    roll = random.randint(1, 100)\n    is_crit = roll <= crit_chance\n    \n    if is_crit:\n        final_damage = base_damage * 2\n    else:\n        final_damage = base_damage\n    \n    return final_damage, is_crit\n\n# Analyze battle results\ndef analyze_battle(player_damage, enemy_damage, player_hp):\n    net_damage = player_damage - enemy_damage\n    remaining_hp = player_hp - enemy_damage\n    is_victory = net_damage > 0\n    return net_damage, remaining_hp, is_victory\n\nprint(\"=== DICE ROLLING ===\")\ndice1, dice2 = roll_two_dice()\ntotal = dice1 + dice2\nprint(f\"Rolled: {dice1} and {dice2} = {total}\")\n\nprint(\"\\n=== ATTACK CALCULATION ===\")\ndamage, critical = calculate_attack(50, 25)\nif critical:\n    print(f\"CRITICAL HIT! Dealt {damage} damage!\")\nelse:\n    print(f\"Normal hit. Dealt {damage} damage.\")\n\nprint(\"\\n=== BATTLE ANALYSIS ===\")\nnet, hp_left, won = analyze_battle(100, 60, 150)\nprint(f\"Net damage: {net}\")\nprint(f\"HP remaining: {hp_left}\")\nprint(f\"Victory: {won}\")\n",
+  "hints": [
+    "To return multiple values, separate them with commas: return value1, value2, value3",
+    "In roll_two_dice, return die1, die2",
+    "In calculate_attack, return final_damage, is_crit",
+    "In analyze_battle, return net_damage, remaining_hp, is_victory",
+    "Complete solution:\n\ndef roll_two_dice():\n    die1 = random.randint(1, 6)\n    die2 = random.randint(1, 6)\n    return die1, die2\n\ndef calculate_attack(base_damage, crit_chance):\n    roll = random.randint(1, 100)\n    is_crit = roll <= crit_chance\n    final_damage = base_damage * 2 if is_crit else base_damage\n    return final_damage, is_crit"
+  ],
+  "validationTests": [
+    {
+      "type": "function_exists",
+      "function": "roll_two_dice",
+      "description": "Function 'roll_two_dice' should exist"
+    },
+    {
+      "type": "function_exists",
+      "function": "calculate_attack",
+      "description": "Function 'calculate_attack' should exist"
+    },
+    {
+      "type": "function_exists",
+      "function": "analyze_battle",
+      "description": "Function 'analyze_battle' should exist"
+    },
+    {
+      "type": "code_contains",
+      "value": "return",
+      "description": "Functions must return values"
+    }
+  ],
+  "learningObjectives": [
+    "Return multiple values from functions",
+    "Unpack returned tuples into variables",
+    "Use random module for game mechanics",
+    "Create functions that compute multiple related values",
+    "Structure code with clear input/output contracts"
+  ],
+  "previousLessonId": 22,
+  "nextLessonId": 24,
+  "tags": ["advanced", "functions", "return-values", "tuples", "unpacking", "random"]
+}

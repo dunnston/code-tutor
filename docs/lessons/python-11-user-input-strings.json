@@ -1,0 +1,51 @@
+{
+  "id": 39,
+  "trackId": 1,
+  "language": "python",
+  "title": "The Voice of the Adventurer",
+  "subtitle": "User Input & String Magic",
+  "difficulty": 1,
+  "estimatedTime": "15-20 minutes",
+  "xpReward": 100,
+  "description": "# Listening to the Player\n\nEvery great adventure begins with a question: *\"What is your name, traveler?\"*\n\nSo far, your programs have only spoken. Now you'll learn to **listen** - to get input from users and respond to them personally.\n\n## The input() Spell\n\nThe `input()` function lets you ask questions and store the answers:\n\n```python\nname = input(\"What is your name? \")\nprint(\"Greetings, \" + name + \"!\")\n```\n\n## String Concatenation\n\nYou can combine strings using the `+` operator:\n\n```python\ngreeting = \"Hello, \" + \"world\" + \"!\"\n```\n\n## F-Strings: The Modern Way\n\nPython's f-strings make it easy to insert variables into text:\n\n```python\nname = \"Aria\"\nlevel = 5\nmessage = f\"Warrior {name} has reached level {level}!\"\n```\n\nThe `f` before the quotes makes it an f-string, and `{variable}` inserts the variable's value.\n\n## Your Quest\n\nCreate a character introduction system:\n1. Ask for the user's character name\n2. Ask for their character's age (as a number)\n3. Create a personalized greeting using an f-string\n4. Print the greeting",
+  "starterCode": "# Get user input for character creation\n# Ask for name\ncharacter_name = input(\"Enter your character's name: \")\n\n# Ask for age (you'll need to convert it to a number using int())\nage = ___  # Fix this line\n\n# Create a personalized greeting using an f-string\n# Example: \"Welcome, Aria! You are 25 years old and ready for adventure!\"\ngreeting = ___  # Create your f-string here\n\n# Print the greeting\n___\n",
+  "solutionCode": "# Get user input for character creation\ncharacter_name = input(\"Enter your character's name: \")\n\n# Ask for age\nage = int(input(\"Enter your character's age: \"))\n\n# Create a personalized greeting using an f-string\ngreeting = f\"Welcome, {character_name}! You are {age} years old and ready for adventure!\"\n\n# Print the greeting\nprint(greeting)\n",
+  "hints": [
+    "Use input() to get the character name and age from the user",
+    "To convert the age input to a number, use: int(input('Enter age: '))",
+    "F-strings start with f before the quotes: f\"text {variable} more text\"",
+    "Inside an f-string, put variables in curly braces: {character_name}",
+    "Complete solution:\ncharacter_name = input('Enter your character\\'s name: ')\nage = int(input('Enter your character\\'s age: '))\ngreeting = f'Welcome, {character_name}! You are {age} years old and ready for adventure!'\nprint(greeting)"
+  ],
+  "validationTests": [
+    {
+      "type": "code_contains",
+      "value": "input(",
+      "description": "Code should use input() function"
+    },
+    {
+      "type": "code_contains",
+      "value": "int(",
+      "description": "Should convert age to integer with int()"
+    },
+    {
+      "type": "code_contains",
+      "value": "f\"",
+      "description": "Should use an f-string for formatting"
+    },
+    {
+      "type": "output_contains",
+      "value": "Welcome",
+      "description": "Output should contain a welcome message"
+    }
+  ],
+  "learningObjectives": [
+    "Use input() to get user input",
+    "Convert string input to numbers with int()",
+    "Create formatted strings with f-strings",
+    "Combine multiple concepts to create interactive programs"
+  ],
+  "previousLessonId": 2,
+  "nextLessonId": 40,
+  "tags": ["beginner", "input", "strings", "f-strings", "user-interaction"]
+}

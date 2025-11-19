@@ -1,0 +1,51 @@
+{
+  "id": 43,
+  "trackId": 1,
+  "language": "python",
+  "title": "The Difficulty Selector",
+  "subtitle": "Multiple Conditions with Elif",
+  "difficulty": 2,
+  "estimatedTime": "20-25 minutes",
+  "xpReward": 150,
+  "description": "# More Than Two Choices\n\nSometimes you need to check multiple conditions, not just two. That's where **elif** (else-if) comes in!\n\n## The elif Statement\n\n```python\ndifficulty = \"medium\"\n\nif difficulty == \"easy\":\n    enemy_health = 50\nelif difficulty == \"medium\":\n    enemy_health = 100\nelif difficulty == \"hard\":\n    enemy_health = 200\nelse:\n    enemy_health = 100  # default\n\nprint(f\"Enemy health: {enemy_health}\")\n```\n\nPython checks each condition in order and runs the FIRST one that's True. The else is optional and runs if none match.\n\n## Your Quest\n\nCreate a difficulty selector for your RPG:\n1. Ask the user to choose a difficulty (easy/medium/hard)\n2. Set different enemy stats based on their choice:\n   - Easy: 50 HP, 5 damage\n   - Medium: 100 HP, 15 damage\n   - Hard: 200 HP, 30 damage\n3. Print the enemy's stats\n4. Add a default case for invalid input",
+  "starterCode": "# Difficulty Selector\n\n# Get user's choice\ndifficulty = input(\"Choose difficulty (easy/medium/hard): \").lower()\n\n# Set enemy stats based on difficulty\nif ___:  # Check for easy\n    enemy_health = ___\n    enemy_damage = ___\n    print(\"You selected EASY mode\")\nelif ___:  # Check for medium\n    enemy_health = ___\n    enemy_damage = ___\n    print(\"You selected MEDIUM mode\")\nelif ___:  # Check for hard\n    enemy_health = ___\n    enemy_damage = ___\n    print(\"You selected HARD mode\")\nelse:\n    # Invalid input - set default\n    enemy_health = 100\n    enemy_damage = 15\n    print(\"Invalid choice! Defaulting to MEDIUM.\")\n\n# Display enemy stats\nprint(f\"\\nEnemy Stats:\")\nprint(f\"Health: {enemy_health}\")\nprint(f\"Damage: {enemy_damage}\")\n",
+  "solutionCode": "# Difficulty Selector\n\n# Get user's choice\ndifficulty = input(\"Choose difficulty (easy/medium/hard): \").lower()\n\n# Set enemy stats based on difficulty\nif difficulty == \"easy\":\n    enemy_health = 50\n    enemy_damage = 5\n    print(\"You selected EASY mode\")\nelif difficulty == \"medium\":\n    enemy_health = 100\n    enemy_damage = 15\n    print(\"You selected MEDIUM mode\")\nelif difficulty == \"hard\":\n    enemy_health = 200\n    enemy_damage = 30\n    print(\"You selected HARD mode\")\nelse:\n    enemy_health = 100\n    enemy_damage = 15\n    print(\"Invalid choice! Defaulting to MEDIUM.\")\n\n# Display enemy stats\nprint(f\"\\nEnemy Stats:\")\nprint(f\"Health: {enemy_health}\")\nprint(f\"Damage: {enemy_damage}\")\n",
+  "hints": [
+    "Use .lower() on the input to handle uppercase/lowercase: difficulty.lower()",
+    "Each condition checks if difficulty equals a specific string: difficulty == 'easy'",
+    "Set both enemy_health and enemy_damage in each branch",
+    "The else block handles any input that doesn't match easy, medium, or hard",
+    "Complete solution:\n\nif difficulty == 'easy':\n    enemy_health = 50\n    enemy_damage = 5\nelif difficulty == 'medium':\n    enemy_health = 100\n    enemy_damage = 15\nelif difficulty == 'hard':\n    enemy_health = 200\n    enemy_damage = 30\nelse:\n    enemy_health = 100\n    enemy_damage = 15"
+  ],
+  "validationTests": [
+    {
+      "type": "code_contains",
+      "value": "elif",
+      "description": "Must use elif statement"
+    },
+    {
+      "type": "code_contains",
+      "value": "if",
+      "description": "Must use if statement"
+    },
+    {
+      "type": "variable_exists",
+      "variable": "enemy_health",
+      "description": "Variable 'enemy_health' should exist"
+    },
+    {
+      "type": "variable_exists",
+      "variable": "enemy_damage",
+      "description": "Variable 'enemy_damage' should exist"
+    }
+  ],
+  "learningObjectives": [
+    "Use elif for multiple conditions",
+    "Check string equality with ==",
+    "Handle invalid input with else",
+    "Structure complex decision trees"
+  ],
+  "previousLessonId": 14,
+  "nextLessonId": 16,
+  "tags": ["intermediate", "elif", "multiple-conditions", "branching", "strings"]
+}

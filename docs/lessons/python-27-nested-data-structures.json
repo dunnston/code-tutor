@@ -1,0 +1,52 @@
+{
+  "id": 55,
+  "trackId": 1,
+  "language": "python",
+  "title": "The Data Architect",
+  "subtitle": "Lists of Dictionaries & Nested Structures",
+  "difficulty": 4,
+  "estimatedTime": "30-35 minutes",
+  "xpReward": 250,
+  "description": "# Complex Data Structures\n\nReal applications use complex nested data. Learn to work with lists of dictionaries and multi-level structures!\n\n## Lists of Dictionaries\n\nStore multiple related items:\n\n```python\nparty = [\n    {\"name\": \"Aria\", \"class\": \"Mage\", \"level\": 5},\n    {\"name\": \"Thorin\", \"class\": \"Warrior\", \"level\": 7},\n    {\"name\": \"Luna\", \"class\": \"Rogue\", \"level\": 6}\n]\n\n# Access items\nfirst_member = party[0]\nprint(first_member[\"name\"])  # \"Aria\"\n\n# Loop through\nfor member in party:\n    print(f\"{member['name']} - Level {member['level']}\")\n```\n\n## Nested Dictionaries\n\n```python\nguild = {\n    \"name\": \"Dragon Slayers\",\n    \"leader\": {\"name\": \"Aria\", \"level\": 10},\n    \"members\": [\n        {\"name\": \"Bob\", \"level\": 5},\n        {\"name\": \"Eve\", \"level\": 7}\n    ]\n}\n\nprint(guild[\"leader\"][\"name\"])  # \"Aria\"\nprint(guild[\"members\"][0][\"name\"])  # \"Bob\"\n```\n\n## Filtering and Searching\n\n```python\n# Find high-level members\nhigh_level = [m for m in party if m[\"level\"] >= 6]\n\n# Calculate average level\ntotal = sum(m[\"level\"] for m in party)\naverage = total / len(party)\n```\n\n## Your Quest\n\nCreate a party management system:\n1. Store party members as list of dicts\n2. Add new members\n3. Find members by class\n4. Calculate party statistics",
+  "starterCode": "# Party Management System\n\nparty = [\n    {\"name\": \"Aria\", \"class\": \"Mage\", \"level\": 8, \"health\": 100},\n    {\"name\": \"Thorin\", \"class\": \"Warrior\", \"level\": 10, \"health\": 150},\n    {\"name\": \"Luna\", \"class\": \"Rogue\", \"level\": 7, \"health\": 90}\n]\n\nprint(\"=== PARTY ROSTER ===\")\nfor member in ___:  # Loop through party\n    print(f\"{member['name']} - {member['class']} Level {member['level']}\")\n\nprint(\"\\n=== ADDING NEW MEMBER ===\")\nnew_member = ___  # Create dict for \"Shadow\", \"Assassin\", level 9, health 80\nparty.append(___)\nprint(f\"Added {new_member['name']} to the party!\")\n\nprint(\"\\n=== FIND ALL WARRIORS ===\")\nwarriors = []\nfor member in party:\n    if ___:  # Check if class is \"Warrior\"\n        warriors.append(___)\n        \nprint(f\"Warriors in party: {len(warriors)}\")\nfor warrior in warriors:\n    print(f\"  - {warrior['name']} (Level {warrior['level']})\")\n\nprint(\"\\n=== PARTY STATISTICS ===\")\n# Calculate average level\ntotal_level = 0\nfor member in ___:  # Loop through party\n    total_level += ___  # Add member's level\n    \naverage_level = ___  # total_level / len(party)\nprint(f\"Average party level: {average_level:.1f}\")\n\n# Calculate total health\ntotal_health = 0\nfor member in party:\n    total_health += ___  # Add member's health\n    \nprint(f\"Total party health: {total_health}\")\n\nprint(\"\\n=== HIGH LEVEL MEMBERS (Level 8+) ===\")\nfor member in party:\n    if ___:  # Check if level >= 8\n        print(f\"  - {member['name']}: Level {member['level']}\")\n",
+  "solutionCode": "# Party Management System\n\nparty = [\n    {\"name\": \"Aria\", \"class\": \"Mage\", \"level\": 8, \"health\": 100},\n    {\"name\": \"Thorin\", \"class\": \"Warrior\", \"level\": 10, \"health\": 150},\n    {\"name\": \"Luna\", \"class\": \"Rogue\", \"level\": 7, \"health\": 90}\n]\n\nprint(\"=== PARTY ROSTER ===\")\nfor member in party:\n    print(f\"{member['name']} - {member['class']} Level {member['level']}\")\n\nprint(\"\\n=== ADDING NEW MEMBER ===\")\nnew_member = {\"name\": \"Shadow\", \"class\": \"Assassin\", \"level\": 9, \"health\": 80}\nparty.append(new_member)\nprint(f\"Added {new_member['name']} to the party!\")\n\nprint(\"\\n=== FIND ALL WARRIORS ===\")\nwarriors = []\nfor member in party:\n    if member[\"class\"] == \"Warrior\":\n        warriors.append(member)\n        \nprint(f\"Warriors in party: {len(warriors)}\")\nfor warrior in warriors:\n    print(f\"  - {warrior['name']} (Level {warrior['level']})\")\n\nprint(\"\\n=== PARTY STATISTICS ===\")\n# Calculate average level\ntotal_level = 0\nfor member in party:\n    total_level += member[\"level\"]\n    \naverage_level = total_level / len(party)\nprint(f\"Average party level: {average_level:.1f}\")\n\n# Calculate total health\ntotal_health = 0\nfor member in party:\n    total_health += member[\"health\"]\n    \nprint(f\"Total party health: {total_health}\")\n\nprint(\"\\n=== HIGH LEVEL MEMBERS (Level 8+) ===\")\nfor member in party:\n    if member[\"level\"] >= 8:\n        print(f\"  - {member['name']}: Level {member['level']}\")\n",
+  "hints": [
+    "Create new member as: {'name': 'Shadow', 'class': 'Assassin', 'level': 9, 'health': 80}",
+    "To find warriors, check: if member['class'] == 'Warrior':",
+    "To calculate average: total_level / len(party)",
+    "To filter high level: if member['level'] >= 8:",
+    "Complete solution:\n\nfor member in party:\n    print(f\"{member['name']}...\")\n\nnew_member = {'name': 'Shadow', 'class': 'Assassin', 'level': 9, 'health': 80}\nparty.append(new_member)\n\nif member['class'] == 'Warrior':\n    warriors.append(member)\n\ntotal_level = 0\nfor member in party:\n    total_level += member['level']\naverage_level = total_level / len(party)"
+  ],
+  "validationTests": [
+    {
+      "type": "code_contains",
+      "value": "for",
+      "description": "Must use for loops"
+    },
+    {
+      "type": "code_contains",
+      "value": "append",
+      "description": "Must use append() to add member"
+    },
+    {
+      "type": "output_line_count",
+      "min": 10,
+      "description": "Should print multiple lines"
+    },
+    {
+      "type": "output_contains",
+      "value": "Average",
+      "description": "Should calculate and display average"
+    }
+  ],
+  "learningObjectives": [
+    "Work with lists of dictionaries",
+    "Access nested data structures",
+    "Filter data based on criteria",
+    "Calculate statistics from structured data",
+    "Build practical data management systems"
+  ],
+  "previousLessonId": 26,
+  "nextLessonId": 28,
+  "tags": ["advanced", "lists", "dictionaries", "nested-data", "filtering", "statistics"]
+}

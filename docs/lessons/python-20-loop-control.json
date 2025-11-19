@@ -1,0 +1,52 @@
+{
+  "id": 48,
+  "trackId": 1,
+  "language": "python",
+  "title": "The Loop Master",
+  "subtitle": "Break and Continue",
+  "difficulty": 3,
+  "estimatedTime": "20-25 minutes",
+  "xpReward": 150,
+  "description": "# Controlling Loop Flow\n\nSometimes you need to skip an iteration or exit a loop early. Python gives you two powerful tools: `break` and `continue`.\n\n## Break - Exit the Loop\n\n`break` immediately stops the loop:\n\n```python\nfor i in range(10):\n    if i == 5:\n        break  # Stop when i is 5\n    print(i)\n# Prints: 0, 1, 2, 3, 4\n```\n\n## Continue - Skip to Next Iteration\n\n`continue` skips the rest of the current iteration:\n\n```python\nfor i in range(5):\n    if i == 2:\n        continue  # Skip when i is 2\n    print(i)\n# Prints: 0, 1, 3, 4 (skips 2)\n```\n\n## Practical Example\n\n```python\n# Find first treasure\nfor chest in chests:\n    if chest == \"empty\":\n        continue  # Skip empty chests\n    if chest == \"treasure\":\n        print(\"Found it!\")\n        break  # Stop searching\n    print(f\"Checking {chest}...\")\n```\n\n## Your Quest\n\nCreate a monster encounter system:\n1. Loop through enemies until you find the boss (use break)\n2. Skip weak enemies (health < 20) but fight others (use continue)\n3. Create a shop system that continues until player types 'quit'",
+  "starterCode": "# Monster Encounter System\n\nprint(\"=== ENEMY ENCOUNTERS ===\")\nenemies = [\n    {\"name\": \"Goblin\", \"health\": 30},\n    {\"name\": \"Slime\", \"health\": 10},\n    {\"name\": \"Orc\", \"health\": 50},\n    {\"name\": \"Skeleton\", \"health\": 15},\n    {\"name\": \"Dragon Boss\", \"health\": 200}\n]\n\nfor enemy in enemies:\n    # Skip weak enemies (health < 20)\n    if ___:  # Fix this condition\n        print(f\"Skipping weak {enemy['name']}...\")\n        ___  # Use continue here\n    \n    # Found the boss - stop searching\n    if ___:  # Fix: check if name contains \"Boss\"\n        print(f\"\\n*** BOSS BATTLE: {enemy['name']} ***\")\n        ___  # Use break here\n    \n    # Fight regular enemy\n    print(f\"Fighting {enemy['name']} (HP: {enemy['health']})\")\n\nprint(\"\\n=== SHOP SYSTEM ===\")\ntotal_spent = 0\n\nwhile True:  # Infinite loop\n    print(\"\\nItems: potion (50g), sword (100g), armor (150g)\")\n    choice = input(\"What to buy? (or 'quit' to exit): \").lower()\n    \n    if ___:  # Fix: check if choice is 'quit'\n        ___  # Use break here\n    \n    # Process purchases\n    if choice == \"potion\":\n        total_spent += 50\n        print(\"Bought potion for 50 gold\")\n    elif choice == \"sword\":\n        total_spent += 100\n        print(\"Bought sword for 100 gold\")\n    elif choice == \"armor\":\n        total_spent += 150\n        print(\"Bought armor for 150 gold\")\n    else:\n        print(\"Invalid item!\")\n        ___  # Use continue to skip to next iteration\n\nprint(f\"Thanks for shopping! Total spent: {total_spent} gold\")\n",
+  "solutionCode": "# Monster Encounter System\n\nprint(\"=== ENEMY ENCOUNTERS ===\")\nenemies = [\n    {\"name\": \"Goblin\", \"health\": 30},\n    {\"name\": \"Slime\", \"health\": 10},\n    {\"name\": \"Orc\", \"health\": 50},\n    {\"name\": \"Skeleton\", \"health\": 15},\n    {\"name\": \"Dragon Boss\", \"health\": 200}\n]\n\nfor enemy in enemies:\n    # Skip weak enemies (health < 20)\n    if enemy['health'] < 20:\n        print(f\"Skipping weak {enemy['name']}...\")\n        continue\n    \n    # Found the boss - stop searching\n    if \"Boss\" in enemy['name']:\n        print(f\"\\n*** BOSS BATTLE: {enemy['name']} ***\")\n        break\n    \n    # Fight regular enemy\n    print(f\"Fighting {enemy['name']} (HP: {enemy['health']})\")\n\nprint(\"\\n=== SHOP SYSTEM ===\")\ntotal_spent = 0\n\nwhile True:\n    print(\"\\nItems: potion (50g), sword (100g), armor (150g)\")\n    choice = input(\"What to buy? (or 'quit' to exit): \").lower()\n    \n    if choice == 'quit':\n        break\n    \n    # Process purchases\n    if choice == \"potion\":\n        total_spent += 50\n        print(\"Bought potion for 50 gold\")\n    elif choice == \"sword\":\n        total_spent += 100\n        print(\"Bought sword for 100 gold\")\n    elif choice == \"armor\":\n        total_spent += 150\n        print(\"Bought armor for 150 gold\")\n    else:\n        print(\"Invalid item!\")\n        continue\n\nprint(f\"Thanks for shopping! Total spent: {total_spent} gold\")\n",
+  "hints": [
+    "To skip weak enemies, check: if enemy['health'] < 20: then use continue",
+    "To check if name contains 'Boss', use: if 'Boss' in enemy['name']:",
+    "Use break to exit the loop when you find the boss",
+    "In the shop, check: if choice == 'quit': then use break",
+    "Complete solution:\n\nif enemy['health'] < 20:\n    print(f'Skipping weak {enemy[\"name\"]}...')\n    continue\n\nif 'Boss' in enemy['name']:\n    print(f'BOSS BATTLE: {enemy[\"name\"]}')\n    break\n\nif choice == 'quit':\n    break"
+  ],
+  "validationTests": [
+    {
+      "type": "code_contains",
+      "value": "break",
+      "description": "Must use break statement"
+    },
+    {
+      "type": "code_contains",
+      "value": "continue",
+      "description": "Must use continue statement"
+    },
+    {
+      "type": "code_contains",
+      "value": "for",
+      "description": "Must use for loop"
+    },
+    {
+      "type": "code_contains",
+      "value": "while",
+      "description": "Must use while loop"
+    }
+  ],
+  "learningObjectives": [
+    "Use break to exit loops early",
+    "Use continue to skip iterations",
+    "Create infinite loops with while True",
+    "Control loop flow based on conditions",
+    "Work with dictionaries in loops"
+  ],
+  "previousLessonId": 19,
+  "nextLessonId": 21,
+  "tags": ["intermediate", "break", "continue", "loop-control", "flow-control"]
+}

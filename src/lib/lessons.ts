@@ -50,6 +50,28 @@ import lesson36 from '../../docs/lessons/git-06-merging-branches.json'
 import lesson37 from '../../docs/lessons/git-07-working-with-remotes.json'
 import lesson38 from '../../docs/lessons/git-08-undoing-changes.json'
 
+// Import extended Python lessons (11-30)
+import lesson39 from '../../docs/lessons/python-11-user-input-strings.json'
+import lesson40 from '../../docs/lessons/python-12-math-operations.json'
+import lesson41 from '../../docs/lessons/python-13-challenge-profile-creator.json'
+import lesson42 from '../../docs/lessons/python-14-if-else-branching.json'
+import lesson43 from '../../docs/lessons/python-15-multiple-conditions.json'
+import lesson44 from '../../docs/lessons/python-16-logical-operators.json'
+import lesson45 from '../../docs/lessons/python-17-challenge-quest-eligibility.json'
+import lesson46 from '../../docs/lessons/python-18-for-loops-range.json'
+import lesson47 from '../../docs/lessons/python-19-while-loops.json'
+import lesson48 from '../../docs/lessons/python-20-loop-control.json'
+import lesson49 from '../../docs/lessons/python-21-challenge-battle-simulator.json'
+import lesson50 from '../../docs/lessons/python-22-advanced-function-parameters.json'
+import lesson51 from '../../docs/lessons/python-23-return-values-multiple.json'
+import lesson52 from '../../docs/lessons/python-24-list-operations-advanced.json'
+import lesson53 from '../../docs/lessons/python-25-challenge-rpg-inventory.json'
+import lesson54 from '../../docs/lessons/python-26-dictionary-mastery.json'
+import lesson55 from '../../docs/lessons/python-27-nested-data-structures.json'
+import lesson56 from '../../docs/lessons/python-28-file-reading.json'
+import lesson57 from '../../docs/lessons/python-29-file-writing-json.json'
+import lesson58 from '../../docs/lessons/python-30-final-project-rpg-system.json'
+
 /**
  * All available lessons
  */
@@ -92,6 +114,26 @@ const ALL_LESSONS: Lesson[] = [
   lesson36 as Lesson,
   lesson37 as Lesson,
   lesson38 as Lesson,
+  lesson39 as Lesson,
+  lesson40 as Lesson,
+  lesson41 as Lesson,
+  lesson42 as Lesson,
+  lesson43 as Lesson,
+  lesson44 as Lesson,
+  lesson45 as Lesson,
+  lesson46 as Lesson,
+  lesson47 as Lesson,
+  lesson48 as Lesson,
+  lesson49 as Lesson,
+  lesson50 as Lesson,
+  lesson51 as Lesson,
+  lesson52 as Lesson,
+  lesson53 as Lesson,
+  lesson54 as Lesson,
+  lesson55 as Lesson,
+  lesson56 as Lesson,
+  lesson57 as Lesson,
+  lesson58 as Lesson,
 ]
 
 /**

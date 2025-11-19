@@ -1,0 +1,51 @@
+{
+  "id": 40,
+  "trackId": 1,
+  "language": "python",
+  "title": "The Calculator's Grimoire",
+  "subtitle": "Mathematical Operations",
+  "difficulty": 1,
+  "estimatedTime": "15-20 minutes",
+  "xpReward": 100,
+  "description": "# Computing with Numbers\n\nIn your adventures, you'll constantly calculate things: damage dealt, gold earned, experience gained. Python makes math easy!\n\n## Mathematical Operators\n\nPython supports all basic math operations:\n\n```python\n# Addition\ngold = 100 + 50  # 150\n\n# Subtraction\nhealth = 100 - 25  # 75\n\n# Multiplication\ndamage = 10 * 3  # 30\n\n# Division (always gives a decimal)\nprice = 100 / 4  # 25.0\n\n# Integer Division (rounds down)\nitems = 10 // 3  # 3\n\n# Modulus (remainder)\nremainder = 10 % 3  # 1\n\n# Exponentiation (power)\npower = 2 ** 3  # 8 (2 to the power of 3)\n```\n\n## Your Quest\n\nCreate a gold transaction calculator:\n1. Start with 100 gold\n2. Buy a sword for 50 gold\n3. Sell 3 monster pelts for 15 gold each\n4. Calculate and display:\n   - Gold after buying sword\n   - Gold earned from pelts\n   - Final gold amount\n   - How many 20-gold potions you can afford (use integer division)\n   - Gold remaining after buying potions",
+  "starterCode": "# Gold Calculator Quest\n\n# Starting values\nstarting_gold = 100\nsword_cost = 50\npelt_value = 15\nnum_pelts = 3\npotion_cost = 20\n\n# Calculate gold after buying sword\ngold_after_sword = ___  # Subtract sword cost from starting gold\n\n# Calculate gold earned from selling pelts\npelt_earnings = ___  # Multiply pelt value by number of pelts\n\n# Calculate final gold before potions\ngold_before_potions = ___  # Add pelt earnings to gold after sword\n\n# Calculate how many potions you can buy\npotions_affordable = ___  # Use integer division //\n\n# Calculate remaining gold after buying potions\nfinal_gold = ___  # Calculate remaining amount\n\n# Print results\nprint(f\"Gold after buying sword: {gold_after_sword}\")\nprint(f\"Gold earned from pelts: {pelt_earnings}\")\nprint(f\"Gold before potions: {gold_before_potions}\")\nprint(f\"Potions you can afford: {potions_affordable}\")\nprint(f\"Final gold remaining: {final_gold}\")\n",
+  "solutionCode": "# Gold Calculator Quest\n\n# Starting values\nstarting_gold = 100\nsword_cost = 50\npelt_value = 15\nnum_pelts = 3\npotion_cost = 20\n\n# Calculate gold after buying sword\ngold_after_sword = starting_gold - sword_cost  # 50\n\n# Calculate gold earned from selling pelts\npelt_earnings = pelt_value * num_pelts  # 45\n\n# Calculate final gold before potions\ngold_before_potions = gold_after_sword + pelt_earnings  # 95\n\n# Calculate how many potions you can buy\npotions_affordable = gold_before_potions // potion_cost  # 4\n\n# Calculate remaining gold after buying potions\nfinal_gold = gold_before_potions - (potions_affordable * potion_cost)  # 15\n\n# Print results\nprint(f\"Gold after buying sword: {gold_after_sword}\")\nprint(f\"Gold earned from pelts: {pelt_earnings}\")\nprint(f\"Gold before potions: {gold_before_potions}\")\nprint(f\"Potions you can afford: {potions_affordable}\")\nprint(f\"Final gold remaining: {final_gold}\")\n",
+  "hints": [
+    "Use subtraction (-) to calculate gold after buying the sword",
+    "Use multiplication (*) to calculate total earnings from pelts",
+    "Use addition (+) to add pelt earnings to your gold",
+    "Use integer division (//) to find how many whole potions you can buy: gold_before_potions // potion_cost",
+    "Complete solution:\ngold_after_sword = starting_gold - sword_cost\npelt_earnings = pelt_value * num_pelts\ngold_before_potions = gold_after_sword + pelt_earnings\npotions_affordable = gold_before_potions // potion_cost\nfinal_gold = gold_before_potions - (potions_affordable * potion_cost)"
+  ],
+  "validationTests": [
+    {
+      "type": "variable_exists",
+      "variable": "gold_after_sword",
+      "description": "Variable 'gold_after_sword' should exist"
+    },
+    {
+      "type": "variable_exists",
+      "variable": "pelt_earnings",
+      "description": "Variable 'pelt_earnings' should exist"
+    },
+    {
+      "type": "variable_exists",
+      "variable": "potions_affordable",
+      "description": "Variable 'potions_affordable' should exist"
+    },
+    {
+      "type": "output_line_count",
+      "min": 5,
+      "description": "Should print at least 5 lines of output"
+    }
+  ],
+  "learningObjectives": [
+    "Use basic arithmetic operators (+, -, *, /)",
+    "Understand integer division (//) vs regular division",
+    "Perform multi-step calculations",
+    "Apply math operations to solve real problems"
+  ],
+  "previousLessonId": 39,
+  "nextLessonId": 41,
+  "tags": ["beginner", "math", "operators", "arithmetic", "calculations"]
+}
