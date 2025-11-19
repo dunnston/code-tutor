@@ -25,3 +25,6 @@ tauri = { version = "2.9.2", features = [] }
 tauri-plugin-log = "2.0.0"
 tokio = { version = "1.40", features = ["time", "rt-multi-thread"] }
 reqwest = { version = "0.11", features = ["json", "stream"] }
+rusqlite = { version = "0.31", features = ["bundled"] }
+r2d2 = "0.8"
+r2d2_sqlite = "0.24"

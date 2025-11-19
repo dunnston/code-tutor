@@ -1,4 +1,6 @@
 mod commands;
+mod db;
+mod puzzle_commands;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -11,6 +13,14 @@ pub fn run() {
             .build(),
         )?;
       }
+
+      // Initialize the database
+      db::initialize_database(&app.handle())
+        .map_err(|e| {
+          log::error!("Failed to initialize database: {}", e);
+          e
+        })?;
+
       Ok(())
     })
     .invoke_handler(tauri::generate_handler![
@@ -19,6 +29,12 @@ pub fn run() {
       commands::check_language_runtime,
       commands::call_claude_api,
       commands::check_ollama_available,
+      // Puzzle commands
+      puzzle_commands::get_puzzle_categories,
+      puzzle_commands::get_puzzles_by_category,
+      puzzle_commands::get_puzzle,
+      puzzle_commands::get_puzzle_implementation,
+      puzzle_commands::has_puzzle_implementation,
     ])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");
