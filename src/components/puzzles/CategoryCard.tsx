@@ -2,13 +2,12 @@ import type { PuzzleCategory } from '@/types/puzzle'
 
 interface CategoryCardProps {
   category: PuzzleCategory
+  totalCount: number
+  solvedCount?: number
   onClick?: () => void
 }
 
-export function CategoryCard({ category, onClick }: CategoryCardProps) {
-  // TODO: Get actual progress from user data
-  const solvedCount = 0
-  const totalCount = 0
+export function CategoryCard({ category, totalCount, solvedCount = 0, onClick }: CategoryCardProps) {
   const completionPercentage = totalCount > 0 ? (solvedCount / totalCount) * 100 : 0
 
   return (

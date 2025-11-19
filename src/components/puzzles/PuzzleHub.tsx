@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react'
-import { getPuzzleCategories } from '@/lib/puzzles'
+import { getPuzzleCategories, getPuzzlesByCategory } from '@/lib/puzzles'
 import { useAppStore } from '@/lib/store'
 import type { PuzzleCategory } from '@/types/puzzle'
 import { CategoryCard } from './CategoryCard'
 
 export function PuzzleHub() {
   const [categories, setCategories] = useState<PuzzleCategory[]>([])
+  const [puzzleCounts, setPuzzleCounts] = useState<Record<string, number>>({})
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const setCurrentView = useAppStore((state) => state.setCurrentView)
@@ -29,6 +30,20 @@ export function PuzzleHub() {
       setLoading(true)
       const data = await getPuzzleCategories()
       setCategories(data)
+
+      // Fetch puzzle counts for each category
+      const counts: Record<string, number> = {}
+      for (const category of data) {
+        try {
+          const puzzles = await getPuzzlesByCategory(category.id)
+          counts[category.id] = puzzles.length
+        } catch (err) {
+          console.error(`Failed to load puzzles for category ${category.id}:`, err)
+          counts[category.id] = 0
+        }
+      }
+      setPuzzleCounts(counts)
+
       setError(null)
     } catch (err) {
       console.error('Failed to load puzzle categories:', err)
@@ -151,6 +166,8 @@ export function PuzzleHub() {
               <CategoryCard
                 key={category.id}
                 category={category}
+                totalCount={puzzleCounts[category.id] || 0}
+                solvedCount={0}
                 onClick={() => handleCategoryClick(category.id)}
               />
             ))}
