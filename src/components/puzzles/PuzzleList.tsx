@@ -18,6 +18,12 @@ export function PuzzleList({ categoryId }: PuzzleListProps) {
   const [difficultyFilter, setDifficultyFilter] = useState<PuzzleDifficulty | 'all'>('all')
   const [sortBy, setSortBy] = useState<SortOption>('difficulty')
   const setCurrentView = useAppStore((state) => state.setCurrentView)
+  const setCurrentPuzzleId = useAppStore((state) => state.setCurrentPuzzleId)
+
+  const handlePuzzleClick = (puzzleId: string) => {
+    setCurrentPuzzleId(puzzleId)
+    setCurrentView('puzzle-solver')
+  }
 
   useEffect(() => {
     loadPuzzles()
@@ -228,7 +234,11 @@ export function PuzzleList({ categoryId }: PuzzleListProps) {
         ) : (
           <div className="grid grid-cols-1 gap-4">
             {sortedPuzzles.map(puzzle => (
-              <PuzzleCard key={puzzle.id} puzzle={puzzle} />
+              <PuzzleCard
+                key={puzzle.id}
+                puzzle={puzzle}
+                onClick={() => handlePuzzleClick(puzzle.id)}
+              />
             ))}
           </div>
         )}

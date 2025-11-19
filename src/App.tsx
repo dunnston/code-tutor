@@ -15,6 +15,7 @@ import { ProfileSelector } from '@components/ProfileSelector'
 import { SolutionConfirmModal } from '@components/SolutionConfirmModal'
 import { PuzzleHub } from '@components/puzzles/PuzzleHub'
 import { PuzzleList } from '@components/puzzles/PuzzleList'
+import { PuzzleSolver } from '@components/puzzles/PuzzleSolver'
 import { useAppStore } from '@/lib/store'
 import { executeCode } from '@/lib/tauri'
 import { validateCode, getValidationSummary } from '@/lib/validation'
@@ -42,6 +43,7 @@ function App() {
   const updateSettings = useAppStore((state) => state.updateSettings)
   const currentView = useAppStore((state) => state.currentView)
   const currentPuzzleCategoryId = useAppStore((state) => state.currentPuzzleCategoryId)
+  const currentPuzzleId = useAppStore((state) => state.currentPuzzleId)
 
   // Profile & Onboarding state
   const [currentProfile, setCurrentProfile] = useState<UserProfile | null>(getCurrentProfile())
@@ -301,6 +303,11 @@ function App() {
       {/* Puzzle List View */}
       {currentView === 'puzzle-list' && currentPuzzleCategoryId && (
         <PuzzleList categoryId={currentPuzzleCategoryId} />
+      )}
+
+      {/* Puzzle Solver View */}
+      {currentView === 'puzzle-solver' && currentPuzzleId && (
+        <PuzzleSolver puzzleId={currentPuzzleId} />
       )}
 
       {/* Learning View */}
