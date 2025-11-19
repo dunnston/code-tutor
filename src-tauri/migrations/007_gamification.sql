@@ -2,6 +2,20 @@
 -- Currency, Shop, Inventory, Quests, Level Rewards, Active Effects
 
 -- ============================================================================
+-- USERS TABLE (Required for foreign keys)
+-- ============================================================================
+
+-- Core users table
+CREATE TABLE IF NOT EXISTS users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    username TEXT NOT NULL UNIQUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Insert default user if not exists (for single-user app)
+INSERT OR IGNORE INTO users (id, username) VALUES (1, 'default_user');
+
+-- ============================================================================
 -- CURRENCY SYSTEM
 -- ============================================================================
 
