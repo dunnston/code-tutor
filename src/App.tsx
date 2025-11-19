@@ -13,6 +13,7 @@ import { WelcomeScreen } from '@components/WelcomeScreen'
 import { SettingsModal } from '@components/SettingsModal'
 import { ProfileSelector } from '@components/ProfileSelector'
 import { SolutionConfirmModal } from '@components/SolutionConfirmModal'
+import { PuzzleHub } from '@components/puzzles/PuzzleHub'
 import { useAppStore } from '@/lib/store'
 import { executeCode } from '@/lib/tauri'
 import { validateCode, getValidationSummary } from '@/lib/validation'
@@ -291,6 +292,9 @@ function App() {
 
       {/* Dashboard View */}
       {currentView === 'dashboard' && <Dashboard onLogout={handleLogout} />}
+
+      {/* Puzzle View */}
+      {currentView === 'puzzles' && <PuzzleHub />}
 
       {/* Learning View */}
       {currentView === 'learning' && (

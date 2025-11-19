@@ -89,8 +89,8 @@ interface AppState {
   toggleDashboard: () => void
   settingsOpen: boolean
   toggleSettings: () => void
-  currentView: 'dashboard' | 'learning'
-  setCurrentView: (view: 'dashboard' | 'learning') => void
+  currentView: 'dashboard' | 'learning' | 'puzzles'
+  setCurrentView: (view: 'dashboard' | 'learning' | 'puzzles') => void
 
   // Settings & Preferences
   settings: UserSettings

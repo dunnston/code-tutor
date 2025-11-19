@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { ProfileHeader } from './dashboard/ProfileHeader'
 import { ActiveCourseCard } from './dashboard/ActiveCourseCard'
 import { StatsGrid } from './dashboard/StatsGrid'
+import { PuzzleWidget } from './dashboard/PuzzleWidget'
 import { CourseCatalog } from './dashboard/CourseCatalog'
 import { AchievementPreview } from './dashboard/AchievementPreview'
 import type { CourseCategory } from '@/types/course'
@@ -29,6 +30,11 @@ export function Dashboard({ onLogout }: DashboardProps) {
         {/* Stats Grid */}
         <section className="mt-8">
           <StatsGrid />
+        </section>
+
+        {/* Puzzle Widget */}
+        <section className="mt-8">
+          <PuzzleWidget />
         </section>
 
         {/* Achievements Preview */}
