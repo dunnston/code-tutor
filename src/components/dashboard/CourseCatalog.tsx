@@ -75,8 +75,9 @@ export function CourseCatalog({ category, searchQuery = '' }: CourseCatalogProps
         const isLocked = !isCourseUnlocked(course.id)
 
         // Check if runtime is available for this course
+        // Bundled languages are always available, otherwise check if detected
         const runtimeStatus = runtimeStatuses[course.language as SupportedLanguage]
-        const runtimeAvailable = runtimeStatus?.available || false
+        const runtimeAvailable = runtimeStatus?.bundled || runtimeStatus?.available || false
 
         return (
           <CourseCard
