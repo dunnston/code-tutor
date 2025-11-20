@@ -57,6 +57,16 @@ pub fn initialize_database(app: &AppHandle) -> Result<(), String> {
     conn.execute_batch(gamification_seed)
         .map_err(|e| format!("Failed to execute gamification seed data: {}", e))?;
 
+    // Execute solution_viewed migration (if columns don't exist yet)
+    let solution_viewed_migration = r#"
+        -- Add solution_viewed columns if they don't exist
+        ALTER TABLE user_puzzle_progress ADD COLUMN solution_viewed BOOLEAN DEFAULT FALSE;
+        ALTER TABLE user_puzzle_progress ADD COLUMN solution_viewed_at TIMESTAMP;
+    "#;
+
+    // Try to execute migration, but don't fail if columns already exist
+    let _ = conn.execute_batch(solution_viewed_migration);
+
     log::info!("Database initialized successfully at {:?}", db_path);
     Ok(())
 }

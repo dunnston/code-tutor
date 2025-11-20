@@ -3,17 +3,28 @@ import { useAppStore } from '@/lib/store'
 import { getLanguageConfig } from '@/lib/languageRegistry'
 import type { SupportedLanguage } from '@/types/language'
 
-export function CodeEditor() {
-  const code = useAppStore((state) => state.code)
-  const setCode = useAppStore((state) => state.setCode)
+interface CodeEditorProps {
+  code?: string
+  onChange?: (code: string) => void
+  language?: SupportedLanguage
+  readOnly?: boolean
+}
+
+export function CodeEditor({ code: propCode, onChange: propOnChange, language: propLanguage, readOnly = false }: CodeEditorProps = {}) {
+  // Use props if provided, otherwise use store
+  const storeCode = useAppStore((state) => state.code)
+  const storeSetCode = useAppStore((state) => state.setCode)
   const currentLesson = useAppStore((state) => state.currentLesson)
 
+  const code = propCode !== undefined ? propCode : storeCode
+  const onChange = propOnChange || storeSetCode
+
   const handleEditorChange = (value: string | undefined) => {
-    setCode(value || '')
+    onChange(value || '')
   }
 
   // Get language configuration
-  const language = (currentLesson?.language || 'python') as SupportedLanguage
+  const language = (propLanguage || currentLesson?.language || 'python') as SupportedLanguage
   const languageConfig = getLanguageConfig(language)
   const monacoLanguage = languageConfig.monacoLanguage
   const fileExtension = languageConfig.extension
@@ -48,7 +59,7 @@ export function CodeEditor() {
             lineNumbers: 'on',
             roundedSelection: false,
             scrollBeyondLastLine: false,
-            readOnly: false,
+            readOnly: readOnly,
             automaticLayout: true,
             tabSize: 4,
             insertSpaces: true,

@@ -61,20 +61,20 @@ async function runTestCase(
     const testCode = buildTestCode(userCode, language, testCase)
 
     // Execute the test
-    const executionResult = await executeCode(testCode, language)
+    const executionResult = await executeCode(language, testCode)
     const executionTime = Date.now() - startTime
 
-    if (!executionResult.success) {
+    if (executionResult.exitCode !== 0) {
       return {
         passed: false,
         testCase,
-        error: executionResult.output,
+        error: executionResult.stderr || executionResult.stdout,
         executionTime,
       }
     }
 
     // Parse the output and compare with expected
-    const actualOutput = parseOutput(executionResult.output, language)
+    const actualOutput = parseOutput(executionResult.stdout, language)
     const passed = compareOutputs(actualOutput, testCase.expectedOutput)
 
     return {

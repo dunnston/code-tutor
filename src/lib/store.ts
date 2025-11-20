@@ -39,6 +39,10 @@ export interface BadgeData {
 }
 
 interface AppState {
+  // Current user
+  currentUserId: number | null
+  setCurrentUserId: (userId: number | null) => void
+
   // Current lesson
   currentLesson: Lesson | null
   setCurrentLesson: (lesson: Lesson | null) => void
@@ -90,8 +94,8 @@ interface AppState {
   toggleDashboard: () => void
   settingsOpen: boolean
   toggleSettings: () => void
-  currentView: 'dashboard' | 'learning' | 'puzzles' | 'puzzle-list' | 'puzzle-solver' | 'playground' | 'shop' | 'inventory' | 'quests'
-  setCurrentView: (view: 'dashboard' | 'learning' | 'puzzles' | 'puzzle-list' | 'puzzle-solver' | 'playground' | 'shop' | 'inventory' | 'quests') => void
+  currentView: 'dashboard' | 'learning' | 'puzzles' | 'puzzle-list' | 'puzzle-solver' | 'playground' | 'shop' | 'inventory' | 'quests' | 'puzzle-all' | 'puzzle-leaderboard' | 'puzzle-achievements'
+  setCurrentView: (view: 'dashboard' | 'learning' | 'puzzles' | 'puzzle-list' | 'puzzle-solver' | 'playground' | 'shop' | 'inventory' | 'quests' | 'puzzle-all' | 'puzzle-leaderboard' | 'puzzle-achievements') => void
 
   // Puzzle state
   currentPuzzleCategoryId: string | null
@@ -110,24 +114,24 @@ interface AppState {
   // Gamification - Currency & Shop
   userCurrency: UserCurrency | null
   setUserCurrency: (currency: UserCurrency | null) => void
-  refreshCurrency: (userId: number) => Promise<void>
+  refreshCurrency: (userId?: number) => Promise<void>
 
   // Gamification - Inventory
   inventory: InventoryItem[]
   setInventory: (inventory: InventoryItem[]) => void
-  refreshInventory: (userId: number) => Promise<void>
+  refreshInventory: (userId?: number) => Promise<void>
 
   // Gamification - Quests
   dailyQuests: UserQuestProgress[]
   weeklyQuests: UserQuestProgress[]
   setDailyQuests: (quests: UserQuestProgress[]) => void
   setWeeklyQuests: (quests: UserQuestProgress[]) => void
-  refreshQuests: (userId: number) => Promise<void>
+  refreshQuests: (userId?: number) => Promise<void>
 
   // Gamification - Active Effects
   activeEffects: ActiveEffect[]
   setActiveEffects: (effects: ActiveEffect[]) => void
-  refreshActiveEffects: (userId: number) => Promise<void>
+  refreshActiveEffects: (userId?: number) => Promise<void>
 
   // Settings & Preferences
   settings: UserSettings
@@ -138,6 +142,10 @@ interface AppState {
 let autoSaveTimeout: NodeJS.Timeout | null = null
 
 export const useAppStore = create<AppState>((set, get) => ({
+  // User state
+  currentUserId: null,
+  setCurrentUserId: (userId) => set({ currentUserId: userId }),
+
   // Lesson state
   currentLesson: null,
   setCurrentLesson: (lesson) => {
@@ -339,8 +347,13 @@ export const useAppStore = create<AppState>((set, get) => ({
   setUserCurrency: (currency) => set({ userCurrency: currency }),
   refreshCurrency: async (userId) => {
     const { getUserCurrency } = await import('./gamification')
+    const effectiveUserId = userId ?? get().currentUserId
+    if (!effectiveUserId) {
+      console.error('No user ID available for refreshCurrency')
+      return
+    }
     try {
-      const currency = await getUserCurrency(userId)
+      const currency = await getUserCurrency(effectiveUserId)
       set({ userCurrency: currency })
     } catch (error) {
       console.error('Failed to refresh currency:', error)
@@ -351,8 +364,13 @@ export const useAppStore = create<AppState>((set, get) => ({
   setInventory: (inventory) => set({ inventory }),
   refreshInventory: async (userId) => {
     const { getUserInventory } = await import('./gamification')
+    const effectiveUserId = userId ?? get().currentUserId
+    if (!effectiveUserId) {
+      console.error('No user ID available for refreshInventory')
+      return
+    }
     try {
-      const inventory = await getUserInventory(userId)
+      const inventory = await getUserInventory(effectiveUserId)
       set({ inventory })
     } catch (error) {
       console.error('Failed to refresh inventory:', error)
@@ -365,9 +383,14 @@ export const useAppStore = create<AppState>((set, get) => ({
   setWeeklyQuests: (quests) => set({ weeklyQuests: quests }),
   refreshQuests: async (userId) => {
     const { getUserQuestProgress } = await import('./gamification')
+    const effectiveUserId = userId ?? get().currentUserId
+    if (!effectiveUserId) {
+      console.error('No user ID available for refreshQuests')
+      return
+    }
     try {
-      const daily = await getUserQuestProgress(userId, 'daily')
-      const weekly = await getUserQuestProgress(userId, 'weekly')
+      const daily = await getUserQuestProgress(effectiveUserId, 'daily')
+      const weekly = await getUserQuestProgress(effectiveUserId, 'weekly')
       set({ dailyQuests: daily, weeklyQuests: weekly })
     } catch (error) {
       console.error('Failed to refresh quests:', error)
@@ -378,8 +401,13 @@ export const useAppStore = create<AppState>((set, get) => ({
   setActiveEffects: (effects) => set({ activeEffects: effects }),
   refreshActiveEffects: async (userId) => {
     const { getActiveEffects } = await import('./gamification')
+    const effectiveUserId = userId ?? get().currentUserId
+    if (!effectiveUserId) {
+      console.error('No user ID available for refreshActiveEffects')
+      return
+    }
     try {
-      const effects = await getActiveEffects(userId)
+      const effects = await getActiveEffects(effectiveUserId)
       set({ activeEffects: effects })
     } catch (error) {
       console.error('Failed to refresh active effects:', error)

@@ -139,6 +139,42 @@ pub struct LevelReward {
 }
 
 // ============================================================================
+// USER COMMANDS
+// ============================================================================
+
+#[tauri::command]
+pub fn get_or_create_user(app: AppHandle, username: String) -> Result<i64, String> {
+    let conn = db::get_connection(&app)?;
+
+    // Try to get existing user
+    let existing_user: SqliteResult<i64> = conn.query_row(
+        "SELECT id FROM users WHERE username = ?",
+        params![username],
+        |row| row.get(0)
+    );
+
+    if let Ok(user_id) = existing_user {
+        return Ok(user_id);
+    }
+
+    // Create new user
+    conn.execute(
+        "INSERT INTO users (username) VALUES (?)",
+        params![username]
+    ).map_err(|e| e.to_string())?;
+
+    let user_id = conn.last_insert_rowid();
+
+    // Initialize currency for new user
+    conn.execute(
+        "INSERT OR IGNORE INTO user_currency (user_id, gold, gems) VALUES (?, 0, 0)",
+        params![user_id]
+    ).map_err(|e| e.to_string())?;
+
+    Ok(user_id)
+}
+
+// ============================================================================
 // CURRENCY COMMANDS
 // ============================================================================
 
@@ -644,6 +680,13 @@ pub fn update_quest_progress(
 
     let completed = progress >= quest.objective_target;
 
+    // Check if quest was already completed before
+    let was_already_completed: bool = conn.query_row(
+        "SELECT completed FROM user_quest_progress WHERE user_id = ? AND quest_id = ?",
+        params![user_id, quest_id],
+        |row| row.get(0)
+    ).unwrap_or(false);
+
     // Upsert progress
     conn.execute(
         "INSERT INTO user_quest_progress (user_id, quest_id, progress, completed, completed_at)
@@ -656,8 +699,9 @@ pub fn update_quest_progress(
         params![user_id, quest_id, progress, completed, completed, progress, completed, completed]
     ).map_err(|e| e.to_string())?;
 
-    // If just completed, award rewards
-    if completed {
+    // If just completed (and wasn't completed before), award rewards
+    if completed && !was_already_completed {
+        println!("Quest completed! Awarding rewards - Gold: {}, Gems: {}", quest.reward_gold, quest.reward_gems);
         if quest.reward_xp > 0 {
             // Award XP (you'd need to implement this in your user system)
         }

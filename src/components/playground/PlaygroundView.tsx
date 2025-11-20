@@ -40,6 +40,7 @@ export default function PlaygroundView() {
     playgroundCode,
     setPlaygroundCode,
     settings,
+    currentUserId,
   } = useAppStore();
 
   const [sidebarView, setSidebarView] = useState<'projects' | 'templates' | 'snippets'>('projects');
@@ -188,10 +189,17 @@ export default function PlaygroundView() {
       setConsoleOutput(output);
 
       // Track playground usage for quest progress
-      try {
-        await incrementQuestProgress(1, 'use_playground');
-      } catch (error) {
-        console.error('Failed to update quest progress:', error);
+      if (currentUserId) {
+        try {
+          await incrementQuestProgress(currentUserId, 'use_playground');
+
+          // Refresh currency and quests to show updated gold and quest progress
+          const { refreshCurrency, refreshQuests } = useAppStore.getState();
+          await refreshCurrency();
+          await refreshQuests();
+        } catch (error) {
+          console.error('Failed to update quest progress:', error);
+        }
       }
 
       // Update last run time if this is a saved project

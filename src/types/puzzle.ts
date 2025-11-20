@@ -103,6 +103,10 @@ export interface UserPuzzleProgress {
 
   // Optimization
   isOptimal: boolean
+
+  // Solution viewing tracking
+  solutionViewed: boolean
+  solutionViewedAt?: string
 }
 
 /**

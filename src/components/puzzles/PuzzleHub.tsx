@@ -176,13 +176,22 @@ export function PuzzleHub() {
 
         {/* Quick Actions */}
         <div className="flex gap-4 justify-center">
-          <button className="px-6 py-3 bg-navy-800 hover:bg-navy-700 text-gray-300 rounded-lg transition-colors border border-navy-700">
+          <button
+            onClick={() => setCurrentView('puzzle-all')}
+            className="px-6 py-3 bg-navy-800 hover:bg-navy-700 text-gray-300 rounded-lg transition-colors border border-navy-700"
+          >
             View All Puzzles
           </button>
-          <button className="px-6 py-3 bg-navy-800 hover:bg-navy-700 text-gray-300 rounded-lg transition-colors border border-navy-700">
+          <button
+            onClick={() => setCurrentView('puzzle-leaderboard')}
+            className="px-6 py-3 bg-navy-800 hover:bg-navy-700 text-gray-300 rounded-lg transition-colors border border-navy-700"
+          >
             Leaderboard
           </button>
-          <button className="px-6 py-3 bg-navy-800 hover:bg-navy-700 text-gray-300 rounded-lg transition-colors border border-navy-700">
+          <button
+            onClick={() => setCurrentView('puzzle-achievements')}
+            className="px-6 py-3 bg-navy-800 hover:bg-navy-700 text-gray-300 rounded-lg transition-colors border border-navy-700"
+          >
             My Achievements
           </button>
         </div>

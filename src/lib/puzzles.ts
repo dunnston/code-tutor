@@ -160,6 +160,8 @@ export async function getPuzzleProgress(
       solvedAt: progress.solved_at,
       lastAttemptAt: progress.last_attempt_at,
       isOptimal: progress.is_optimal,
+      solutionViewed: progress.solution_viewed || false,
+      solutionViewedAt: progress.solution_viewed_at,
     }
   } catch (error) {
     console.error(`Failed to get puzzle progress ${puzzleId}/${languageId}:`, error)
@@ -201,6 +203,24 @@ export async function recordHintUsed(
     })
   } catch (error) {
     console.error(`Failed to record hint ${puzzleId}/${languageId}:`, error)
+    throw error
+  }
+}
+
+/**
+ * Record that the user viewed the solution
+ */
+export async function recordSolutionViewed(
+  puzzleId: string,
+  languageId: string
+): Promise<void> {
+  try {
+    await invoke('record_solution_viewed', {
+      puzzleId,
+      languageId,
+    })
+  } catch (error) {
+    console.error(`Failed to record solution viewed ${puzzleId}/${languageId}:`, error)
     throw error
   }
 }

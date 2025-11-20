@@ -6,6 +6,7 @@ import {
   getPuzzleProgress,
   recordPuzzleAttempt,
   recordHintUsed,
+  recordSolutionViewed,
   markPuzzleSolved,
 } from '@/lib/puzzles'
 import { validatePuzzleSolution, formatTestResults } from '@/lib/puzzleValidation'
@@ -25,6 +26,8 @@ import { PuzzleActionBar } from './PuzzleActionBar'
 import { PuzzleDescriptionPanel } from './PuzzleDescriptionPanel'
 import { PuzzleSuccessModal } from './PuzzleSuccessModal'
 import { PuzzleFailureModal } from './PuzzleFailureModal'
+import { SolutionWarningModal } from './SolutionWarningModal'
+import { PuzzleChatPanel } from './PuzzleChatPanel'
 
 interface PuzzleSolverProps {
   puzzleId: string
@@ -44,12 +47,16 @@ export function PuzzleSolver({ puzzleId }: PuzzleSolverProps) {
   const [validationResult, setValidationResult] = useState<ValidationResult | null>(null)
   const [pointsEarned, setPointsEarned] = useState(0)
   const [solveStartTime, setSolveStartTime] = useState<number>(Date.now())
+  const [showSolutionWarning, setShowSolutionWarning] = useState(false)
+  const [solutionViewed, setSolutionViewed] = useState(false)
 
   const addConsoleMessage = useAppStore((state) => state.addConsoleMessage)
   const clearConsole = useAppStore((state) => state.clearConsole)
   const setExecutionStatus = useAppStore((state) => state.setExecutionStatus)
   const setCurrentView = useAppStore((state) => state.setCurrentView)
   const addXP = useAppStore((state) => state.addXP)
+  const consoleMessages = useAppStore((state) => state.consoleMessages)
+  const currentUserId = useAppStore((state) => state.currentUserId)
 
   const lastExecutionResult = useRef<ExecutionResult | undefined>()
 
@@ -72,9 +79,11 @@ export function PuzzleSolver({ puzzleId }: PuzzleSolverProps) {
         // Restore previous solution
         setCode(progress.userSolution)
         setHintsRevealed(progress.hintsUsed)
+        setSolutionViewed(progress.solutionViewed)
       } else {
         setCode(implData.starterCode)
         setHintsRevealed(0)
+        setSolutionViewed(false)
       }
 
       // Reset solve start time
@@ -204,13 +213,20 @@ export function PuzzleSolver({ puzzleId }: PuzzleSolverProps) {
         addXP(points)
 
         // Track quest progress
-        try {
-          await incrementQuestProgress(1, 'solve_puzzle')
-          if (points > 0) {
-            await incrementQuestProgress(1, 'earn_xp', points)
+        if (currentUserId) {
+          try {
+            await incrementQuestProgress(currentUserId, 'solve_puzzle')
+            if (points > 0) {
+              await incrementQuestProgress(currentUserId, 'earn_xp', points)
+            }
+
+            // Refresh currency and quests to show updated gold and quest progress
+            const { refreshCurrency, refreshQuests } = useAppStore.getState()
+            await refreshCurrency()
+            await refreshQuests()
+          } catch (error) {
+            console.error('Failed to update quest progress:', error)
           }
-        } catch (error) {
-          console.error('Failed to update quest progress:', error)
         }
 
         addConsoleMessage({
@@ -267,10 +283,34 @@ export function PuzzleSolver({ puzzleId }: PuzzleSolverProps) {
   const handleShowSolution = () => {
     if (!implementation) return
 
+    // Show warning modal if solution not already viewed
+    if (!solutionViewed) {
+      setShowSolutionWarning(true)
+    } else {
+      // Already viewed, just show it again
+      revealSolution()
+    }
+  }
+
+  const revealSolution = async () => {
+    if (!implementation) return
+
+    // Record solution viewed if first time
+    if (!solutionViewed) {
+      try {
+        await recordSolutionViewed(puzzleId, selectedLanguage)
+        setSolutionViewed(true)
+      } catch (err) {
+        console.error('Failed to record solution viewed:', err)
+      }
+    }
+
     setCode(implementation.solutionCode)
     addConsoleMessage({
       type: 'system',
-      content: '📖 Solution revealed. Try to understand how it works!',
+      content: solutionViewed
+        ? '📖 Solution displayed again.'
+        : '📖 Solution revealed. You will not earn points for this puzzle in this language.',
     })
   }
 
@@ -425,6 +465,29 @@ export function PuzzleSolver({ puzzleId }: PuzzleSolverProps) {
             await handleShowHint()
           }}
           onTryAgain={() => setShowFailureModal(false)}
+        />
+      )}
+
+      {/* Solution Warning Modal */}
+      <SolutionWarningModal
+        isOpen={showSolutionWarning}
+        puzzleTitle={puzzle?.title || ''}
+        languageName={selectedLanguage === 'python' ? 'Python' : selectedLanguage === 'javascript' ? 'JavaScript' : 'C#'}
+        onCancel={() => setShowSolutionWarning(false)}
+        onConfirm={() => {
+          setShowSolutionWarning(false)
+          revealSolution()
+        }}
+      />
+
+      {/* AI Tutor Chat Panel */}
+      {puzzle && implementation && (
+        <PuzzleChatPanel
+          puzzle={puzzle}
+          implementation={implementation}
+          userCode={code}
+          hintsRevealed={hintsRevealed}
+          consoleOutput={consoleMessages.map(m => m.content).join('\n')}
         />
       )}
     </div>

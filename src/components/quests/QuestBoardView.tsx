@@ -7,7 +7,7 @@ import { QuestCard } from './QuestCard';
 type QuestProgressWithPercentage = UserQuestProgress & { progressPercentage: number };
 
 export function QuestBoardView() {
-  const { dailyQuests, weeklyQuests, refreshQuests, userCurrency, refreshCurrency, setCurrentView } = useAppStore();
+  const { dailyQuests, weeklyQuests, refreshQuests, userCurrency, refreshCurrency, setCurrentView, currentUserId } = useAppStore();
   const [activeTab, setActiveTab] = useState<QuestType>('daily');
   const [quests, setQuests] = useState<QuestProgressWithPercentage[]>([]);
   const [loading, setLoading] = useState(true);
@@ -15,32 +15,38 @@ export function QuestBoardView() {
 
   // Load currency
   useEffect(() => {
-    if (!userCurrency) {
-      refreshCurrency(1); // TODO: Use actual user ID
+    if (!userCurrency && currentUserId) {
+      refreshCurrency(currentUserId);
     }
-  }, [userCurrency, refreshCurrency]);
+  }, [userCurrency, refreshCurrency, currentUserId]);
 
   // Load quests
   useEffect(() => {
-    loadQuests();
-  }, []);
+    if (currentUserId) {
+      loadQuests();
+    }
+  }, [currentUserId]);
 
   // Update displayed quests when tab changes or quests are refreshed
   useEffect(() => {
-    loadQuestProgress();
-  }, [activeTab, dailyQuests, weeklyQuests]);
+    if (currentUserId) {
+      loadQuestProgress();
+    }
+  }, [activeTab, dailyQuests, weeklyQuests, currentUserId]);
 
   const loadQuests = async () => {
+    if (!currentUserId) return;
+
     try {
       setLoading(true);
       setError(null);
 
       // Initialize quest progress for the user
-      await initializeQuestProgress(1, 'daily');
-      await initializeQuestProgress(1, 'weekly');
+      await initializeQuestProgress(currentUserId, 'daily');
+      await initializeQuestProgress(currentUserId, 'weekly');
 
       // Refresh quest data
-      await refreshQuests(1); // TODO: Use actual user ID
+      await refreshQuests(currentUserId);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load quests');
     } finally {
@@ -49,8 +55,10 @@ export function QuestBoardView() {
   };
 
   const loadQuestProgress = async () => {
+    if (!currentUserId) return;
+
     try {
-      const progress = await getQuestProgressWithPercentage(1, activeTab); // TODO: Use actual user ID
+      const progress = await getQuestProgressWithPercentage(currentUserId, activeTab);
       setQuests(progress);
     } catch (err) {
       console.error('Failed to load quest progress:', err);

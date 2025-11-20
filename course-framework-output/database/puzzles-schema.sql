@@ -93,6 +93,10 @@ CREATE TABLE IF NOT EXISTS user_puzzle_progress (
     -- Optimization
     is_optimal BOOLEAN DEFAULT FALSE,
 
+    -- Solution viewing tracking
+    solution_viewed BOOLEAN DEFAULT FALSE,
+    solution_viewed_at TIMESTAMP,
+
     UNIQUE(user_id, puzzle_id, language_id)
 );
 

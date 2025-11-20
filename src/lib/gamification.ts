@@ -28,6 +28,14 @@ import {
 } from '../types/gamification';
 
 // ============================================================================
+// USER OPERATIONS
+// ============================================================================
+
+export async function getOrCreateUser(username: string): Promise<number> {
+  return await invoke<number>('get_or_create_user', { username });
+}
+
+// ============================================================================
 // CURRENCY OPERATIONS
 // ============================================================================
 

@@ -41,6 +41,7 @@ pub fn run() {
       puzzle_commands::get_puzzle_progress,
       puzzle_commands::record_puzzle_attempt,
       puzzle_commands::record_hint_used,
+      puzzle_commands::record_solution_viewed,
       puzzle_commands::mark_puzzle_solved,
       // Playground commands
       playground_commands::get_playground_projects,
@@ -57,6 +58,8 @@ pub fn run() {
       playground_commands::get_playground_session,
       playground_commands::save_playground_session,
       playground_commands::fork_playground_project,
+      // Gamification - User commands
+      gamification_commands::get_or_create_user,
       // Gamification - Currency commands
       gamification_commands::get_user_currency,
       gamification_commands::add_currency,

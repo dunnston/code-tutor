@@ -16,6 +16,9 @@ import { SolutionConfirmModal } from '@components/SolutionConfirmModal'
 import { PuzzleHub } from '@components/puzzles/PuzzleHub'
 import { PuzzleList } from '@components/puzzles/PuzzleList'
 import { PuzzleSolver } from '@components/puzzles/PuzzleSolver'
+import { AllPuzzlesList } from '@components/puzzles/AllPuzzlesList'
+import { PuzzleLeaderboard } from '@components/puzzles/PuzzleLeaderboard'
+import { PuzzleAchievements } from '@components/puzzles/PuzzleAchievements'
 import PlaygroundView from '@components/playground/PlaygroundView'
 import { ShopView } from '@components/shop/ShopView'
 import { InventoryView } from '@components/inventory/InventoryView'
@@ -25,9 +28,9 @@ import { executeCode } from '@/lib/tauri'
 import { validateCode, getValidationSummary } from '@/lib/validation'
 import { updateStreak, recordLessonAttempt, clearAllData } from '@/lib/storage'
 import { hasCompletedOnboarding, completeOnboarding, resetOnboarding } from '@/lib/preferences'
-import { getCurrentProfile, type UserProfile } from '@/lib/profiles'
+import { getCurrentProfile, ensureProfileHasDbUser, type UserProfile } from '@/lib/profiles'
 import { aiService } from '@/lib/ai'
-import { incrementQuestProgress } from '@/lib/gamification'
+import { incrementQuestProgress, initializeQuestProgress } from '@/lib/gamification'
 import type { ExecutionResult } from '@/types/execution'
 import type { LanguageId } from '@/types/language'
 
@@ -49,6 +52,7 @@ function App() {
   const currentView = useAppStore((state) => state.currentView)
   const currentPuzzleCategoryId = useAppStore((state) => state.currentPuzzleCategoryId)
   const currentPuzzleId = useAppStore((state) => state.currentPuzzleId)
+  const currentUserId = useAppStore((state) => state.currentUserId)
 
   // Profile & Onboarding state
   const [currentProfile, setCurrentProfile] = useState<UserProfile | null>(getCurrentProfile())
@@ -59,8 +63,25 @@ function App() {
   const lastExecutionResult = useRef<ExecutionResult | undefined>()
 
   // Handle profile selection
-  const handleProfileSelected = (profile: UserProfile) => {
+  const handleProfileSelected = async (profile: UserProfile) => {
     setCurrentProfile(profile)
+
+    // Get or create database user for this profile
+    const dbUserId = await ensureProfileHasDbUser(profile)
+
+    // Set the current user ID in the store
+    const { setCurrentUserId, refreshCurrency, refreshInventory, refreshQuests, refreshActiveEffects } = useAppStore.getState()
+    setCurrentUserId(dbUserId)
+
+    // Initialize quest progress for new users
+    await initializeQuestProgress(dbUserId, 'daily')
+    await initializeQuestProgress(dbUserId, 'weekly')
+
+    // Refresh gamification data for the user
+    await refreshCurrency()
+    await refreshInventory()
+    await refreshQuests()
+    await refreshActiveEffects()
 
     // Clear current lesson to prevent stale data
     const setCurrentLesson = useAppStore.getState().setCurrentLesson
@@ -108,6 +129,29 @@ function App() {
     // Update streak on app load
     updateStreak().catch(error => console.error('Failed to update streak:', error))
     refreshProgress()
+
+    // Initialize current user ID if profile exists
+    const initProfile = async () => {
+      if (currentProfile) {
+        try {
+          const dbUserId = await ensureProfileHasDbUser(currentProfile)
+          const { setCurrentUserId, refreshCurrency, refreshInventory, refreshQuests, refreshActiveEffects } = useAppStore.getState()
+          setCurrentUserId(dbUserId)
+
+          // Initialize quest progress for new users
+          await initializeQuestProgress(dbUserId, 'daily')
+          await initializeQuestProgress(dbUserId, 'weekly')
+
+          await refreshCurrency()
+          await refreshInventory()
+          await refreshQuests()
+          await refreshActiveEffects()
+        } catch (error) {
+          console.error('Failed to initialize profile:', error)
+        }
+      }
+    }
+    initProfile()
 
     // Initialize AI provider based on saved settings
     const initAI = async () => {
@@ -222,23 +266,30 @@ function App() {
         completeLesson(currentLesson.id, currentLesson.xpReward, hintsRevealed)
 
         // Track quest progress
-        try {
-          // Track lesson completion
-          await incrementQuestProgress(1, 'complete_lesson')
+        if (currentUserId) {
+          try {
+            // Track lesson completion
+            await incrementQuestProgress(currentUserId, 'complete_lesson')
 
-          // Track XP earned
-          if (currentLesson.xpReward > 0) {
-            await incrementQuestProgress(1, 'earn_xp', currentLesson.xpReward)
-          }
+            // Track XP earned
+            if (currentLesson.xpReward > 0) {
+              await incrementQuestProgress(currentUserId, 'earn_xp', currentLesson.xpReward)
+            }
 
-          // Track hint-free completion
-          if (hintsRevealed === 0) {
-            await incrementQuestProgress(1, 'lesson_no_hints')
-            // Also track as perfect lesson (assuming first try if no hints used)
-            await incrementQuestProgress(1, 'perfect_lesson')
+            // Track hint-free completion
+            if (hintsRevealed === 0) {
+              await incrementQuestProgress(currentUserId, 'lesson_no_hints')
+              // Also track as perfect lesson (assuming first try if no hints used)
+              await incrementQuestProgress(currentUserId, 'perfect_lesson')
+            }
+
+            // Refresh currency and quests to show updated gold and quest progress
+            const { refreshCurrency, refreshQuests } = useAppStore.getState()
+            await refreshCurrency()
+            await refreshQuests()
+          } catch (error) {
+            console.error('Failed to update quest progress:', error)
           }
-        } catch (error) {
-          console.error('Failed to update quest progress:', error)
         }
 
         addConsoleMessage({
@@ -334,6 +385,15 @@ function App() {
       {currentView === 'puzzle-solver' && currentPuzzleId && (
         <PuzzleSolver puzzleId={currentPuzzleId} />
       )}
+
+      {/* All Puzzles View */}
+      {currentView === 'puzzle-all' && <AllPuzzlesList />}
+
+      {/* Puzzle Leaderboard View */}
+      {currentView === 'puzzle-leaderboard' && <PuzzleLeaderboard />}
+
+      {/* Puzzle Achievements View */}
+      {currentView === 'puzzle-achievements' && <PuzzleAchievements />}
 
       {/* Playground View */}
       {currentView === 'playground' && <PlaygroundView />}

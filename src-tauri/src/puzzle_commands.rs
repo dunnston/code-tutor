@@ -232,6 +232,8 @@ pub struct UserPuzzleProgress {
     pub solved_at: Option<String>,
     pub last_attempt_at: Option<String>,
     pub is_optimal: bool,
+    pub solution_viewed: bool,
+    pub solution_viewed_at: Option<String>,
 }
 
 /// Get user progress for a specific puzzle
@@ -246,7 +248,8 @@ pub fn get_puzzle_progress(
     let result = conn.query_row(
         "SELECT id, user_id, puzzle_id, language_id, status, attempts, hints_used,
                 user_solution, solve_time, solution_lines,
-                first_attempt_at, solved_at, last_attempt_at, is_optimal
+                first_attempt_at, solved_at, last_attempt_at, is_optimal,
+                COALESCE(solution_viewed, 0) as solution_viewed, solution_viewed_at
          FROM user_puzzle_progress
          WHERE user_id = 1 AND puzzle_id = ?1 AND language_id = ?2",
         params![puzzle_id, language_id],
@@ -266,6 +269,8 @@ pub fn get_puzzle_progress(
                 solved_at: row.get(11)?,
                 last_attempt_at: row.get(12)?,
                 is_optimal: row.get(13)?,
+                solution_viewed: row.get(14)?,
+                solution_viewed_at: row.get(15)?,
             })
         },
     );
@@ -346,6 +351,28 @@ pub fn record_hint_used(
     Ok(())
 }
 
+/// Record solution viewed
+#[tauri::command]
+pub fn record_solution_viewed(
+    app: AppHandle,
+    puzzle_id: String,
+    language_id: String,
+) -> Result<(), String> {
+    let conn = db::get_connection(&app)?;
+
+    conn.execute(
+        "INSERT INTO user_puzzle_progress
+         (user_id, puzzle_id, language_id, solution_viewed, solution_viewed_at)
+         VALUES (1, ?1, ?2, 1, CURRENT_TIMESTAMP)
+         ON CONFLICT(user_id, puzzle_id, language_id)
+         DO UPDATE SET solution_viewed = 1, solution_viewed_at = CURRENT_TIMESTAMP",
+        params![puzzle_id, language_id],
+    )
+    .map_err(|e| format!("Failed to record solution viewed: {}", e))?;
+
+    Ok(())
+}
+
 /// Mark puzzle as solved and award points
 #[tauri::command]
 pub fn mark_puzzle_solved(
@@ -357,14 +384,27 @@ pub fn mark_puzzle_solved(
 ) -> Result<i32, String> {
     let conn = db::get_connection(&app)?;
 
-    // Get puzzle points
-    let points: i32 = conn
+    // Check if solution was viewed
+    let solution_viewed: bool = conn
         .query_row(
+            "SELECT COALESCE(solution_viewed, 0) FROM user_puzzle_progress
+             WHERE user_id = 1 AND puzzle_id = ?1 AND language_id = ?2",
+            params![&puzzle_id, &language_id],
+            |row| row.get(0),
+        )
+        .unwrap_or(false);
+
+    // Get puzzle points (0 if solution was viewed)
+    let points: i32 = if solution_viewed {
+        0
+    } else {
+        conn.query_row(
             "SELECT points FROM puzzles WHERE id = ?1",
             params![&puzzle_id],
             |row| row.get(0),
         )
-        .map_err(|e| format!("Failed to get puzzle points: {}", e))?;
+        .map_err(|e| format!("Failed to get puzzle points: {}", e))?
+    };
 
     // Count lines of code
     let solution_lines = user_solution.lines().filter(|l| !l.trim().is_empty()).count() as i32;
@@ -406,12 +446,14 @@ pub fn mark_puzzle_solved(
         .map_err(|e| format!("Failed to insert solved record: {}", e))?;
     }
 
-    // Update puzzle solve count
-    conn.execute(
-        "UPDATE puzzles SET solve_count = solve_count + 1 WHERE id = ?1",
-        params![&puzzle_id],
-    )
-    .map_err(|e| format!("Failed to update solve count: {}", e))?;
+    // Update puzzle solve count (only if points were awarded)
+    if points > 0 {
+        conn.execute(
+            "UPDATE puzzles SET solve_count = solve_count + 1 WHERE id = ?1",
+            params![&puzzle_id],
+        )
+        .map_err(|e| format!("Failed to update solve count: {}", e))?;
+    }
 
     Ok(points)
 }

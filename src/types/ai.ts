@@ -78,6 +78,19 @@ export interface PromptContext {
     tags: string[]
   }>
   playgroundMode?: boolean
+
+  // Puzzle-specific context
+  puzzleTitle?: string
+  puzzleDescription?: string
+  puzzleDifficulty?: string
+  puzzleTestCases?: Array<{
+    description: string
+    input: Record<string, unknown>
+    expectedOutput: unknown
+  }>
+  puzzleHintsUsed?: number
+  puzzleHintsAvailable?: number
+  puzzleMode?: boolean
 }
 
 /**
@@ -108,6 +121,10 @@ export type PromptType =
   | 'playground_help'
   | 'playground_chat'
   | 'playground_challenge'
+  | 'puzzle_help'
+  | 'puzzle_test_results'
+  | 'puzzle_hint'
+  | 'puzzle_concept'
 
 export type AIProviderType = 'ollama' | 'claude' | 'none'
 
