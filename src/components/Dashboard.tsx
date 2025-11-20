@@ -24,6 +24,11 @@ export function Dashboard({ onLogout }: DashboardProps) {
         {/* Profile Header */}
         <ProfileHeader onLogout={onLogout} />
 
+        {/* Playground Widget */}
+        <section className="mt-6">
+          <PlaygroundWidget />
+        </section>
+
         {/* Active Courses Section */}
         <section className="mt-8">
           <ActiveCourseCard />
@@ -42,11 +47,6 @@ export function Dashboard({ onLogout }: DashboardProps) {
         {/* Puzzle Widget */}
         <section className="mt-8">
           <PuzzleWidget />
-        </section>
-
-        {/* Playground Widget */}
-        <section className="mt-8">
-          <PlaygroundWidget />
         </section>
 
         {/* Achievements Preview */}

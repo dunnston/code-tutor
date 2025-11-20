@@ -22,6 +22,7 @@ import type {
 import PlaygroundSidebar from './PlaygroundSidebar';
 import PlaygroundToolbar from './PlaygroundToolbar';
 import PlaygroundConsole from './PlaygroundConsole';
+import { ConfirmModal } from '@/components/ui/ConfirmModal';
 
 export default function PlaygroundView() {
   const {
@@ -43,6 +44,7 @@ export default function PlaygroundView() {
   const [isSaving, setIsSaving] = useState(false);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const [currentProject, setCurrentProject] = useState<PlaygroundProject | null>(null);
+  const [projectToDelete, setProjectToDelete] = useState<string | null>(null);
 
   // Load projects, templates, and snippets on mount
   useEffect(() => {
@@ -270,28 +272,46 @@ export default function PlaygroundView() {
     setConsoleOutput([]);
   };
 
-  const handleDeleteProject = async (projectId: string) => {
-    if (!confirm('Are you sure you want to delete this project?')) return;
+  const handleDeleteProject = (projectId: string) => {
+    setProjectToDelete(projectId);
+  };
+
+  const confirmDeleteProject = async () => {
+    if (!projectToDelete) return;
 
     try {
-      await deletePlaygroundProject(projectId);
+      await deletePlaygroundProject(projectToDelete);
       await loadProjects();
 
-      if (projectId === playgroundProjectId) {
+      if (projectToDelete === playgroundProjectId) {
         handleNewProject();
       }
+      setProjectToDelete(null);
     } catch (error) {
       console.error('Failed to delete project:', error);
-      alert('Failed to delete project');
+      setConsoleOutput(prev => [...prev, 'Error: Failed to delete project']);
+      setProjectToDelete(null);
     }
   };
 
   const monacoLanguage = LANGUAGE_REGISTRY[playgroundLanguage as keyof typeof LANGUAGE_REGISTRY]?.monacoLanguage || 'python';
 
   return (
-    <div className="flex h-screen bg-slate-900 text-gray-100">
-      {/* Sidebar */}
-      <PlaygroundSidebar
+    <>
+      <ConfirmModal
+        isOpen={projectToDelete !== null}
+        title="Delete Project"
+        message="Are you sure you want to delete this project? This action cannot be undone."
+        confirmText="Delete"
+        cancelText="Cancel"
+        confirmVariant="danger"
+        onConfirm={confirmDeleteProject}
+        onCancel={() => setProjectToDelete(null)}
+      />
+
+      <div className="flex h-screen bg-slate-900 text-gray-100">
+        {/* Sidebar */}
+        <PlaygroundSidebar
         view={sidebarView}
         onViewChange={setSidebarView}
         projects={projects}
@@ -346,6 +366,7 @@ export default function PlaygroundView() {
           onClear={handleClearConsole}
         />
       </div>
-    </div>
+      </div>
+    </>
   );
 }

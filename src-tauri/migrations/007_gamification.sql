@@ -221,7 +221,7 @@ CREATE TABLE IF NOT EXISTS level_rewards (
 
 -- Initialize currency for existing users (if any)
 INSERT OR IGNORE INTO user_currency (user_id, gold, gems, lifetime_gold_earned, lifetime_gems_earned)
-SELECT id, 1000, 50, 1000, 50  -- Starting bonus
+SELECT id, 0, 0, 0, 0  -- Start with no currency - earn through gameplay
 FROM users;
 
 -- ============================================================================

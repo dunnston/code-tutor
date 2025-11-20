@@ -1,10 +1,14 @@
+import { useState } from 'react'
 import { useAppStore } from '@/lib/store'
 import { getCourseById, getCourseProgress } from '@/lib/courses'
-import { getActivatedCourses } from '@/lib/profiles'
+import { getActivatedCourses, deactivateCourse } from '@/lib/profiles'
+import { ConfirmModal } from '@/components/ui/ConfirmModal'
 
 export function ActiveCourseCard() {
   const setCurrentLesson = useAppStore((state) => state.setCurrentLesson)
   const setCurrentView = useAppStore((state) => state.setCurrentView)
+  const [refreshKey, setRefreshKey] = useState(0)
+  const [confirmModal, setConfirmModal] = useState<{ courseId: number; courseName: string } | null>(null)
   const activeCourseIds = getActivatedCourses()
 
   if (activeCourseIds.length === 0) {
@@ -50,10 +54,34 @@ export function ActiveCourseCard() {
     }
   }
 
+  const handleDeactivateCourse = (courseId: number, courseName: string) => {
+    setConfirmModal({ courseId, courseName })
+  }
+
+  const confirmDeactivation = () => {
+    if (confirmModal) {
+      deactivateCourse(confirmModal.courseId)
+      setRefreshKey(prev => prev + 1) // Force re-render
+      setConfirmModal(null)
+    }
+  }
+
   return (
-    <div className="space-y-4">
-      <h2 className="text-2xl font-bold text-gray-100">Your Active Courses</h2>
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+    <>
+      <ConfirmModal
+        isOpen={confirmModal !== null}
+        title="Deactivate Course"
+        message={`Are you sure you want to deactivate "${confirmModal?.courseName}"? Your progress will be saved.`}
+        confirmText="Deactivate"
+        cancelText="Cancel"
+        confirmVariant="primary"
+        onConfirm={confirmDeactivation}
+        onCancel={() => setConfirmModal(null)}
+      />
+
+      <div className="space-y-4">
+        <h2 className="text-2xl font-bold text-gray-100">Your Active Courses</h2>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {activeCourses.map(({ course, progress }) => {
           if (!course) return null
 
@@ -74,6 +102,16 @@ export function ActiveCourseCard() {
                     <p className="text-orange-100 text-sm">{course.category}</p>
                   </div>
                 </div>
+                {/* Deactivate Button */}
+                <button
+                  onClick={() => handleDeactivateCourse(course.id, course.name)}
+                  className="text-orange-200 hover:text-white transition-colors p-2 rounded-lg hover:bg-orange-800/30"
+                  title="Deactivate course"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
               </div>
 
               {/* Progress Bar */}
@@ -131,7 +169,8 @@ export function ActiveCourseCard() {
             </div>
           )
         })}
+        </div>
       </div>
-    </div>
+    </>
   )
 }
