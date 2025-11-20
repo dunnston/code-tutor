@@ -6,7 +6,7 @@
 -- ============================================================================
 
 -- Beginner Templates
-INSERT INTO playground_templates (id, name, description, language_id, category, code, difficulty, tags, icon, is_featured, order_index) VALUES
+INSERT OR IGNORE INTO playground_templates (id, name, description, language_id, category, code, difficulty, tags, icon, is_featured, order_index) VALUES
 ('hello-world-py', 'Hello World', 'The classic first program', 'python', 'basics', '# Welcome to the playground!
 # Try changing the message below
 
@@ -63,7 +63,7 @@ level_up(character)
 display_character(character)', 'beginner', '["game", "rpg"]', '⚔️', TRUE, 3);
 
 -- Intermediate Templates
-INSERT INTO playground_templates (id, name, description, language_id, category, code, difficulty, tags, icon, is_featured, order_index) VALUES
+INSERT OR IGNORE INTO playground_templates (id, name, description, language_id, category, code, difficulty, tags, icon, is_featured, order_index) VALUES
 ('text-adventure-py', 'Text Adventure Game', 'Simple room-based adventure', 'python', 'game', '# Text Adventure Framework
 
 rooms = {
@@ -304,7 +304,7 @@ if player.is_alive():
     print(player.status())', 'intermediate', '["game", "combat", "rpg"]', '⚔️', TRUE, 6);
 
 -- Advanced Templates
-INSERT INTO playground_templates (id, name, description, language_id, category, code, difficulty, tags, icon, is_featured, order_index) VALUES
+INSERT OR IGNORE INTO playground_templates (id, name, description, language_id, category, code, difficulty, tags, icon, is_featured, order_index) VALUES
 ('data-visualizer-py', 'Data Visualizer', 'Process and display data with ASCII charts', 'python', 'utility', '# Data Analysis Template
 
 student_scores = [
@@ -469,7 +469,7 @@ print("\\n💡 TIP: Modify the actions list to create different state flows!")',
 -- ============================================================================
 
 -- Game Snippets
-INSERT INTO playground_snippets (id, user_id, name, description, language_id, category, code, use_count) VALUES
+INSERT OR IGNORE INTO playground_snippets (id, user_id, name, description, language_id, category, code, use_count) VALUES
 ('dice-roller-py', NULL, 'Roll Dice', 'Roll N-sided dice', 'python', 'game', 'import random
 
 def roll_dice(sides=6, count=1):
@@ -539,7 +539,7 @@ def generate_item():
 # Usage: print(generate_item())', 0);
 
 -- Utility Snippets
-INSERT INTO playground_snippets (id, user_id, name, description, language_id, category, code, use_count) VALUES
+INSERT OR IGNORE INTO playground_snippets (id, user_id, name, description, language_id, category, code, use_count) VALUES
 ('input-validator-py', NULL, 'Number Input Validator', 'Get valid number from user', 'python', 'utility', 'def get_number(prompt, min_val=None, max_val=None):
     """Get valid number input from user"""
     while True:
@@ -622,7 +622,7 @@ def timer(func):
 -- PLAYGROUND ACHIEVEMENTS
 -- ============================================================================
 
-INSERT INTO playground_achievements (id, name, description, icon, requirement_type, requirement_value, xp_reward, gold_reward) VALUES
+INSERT OR IGNORE INTO playground_achievements (id, name, description, icon, requirement_type, requirement_value, xp_reward, gold_reward) VALUES
 ('first-playground', 'Sandbox Explorer', 'Create your first playground project', '🏖️', 'count', 1, 100, 100),
 ('10-projects', 'Prolific Creator', 'Create 10 playground projects', '🎨', 'count', 10, 500, 500),
 ('100-lines', 'Century Coder', 'Write 100 lines in a single project', '📜', 'lines', 100, 200, 200),
