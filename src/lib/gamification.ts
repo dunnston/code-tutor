@@ -329,7 +329,8 @@ export async function incrementQuestProgress(
     | 'earn_xp'
     | 'lesson_no_hints'
     | 'perfect_lesson'
-    | 'maintain_streak',
+    | 'maintain_streak'
+    | 'use_playground',
   amount: number = 1
 ): Promise<void> {
   // Map actions to objective types
@@ -340,6 +341,7 @@ export async function incrementQuestProgress(
     lesson_no_hints: 'lesson_no_hints',
     perfect_lesson: 'perfect_lessons',
     maintain_streak: 'maintain_streak',
+    use_playground: 'use_playground',
   };
 
   const objectiveType = objectiveTypeMap[action];

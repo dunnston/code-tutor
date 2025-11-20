@@ -397,7 +397,7 @@ export const BADGES: Record<BadgeId, Omit<Badge, 'earnedAt'>> = {
 /**
  * Update daily streak on login/activity
  */
-export function updateStreak(): void {
+export async function updateStreak(): Promise<void> {
   const progress = loadProgress()
   const today = new Date().toISOString().split('T')[0]!
   const lastLogin = progress.streak.lastLoginDate
@@ -414,6 +414,8 @@ export function updateStreak(): void {
     (todayDate.getTime() - lastDate.getTime()) / (1000 * 60 * 60 * 24)
   )
 
+  let streakContinued = false
+
   if (daysDiff === 1) {
     // Consecutive day - increment streak
     progress.streak.currentStreak += 1
@@ -421,6 +423,7 @@ export function updateStreak(): void {
       progress.streak.longestStreak,
       progress.streak.currentStreak
     )
+    streakContinued = true
   } else if (daysDiff > 1) {
     // Streak broken - reset to 1
     progress.streak.currentStreak = 1
@@ -430,6 +433,16 @@ export function updateStreak(): void {
   progress.streak.totalDaysActive += 1
 
   saveProgress(progress)
+
+  // Track streak maintenance for quests (only if streak continued)
+  if (streakContinued) {
+    try {
+      const { incrementQuestProgress } = await import('./gamification')
+      await incrementQuestProgress(1, 'maintain_streak')
+    } catch (error) {
+      console.error('Failed to track streak maintenance:', error)
+    }
+  }
 }
 
 /**

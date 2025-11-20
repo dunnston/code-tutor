@@ -250,7 +250,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   refreshProgress: () => {
     set({ progress: loadProgress() })
     // Update streak on app load
-    updateStreak()
+    updateStreak().catch(error => console.error('Failed to update streak:', error))
   },
 
   // Gamification state

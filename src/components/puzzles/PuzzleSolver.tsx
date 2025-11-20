@@ -11,6 +11,7 @@ import {
 import { validatePuzzleSolution, formatTestResults } from '@/lib/puzzleValidation'
 import { useAppStore } from '@/lib/store'
 import { executeCode } from '@/lib/tauri'
+import { incrementQuestProgress } from '@/lib/gamification'
 import type {
   Puzzle,
   PuzzleImplementation,
@@ -201,6 +202,16 @@ export function PuzzleSolver({ puzzleId }: PuzzleSolverProps) {
 
         // Add XP to user profile
         addXP(points)
+
+        // Track quest progress
+        try {
+          await incrementQuestProgress(1, 'solve_puzzle')
+          if (points > 0) {
+            await incrementQuestProgress(1, 'earn_xp', points)
+          }
+        } catch (error) {
+          console.error('Failed to update quest progress:', error)
+        }
 
         addConsoleMessage({
           type: 'system',

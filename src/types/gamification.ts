@@ -87,7 +87,8 @@ export type QuestObjectiveType =
   | 'earn_xp'
   | 'lesson_no_hints'
   | 'perfect_lessons'
-  | 'maintain_streak';
+  | 'maintain_streak'
+  | 'use_playground';
 
 export interface Quest {
   id: string;

@@ -27,6 +27,7 @@ import { updateStreak, recordLessonAttempt, clearAllData } from '@/lib/storage'
 import { hasCompletedOnboarding, completeOnboarding, resetOnboarding } from '@/lib/preferences'
 import { getCurrentProfile, type UserProfile } from '@/lib/profiles'
 import { aiService } from '@/lib/ai'
+import { incrementQuestProgress } from '@/lib/gamification'
 import type { ExecutionResult } from '@/types/execution'
 import type { LanguageId } from '@/types/language'
 
@@ -105,7 +106,7 @@ function App() {
   useEffect(() => {
     // Don't auto-load lesson anymore - users start from dashboard
     // Update streak on app load
-    updateStreak()
+    updateStreak().catch(error => console.error('Failed to update streak:', error))
     refreshProgress()
 
     // Initialize AI provider based on saved settings
@@ -219,6 +220,26 @@ function App() {
       if (!alreadyCompleted) {
         // Mark lesson as complete and award XP (also triggers badge checks and notifications)
         completeLesson(currentLesson.id, currentLesson.xpReward, hintsRevealed)
+
+        // Track quest progress
+        try {
+          // Track lesson completion
+          await incrementQuestProgress(1, 'complete_lesson')
+
+          // Track XP earned
+          if (currentLesson.xpReward > 0) {
+            await incrementQuestProgress(1, 'earn_xp', currentLesson.xpReward)
+          }
+
+          // Track hint-free completion
+          if (hintsRevealed === 0) {
+            await incrementQuestProgress(1, 'lesson_no_hints')
+            // Also track as perfect lesson (assuming first try if no hints used)
+            await incrementQuestProgress(1, 'perfect_lesson')
+          }
+        } catch (error) {
+          console.error('Failed to update quest progress:', error)
+        }
 
         addConsoleMessage({
           type: 'system',

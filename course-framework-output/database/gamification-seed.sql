@@ -90,7 +90,8 @@ INSERT OR IGNORE INTO quests (id, type, title, description, objective_type, obje
 ('daily-three-lessons', 'daily', 'Learning Spree', 'Complete 3 lessons', 'complete_lessons', 3, 300, 300, 5, TRUE, '🔥', 2),
 ('daily-puzzle', 'daily', 'Puzzle Master', 'Solve 2 puzzles', 'solve_puzzles', 2, 200, 200, 0, TRUE, '🧩', 3),
 ('daily-xp', 'daily', 'XP Grinder', 'Earn 500 XP', 'earn_xp', 500, 0, 250, 5, TRUE, '⚡', 4),
-('daily-no-hints', 'daily', 'Self-Sufficient', 'Complete a lesson without using hints', 'lesson_no_hints', 1, 150, 200, 3, TRUE, '💪', 5);
+('daily-no-hints', 'daily', 'Self-Sufficient', 'Complete a lesson without using hints', 'lesson_no_hints', 1, 150, 200, 3, TRUE, '💪', 5),
+('daily-playground', 'daily', 'Code Explorer', 'Use the playground to experiment with what you learned', 'use_playground', 1, 120, 150, 2, TRUE, '🎮', 6);
 
 -- ============================================================================
 -- WEEKLY QUESTS

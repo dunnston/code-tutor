@@ -14,6 +14,7 @@ import {
   deletePlaygroundProject,
   getPlaygroundProject,
 } from '@/lib/playground';
+import { incrementQuestProgress } from '@/lib/gamification';
 import type {
   PlaygroundProject,
   PlaygroundTemplate,
@@ -185,6 +186,13 @@ export default function PlaygroundView() {
       output.push(`\n✓ Executed in ${(result.executionTimeMs / 1000).toFixed(2)}s`);
 
       setConsoleOutput(output);
+
+      // Track playground usage for quest progress
+      try {
+        await incrementQuestProgress(1, 'use_playground');
+      } catch (error) {
+        console.error('Failed to update quest progress:', error);
+      }
 
       // Update last run time if this is a saved project
       if (playgroundProjectId) {
