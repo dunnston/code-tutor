@@ -69,6 +69,12 @@ impl LanguageConfig {
                 execution_mode: ExecutionMode::Inline,
                 extension: ".rb".to_string(),
             }),
+            "bash" => Ok(LanguageConfig {
+                command: vec!["bash".to_string(), "-c".to_string()],
+                fallback_command: Some(vec!["sh".to_string(), "-c".to_string()]),
+                execution_mode: ExecutionMode::Inline,
+                extension: ".sh".to_string(),
+            }),
             _ => Err(format!("Unsupported language: {}", language)),
         }
     }
@@ -218,6 +224,7 @@ pub async fn check_language_runtime(language: String) -> Result<bool, String> {
         "gdscript" => vec!["godot", "--version"],
         "csharp" => vec!["dotnet", "--version"],
         "ruby" => vec!["ruby", "--version"],
+        "bash" => vec!["bash", "--version"],
         _ => return Err(format!("Unknown language: {}", language)),
     };
 
