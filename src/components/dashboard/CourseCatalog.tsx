@@ -1,6 +1,9 @@
+import { useState, useEffect } from 'react'
 import { getAllCourses, getCourseProgress, isCourseUnlocked } from '@/lib/courses'
 import { getActivatedCourses } from '@/lib/profiles'
+import { checkAllRuntimes, type RuntimeStatus } from '@/lib/runtimeDetection'
 import type { CourseCategory } from '@/types/course'
+import type { SupportedLanguage } from '@/types/language'
 import { CourseCard } from './CourseCard'
 
 interface CourseCatalogProps {
@@ -9,8 +12,15 @@ interface CourseCatalogProps {
 }
 
 export function CourseCatalog({ category, searchQuery = '' }: CourseCatalogProps) {
+  const [runtimeStatuses, setRuntimeStatuses] = useState<Record<SupportedLanguage, RuntimeStatus> | null>(null)
+
   let courses = getAllCourses()
   const activatedCourseIds = getActivatedCourses()
+
+  // Check runtime availability
+  useEffect(() => {
+    checkAllRuntimes().then(setRuntimeStatuses)
+  }, [])
 
   // Filter out activated courses (only show courses that can be activated)
   courses = courses.filter((course) => !activatedCourseIds.includes(course.id))
@@ -48,11 +58,25 @@ export function CourseCatalog({ category, searchQuery = '' }: CourseCatalogProps
     )
   }
 
+  // Show loading state while checking runtimes
+  if (!runtimeStatuses) {
+    return (
+      <div className="text-center py-12">
+        <div className="animate-spin h-8 w-8 border-4 border-orange-500 border-t-transparent rounded-full mx-auto mb-4"></div>
+        <p className="text-gray-400">Checking available courses...</p>
+      </div>
+    )
+  }
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {courses.map((course) => {
         const progress = getCourseProgress(course.id)
         const isLocked = !isCourseUnlocked(course.id)
+
+        // Check if runtime is available for this course
+        const runtimeStatus = runtimeStatuses[course.language as SupportedLanguage]
+        const runtimeAvailable = runtimeStatus?.available || false
 
         return (
           <CourseCard
@@ -60,6 +84,7 @@ export function CourseCatalog({ category, searchQuery = '' }: CourseCatalogProps
             course={course}
             progress={progress}
             isLocked={isLocked}
+            runtimeAvailable={runtimeAvailable}
           />
         )
       })}

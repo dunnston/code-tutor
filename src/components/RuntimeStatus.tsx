@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react'
 import { checkAllRuntimes, getRuntimeName, getInstallInstructions, type RuntimeStatus } from '@/lib/runtimeDetection'
 import type { SupportedLanguage } from '@/types/language'
+import { open } from '@tauri-apps/plugin-shell'
 
 export function RuntimeStatusPanel() {
   const [runtimes, setRuntimes] = useState<Record<SupportedLanguage, RuntimeStatus> | null>(null)
   const [loading, setLoading] = useState(true)
+  const [refreshing, setRefreshing] = useState(false)
 
   useEffect(() => {
     loadRuntimes()
@@ -22,85 +24,151 @@ export function RuntimeStatusPanel() {
     }
   }
 
+  const handleRefresh = async () => {
+    setRefreshing(true)
+    await loadRuntimes()
+    setRefreshing(false)
+  }
+
+  const handleInstall = async (url: string) => {
+    try {
+      await open(url)
+    } catch (error) {
+      console.error('Failed to open URL:', error)
+    }
+  }
+
   if (loading || !runtimes) {
     return (
       <div className="p-6 bg-slate-800 rounded-lg">
-        <p className="text-gray-400">Checking installed runtimes...</p>
+        <div className="flex items-center gap-3">
+          <div className="animate-spin h-5 w-5 border-2 border-orange-500 border-t-transparent rounded-full"></div>
+          <p className="text-gray-400">Checking installed runtimes...</p>
+        </div>
       </div>
     )
   }
 
-  const available = Object.values(runtimes).filter(r => r.available)
-  const missing = Object.values(runtimes).filter(r => !r.available)
+  const bundled = Object.values(runtimes).filter(r => r.bundled)
+  const optional = Object.values(runtimes).filter(r => !r.bundled)
+  const optionalAvailable = optional.filter(r => r.available)
+  const optionalMissing = optional.filter(r => !r.available)
 
   return (
     <div className="space-y-4">
+      {/* Bundled Runtimes (Always Available) */}
       <div className="bg-slate-800 rounded-lg p-6">
-        <h2 className="text-xl font-bold text-white mb-4">Language Runtimes</h2>
+        <div className="flex items-center gap-2 mb-4">
+          <span className="text-2xl">📦</span>
+          <h2 className="text-xl font-bold text-white">Built-in Languages</h2>
+        </div>
+        <p className="text-sm text-gray-400 mb-4">
+          These languages work out of the box - no installation required!
+        </p>
+        <div className="space-y-2">
+          {bundled.map((runtime) => (
+            <div
+              key={runtime.language}
+              className="flex items-center justify-between p-3 bg-green-900/20 border border-green-500/30 rounded"
+            >
+              <div className="flex items-center gap-2">
+                <span className="text-green-400">✓</span>
+                <span className="text-white font-medium">{getRuntimeName(runtime.language)}</span>
+              </div>
+              <span className="text-green-400 text-sm">Ready</span>
+            </div>
+          ))}
+        </div>
+      </div>
 
-        {/* Available Runtimes */}
-        {available.length > 0 && (
-          <div className="mb-6">
-            <h3 className="text-sm font-semibold text-green-400 mb-2">✓ Available</h3>
+      {/* Optional Runtimes */}
+      <div className="bg-slate-800 rounded-lg p-6">
+        <div className="flex items-center gap-2 mb-4">
+          <span className="text-2xl">🔧</span>
+          <h2 className="text-xl font-bold text-white">Optional Languages</h2>
+        </div>
+        <p className="text-sm text-gray-400 mb-4">
+          Install these to unlock additional courses
+        </p>
+
+        {/* Installed Optional Runtimes */}
+        {optionalAvailable.length > 0 && (
+          <div className="mb-4">
+            <h3 className="text-sm font-semibold text-green-400 mb-2">Installed</h3>
             <div className="space-y-2">
-              {available.map((runtime) => (
+              {optionalAvailable.map((runtime) => (
                 <div
                   key={runtime.language}
                   className="flex items-center justify-between p-3 bg-slate-700/50 rounded"
                 >
-                  <span className="text-white">{getRuntimeName(runtime.language)}</span>
-                  <span className="text-green-400 text-sm">Ready</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-green-400">✓</span>
+                    <span className="text-white">{getRuntimeName(runtime.language)}</span>
+                  </div>
+                  <span className="text-green-400 text-sm">Available</span>
                 </div>
               ))}
             </div>
           </div>
         )}
 
-        {/* Missing Runtimes */}
-        {missing.length > 0 && (
+        {/* Not Installed Optional Runtimes */}
+        {optionalMissing.length > 0 && (
           <div>
-            <h3 className="text-sm font-semibold text-orange-400 mb-2">⚠ Not Installed</h3>
-            <div className="space-y-2">
-              {missing.map((runtime) => (
+            <h3 className="text-sm font-semibold text-orange-400 mb-2">Not Installed</h3>
+            <div className="space-y-3">
+              {optionalMissing.map((runtime) => (
                 <div
                   key={runtime.language}
-                  className="p-3 bg-slate-700/50 rounded space-y-2"
+                  className="p-4 bg-slate-700/50 rounded space-y-3"
                 >
                   <div className="flex items-center justify-between">
-                    <span className="text-white">{getRuntimeName(runtime.language)}</span>
-                    <span className="text-orange-400 text-sm">Not Found</span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-gray-400">🔒</span>
+                      <span className="text-white font-medium">{getRuntimeName(runtime.language)}</span>
+                    </div>
+                    <span className="text-orange-400 text-sm">Locked</span>
                   </div>
                   <p className="text-xs text-gray-400">
                     {getInstallInstructions(runtime.language)}
                   </p>
                   {runtime.installUrl && (
-                    <a
-                      href={runtime.installUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-block text-xs text-orange-400 hover:text-orange-300 underline"
+                    <button
+                      onClick={() => handleInstall(runtime.installUrl!)}
+                      className="w-full px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded text-sm font-medium transition-colors"
                     >
-                      Download →
-                    </a>
+                      Download & Install
+                    </button>
                   )}
                 </div>
               ))}
             </div>
           </div>
         )}
-
-        <button
-          onClick={loadRuntimes}
-          className="mt-4 px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded text-sm transition-colors"
-        >
-          Refresh Status
-        </button>
       </div>
 
-      {missing.length > 0 && (
-        <div className="bg-orange-900/20 border border-orange-500/30 rounded-lg p-4">
-          <p className="text-sm text-orange-300">
-            Some language courses require additional software. Install the runtimes above to unlock all courses!
+      {/* Refresh Button */}
+      <button
+        onClick={handleRefresh}
+        disabled={refreshing}
+        className="w-full px-4 py-3 bg-slate-700 hover:bg-slate-600 disabled:bg-slate-800 text-white rounded font-medium transition-colors flex items-center justify-center gap-2"
+      >
+        {refreshing ? (
+          <>
+            <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full"></div>
+            Checking...
+          </>
+        ) : (
+          <>
+            🔄 Check Again
+          </>
+        )}
+      </button>
+
+      {optionalMissing.length > 0 && (
+        <div className="bg-blue-900/20 border border-blue-500/30 rounded-lg p-4">
+          <p className="text-sm text-blue-300">
+            💡 <strong>Tip:</strong> After installing a language, click "Check Again" to unlock the courses!
           </p>
         </div>
       )}

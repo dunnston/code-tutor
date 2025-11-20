@@ -1,22 +1,29 @@
 import type { Course, UserCourseProgress } from '@/types/course'
 import { useAppStore } from '@/lib/store'
 import { isCourseActivated, activateCourse } from '@/lib/profiles'
+import { getRuntimeName, getLockedCourseMessage } from '@/lib/runtimeDetection'
+import type { SupportedLanguage } from '@/types/language'
 import { useState } from 'react'
 
 interface CourseCardProps {
   course: Course
   progress: UserCourseProgress | null
   isLocked?: boolean
+  runtimeAvailable?: boolean
 }
 
-export function CourseCard({ course, progress, isLocked = false }: CourseCardProps) {
+export function CourseCard({ course, progress, isLocked = false, runtimeAvailable = true }: CourseCardProps) {
   const setCurrentLesson = useAppStore((state) => state.setCurrentLesson)
   const setCurrentView = useAppStore((state) => state.setCurrentView)
+  const toggleSettings = useAppStore((state) => state.toggleSettings)
   const [isActivated, setIsActivated] = useState(isCourseActivated(course.id))
+
+  // Course is locked if either isLocked OR runtime is not available
+  const effectivelyLocked = isLocked || !runtimeAvailable
 
   const handleActivateCourse = (e: React.MouseEvent) => {
     e.stopPropagation()
-    if (isLocked) return
+    if (effectivelyLocked) return
 
     activateCourse(course.id)
     setIsActivated(true)
@@ -24,7 +31,7 @@ export function CourseCard({ course, progress, isLocked = false }: CourseCardPro
 
   const handleStartCourse = (e: React.MouseEvent) => {
     e.stopPropagation()
-    if (isLocked || !isActivated) return
+    if (effectivelyLocked || !isActivated) return
 
     // Set first lesson of the course
     const firstLesson = course.lessons[0]
@@ -36,7 +43,7 @@ export function CourseCard({ course, progress, isLocked = false }: CourseCardPro
 
   const handleContinueCourse = (e: React.MouseEvent) => {
     e.stopPropagation()
-    if (isLocked || !progress || !isActivated) return
+    if (effectivelyLocked || !progress || !isActivated) return
 
     // Find the next lesson to resume
     const nextLessonId = progress.lastAccessedLessonId
@@ -48,6 +55,11 @@ export function CourseCard({ course, progress, isLocked = false }: CourseCardPro
     }
   }
 
+  const handleOpenSettings = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    toggleSettings()
+  }
+
   const isInProgress = progress && progress.lessonsCompleted > 0 && progress.completionPercentage < 100
   const isCompleted = progress && progress.completionPercentage === 100
   const isNew = !progress || progress.lessonsCompleted === 0
@@ -55,7 +67,7 @@ export function CourseCard({ course, progress, isLocked = false }: CourseCardPro
   return (
     <div
       className={`bg-navy-800 rounded-xl p-6 border transition-all ${
-        isLocked
+        effectivelyLocked
           ? 'border-navy-700 opacity-60'
           : 'border-navy-700 hover:border-accent-500 hover:shadow-lg'
       }`}
@@ -77,22 +89,27 @@ export function CourseCard({ course, progress, isLocked = false }: CourseCardPro
         </div>
 
         {/* Status Badge */}
-        {isLocked && (
+        {!runtimeAvailable && (
+          <div className="bg-orange-900/20 px-2 py-1 rounded text-xs text-orange-400 flex items-center gap-1 border border-orange-500/30">
+            🔒 Setup Required
+          </div>
+        )}
+        {runtimeAvailable && isLocked && (
           <div className="bg-navy-700 px-2 py-1 rounded text-xs text-gray-500 flex items-center gap-1">
             🔒 Locked
           </div>
         )}
-        {isCompleted && (
+        {!effectivelyLocked && isCompleted && (
           <div className="bg-green-500/10 px-2 py-1 rounded text-xs text-green-400 flex items-center gap-1">
             ✓ Completed
           </div>
         )}
-        {isInProgress && (
+        {!effectivelyLocked && isInProgress && (
           <div className="bg-accent-500/10 px-2 py-1 rounded text-xs text-accent-400 flex items-center gap-1">
             ▶ In Progress
           </div>
         )}
-        {isNew && !isLocked && (
+        {!effectivelyLocked && isNew && (
           <div className="bg-blue-500/10 px-2 py-1 rounded text-xs text-blue-400 flex items-center gap-1">
             ✨ New
           </div>
@@ -149,7 +166,25 @@ export function CourseCard({ course, progress, isLocked = false }: CourseCardPro
 
       {/* Action Buttons */}
       <div className="mt-4 pt-4 border-t border-navy-700">
-        {isLocked ? (
+        {!runtimeAvailable ? (
+          <div className="space-y-2">
+            <div className="bg-orange-900/20 border border-orange-500/30 rounded-lg p-3">
+              <p className="text-xs text-orange-300 mb-2">
+                {getLockedCourseMessage(course.language as SupportedLanguage)}
+              </p>
+            </div>
+            <button
+              onClick={handleOpenSettings}
+              className="w-full px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white font-semibold rounded-lg transition-colors flex items-center justify-center gap-2"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+              Go to Settings
+            </button>
+          </div>
+        ) : isLocked ? (
           <button
             disabled
             className="w-full px-4 py-2 bg-navy-700 text-gray-500 rounded-lg cursor-not-allowed flex items-center justify-center gap-2"

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import type { AIProviderType } from '@/types/ai'
+import { RuntimeStatusPanel } from './RuntimeStatus'
 
 export interface UserSettings {
   theme: 'dark' | 'light'
@@ -256,6 +257,12 @@ export function SettingsModal({
                 />
               </button>
             </div>
+          </div>
+
+          {/* Language Runtimes */}
+          <div className="pt-6 border-t border-navy-700">
+            <h3 className="text-lg font-semibold text-white mb-4">Language Runtimes</h3>
+            <RuntimeStatusPanel />
           </div>
 
           {/* Danger Zone */}

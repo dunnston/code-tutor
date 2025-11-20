@@ -52,12 +52,8 @@ export async function checkAllRuntimes(): Promise<Record<SupportedLanguage, Runt
  * Check if a runtime is bundled with the app
  */
 function isBundledRuntime(language: SupportedLanguage): boolean {
-  // TODO: Update this when we bundle runtimes
-  // For now, none are bundled
-  return false
-
-  // Future:
-  // return language === 'python' || language === 'javascript'
+  // These languages come bundled with the app
+  return language === 'python' || language === 'javascript' || language === 'bash'
 }
 
 /**
@@ -106,4 +102,19 @@ export function getInstallInstructions(language: SupportedLanguage): string {
   }
 
   return instructions[language]
+}
+
+/**
+ * Check if a course can be accessed based on runtime availability
+ */
+export async function isCourseAvailable(language: SupportedLanguage): Promise<boolean> {
+  const status = await checkRuntime(language)
+  return status.available || status.bundled
+}
+
+/**
+ * Get a message for locked courses
+ */
+export function getLockedCourseMessage(language: SupportedLanguage): string {
+  return `This course requires ${getRuntimeName(language)}. Install it in Settings to unlock this course.`
 }
