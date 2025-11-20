@@ -7,6 +7,7 @@ mod gamification_commands;
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
   tauri::Builder::default()
+    .plugin(tauri_plugin_dialog::init())
     .setup(|app| {
       if cfg!(debug_assertions) {
         app.handle().plugin(
@@ -31,6 +32,7 @@ pub fn run() {
       commands::check_language_runtime,
       commands::call_claude_api,
       commands::check_ollama_available,
+      commands::check_runtime_path,
       // Puzzle commands
       puzzle_commands::get_puzzle_categories,
       puzzle_commands::get_puzzles_by_category,

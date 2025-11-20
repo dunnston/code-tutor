@@ -1,5 +1,6 @@
 import { invoke } from '@tauri-apps/api/core'
 import type { SupportedLanguage } from '@/types/language'
+import { getRuntimePath } from './runtimePaths'
 
 export interface RuntimeStatus {
   language: SupportedLanguage
@@ -7,16 +8,41 @@ export interface RuntimeStatus {
   version?: string
   bundled: boolean // Whether this runtime is bundled with the app
   installUrl?: string // Where to download if missing
+  customPath?: string // Custom path if configured
 }
 
 /**
  * Check if a language runtime is available
  */
 export async function checkRuntime(language: SupportedLanguage): Promise<RuntimeStatus> {
-  try {
-    const available = await invoke<boolean>('check_language_runtime', { language })
-    const bundled = isBundledRuntime(language)
+  const bundled = isBundledRuntime(language)
+  const customPath = getRuntimePath(language)
 
+  try {
+    // If custom path is configured, check that first
+    if (customPath) {
+      console.log(`Checking custom path for ${language}:`, customPath)
+      const customPathWorks = await invoke<boolean>('check_runtime_path', {
+        language,
+        executablePath: customPath
+      })
+
+      if (customPathWorks) {
+        console.log(`Custom path for ${language} works:`, customPath)
+        return {
+          language,
+          available: true,
+          bundled,
+          installUrl: getInstallUrl(language),
+          customPath,
+        }
+      } else {
+        console.warn(`Custom path for ${language} doesn't work:`, customPath)
+      }
+    }
+
+    // Fall back to system PATH check
+    const available = await invoke<boolean>('check_language_runtime', { language })
     console.log(`Runtime check for ${language}:`, { available, bundled })
 
     return {
@@ -24,9 +50,9 @@ export async function checkRuntime(language: SupportedLanguage): Promise<Runtime
       available,
       bundled,
       installUrl: getInstallUrl(language),
+      customPath: available ? undefined : customPath, // Keep failed custom path to show in UI
     }
   } catch (error) {
-    const bundled = isBundledRuntime(language)
     console.error(`Runtime check failed for ${language}:`, error, { bundled })
 
     return {
@@ -34,6 +60,7 @@ export async function checkRuntime(language: SupportedLanguage): Promise<Runtime
       available: false,
       bundled, // Still check if bundled even on error
       installUrl: getInstallUrl(language),
+      customPath,
     }
   }
 }

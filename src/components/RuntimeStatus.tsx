@@ -2,11 +2,14 @@ import { useEffect, useState } from 'react'
 import { checkAllRuntimes, getRuntimeName, getInstallInstructions, type RuntimeStatus } from '@/lib/runtimeDetection'
 import type { SupportedLanguage } from '@/types/language'
 import { open } from '@tauri-apps/plugin-shell'
+import { setRuntimePath, clearRuntimePath, getExecutableName } from '@/lib/runtimePaths'
+import { open as openDialog } from '@tauri-apps/plugin-dialog'
 
 export function RuntimeStatusPanel() {
   const [runtimes, setRuntimes] = useState<Record<SupportedLanguage, RuntimeStatus> | null>(null)
   const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
+  const [browsing, setBrowsing] = useState<SupportedLanguage | null>(null)
 
   useEffect(() => {
     loadRuntimes()
@@ -36,6 +39,38 @@ export function RuntimeStatusPanel() {
     } catch (error) {
       console.error('Failed to open URL:', error)
     }
+  }
+
+  const handleBrowseExecutable = async (language: SupportedLanguage) => {
+    setBrowsing(language)
+    try {
+      const selectedPath = await openDialog({
+        title: `Select ${getRuntimeName(language)} Executable`,
+        filters: [{
+          name: 'Executable',
+          extensions: ['exe']
+        }],
+        multiple: false,
+        directory: false,
+      })
+
+      if (selectedPath) {
+        // Save the selected path
+        setRuntimePath(language, selectedPath)
+
+        // Refresh runtimes to check if the path works
+        await loadRuntimes()
+      }
+    } catch (error) {
+      console.error('Failed to select executable:', error)
+    } finally {
+      setBrowsing(null)
+    }
+  }
+
+  const handleClearPath = async (language: SupportedLanguage) => {
+    clearRuntimePath(language)
+    await loadRuntimes()
   }
 
   if (loading || !runtimes) {
@@ -99,13 +134,27 @@ export function RuntimeStatusPanel() {
               {optionalAvailable.map((runtime) => (
                 <div
                   key={runtime.language}
-                  className="flex items-center justify-between p-3 bg-slate-700/50 rounded"
+                  className="p-3 bg-slate-700/50 rounded space-y-2"
                 >
-                  <div className="flex items-center gap-2">
-                    <span className="text-green-400">✓</span>
-                    <span className="text-white">{getRuntimeName(runtime.language)}</span>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <span className="text-green-400">✓</span>
+                      <span className="text-white">{getRuntimeName(runtime.language)}</span>
+                    </div>
+                    <span className="text-green-400 text-sm">Available</span>
                   </div>
-                  <span className="text-green-400 text-sm">Available</span>
+                  {runtime.customPath && (
+                    <div className="bg-green-900/20 rounded p-2">
+                      <p className="text-xs text-green-400 mb-1">Using Custom Path:</p>
+                      <p className="text-xs text-green-300 font-mono break-all">{runtime.customPath}</p>
+                      <button
+                        onClick={() => handleClearPath(runtime.language)}
+                        className="mt-2 px-2 py-1 bg-slate-600 hover:bg-slate-500 text-white rounded text-xs font-medium transition-colors"
+                      >
+                        Clear (Use System PATH)
+                      </button>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
@@ -132,12 +181,49 @@ export function RuntimeStatusPanel() {
                   <p className="text-xs text-gray-400">
                     {getInstallInstructions(runtime.language)}
                   </p>
-                  {runtime.installUrl && (
+
+                  {/* Show custom path if configured */}
+                  {runtime.customPath && (
+                    <div className="bg-slate-800/50 rounded p-2">
+                      <p className="text-xs text-gray-400 mb-1">Custom Path:</p>
+                      <p className="text-xs text-orange-300 font-mono break-all">{runtime.customPath}</p>
+                      <p className="text-xs text-orange-400 mt-1">⚠ Path doesn't work. Try browsing again.</p>
+                    </div>
+                  )}
+
+                  <div className="flex gap-2">
+                    {runtime.installUrl && (
+                      <button
+                        onClick={() => handleInstall(runtime.installUrl!)}
+                        className="flex-1 px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded text-sm font-medium transition-colors"
+                      >
+                        Download & Install
+                      </button>
+                    )}
                     <button
-                      onClick={() => handleInstall(runtime.installUrl!)}
-                      className="w-full px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded text-sm font-medium transition-colors"
+                      onClick={() => handleBrowseExecutable(runtime.language)}
+                      disabled={browsing === runtime.language}
+                      className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-800 text-white rounded text-sm font-medium transition-colors flex items-center justify-center gap-2"
                     >
-                      Download & Install
+                      {browsing === runtime.language ? (
+                        <>
+                          <div className="animate-spin h-3 w-3 border-2 border-white border-t-transparent rounded-full"></div>
+                          Browsing...
+                        </>
+                      ) : (
+                        <>
+                          📂 Browse for {getExecutableName(runtime.language)}
+                        </>
+                      )}
+                    </button>
+                  </div>
+
+                  {runtime.customPath && (
+                    <button
+                      onClick={() => handleClearPath(runtime.language)}
+                      className="w-full px-3 py-1.5 bg-slate-600 hover:bg-slate-500 text-white rounded text-xs font-medium transition-colors"
+                    >
+                      Clear Custom Path
                     </button>
                   )}
                 </div>

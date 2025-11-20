@@ -347,3 +347,38 @@ pub async fn check_ollama_available() -> Result<bool, String> {
         Err(_) => Ok(false),
     }
 }
+
+/// Check if a specific executable path is valid for a language
+#[tauri::command]
+pub async fn check_runtime_path(language: String, executable_path: String) -> Result<bool, String> {
+    // Get the version check flag for this language
+    let version_flag = match language.to_lowercase().as_str() {
+        "python" => "--version",
+        "javascript" => "--version",
+        "gdscript" => "--version",
+        "csharp" => "--version",
+        "ruby" => "--version",
+        "bash" => "--version",
+        _ => return Err(format!("Unknown language: {}", language)),
+    };
+
+    let exec_path = executable_path.clone();
+    let flag = version_flag.to_string();
+
+    let output = tokio::task::spawn_blocking(move || {
+        let mut cmd = Command::new(&exec_path);
+        cmd.arg(&flag)
+            .stdout(Stdio::piped())
+            .stderr(Stdio::piped());
+
+        // Ensure all environment variables are inherited
+        cmd.envs(std::env::vars());
+
+        cmd.output()
+    })
+    .await
+    .map_err(|e| format!("Failed to check runtime path: {}", e))?
+    .map_err(|e| format!("Failed to execute check: {}", e))?;
+
+    Ok(output.status.success())
+}
