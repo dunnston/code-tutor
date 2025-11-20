@@ -96,8 +96,10 @@ def look():
     room = rooms[current_room]
     print(f"\n{room[''description'']}")
     if room[''items'']:
-        print(f"You see: {", ".join(room[''items''])}")
-    print(f"Exits: {", ".join(room[''exits''].keys())}")
+        items_list = ", ".join(room[''items''])
+        print(f"You see: {items_list}")
+    exits_list = ", ".join(room[''exits''].keys())
+    print(f"Exits: {exits_list}")
 
 def move(direction):
     global current_room
@@ -119,12 +121,32 @@ def take(item):
 
 # Start game
 print("=== DUNGEON ADVENTURE ===")
+print("Commands: ''look'', ''move <direction>'', ''take <item>'', ''inventory'', ''quit''")
+print()
 look()
 
-# Example commands:
-# move(''north'')
-# take(''torch'')
-# print(f"Inventory: {inventory}")', 'intermediate', '["game", "adventure"]', '🗺️', TRUE, 4),
+# Game loop
+while True:
+    command = input("\n> ").lower().strip()
+
+    if command == ''quit'':
+        print("Thanks for playing!")
+        break
+    elif command == ''look'':
+        look()
+    elif command == ''inventory'':
+        if inventory:
+            print(f"Inventory: {", ".join(inventory)}")
+        else:
+            print("Inventory is empty")
+    elif command.startswith(''move ''):
+        direction = command[5:]
+        move(direction)
+    elif command.startswith(''take ''):
+        item = command[5:]
+        take(item)
+    else:
+        print("Unknown command. Try: look, move <direction>, take <item>, inventory, quit")', 'intermediate', '["game", "adventure"]', '🗺️', TRUE, 4),
 
 ('inventory-system-py', 'Inventory Management', 'Full inventory with weight limits', 'python', 'game', 'class Inventory:
     def __init__(self, max_weight=100):
@@ -334,74 +356,75 @@ analyze_scores(student_scores)
 
 class State:
     """Base state class"""
-    def enter(self):
-        pass
+    def __init__(self, name):
+        self.name = name
 
-    def update(self):
+    def enter(self):
+        print(f"\\n[Entering {self.name} state]")
+
+    def update(self, action):
+        """Process action and return next state"""
         pass
 
     def exit(self):
-        pass
+        print(f"[Exiting {self.name} state]")
 
 class MenuState(State):
+    def __init__(self):
+        super().__init__(''Menu'')
+
     def enter(self):
-        print("\\n=== MAIN MENU ===")
+        super().enter()
+        print("=== MAIN MENU ===")
         print("1. Start Game")
         print("2. Options")
         print("3. Exit")
 
-    def update(self):
-        choice = input("Choose: ")
-        if choice == ''1'':
+    def update(self, action):
+        if action == ''start'':
             return ''playing''
-        elif choice == ''2'':
+        elif action == ''options'':
             return ''options''
-        elif choice == ''3'':
+        elif action == ''exit'':
             return ''exit''
-        else:
-            print("Invalid choice!")
         return ''menu''
 
 class PlayingState(State):
     def __init__(self):
+        super().__init__(''Playing'')
         self.score = 0
 
     def enter(self):
-        print("\\n=== GAME STARTED ===")
-        print("Type ''menu'' to return to menu")
-        print("Type ''score'' to see your score")
-        print("Type any action to play!")
+        super().enter()
+        print("=== GAME STARTED ===")
         self.score = 0
 
-    def update(self):
-        action = input("> ").lower()
-
+    def update(self, action):
         if action == ''menu'':
             return ''menu''
-        elif action == ''score'':
-            print(f"Score: {self.score}")
         else:
             self.score += 10
-            print(f"You did: {action} (+10 points)")
-
+            print(f"Action: {action} (+10 points)")
         return ''playing''
 
     def exit(self):
-        print(f"\\nFinal Score: {self.score}")
+        print(f"Final Score: {self.score}")
+        super().exit()
 
 class OptionsState(State):
-    def enter(self):
-        print("\\n=== OPTIONS ===")
-        print("1. Sound: ON")
-        print("2. Difficulty: Normal")
-        print("3. Back to Menu")
+    def __init__(self):
+        super().__init__(''Options'')
 
-    def update(self):
-        choice = input("Choose: ")
-        if choice == ''3'':
+    def enter(self):
+        super().enter()
+        print("=== OPTIONS ===")
+        print("- Sound: ON")
+        print("- Difficulty: Normal")
+
+    def update(self, action):
+        if action == ''back'':
             return ''menu''
-        else:
-            print("Option changed! (not really)")
+        print(f"Changed option: {action}")
         return ''options''
 
 class StateMachine:
@@ -414,26 +437,32 @@ class StateMachine:
         }
         self.current = ''menu''
 
-    def run(self):
-        """Main game loop"""
-        self.states[self.current].enter()
+    def transition(self, action):
+        """Process action and transition states"""
+        print(f"\\n> Action: {action}")
+        next_state = self.states[self.current].update(action)
 
-        while self.current != ''exit'':
-            next_state = self.states[self.current].update()
+        if next_state != self.current:
+            self.states[self.current].exit()
+            self.current = next_state
+            if self.current != ''exit'':
+                self.states[self.current].enter()
 
-            if next_state != self.current:
-                self.states[self.current].exit()
-                self.current = next_state
-
-                if self.current != ''exit'':
-                    self.states[self.current].enter()
-
-        print("\\nThanks for playing!")
-
-# Run the game
+# Demo: Run a sequence of state transitions
+print("=== STATE MACHINE DEMO ===")
 game = StateMachine()
-# Uncomment to run:
-# game.run()', 'advanced', '["game", "pattern", "architecture"]', '🎮', TRUE, 8);
+game.states[game.current].enter()
+
+# Demo sequence - modify this to see different transitions!
+actions = [''start'', ''jump'', ''attack'', ''run'', ''menu'', ''options'', ''back'', ''exit'']
+
+for action in actions:
+    if game.current == ''exit'':
+        print("\\nGame ended!")
+        break
+    game.transition(action)
+
+print("\\n💡 TIP: Modify the actions list to create different state flows!")', 'advanced', '["game", "pattern", "architecture"]', '🎮', TRUE, 8);
 
 -- ============================================================================
 -- PLAYGROUND SNIPPETS (Reusable Code Blocks)

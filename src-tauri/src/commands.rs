@@ -78,6 +78,7 @@ impl LanguageConfig {
 async fn execute_with_config(
     config: LanguageConfig,
     code: String,
+    stdin_input: Option<String>,
     timeout_duration: Duration,
 ) -> Result<ExecutionResult, String> {
     let start = Instant::now();
@@ -91,10 +92,22 @@ async fn execute_with_config(
                 for arg in &command_parts[1..] {
                     cmd.arg(arg);
                 }
-                cmd.arg(&code)
+
+                let mut child = cmd.arg(&code)
+                    .stdin(Stdio::piped())
                     .stdout(Stdio::piped())
                     .stderr(Stdio::piped())
-                    .output()
+                    .spawn()?;
+
+                // Write stdin if provided
+                if let Some(input) = stdin_input {
+                    use std::io::Write;
+                    if let Some(mut stdin) = child.stdin.take() {
+                        let _ = stdin.write_all(input.as_bytes());
+                    }
+                }
+
+                child.wait_with_output()
             })
         }
         ExecutionMode::File => {
@@ -117,10 +130,22 @@ async fn execute_with_config(
                 for arg in &command_parts[1..] {
                     cmd.arg(arg);
                 }
-                cmd.arg(&temp_file_clone)
+
+                let mut child = cmd.arg(&temp_file_clone)
+                    .stdin(Stdio::piped())
                     .stdout(Stdio::piped())
                     .stderr(Stdio::piped())
-                    .output()
+                    .spawn()?;
+
+                // Write stdin if provided
+                if let Some(input) = stdin_input {
+                    use std::io::Write;
+                    if let Some(mut stdin) = child.stdin.take() {
+                        let _ = stdin.write_all(input.as_bytes());
+                    }
+                }
+
+                child.wait_with_output()
             });
 
             // Clean up temp file after execution (best effort)
@@ -160,12 +185,13 @@ pub async fn execute_code(
     language: String,
     code: String,
     timeout_ms: Option<u64>,
+    stdin: Option<String>,
 ) -> Result<ExecutionResult, String> {
     let timeout_duration = Duration::from_millis(timeout_ms.unwrap_or(5000));
     let config = LanguageConfig::get_config(&language)?;
 
     // Try primary command
-    let result = execute_with_config(config.clone(), code.clone(), timeout_duration).await;
+    let result = execute_with_config(config.clone(), code.clone(), stdin.clone(), timeout_duration).await;
 
     // If primary fails and fallback exists, try fallback
     if result.is_err() && config.fallback_command.is_some() {
@@ -175,7 +201,7 @@ pub async fn execute_code(
             execution_mode: config.execution_mode.clone(),
             extension: config.extension.clone(),
         };
-        return execute_with_config(fallback_config, code, timeout_duration).await;
+        return execute_with_config(fallback_config, code, stdin, timeout_duration).await;
     }
 
     result
@@ -212,7 +238,7 @@ pub async fn check_language_runtime(language: String) -> Result<bool, String> {
 /// Legacy Python execution command (kept for backward compatibility)
 #[tauri::command]
 pub async fn execute_python(code: String, timeout_ms: Option<u64>) -> Result<ExecutionResult, String> {
-    execute_code("python".to_string(), code, timeout_ms).await
+    execute_code("python".to_string(), code, timeout_ms, None).await
 }
 
 // Claude API types

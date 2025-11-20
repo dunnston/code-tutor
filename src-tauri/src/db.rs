@@ -22,6 +22,11 @@ pub fn initialize_database(app: &AppHandle) -> Result<(), String> {
     let conn = Connection::open(&db_path)
         .map_err(|e| format!("Failed to open database: {}", e))?;
 
+    // Execute languages migration first (required by other tables)
+    let languages_migration = include_str!("../migrations/001_languages.sql");
+    conn.execute_batch(languages_migration)
+        .map_err(|e| format!("Failed to execute languages migration: {}", e))?;
+
     // Execute puzzle schema
     let schema_sql = include_str!("../../course-framework-output/database/puzzles-schema.sql");
     conn.execute_batch(schema_sql)
@@ -31,6 +36,16 @@ pub fn initialize_database(app: &AppHandle) -> Result<(), String> {
     let seed_sql = include_str!("../../course-framework-output/database/puzzles-seed.sql");
     conn.execute_batch(seed_sql)
         .map_err(|e| format!("Failed to execute puzzle seed data: {}", e))?;
+
+    // Execute playground migration
+    let playground_migration = include_str!("../migrations/006_playground.sql");
+    conn.execute_batch(playground_migration)
+        .map_err(|e| format!("Failed to execute playground migration: {}", e))?;
+
+    // Execute playground seed data
+    let playground_seed = include_str!("../../course-framework-output/database/playground-seed.sql");
+    conn.execute_batch(playground_seed)
+        .map_err(|e| format!("Failed to execute playground seed data: {}", e))?;
 
     // Execute gamification migration
     let gamification_migration = include_str!("../migrations/007_gamification.sql");

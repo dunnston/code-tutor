@@ -70,6 +70,14 @@ export interface PromptContext {
   // Special context
   recentActions?: string[]
   sentiment?: string
+
+  // Playground-specific context
+  completedLessons?: Array<{
+    id: number
+    title: string
+    tags: string[]
+  }>
+  playgroundMode?: boolean
 }
 
 /**
@@ -96,6 +104,10 @@ export type PromptType =
   | 'code_comparison'
   | 'lesson_complete'
   | 'chat'
+  | 'playground_ideas'
+  | 'playground_help'
+  | 'playground_chat'
+  | 'playground_challenge'
 
 export type AIProviderType = 'ollama' | 'claude' | 'none'
 

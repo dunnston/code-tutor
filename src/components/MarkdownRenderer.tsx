@@ -33,7 +33,7 @@ export function MarkdownRenderer({ content, className = '' }: MarkdownRendererPr
 
         // Paragraphs
         p: ({ children }) => (
-          <p className="text-gray-300 mb-4 leading-relaxed">
+          <p className="text-gray-300 mb-4 leading-relaxed break-words">
             {children}
           </p>
         ),
@@ -73,20 +73,34 @@ export function MarkdownRenderer({ content, className = '' }: MarkdownRendererPr
           }
 
           return (
-            <SyntaxHighlighter
-              style={vscDarkPlus}
-              language={language}
-              PreTag="div"
-              className="rounded-lg overflow-x-auto mb-4 text-sm"
-              customStyle={{
-                margin: 0,
-                padding: '1rem',
-                backgroundColor: '#1a1d29',
-              }}
-              {...props}
-            >
-              {String(children).replace(/\n$/, '')}
-            </SyntaxHighlighter>
+            <div className="overflow-hidden max-w-full" style={{ wordBreak: 'break-word' }}>
+              <SyntaxHighlighter
+                style={vscDarkPlus}
+                language={language}
+                PreTag="div"
+                className="rounded-lg mb-4 text-sm [&>pre]:!whitespace-pre-wrap [&>pre]:!break-words [&_code]:!whitespace-pre-wrap [&_code]:!break-words"
+                customStyle={{
+                  margin: 0,
+                  padding: '1rem',
+                  backgroundColor: '#1a1d29',
+                  whiteSpace: 'pre-wrap',
+                  wordBreak: 'break-word',
+                  overflowWrap: 'break-word',
+                  overflow: 'hidden',
+                }}
+                codeTagProps={{
+                  style: {
+                    whiteSpace: 'pre-wrap',
+                    wordBreak: 'break-word',
+                    overflowWrap: 'break-word',
+                  }
+                }}
+                wrapLongLines={true}
+                {...props}
+              >
+                {String(children).replace(/\n$/, '')}
+              </SyntaxHighlighter>
+            </div>
           )
         },
 

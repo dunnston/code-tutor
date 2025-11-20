@@ -22,7 +22,13 @@ import type {
 import PlaygroundSidebar from './PlaygroundSidebar';
 import PlaygroundToolbar from './PlaygroundToolbar';
 import PlaygroundConsole from './PlaygroundConsole';
+import { PlaygroundChatPanel } from './PlaygroundChatPanel';
 import { ConfirmModal } from '@/components/ui/ConfirmModal';
+import { InputModal } from '@/components/ui/InputModal';
+import { AlertModal } from '@/components/ui/AlertModal';
+import { InteractiveInputModal } from '@/components/ui/InteractiveInputModal';
+import { detectInputRequirements, needsInput } from '@/lib/inputDetection';
+import type { InputPrompt } from '@/lib/inputDetection';
 
 export default function PlaygroundView() {
   const {
@@ -45,6 +51,11 @@ export default function PlaygroundView() {
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const [currentProject, setCurrentProject] = useState<PlaygroundProject | null>(null);
   const [projectToDelete, setProjectToDelete] = useState<string | null>(null);
+  const [showSaveProjectModal, setShowSaveProjectModal] = useState(false);
+  const [errorModal, setErrorModal] = useState<{ show: boolean; message: string }>({ show: false, message: '' });
+  const [chatOpen, setChatOpen] = useState(false);
+  const [inputPrompts, setInputPrompts] = useState<InputPrompt[]>([]);
+  const [showInputModal, setShowInputModal] = useState(false);
 
   // Load projects, templates, and snippets on mount
   useEffect(() => {
@@ -130,10 +141,26 @@ export default function PlaygroundView() {
   };
 
   const handleRunCode = async () => {
+    // Check if code needs input
+    if (needsInput(playgroundCode, playgroundLanguage)) {
+      const prompts = detectInputRequirements(playgroundCode, playgroundLanguage);
+      setInputPrompts(prompts);
+      setShowInputModal(true);
+      return;
+    }
+
+    // Run without input
+    await executeCode(null);
+  };
+
+  const executeCode = async (stdinValues: string[] | null) => {
     setIsRunning(true);
     setConsoleOutput([]);
 
     try {
+      // Convert input values to stdin string (newline-separated)
+      const stdin = stdinValues ? stdinValues.join('\n') + '\n' : null;
+
       const result = await invoke<{
         stdout: string;
         stderr: string;
@@ -142,6 +169,7 @@ export default function PlaygroundView() {
       }>('execute_code', {
         code: playgroundCode,
         language: playgroundLanguage,
+        stdin,
       });
 
       const output: string[] = [];
@@ -169,32 +197,19 @@ export default function PlaygroundView() {
     }
   };
 
+  const handleInputConfirm = (values: string[]) => {
+    setShowInputModal(false);
+    executeCode(values);
+  };
+
+  const handleInputCancel = () => {
+    setShowInputModal(false);
+  };
+
   const handleSaveProject = async () => {
     if (!currentProject) {
-      // Create new project
-      const projectName = prompt('Enter project name:');
-      if (!projectName) return;
-
-      setIsSaving(true);
-      try {
-        const projectId = await createPlaygroundProject({
-          name: projectName,
-          language_id: playgroundLanguage,
-          code: playgroundCode,
-        });
-
-        setPlaygroundProjectId(projectId);
-        await loadProjects();
-
-        // Load the created project
-        const project = await getPlaygroundProject(projectId);
-        setCurrentProject(project);
-      } catch (error) {
-        console.error('Failed to create project:', error);
-        alert('Failed to create project');
-      } finally {
-        setIsSaving(false);
-      }
+      // Create new project - show modal to get project name
+      setShowSaveProjectModal(true);
     } else {
       // Update existing project
       setIsSaving(true);
@@ -206,10 +221,34 @@ export default function PlaygroundView() {
         await loadProjects();
       } catch (error) {
         console.error('Failed to update project:', error);
-        alert('Failed to update project');
+        setErrorModal({ show: true, message: 'Failed to update project. Please try again.' });
       } finally {
         setIsSaving(false);
       }
+    }
+  };
+
+  const handleConfirmSaveProject = async (projectName: string) => {
+    setShowSaveProjectModal(false);
+    setIsSaving(true);
+    try {
+      const projectId = await createPlaygroundProject({
+        name: projectName,
+        language_id: playgroundLanguage,
+        code: playgroundCode,
+      });
+
+      setPlaygroundProjectId(projectId);
+      await loadProjects();
+
+      // Load the created project
+      const project = await getPlaygroundProject(projectId);
+      setCurrentProject(project);
+    } catch (error) {
+      console.error('Failed to create project:', error);
+      setErrorModal({ show: true, message: 'Failed to create project. Please try again.' });
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -309,7 +348,34 @@ export default function PlaygroundView() {
         onCancel={() => setProjectToDelete(null)}
       />
 
-      <div className="flex h-screen bg-slate-900 text-gray-100">
+      <InputModal
+        isOpen={showSaveProjectModal}
+        title="Save Project"
+        message="Enter a name for your project:"
+        placeholder="My Project"
+        confirmText="Save"
+        cancelText="Cancel"
+        onConfirm={handleConfirmSaveProject}
+        onCancel={() => setShowSaveProjectModal(false)}
+      />
+
+      <AlertModal
+        isOpen={errorModal.show}
+        title="Error"
+        message={errorModal.message}
+        variant="error"
+        confirmText="OK"
+        onConfirm={() => setErrorModal({ show: false, message: '' })}
+      />
+
+      <InteractiveInputModal
+        isOpen={showInputModal}
+        prompts={inputPrompts}
+        onConfirm={handleInputConfirm}
+        onCancel={handleInputCancel}
+      />
+
+      <div className="flex h-screen bg-slate-900 text-gray-100 overflow-hidden">
         {/* Sidebar */}
         <PlaygroundSidebar
         view={sidebarView}
@@ -326,7 +392,7 @@ export default function PlaygroundView() {
       />
 
       {/* Main Editor Area */}
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 min-w-0 flex flex-col">
         {/* Toolbar */}
         <PlaygroundToolbar
           currentProject={currentProject}
@@ -339,32 +405,67 @@ export default function PlaygroundView() {
           lastSaved={lastSaved}
         />
 
-        {/* Code Editor */}
-        <div className="flex-1 border-b border-slate-700 bg-slate-900">
-          <Editor
-            height="100%"
-            language={monacoLanguage}
-            value={playgroundCode}
-            onChange={(value) => setPlaygroundCode(value || '')}
-            theme="vs-dark"
-            options={{
-              minimap: { enabled: true },
-              fontSize: settings.fontSize || 14,
-              wordWrap: 'on',
-              lineNumbers: 'on',
-              scrollBeyondLastLine: false,
-              automaticLayout: true,
-              tabSize: 2,
-            }}
-            loading={<div className="flex items-center justify-center h-full bg-slate-900 text-gray-400">Loading editor...</div>}
-          />
-        </div>
+        <div className="flex flex-1 min-h-0 overflow-hidden">
+          {/* Editor and Console */}
+          <div className="flex-1 min-w-0 flex flex-col overflow-hidden">
+            {/* Code Editor */}
+            <div className="flex-1 border-b border-slate-700 bg-slate-900">
+              <Editor
+                height="100%"
+                language={monacoLanguage}
+                value={playgroundCode}
+                onChange={(value) => setPlaygroundCode(value || '')}
+                theme="vs-dark"
+                options={{
+                  minimap: { enabled: true },
+                  fontSize: settings.fontSize || 14,
+                  wordWrap: 'on',
+                  lineNumbers: 'on',
+                  scrollBeyondLastLine: false,
+                  automaticLayout: true,
+                  tabSize: 2,
+                }}
+                loading={<div className="flex items-center justify-center h-full bg-slate-900 text-gray-400">Loading editor...</div>}
+              />
+            </div>
 
-        {/* Console */}
-        <PlaygroundConsole
-          output={consoleOutput}
-          onClear={handleClearConsole}
-        />
+            {/* Console */}
+            <PlaygroundConsole
+              output={consoleOutput}
+              onClear={handleClearConsole}
+            />
+          </div>
+
+          {/* AI Chat Panel - Only takes space when open */}
+          {chatOpen && (
+            <div className="w-96 flex-shrink-0 border-l border-slate-700">
+              <PlaygroundChatPanel isOpen={chatOpen} onToggle={() => setChatOpen(false)} />
+            </div>
+          )}
+
+          {/* Floating Chat Button - Only show when closed */}
+          {!chatOpen && (
+            <button
+              onClick={() => setChatOpen(true)}
+              className="fixed right-6 bottom-6 w-14 h-14 bg-orange-500 hover:bg-orange-400 text-white rounded-full shadow-lg flex items-center justify-center transition-colors z-50"
+              aria-label="Open AI Tutor"
+            >
+              <svg
+                className="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"
+                />
+              </svg>
+            </button>
+          )}
+        </div>
       </div>
       </div>
     </>
