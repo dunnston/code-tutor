@@ -99,6 +99,9 @@ async fn execute_with_config(
                     cmd.arg(arg);
                 }
 
+                // Ensure all environment variables are inherited
+                cmd.envs(std::env::vars());
+
                 let mut child = cmd.arg(&code)
                     .stdin(Stdio::piped())
                     .stdout(Stdio::piped())
@@ -136,6 +139,9 @@ async fn execute_with_config(
                 for arg in &command_parts[1..] {
                     cmd.arg(arg);
                 }
+
+                // Ensure all environment variables are inherited
+                cmd.envs(std::env::vars());
 
                 let mut child = cmd.arg(&temp_file_clone)
                     .stdin(Stdio::piped())
@@ -229,11 +235,15 @@ pub async fn check_language_runtime(language: String) -> Result<bool, String> {
     };
 
     let output = tokio::task::spawn_blocking(move || {
-        Command::new(check_command[0])
-            .args(&check_command[1..])
+        let mut cmd = Command::new(check_command[0]);
+        cmd.args(&check_command[1..])
             .stdout(Stdio::piped())
-            .stderr(Stdio::piped())
-            .output()
+            .stderr(Stdio::piped());
+
+        // Ensure all environment variables are inherited
+        cmd.envs(std::env::vars());
+
+        cmd.output()
     })
     .await
     .map_err(|e| format!("Failed to check runtime: {}", e))?
