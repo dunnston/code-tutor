@@ -79,6 +79,15 @@ export function CourseCatalog({ category, searchQuery = '' }: CourseCatalogProps
         const runtimeStatus = runtimeStatuses[course.language as SupportedLanguage]
         const runtimeAvailable = runtimeStatus?.bundled || runtimeStatus?.available || false
 
+        if (course.language === 'bash') {
+          console.log('Git/Bash course check:', {
+            language: course.language,
+            runtimeStatus,
+            runtimeAvailable,
+            courseName: course.name
+          })
+        }
+
         return (
           <CourseCard
             key={course.id}

@@ -15,18 +15,24 @@ export interface RuntimeStatus {
 export async function checkRuntime(language: SupportedLanguage): Promise<RuntimeStatus> {
   try {
     const available = await invoke<boolean>('check_language_runtime', { language })
+    const bundled = isBundledRuntime(language)
+
+    console.log(`Runtime check for ${language}:`, { available, bundled })
 
     return {
       language,
       available,
-      bundled: isBundledRuntime(language),
+      bundled,
       installUrl: getInstallUrl(language),
     }
   } catch (error) {
+    const bundled = isBundledRuntime(language)
+    console.error(`Runtime check failed for ${language}:`, error, { bundled })
+
     return {
       language,
       available: false,
-      bundled: false,
+      bundled, // Still check if bundled even on error
       installUrl: getInstallUrl(language),
     }
   }
