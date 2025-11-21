@@ -402,8 +402,17 @@ export async function updateStreak(): Promise<void> {
   const today = new Date().toISOString().split('T')[0]!
   const lastLogin = progress.streak.lastLoginDate
 
-  // Same day - no change
-  if (lastLogin === today) {
+  // Same day - no change (unless it's a new user with 0 streak)
+  if (lastLogin === today && progress.streak.currentStreak > 0) {
+    return
+  }
+
+  // Handle first day for new users
+  if (progress.streak.currentStreak === 0 && lastLogin === today) {
+    progress.streak.currentStreak = 1
+    progress.streak.longestStreak = 1
+    progress.streak.totalDaysActive = 1
+    saveProgress(progress)
     return
   }
 

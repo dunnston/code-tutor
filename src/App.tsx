@@ -126,9 +126,17 @@ function App() {
   // Initialize on mount: update streak, refresh progress, and set up AI provider
   useEffect(() => {
     // Don't auto-load lesson anymore - users start from dashboard
-    // Update streak on app load
-    updateStreak().catch(error => console.error('Failed to update streak:', error))
-    refreshProgress()
+    // Update streak on app load (await to ensure state is updated)
+    const initStreak = async () => {
+      try {
+        await updateStreak()
+        refreshProgress()
+      } catch (error) {
+        console.error('Failed to update streak:', error)
+        refreshProgress() // Still refresh even if streak update fails
+      }
+    }
+    initStreak()
 
     // Initialize current user ID if profile exists
     const initProfile = async () => {
