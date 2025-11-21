@@ -1,6 +1,6 @@
 use rusqlite::{params, Result as SqlResult, Row};
 use serde::{Deserialize, Serialize};
-use tauri::{AppHandle, Manager};
+use tauri::AppHandle;
 use rand::Rng;
 
 use crate::db::get_connection;
@@ -306,9 +306,9 @@ pub fn get_random_enemy_for_floor(app: AppHandle, floor_number: i64) -> Result<E
     let mut rng = rand::thread_rng();
     let mut roll = rng.gen_range(0..total_weight);
 
-    for (enemy, weight) in enemies {
-        if roll < weight {
-            return Ok(enemy);
+    for (enemy, weight) in &enemies {
+        if roll < *weight {
+            return Ok(enemy.clone());
         }
         roll -= weight;
     }
@@ -442,7 +442,7 @@ pub fn get_challenge_for_action(
 ) -> Result<DungeonChallenge, String> {
     let conn = get_connection(&app)?;
 
-    let query = if let Some(diff) = difficulty {
+    let query = if let Some(ref _diff) = difficulty {
         format!(
             "SELECT id, difficulty, action_type, title, description, starter_code, solution,
                     test_cases, required_language, min_floor, max_floor, times_used, success_rate,
@@ -473,7 +473,7 @@ pub fn get_challenge_for_action(
         .prepare(&query)
         .map_err(|e| format!("Failed to prepare statement: {}", e))?;
 
-    let challenge = if let Some(diff) = difficulty {
+    let challenge = if let Some(ref diff) = difficulty {
         stmt.query_row(
             params![action_type, diff, floor_number, floor_number],
             DungeonChallenge::from_row,

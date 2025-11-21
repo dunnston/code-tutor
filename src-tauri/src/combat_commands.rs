@@ -1,10 +1,10 @@
-use rusqlite::{params, Result as SqlResult, Row};
+use rusqlite::params;
 use serde::{Deserialize, Serialize};
-use tauri::{AppHandle, Manager};
+use tauri::AppHandle;
 use rand::Rng;
 
 use crate::db::get_connection;
-use crate::rpg_commands::{CharacterStats, get_character_stats, Ability};
+use crate::rpg_commands::{get_character_stats, Ability};
 use crate::dungeon_commands::{EnemyType, BossEnemy};
 
 // ============================================================================

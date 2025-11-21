@@ -1,6 +1,6 @@
 use rusqlite::{params, Result as SqlResult, Row};
 use serde::{Deserialize, Serialize};
-use tauri::{AppHandle, Manager};
+use tauri::AppHandle;
 
 use crate::db::get_connection;
 
@@ -441,7 +441,7 @@ pub fn unequip_item(
 // ABILITIES
 // ============================================================================
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Ability {
     pub id: String,
     pub name: String,
