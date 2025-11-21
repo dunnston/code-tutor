@@ -87,19 +87,18 @@ INSERT OR IGNORE INTO shop_items (id, name, description, category, type, cost_go
 
 INSERT OR IGNORE INTO quests (id, type, title, description, objective_type, objective_target, reward_xp, reward_gold, reward_gems, repeatable, icon, order_index) VALUES
 ('daily-lesson', 'daily', 'Daily Devotion', 'Complete 1 lesson', 'complete_lessons', 1, 100, 100, 0, TRUE, '📚', 1),
-('daily-three-lessons', 'daily', 'Learning Spree', 'Complete 3 lessons', 'complete_lessons', 3, 300, 300, 5, TRUE, '🔥', 2),
-('daily-puzzle', 'daily', 'Puzzle Master', 'Solve 2 puzzles', 'solve_puzzles', 2, 200, 200, 0, TRUE, '🧩', 3),
-('daily-xp', 'daily', 'XP Grinder', 'Earn 500 XP', 'earn_xp', 500, 0, 250, 5, TRUE, '⚡', 4),
-('daily-no-hints', 'daily', 'Self-Sufficient', 'Complete a lesson without using hints', 'lesson_no_hints', 1, 150, 200, 3, TRUE, '💪', 5),
-('daily-playground', 'daily', 'Code Explorer', 'Use the playground to experiment with what you learned', 'use_playground', 1, 120, 150, 2, TRUE, '🎮', 6);
+('daily-puzzle', 'daily', 'Puzzle Master', 'Solve 1 puzzle', 'solve_puzzles', 1, 200, 200, 0, TRUE, '🧩', 2),
+('daily-xp', 'daily', 'XP Grinder', 'Earn 500 XP', 'earn_xp', 500, 0, 250, 5, TRUE, '⚡', 3),
+('daily-no-hints', 'daily', 'Self-Sufficient', 'Complete a lesson without using hints', 'lesson_no_hints', 1, 150, 200, 3, TRUE, '💪', 4),
+('daily-playground', 'daily', 'Code Explorer', 'Use the playground to experiment with what you learned', 'use_playground', 1, 120, 150, 2, TRUE, '🎮', 5);
 
 -- ============================================================================
 -- WEEKLY QUESTS
 -- ============================================================================
 
 INSERT OR IGNORE INTO quests (id, type, title, description, objective_type, objective_target, reward_xp, reward_gold, reward_gems, repeatable, icon, order_index) VALUES
-('weekly-grind', 'weekly', 'Weekly Warrior', 'Complete 15 lessons this week', 'complete_lessons', 15, 1000, 1500, 25, TRUE, '⚔️', 1),
-('weekly-puzzles', 'weekly', 'Puzzle Enthusiast', 'Solve 10 puzzles this week', 'solve_puzzles', 10, 800, 1200, 20, TRUE, '🧠', 2),
+('weekly-grind', 'weekly', 'Weekly Warrior', 'Complete 8 lessons this week', 'complete_lessons', 8, 1000, 1500, 25, TRUE, '⚔️', 1),
+('weekly-puzzles', 'weekly', 'Puzzle Enthusiast', 'Solve 5 puzzles this week', 'solve_puzzles', 5, 800, 1200, 20, TRUE, '🧠', 2),
 ('weekly-perfect', 'weekly', 'Perfectionist', 'Complete 5 lessons perfectly (no hints, first try)', 'perfect_lessons', 5, 1500, 2000, 50, TRUE, '✨', 3),
 ('weekly-streak', 'weekly', 'Consistent Coder', 'Maintain your streak for 7 days', 'maintain_streak', 7, 0, 1000, 30, TRUE, '🔥', 4);
 

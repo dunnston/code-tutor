@@ -57,6 +57,11 @@ pub fn initialize_database(app: &AppHandle) -> Result<(), String> {
     conn.execute_batch(gamification_seed)
         .map_err(|e| format!("Failed to execute gamification seed data: {}", e))?;
 
+    // Execute quest updates migration
+    let quest_updates_migration = include_str!("../migrations/008_update_quests.sql");
+    conn.execute_batch(quest_updates_migration)
+        .map_err(|e| format!("Failed to execute quest updates migration: {}", e))?;
+
     // Execute solution_viewed migration (if columns don't exist yet)
     let solution_viewed_migration = r#"
         -- Add solution_viewed columns if they don't exist
