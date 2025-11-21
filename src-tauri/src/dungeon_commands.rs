@@ -134,6 +134,18 @@ impl UserDungeonProgress {
 pub fn get_user_dungeon_progress(app: AppHandle, user_id: i64) -> Result<UserDungeonProgress, String> {
     let conn = get_connection(&app)?;
 
+    // Initialize dungeon progress if doesn't exist (starting at floor 1)
+    conn.execute(
+        "INSERT OR IGNORE INTO user_dungeon_progress (
+            user_id, current_floor, deepest_floor_reached, in_combat, current_room_type,
+            total_enemies_defeated, total_bosses_defeated, total_floors_cleared,
+            total_deaths, total_gold_earned, total_xp_earned,
+            created_at, updated_at
+        ) VALUES (?, 1, 1, 0, 'entrance', 0, 0, 0, 0, 0, 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)",
+        params![user_id],
+    )
+    .map_err(|e| format!("Failed to initialize dungeon progress: {}", e))?;
+
     conn.query_row(
         "SELECT user_id, current_floor, deepest_floor_reached, in_combat, current_enemy_id,
                 current_enemy_health, current_room_type, total_enemies_defeated,

@@ -55,6 +55,17 @@ impl CharacterStats {
 pub fn get_character_stats(app: AppHandle, user_id: i64) -> Result<CharacterStats, String> {
     let conn = get_connection(&app)?;
 
+    // Initialize character if doesn't exist (with default starting stats)
+    conn.execute(
+        "INSERT OR IGNORE INTO character_stats (
+            user_id, level, strength, intelligence, dexterity, max_health, current_health,
+            max_mana, current_mana, base_damage, defense, critical_chance, dodge_chance,
+            stat_points_available, created_at, updated_at
+        ) VALUES (?, 1, 10, 10, 10, 100, 100, 50, 50, 10, 5, 0.05, 0.05, 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)",
+        params![user_id],
+    )
+    .map_err(|e| format!("Failed to initialize character: {}", e))?;
+
     conn.query_row(
         "SELECT user_id, level, strength, intelligence, dexterity, max_health, current_health,
                 max_mana, current_mana, base_damage, defense, critical_chance, dodge_chance,
