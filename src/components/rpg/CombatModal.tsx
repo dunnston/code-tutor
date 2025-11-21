@@ -89,7 +89,18 @@ export function CombatModal({
 
     try {
       // Fetch a coding challenge for this ability
-      const actionType = ability.type === 'attack' ? 'attack' : ability.type === 'heal' ? 'heal' : 'attack';
+      // Map ability to challenge action_type
+      let actionType: string;
+      if (ability.id === 'basic_attack') {
+        actionType = 'basic_attack';
+      } else if (ability.id === 'fireball' || ability.id === 'power_strike') {
+        actionType = 'spell';
+      } else if (ability.type === 'heal') {
+        actionType = 'heal';
+      } else {
+        actionType = 'basic_attack'; // Default fallback
+      }
+
       const challengeData = await getChallengeForAction(actionType, floorNumber, undefined);
       setChallenge(challengeData);
       setUserCode(challengeData.starterCode || '');
