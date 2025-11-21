@@ -82,10 +82,20 @@ pub fn initialize_database(app: &AppHandle) -> Result<(), String> {
     conn.execute_batch(rpg_achievements_migration)
         .map_err(|e| format!("Failed to execute RPG achievements migration: {}", e))?;
 
+    // Execute multiple choice challenges migration
+    let multiple_choice_migration = include_str!("../migrations/013_convert_challenges_to_multiple_choice.sql");
+    conn.execute_batch(multiple_choice_migration)
+        .map_err(|e| format!("Failed to execute multiple choice migration: {}", e))?;
+
     // Execute RPG dungeon seed data
     let rpg_dungeon_seed = include_str!("../../course-framework-output/database/rpg-dungeon-seed.sql");
     conn.execute_batch(rpg_dungeon_seed)
         .map_err(|e| format!("Failed to execute RPG dungeon seed data: {}", e))?;
+
+    // Execute multiple choice challenges seed data
+    let multiple_choice_seed = include_str!("../../course-framework-output/database/rpg-challenges-multiple-choice.sql");
+    conn.execute_batch(multiple_choice_seed)
+        .map_err(|e| format!("Failed to execute multiple choice seed data: {}", e))?;
 
     // Execute solution_viewed migration (if columns don't exist yet)
     let solution_viewed_migration = r#"

@@ -50,7 +50,7 @@ export function CombatModal({
   const [abilities, setAbilities] = useState<Ability[]>([]);
   const [selectedAbility, setSelectedAbility] = useState<Ability | null>(null);
   const [challenge, setChallenge] = useState<DungeonChallenge | null>(null);
-  const [userCode, setUserCode] = useState('');
+  const [selectedAnswer, setSelectedAnswer] = useState<string>('');
   const [phase, setPhase] = useState<CombatPhase>('ability-select');
   const [combatLog, setCombatLog] = useState<CombatLogEntry[]>([]);
   const [loading, setLoading] = useState(true);
@@ -103,7 +103,7 @@ export function CombatModal({
 
       const challengeData = await getChallengeForAction(actionType, floorNumber, undefined);
       setChallenge(challengeData);
-      setUserCode(challengeData.starterCode || '');
+      setSelectedAnswer('');
       setPhase('challenge');
     } catch (err) {
       console.error('Failed to load challenge:', err);
@@ -112,13 +112,12 @@ export function CombatModal({
   }
 
   async function handleChallengeSubmit() {
-    if (!combat || !selectedAbility || !challenge) return;
+    if (!combat || !selectedAbility || !challenge || !selectedAnswer) return;
 
     setPhase('executing');
 
-    // In a real implementation, we would execute the user's code and validate it
-    // For now, we'll simulate success/failure
-    const challengeSuccess = true; // TODO: Implement actual code validation
+    // Check if the selected answer is correct
+    const challengeSuccess = selectedAnswer === challenge.correctAnswer;
 
     try {
       // Record challenge attempt
@@ -185,7 +184,7 @@ export function CombatModal({
         setPhase('ability-select');
         setSelectedAbility(null);
         setChallenge(null);
-        setUserCode('');
+        setSelectedAnswer('');
       }
     } catch (err) {
       console.error('Combat turn failed:', err);
@@ -347,20 +346,37 @@ export function CombatModal({
             <div>
               <div className="mb-4">
                 <h4 className="text-lg font-semibold text-white mb-2">{challenge.title}</h4>
-                <p className="text-gray-300 text-sm">{challenge.description}</p>
+                <p className="text-gray-300 text-sm whitespace-pre-line">{challenge.description}</p>
               </div>
-              <div className="bg-slate-900 rounded-lg p-4 mb-4">
-                <textarea
-                  value={userCode}
-                  onChange={(e) => setUserCode(e.target.value)}
-                  className="w-full h-48 bg-slate-800 text-gray-100 font-mono text-sm p-3 rounded border border-slate-700 focus:border-orange-500 focus:outline-none"
-                  placeholder="Write your solution here..."
-                />
-              </div>
+
+              {/* Multiple Choice Options */}
+              {challenge.choices && (
+                <div className="space-y-3 mb-6">
+                  {challenge.choices.map((choice) => {
+                    const letter = choice.charAt(0); // Extract "A", "B", "C", or "D"
+                    const isSelected = selectedAnswer === letter;
+                    return (
+                      <button
+                        key={letter}
+                        onClick={() => setSelectedAnswer(letter)}
+                        className={`w-full text-left p-4 rounded-lg border-2 transition-all ${
+                          isSelected
+                            ? 'bg-orange-500 border-orange-400 text-white'
+                            : 'bg-slate-700 border-slate-600 text-gray-300 hover:border-orange-500 hover:bg-slate-600'
+                        }`}
+                      >
+                        {choice}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+
               <div className="flex gap-3">
                 <button
                   onClick={handleChallengeSubmit}
-                  className="flex-1 bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 rounded-lg transition-colors"
+                  disabled={!selectedAnswer}
+                  className="flex-1 bg-orange-500 hover:bg-orange-600 disabled:bg-slate-700 disabled:cursor-not-allowed text-white font-semibold py-3 rounded-lg transition-colors"
                 >
                   Submit & Attack
                 </button>
@@ -369,6 +385,7 @@ export function CombatModal({
                     setPhase('ability-select');
                     setSelectedAbility(null);
                     setChallenge(null);
+                    setSelectedAnswer('');
                   }}
                   className="bg-slate-700 hover:bg-slate-600 text-white px-6 py-3 rounded-lg transition-colors"
                 >

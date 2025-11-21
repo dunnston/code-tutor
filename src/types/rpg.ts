@@ -490,10 +490,14 @@ export interface DungeonChallengeRaw {
   action_type: ChallengeActionType;
   title: string;
   description: string;
-  starter_code: string;
-  solution: string;
-  test_cases: string; // JSON
-  required_language: string;
+  // Multiple choice fields
+  choices?: string | null; // JSON array: ["A) ...", "B) ...", "C) ...", "D) ..."]
+  correct_answer?: string | null; // Single letter: "A", "B", "C", or "D"
+  // Coding challenge fields (optional)
+  starter_code?: string | null;
+  solution?: string | null;
+  test_cases?: string | null; // JSON
+  required_language?: string | null;
   min_floor: number;
   max_floor: number | null;
   times_used: number;
@@ -507,13 +511,17 @@ export interface DungeonChallenge {
   actionType: ChallengeActionType;
   title: string;
   description: string;
-  starterCode: string;
-  solution: string;
-  testCases: Array<{
+  // Multiple choice fields
+  choices?: string[]; // ["A) ...", "B) ...", "C) ...", "D) ..."]
+  correctAnswer?: string; // Single letter: "A", "B", "C", or "D"
+  // Coding challenge fields (optional)
+  starterCode?: string;
+  solution?: string;
+  testCases?: Array<{
     input: Record<string, any>;
     expected: any;
   }>;
-  requiredLanguage: string;
+  requiredLanguage?: string;
   minFloor: number;
   maxFloor: number | null;
   timesUsed: number;
@@ -780,10 +788,14 @@ export function convertDungeonChallenge(raw: DungeonChallengeRaw): DungeonChalle
     actionType: raw.action_type,
     title: raw.title,
     description: raw.description,
-    starterCode: raw.starter_code,
-    solution: raw.solution,
-    testCases: JSON.parse(raw.test_cases),
-    requiredLanguage: raw.required_language,
+    // Multiple choice fields
+    choices: raw.choices ? JSON.parse(raw.choices) : undefined,
+    correctAnswer: raw.correct_answer || undefined,
+    // Coding challenge fields (optional)
+    starterCode: raw.starter_code || undefined,
+    solution: raw.solution || undefined,
+    testCases: raw.test_cases ? JSON.parse(raw.test_cases) : undefined,
+    requiredLanguage: raw.required_language || undefined,
     minFloor: raw.min_floor,
     maxFloor: raw.max_floor,
     timesUsed: raw.times_used,
