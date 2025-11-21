@@ -28,7 +28,9 @@ import {
   convertAbility,
   convertDungeonFloor,
   convertEnemyType,
+  convertEnemyTypeToRaw,
   convertBossEnemy,
+  convertBossEnemyToRaw,
   convertDungeonChallenge,
 } from '../types/rpg';
 
@@ -337,7 +339,9 @@ export interface CombatRewards {
 }
 
 export async function startCombat(userId: number, enemy: EnemyType): Promise<ActiveCombat> {
-  const result = await invoke<any>('start_combat', { userId, enemy });
+  // Convert enemy to raw format for Rust backend
+  const enemyRaw = convertEnemyTypeToRaw(enemy);
+  const result = await invoke<any>('start_combat', { userId, enemy: enemyRaw });
   return {
     userId: result.user_id,
     enemyId: result.enemy_id,
@@ -356,7 +360,9 @@ export async function startCombat(userId: number, enemy: EnemyType): Promise<Act
 }
 
 export async function startBossCombat(userId: number, boss: BossEnemy): Promise<ActiveCombat> {
-  const result = await invoke<any>('start_boss_combat', { userId, boss });
+  // Convert boss to raw format for Rust backend
+  const bossRaw = convertBossEnemyToRaw(boss);
+  const result = await invoke<any>('start_boss_combat', { userId, boss: bossRaw });
   return {
     userId: result.user_id,
     enemyId: result.enemy_id,

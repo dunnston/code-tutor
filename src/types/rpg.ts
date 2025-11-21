@@ -714,6 +714,25 @@ export function convertEnemyType(raw: EnemyTypeRaw): EnemyType {
   };
 }
 
+export function convertEnemyTypeToRaw(enemy: EnemyType): EnemyTypeRaw {
+  return {
+    id: enemy.id,
+    name: enemy.name,
+    description: enemy.description,
+    base_health: enemy.baseHealth,
+    base_damage: enemy.baseDamage,
+    base_defense: enemy.baseDefense,
+    behavior_type: enemy.behaviorType,
+    gold_drop_min: enemy.goldDropMin,
+    gold_drop_max: enemy.goldDropMax,
+    xp_reward: enemy.xpReward,
+    loot_table: enemy.lootTable ? JSON.stringify(enemy.lootTable) : undefined,
+    icon: enemy.icon,
+    ascii_art: enemy.asciiArt,
+    created_at: enemy.createdAt.toISOString(),
+  };
+}
+
 export function convertBossEnemy(raw: BossEnemyRaw): BossEnemy {
   return {
     id: raw.id,
@@ -731,6 +750,26 @@ export function convertBossEnemy(raw: BossEnemyRaw): BossEnemy {
     icon: raw.icon,
     asciiArt: raw.ascii_art || undefined,
     createdAt: new Date(raw.created_at),
+  };
+}
+
+export function convertBossEnemyToRaw(boss: BossEnemy): BossEnemyRaw {
+  return {
+    id: boss.id,
+    name: boss.name,
+    description: boss.description,
+    floor_number: boss.floorNumber,
+    health: boss.health,
+    damage: boss.damage,
+    defense: boss.defense,
+    abilities: JSON.stringify(boss.abilities),
+    phases: boss.phases ? JSON.stringify(boss.phases) : undefined,
+    gold_reward: boss.goldReward,
+    xp_reward: boss.xpReward,
+    guaranteed_loot: boss.guaranteedLoot ? JSON.stringify(boss.guaranteedLoot) : undefined,
+    icon: boss.icon,
+    ascii_art: boss.asciiArt,
+    created_at: boss.createdAt.toISOString(),
   };
 }
 
