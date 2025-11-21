@@ -87,6 +87,10 @@ pub fn initialize_database(app: &AppHandle) -> Result<(), String> {
     conn.execute_batch(multiple_choice_migration)
         .map_err(|e| format!("Failed to execute multiple choice migration: {}", e))?;
 
+    // Add multiple choice columns (safe to run multiple times - ignores errors if columns exist)
+    let _ = conn.execute("ALTER TABLE dungeon_challenges ADD COLUMN choices TEXT", []);
+    let _ = conn.execute("ALTER TABLE dungeon_challenges ADD COLUMN correct_answer TEXT", []);
+
     // Execute RPG dungeon seed data
     let rpg_dungeon_seed = include_str!("../../course-framework-output/database/rpg-dungeon-seed.sql");
     conn.execute_batch(rpg_dungeon_seed)

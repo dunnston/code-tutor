@@ -2,11 +2,9 @@
 -- MIGRATION 013: Convert Coding Challenges to Multiple Choice
 -- ============================================================================
 
--- Add new columns for multiple choice format
-ALTER TABLE dungeon_challenges ADD COLUMN choices TEXT;  -- JSON array: ["A) ...", "B) ...", "C) ...", "D) ..."]
-ALTER TABLE dungeon_challenges ADD COLUMN correct_answer TEXT;  -- Single letter: "A", "B", "C", or "D"
-
--- Update existing schema to make coding fields optional (already NULL-able by default in SQLite)
-
 -- Clear existing coding challenges (we'll add new multiple choice questions in seed data)
+-- This migration is safe to run multiple times
 DELETE FROM dungeon_challenges;
+
+-- Note: The 'choices' and 'correct_answer' columns are added via ALTER TABLE
+-- in the db.rs initialization code to handle cases where they may already exist
