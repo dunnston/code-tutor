@@ -21,6 +21,8 @@ import type {
   DungeonEncounterRaw,
   DungeonChallenge,
   DungeonChallengeRaw,
+} from '../types/rpg';
+import {
   convertCharacterStats,
   convertEquipmentItem,
   convertAbility,
