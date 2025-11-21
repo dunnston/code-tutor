@@ -344,6 +344,21 @@ pub fn get_boss_for_floor(app: AppHandle, floor_number: i64) -> Result<BossEnemy
     .map_err(|e| format!("Failed to get boss: {}", e))
 }
 
+#[tauri::command]
+pub fn get_enemy_by_id(app: AppHandle, enemy_id: String) -> Result<EnemyType, String> {
+    let conn = get_connection(&app)?;
+
+    conn.query_row(
+        "SELECT id, name, description, base_health, base_damage, base_defense, behavior_type,
+                gold_drop_min, gold_drop_max, xp_reward, loot_table, icon, ascii_art, created_at
+         FROM enemy_types
+         WHERE id = ?",
+        params![enemy_id],
+        EnemyType::from_row,
+    )
+    .map_err(|e| format!("Failed to get enemy by id: {}", e))
+}
+
 // ============================================================================
 // ENCOUNTERS
 // ============================================================================
@@ -413,10 +428,12 @@ pub struct DungeonChallenge {
     pub action_type: String,
     pub title: String,
     pub description: String,
-    pub starter_code: String,
-    pub solution: String,
-    pub test_cases: String,
-    pub required_language: String,
+    pub starter_code: Option<String>,
+    pub solution: Option<String>,
+    pub test_cases: Option<String>,
+    pub choices: Option<String>,
+    pub correct_answer: Option<String>,
+    pub required_language: Option<String>,
     pub min_floor: i64,
     pub max_floor: Option<i64>,
     pub times_used: i64,
@@ -435,12 +452,14 @@ impl DungeonChallenge {
             starter_code: row.get(5)?,
             solution: row.get(6)?,
             test_cases: row.get(7)?,
-            required_language: row.get(8)?,
-            min_floor: row.get(9)?,
-            max_floor: row.get(10)?,
-            times_used: row.get(11)?,
-            success_rate: row.get(12)?,
-            created_at: row.get(13)?,
+            choices: row.get(8)?,
+            correct_answer: row.get(9)?,
+            required_language: row.get(10)?,
+            min_floor: row.get(11)?,
+            max_floor: row.get(12)?,
+            times_used: row.get(13)?,
+            success_rate: row.get(14)?,
+            created_at: row.get(15)?,
         })
     }
 }
@@ -457,8 +476,8 @@ pub fn get_challenge_for_action(
     let query = if let Some(ref _diff) = difficulty {
         format!(
             "SELECT id, difficulty, action_type, title, description, starter_code, solution,
-                    test_cases, required_language, min_floor, max_floor, times_used, success_rate,
-                    created_at
+                    test_cases, choices, correct_answer, required_language, min_floor, max_floor,
+                    times_used, success_rate, created_at
              FROM dungeon_challenges
              WHERE action_type = ?
                AND difficulty = ?
@@ -470,8 +489,8 @@ pub fn get_challenge_for_action(
     } else {
         format!(
             "SELECT id, difficulty, action_type, title, description, starter_code, solution,
-                    test_cases, required_language, min_floor, max_floor, times_used, success_rate,
-                    created_at
+                    test_cases, choices, correct_answer, required_language, min_floor, max_floor,
+                    times_used, success_rate, created_at
              FROM dungeon_challenges
              WHERE action_type = ?
                AND min_floor <= ?

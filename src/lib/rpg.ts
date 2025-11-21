@@ -7,8 +7,12 @@ import type {
   EquipmentItemRaw,
   CharacterEquipment,
   CharacterEquipmentRaw,
+  EquipmentInventoryItem,
+  EquipmentInventoryItemRaw,
   Ability,
   AbilityRaw,
+  UserAbilityWithLevel,
+  UserAbilityWithLevelRaw,
   DungeonFloor,
   DungeonFloorRaw,
   UserDungeonProgress,
@@ -21,17 +25,32 @@ import type {
   DungeonEncounterRaw,
   DungeonChallenge,
   DungeonChallengeRaw,
+  NarrativeLocation,
+  NarrativeLocationRaw,
+  NarrativeChoice,
+  NarrativeChoiceRaw,
+  NarrativeOutcome,
+  NarrativeOutcomeRaw,
+  UserNarrativeProgress,
+  UserNarrativeProgressRaw,
+  SkillCheckResult,
 } from '../types/rpg';
 import {
   convertCharacterStats,
   convertEquipmentItem,
+  convertEquipmentInventoryItem,
   convertAbility,
+  convertUserAbilityWithLevel,
   convertDungeonFloor,
   convertEnemyType,
   convertEnemyTypeToRaw,
   convertBossEnemy,
   convertBossEnemyToRaw,
   convertDungeonChallenge,
+  convertNarrativeLocation,
+  convertNarrativeChoice,
+  convertNarrativeOutcome,
+  convertUserNarrativeProgress,
 } from '../types/rpg';
 
 // ============================================================================
@@ -101,6 +120,10 @@ export async function getCharacterEquipment(userId: number): Promise<CharacterEq
     weaponId: raw.weapon_id,
     armorId: raw.armor_id,
     accessoryId: raw.accessory_id,
+    shieldId: raw.shield_id,
+    helmetId: raw.helmet_id,
+    chestId: raw.chest_id,
+    bootsId: raw.boots_id,
     updatedAt: new Date(raw.updated_at),
   };
 }
@@ -120,6 +143,10 @@ export async function equipItem(
     weaponId: raw.weapon_id,
     armorId: raw.armor_id,
     accessoryId: raw.accessory_id,
+    shieldId: raw.shield_id,
+    helmetId: raw.helmet_id,
+    chestId: raw.chest_id,
+    bootsId: raw.boots_id,
     updatedAt: new Date(raw.updated_at),
   };
 }
@@ -134,8 +161,101 @@ export async function unequipItem(userId: number, slot: string): Promise<Charact
     weaponId: raw.weapon_id,
     armorId: raw.armor_id,
     accessoryId: raw.accessory_id,
+    shieldId: raw.shield_id,
+    helmetId: raw.helmet_id,
+    chestId: raw.chest_id,
+    bootsId: raw.boots_id,
     updatedAt: new Date(raw.updated_at),
   };
+}
+
+// ============================================================================
+// CHARACTER SHEET & PROGRESSION
+// ============================================================================
+
+export async function getEquipmentInventory(userId: number): Promise<EquipmentInventoryItem[]> {
+  const rawItems = await invoke<EquipmentInventoryItemRaw[]>('get_equipment_inventory', { userId });
+  return rawItems.map(convertEquipmentInventoryItem);
+}
+
+export async function equipItemToSlot(
+  userId: number,
+  equipmentId: string,
+  slot: string
+): Promise<CharacterEquipment> {
+  const raw = await invoke<CharacterEquipmentRaw>('equip_item_to_slot', {
+    userId,
+    equipmentId,
+    slot,
+  });
+  return {
+    userId: raw.user_id,
+    weaponId: raw.weapon_id,
+    armorId: raw.armor_id,
+    accessoryId: raw.accessory_id,
+    shieldId: raw.shield_id,
+    helmetId: raw.helmet_id,
+    chestId: raw.chest_id,
+    bootsId: raw.boots_id,
+    updatedAt: new Date(raw.updated_at),
+  };
+}
+
+export async function unequipItemFromSlot(userId: number, slot: string): Promise<CharacterEquipment> {
+  const raw = await invoke<CharacterEquipmentRaw>('unequip_item_from_slot', {
+    userId,
+    slot,
+  });
+  return {
+    userId: raw.user_id,
+    weaponId: raw.weapon_id,
+    armorId: raw.armor_id,
+    accessoryId: raw.accessory_id,
+    shieldId: raw.shield_id,
+    helmetId: raw.helmet_id,
+    chestId: raw.chest_id,
+    bootsId: raw.boots_id,
+    updatedAt: new Date(raw.updated_at),
+  };
+}
+
+export async function spendStatPointOnHealth(userId: number): Promise<CharacterStats> {
+  const raw = await invoke<CharacterStatsRaw>('spend_stat_point_on_health', { userId });
+  return convertCharacterStats(raw);
+}
+
+export async function spendStatPointOnMana(userId: number): Promise<CharacterStats> {
+  const raw = await invoke<CharacterStatsRaw>('spend_stat_point_on_mana', { userId });
+  return convertCharacterStats(raw);
+}
+
+export async function spendStatPointOnStat(
+  userId: number,
+  statName: 'strength' | 'intelligence' | 'dexterity' | 'charisma'
+): Promise<CharacterStats> {
+  const raw = await invoke<CharacterStatsRaw>('spend_stat_point_on_stat', {
+    userId,
+    statName,
+  });
+  return convertCharacterStats(raw);
+}
+
+export async function spendStatPointOnAbility(
+  userId: number,
+  abilityId: string
+): Promise<CharacterStats> {
+  const raw = await invoke<CharacterStatsRaw>('spend_stat_point_on_ability', {
+    userId,
+    abilityId,
+  });
+  return convertCharacterStats(raw);
+}
+
+export async function getUserAbilitiesWithLevels(userId: number): Promise<UserAbilityWithLevel[]> {
+  const rawAbilities = await invoke<UserAbilityWithLevelRaw[]>('get_user_abilities_with_levels', {
+    userId,
+  });
+  return rawAbilities.map(convertUserAbilityWithLevel);
 }
 
 // ============================================================================
@@ -234,6 +354,11 @@ export async function getRandomEnemyForFloor(floorNumber: number): Promise<Enemy
 export async function getBossForFloor(floorNumber: number): Promise<BossEnemy> {
   const raw = await invoke<BossEnemyRaw>('get_boss_for_floor', { floorNumber });
   return convertBossEnemy(raw);
+}
+
+export async function getEnemyById(enemyId: string): Promise<EnemyType> {
+  const raw = await invoke<EnemyTypeRaw>('get_enemy_by_id', { enemyId });
+  return convertEnemyType(raw);
 }
 
 // ============================================================================
@@ -427,4 +552,83 @@ export async function endCombatVictory(
 
 export async function endCombatDefeat(userId: number): Promise<void> {
   await invoke('end_combat_defeat', { userId });
+}
+
+// ============================================================================
+// NARRATIVE DUNGEON SYSTEM
+// ============================================================================
+
+export async function rollD20(): Promise<number> {
+  return await invoke<number>('roll_d20');
+}
+
+export async function getUserNarrativeProgress(userId: number): Promise<UserNarrativeProgress> {
+  const raw = await invoke<UserNarrativeProgressRaw>('get_user_narrative_progress', { userId });
+  return convertUserNarrativeProgress(raw);
+}
+
+export async function getNarrativeLocation(locationId: string): Promise<NarrativeLocation> {
+  const raw = await invoke<NarrativeLocationRaw>('get_narrative_location', { locationId });
+  return convertNarrativeLocation(raw);
+}
+
+export async function getLocationChoices(locationId: string, userId: number): Promise<NarrativeChoice[]> {
+  const rawChoices = await invoke<NarrativeChoiceRaw[]>('get_location_choices', { locationId, userId });
+  return rawChoices.map(convertNarrativeChoice);
+}
+
+export async function startNarrativeDungeon(
+  userId: number,
+  floorNumber: number
+): Promise<{ location: NarrativeLocation; progress: UserNarrativeProgress }> {
+  const result = await invoke<[NarrativeLocationRaw, UserNarrativeProgressRaw]>(
+    'start_narrative_dungeon',
+    { userId, floorNumber }
+  );
+  return {
+    location: convertNarrativeLocation(result[0]),
+    progress: convertUserNarrativeProgress(result[1]),
+  };
+}
+
+export async function resolveSkillCheck(
+  userId: number,
+  choiceId: string,
+  diceRoll: number,
+  statModifier: number,
+  challengeSuccess: boolean
+): Promise<SkillCheckResult> {
+  const result = await invoke<SkillCheckResult>('resolve_skill_check', {
+    userId,
+    choiceId,
+    diceRoll,
+    statModifier,
+    challengeSuccess,
+  });
+  return result;
+}
+
+export async function applyNarrativeOutcome(
+  userId: number,
+  outcome: NarrativeOutcomeRaw
+): Promise<UserNarrativeProgress> {
+  const raw = await invoke<UserNarrativeProgressRaw>('apply_narrative_outcome', {
+    userId,
+    outcome,
+  });
+  return convertUserNarrativeProgress(raw);
+}
+
+export async function makeSimpleChoice(
+  userId: number,
+  choiceId: string
+): Promise<{ outcome: NarrativeOutcome; progress: UserNarrativeProgress }> {
+  const result = await invoke<[NarrativeOutcomeRaw, UserNarrativeProgressRaw]>('make_simple_choice', {
+    userId,
+    choiceId,
+  });
+  return {
+    outcome: convertNarrativeOutcome(result[0]),
+    progress: convertUserNarrativeProgress(result[1]),
+  };
 }

@@ -4,9 +4,10 @@ import { xpForNextLevel, xpProgressToNextLevel } from '@/lib/storage'
 
 interface ProfileHeaderProps {
   onLogout?: () => void
+  onOpenCharacterSheet?: () => void
 }
 
-export function ProfileHeader({ onLogout }: ProfileHeaderProps) {
+export function ProfileHeader({ onLogout, onOpenCharacterSheet }: ProfileHeaderProps) {
   const progress = useAppStore((state) => state.progress)
   const toggleSettings = useAppStore((state) => state.toggleSettings)
   const currentProfile = getCurrentProfile()
@@ -26,13 +27,20 @@ export function ProfileHeader({ onLogout }: ProfileHeaderProps) {
         {/* Left: Profile Info */}
         <div className="flex items-center gap-6">
           {/* Avatar */}
-          <div className="w-20 h-20 rounded-full overflow-hidden ring-4 ring-accent-500/30">
+          <button
+            onClick={onOpenCharacterSheet}
+            className="w-20 h-20 rounded-full overflow-hidden ring-4 ring-accent-500/30 hover:ring-accent-500/50 transition-all cursor-pointer relative group"
+            title="View Character Sheet"
+          >
             <img
               src={currentProfile.avatar}
               alt={currentProfile.name}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover group-hover:scale-110 transition-transform"
             />
-          </div>
+            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+              <span className="text-white text-xs font-bold">View Sheet</span>
+            </div>
+          </button>
 
           {/* Profile Details */}
           <div>

@@ -4,10 +4,20 @@ import {
   getUserDungeonProgress,
   getRandomEnemyForFloor,
   getBossForFloor,
+  getEnemyById,
   updateDungeonFloor,
   getCharacterStats,
   restoreHealthAndMana,
   getRandomEncounter,
+  // Narrative system
+  startNarrativeDungeon,
+  getNarrativeLocation,
+  getLocationChoices,
+  rollD20,
+  resolveSkillCheck,
+  makeSimpleChoice,
+  getChallengeForAction,
+  recordChallengeAttempt,
 } from '../../lib/rpg';
 import type {
   DungeonFloor,
@@ -16,6 +26,12 @@ import type {
   BossEnemy,
   CharacterStats,
   DungeonEncounter,
+  NarrativeLocation,
+  NarrativeChoice,
+  NarrativeOutcome,
+  SkillCheckResult,
+  DungeonChallenge,
+  SkillType,
 } from '../../types/rpg';
 import { CharacterStatsDisplay } from './CharacterStats';
 import { CombatModal } from './CombatModal';
@@ -26,7 +42,7 @@ interface DungeonExplorerProps {
   onClose: () => void;
 }
 
-type ExplorationPhase = 'exploring' | 'encounter' | 'combat' | 'rest' | 'boss-warning';
+type ExplorationPhase = 'narrative' | 'skill-check' | 'challenge' | 'outcome' | 'combat';
 
 interface EncounterState {
   type: 'enemy' | 'boss' | 'treasure' | 'trap' | 'rest';
@@ -40,10 +56,19 @@ export function DungeonExplorer({ userId, onClose }: DungeonExplorerProps) {
   const [floor, setFloor] = useState<DungeonFloor | null>(null);
   const [progress, setProgress] = useState<UserDungeonProgress | null>(null);
   const [stats, setStats] = useState<CharacterStats | null>(null);
-  const [phase, setPhase] = useState<ExplorationPhase>('exploring');
+  const [phase, setPhase] = useState<ExplorationPhase>('narrative');
   const [encounter, setEncounter] = useState<EncounterState | null>(null);
   const [loading, setLoading] = useState(true);
-  const [narrativeText, setNarrativeText] = useState<string>('');
+
+  // Narrative system state
+  const [currentLocation, setCurrentLocation] = useState<NarrativeLocation | null>(null);
+  const [availableChoices, setAvailableChoices] = useState<NarrativeChoice[]>([]);
+  const [selectedChoice, setSelectedChoice] = useState<NarrativeChoice | null>(null);
+  const [diceRoll, setDiceRoll] = useState<number | null>(null);
+  const [challenge, setChallenge] = useState<DungeonChallenge | null>(null);
+  const [selectedAnswer, setSelectedAnswer] = useState<string>('');
+  const [skillCheckResult, setSkillCheckResult] = useState<SkillCheckResult | null>(null);
+  const [currentOutcome, setCurrentOutcome] = useState<NarrativeOutcome | null>(null);
 
   useEffect(() => {
     loadDungeonState();
@@ -62,123 +87,166 @@ export function DungeonExplorer({ userId, onClose }: DungeonExplorerProps) {
       setProgress(userProgress);
       setStats(characterStats);
       setFloor(currentFloor);
-      setNarrativeText(
-        `You stand at the entrance of ${currentFloor.name}. ${currentFloor.description}`
-      );
+
+      // Start narrative dungeon - this gets the starting location
+      console.log('Starting narrative dungeon for user', userId);
+      const { location, progress: narrativeProgress } = await startNarrativeDungeon(userId, 1);
+      console.log('Loaded location:', location);
+      setCurrentLocation(location);
+
+      // Load choices for this location
+      const choices = await getLocationChoices(location.id, userId);
+      console.log('Loaded choices:', choices);
+      setAvailableChoices(choices);
+      setPhase('narrative');
     } catch (err) {
       console.error('Failed to load dungeon state:', err);
+      alert(`Failed to load dungeon: ${err}. Check console for details.`);
     } finally {
       setLoading(false);
     }
   }
 
-  async function handleExplore() {
-    if (!floor || !stats) return;
+  // Handle selecting a choice
+  async function handleChoiceSelect(choice: NarrativeChoice) {
+    setSelectedChoice(choice);
 
-    setPhase('exploring');
-    setNarrativeText('You venture deeper into the dungeon...');
-
-    // Wait for dramatic effect
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    // Randomly determine encounter type
-    const roll = Math.random();
-
-    if (roll < 0.6) {
-      // 60% chance for enemy encounter
-      await handleEnemyEncounter();
-    } else if (roll < 0.75) {
-      // 15% chance for special encounter
-      await handleSpecialEncounter();
-    } else if (roll < 0.85) {
-      // 10% chance for treasure
-      await handleTreasureEncounter();
+    if (choice.requiresSkillCheck && choice.skillType && choice.skillDc) {
+      // This is a skill check - roll the dice!
+      const roll = await rollD20();
+      setDiceRoll(roll);
+      setPhase('skill-check');
     } else {
-      // 15% chance for rest spot
-      await handleRestEncounter();
+      // Simple choice - execute immediately
+      try {
+        console.log('Making simple choice:', choice.id);
+        const { outcome, progress: narrativeProgress } = await makeSimpleChoice(userId, choice.id);
+        console.log('Got outcome:', outcome);
+        await handleOutcome(outcome);
+      } catch (err) {
+        console.error('Failed to make choice:', err);
+        alert(`Failed to make choice: ${err}`);
+      }
     }
   }
 
-  async function handleEnemyEncounter() {
-    if (!floor) return;
+  // After dice roll, load the coding challenge
+  async function handleStartChallenge() {
+    if (!selectedChoice || !selectedChoice.challengeActionType) return;
 
     try {
-      const enemy = await getRandomEnemyForFloor(floor.floorNumber);
-      setEncounter({ type: 'enemy', enemy, isBoss: false });
-      setNarrativeText(
-        `A ${enemy.name} blocks your path! ${enemy.description}`
+      const challengeData = await getChallengeForAction(
+        selectedChoice.challengeActionType,
+        floor?.floorNumber || 1,
+        undefined
       );
-      setPhase('encounter');
+      setChallenge(challengeData);
+      setSelectedAnswer('');
+      setPhase('challenge');
     } catch (err) {
-      console.error('Failed to generate enemy:', err);
-      setNarrativeText('The passage ahead is clear.');
-      setPhase('exploring');
+      console.error('Failed to load challenge:', err);
     }
   }
 
-  async function handleBossEncounter() {
-    if (!floor) return;
+  // Submit the challenge answer and resolve the skill check
+  async function handleChallengeSubmit() {
+    if (!selectedChoice || !challenge || !selectedAnswer || !stats || diceRoll === null) return;
 
     try {
-      const boss = await getBossForFloor(floor.floorNumber);
-      setEncounter({ type: 'boss', enemy: boss, isBoss: true });
-      setNarrativeText(
-        `${boss.name} emerges! ${boss.description}`
+      // Check if answer is correct
+      const challengeSuccess = selectedAnswer === challenge.correctAnswer;
+
+      // Record the challenge attempt
+      await recordChallengeAttempt(userId, challenge.id, challengeSuccess, 1);
+
+      // Get the stat modifier based on skill type
+      const statModifier = getStatModifier(selectedChoice.skillType, stats);
+
+      // Resolve the skill check
+      const result = await resolveSkillCheck(
+        userId,
+        selectedChoice.id,
+        diceRoll,
+        statModifier,
+        challengeSuccess
       );
-      setPhase('boss-warning');
+
+      setSkillCheckResult(result);
+      await handleOutcome(result.outcome);
     } catch (err) {
-      console.error('Failed to load boss:', err);
+      console.error('Failed to submit challenge:', err);
     }
   }
 
-  async function handleSpecialEncounter() {
-    if (!floor) return;
+  // Handle the outcome of a choice
+  async function handleOutcome(outcome: any) {
+    console.log('Handling outcome:', outcome);
+    setCurrentOutcome(outcome);
+    setPhase('outcome');
 
-    try {
-      const specialEncounter = await getRandomEncounter(floor.floorNumber, 'skill_check');
-      setEncounter({
-        type: 'trap',
-        encounter: specialEncounter,
-        description: specialEncounter.descriptionPrompt,
-      });
-      setNarrativeText(specialEncounter.descriptionPrompt);
-      setPhase('encounter');
-    } catch (err) {
-      console.error('Failed to generate encounter:', err);
-      setNarrativeText('You find nothing of interest.');
-      setPhase('exploring');
+    // Check if combat is triggered
+    if (outcome.triggersCombat && outcome.enemyId) {
+      // Load the SPECIFIC enemy from the outcome
+      console.log('Loading enemy:', outcome.enemyId);
+      try {
+        const enemy = await getEnemyById(outcome.enemyId);
+        console.log('Loaded enemy:', enemy);
+        setEncounter({ type: 'enemy', enemy, isBoss: false });
+        setTimeout(() => {
+          setPhase('combat');
+        }, 2000);
+      } catch (err) {
+        console.error('Failed to load enemy:', err);
+      }
+      return;
     }
+
+    // Wait for player to read outcome, then move to next location
+    setTimeout(async () => {
+      if (outcome.nextLocationId) {
+        console.log('Moving to next location:', outcome.nextLocationId);
+        const nextLocation = await getNarrativeLocation(outcome.nextLocationId);
+        console.log('Loaded next location:', nextLocation);
+        setCurrentLocation(nextLocation);
+        const choices = await getLocationChoices(nextLocation.id, userId);
+        console.log('Loaded next choices:', choices);
+        setAvailableChoices(choices);
+        setPhase('narrative');
+        // Reset state
+        setSelectedChoice(null);
+        setDiceRoll(null);
+        setChallenge(null);
+        setSelectedAnswer('');
+        setSkillCheckResult(null);
+        setCurrentOutcome(null);
+      } else {
+        console.log('No next location, staying at current location');
+        // No next location - stay at current location
+        setPhase('narrative');
+        setSelectedChoice(null);
+        setDiceRoll(null);
+        setChallenge(null);
+        setSelectedAnswer('');
+        setSkillCheckResult(null);
+        setCurrentOutcome(null);
+      }
+    }, 3000);
   }
 
-  async function handleTreasureEncounter() {
-    setEncounter({ type: 'treasure', description: 'You discover a hidden chest!' });
-    setNarrativeText(
-      'You discover a chest filled with gold and items! Your adventure has paid off.'
-    );
-    setPhase('encounter');
-  }
+  function getStatModifier(skillType: SkillType | null, stats: CharacterStats): number {
+    if (!skillType) return 0;
 
-  async function handleRestEncounter() {
-    setEncounter({ type: 'rest', description: 'You find a safe place to rest.' });
-    setNarrativeText(
-      'You find a quiet alcove with a small fire still burning. You can rest here safely.'
-    );
-    setPhase('rest');
-  }
-
-  async function handleRest() {
-    if (!stats) return;
-
-    try {
-      const restoredStats = await restoreHealthAndMana(userId);
-      setStats(restoredStats);
-      setNarrativeText('You rest and recover your strength. HP and Mana fully restored!');
-      setTimeout(() => {
-        setPhase('exploring');
-        setEncounter(null);
-      }, 2000);
-    } catch (err) {
-      console.error('Failed to rest:', err);
+    switch (skillType) {
+      case 'strength':
+        return Math.floor((stats.strength - 10) / 2);
+      case 'intelligence':
+        return Math.floor((stats.intelligence - 10) / 2);
+      case 'dexterity':
+        return Math.floor((stats.dexterity - 10) / 2);
+      case 'charisma':
+        return 0; // We don't have charisma stat yet
+      default:
+        return 0;
     }
   }
 
@@ -187,26 +255,74 @@ export function DungeonExplorer({ userId, onClose }: DungeonExplorerProps) {
   }
 
   function handleCombatVictory(rewards: CombatRewards) {
-    setNarrativeText(
-      `Victory! You earned ${rewards.xpGained} XP and ${rewards.goldGained} gold!`
-    );
-    setPhase('exploring');
+    console.log('Combat victory! Rewards:', rewards);
+
+    // Show victory message as an outcome
+    setCurrentOutcome({
+      id: 'combat_victory',
+      choiceId: '',
+      outcomeType: 'success',
+      description: `Victory! You defeated the enemies and earned ${rewards.xpGained} XP and ${rewards.goldGained} gold!`,
+      nextLocationId: currentLocation?.id || null,
+      triggersCombat: false,
+      enemyId: null,
+      enemyCount: 0,
+      createdAt: new Date(),
+    } as NarrativeOutcome);
+
+    setPhase('outcome');
     setEncounter(null);
-    // Reload stats to reflect rewards
-    loadDungeonState();
+
+    // Return to current location after showing victory
+    setTimeout(async () => {
+      await loadDungeonState();
+    }, 3000);
   }
 
   function handleCombatDefeat() {
-    setNarrativeText('You have been defeated and must retreat...');
+    console.log('Combat defeat!');
+
+    setCurrentOutcome({
+      id: 'combat_defeat',
+      choiceId: '',
+      outcomeType: 'failure',
+      description: 'You have been defeated! Your wounds are grievous and you must retreat from the dungeon...',
+      nextLocationId: null,
+      triggersCombat: false,
+      enemyId: null,
+      enemyCount: 0,
+      createdAt: new Date(),
+    } as NarrativeOutcome);
+
+    setPhase('outcome');
+    setEncounter(null);
+
     setTimeout(() => {
       onClose();
-    }, 2000);
+    }, 3000);
   }
 
   function handleFlee() {
-    setNarrativeText('You flee from combat!');
-    setPhase('exploring');
+    console.log('Fled from combat!');
+
+    setCurrentOutcome({
+      id: 'combat_flee',
+      choiceId: '',
+      outcomeType: 'default',
+      description: 'You flee from combat! You manage to escape back to safety.',
+      nextLocationId: currentLocation?.id || null,
+      triggersCombat: false,
+      enemyId: null,
+      enemyCount: 0,
+      createdAt: new Date(),
+    } as NarrativeOutcome);
+
+    setPhase('outcome');
     setEncounter(null);
+
+    setTimeout(async () => {
+      await loadDungeonState();
+    }, 2000);
   }
 
   async function handleDescendFloor() {
@@ -248,7 +364,7 @@ export function DungeonExplorer({ userId, onClose }: DungeonExplorerProps) {
               <h2 className="text-2xl font-bold text-orange-400">
                 🗺️ {floor.name} - Floor {floor.floorNumber}
               </h2>
-              <p className="text-sm text-gray-400">Difficulty: {floor.difficultyRating}/10</p>
+              <p className="text-sm text-gray-400">Difficulty: /10</p>
             </div>
             <button
               onClick={onClose}
@@ -271,8 +387,8 @@ export function DungeonExplorer({ userId, onClose }: DungeonExplorerProps) {
                   </h4>
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
-                      <span className="text-gray-400">Deepest Floor:</span>
-                      <span className="text-white">{progress.deepestFloorReached}</span>
+                      <span className="text-gray-400">Level:</span>
+                      <span className="text-white">{stats.level}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-400">Enemies Defeated:</span>
@@ -291,109 +407,131 @@ export function DungeonExplorer({ userId, onClose }: DungeonExplorerProps) {
                 {/* Narrative Panel */}
                 <div className="bg-slate-900 border-2 border-slate-700 rounded-lg p-6 min-h-[200px]">
                   <div className="prose prose-invert max-w-none">
-                    <p className="text-gray-300 leading-relaxed">{narrativeText}</p>
+                    {currentLocation && phase === 'narrative' && (
+                      <>
+                        <h3 className="text-xl font-bold text-orange-400 mb-3">
+                          {currentLocation.icon} {currentLocation.name}
+                        </h3>
+                        <p className="text-gray-300 leading-relaxed">{currentLocation.description}</p>
+                      </>
+                    )}
+
+                    {phase === 'skill-check' && selectedChoice && diceRoll !== null && (
+                      <>
+                        <h3 className="text-xl font-bold text-orange-400 mb-3">🎲 Skill Check</h3>
+                        <p className="text-gray-300 mb-4">{selectedChoice.choiceText}</p>
+                        <div className="bg-slate-800 border-2 border-orange-500 rounded-lg p-4 mb-4">
+                          <p className="text-center text-4xl font-bold text-orange-400 mb-2">
+                            {diceRoll}
+                          </p>
+                          <p className="text-center text-sm text-gray-400">
+                            You rolled a d20! DC: {selectedChoice.skillDc}
+                          </p>
+                          <p className="text-center text-sm text-gray-300 mt-2">
+                            Answer the coding challenge correctly to add your {selectedChoice.skillType?.toUpperCase()} modifier!
+                          </p>
+                        </div>
+                      </>
+                    )}
+
+                    {phase === 'challenge' && challenge && (
+                      <>
+                        <h3 className="text-xl font-bold text-orange-400 mb-3">{challenge.title}</h3>
+                        <p className="text-gray-300 whitespace-pre-line mb-4">{challenge.description}</p>
+                      </>
+                    )}
+
+                    {phase === 'outcome' && (skillCheckResult || currentOutcome) && (
+                      <>
+                        <h3 className="text-xl font-bold text-orange-400 mb-3">
+                          {skillCheckResult ? 'Result' : 'Outcome'}
+                        </h3>
+                        {skillCheckResult && (
+                          <div className={`p-4 rounded-lg mb-4 ${
+                            skillCheckResult.check_passed
+                              ? 'bg-green-900/50 border-2 border-green-500'
+                              : 'bg-red-900/50 border-2 border-red-500'
+                          }`}>
+                            <p className="font-bold mb-2">
+                              {skillCheckResult.check_passed ? '✅ Success!' : '❌ Failure'}
+                            </p>
+                            <p className="text-sm">
+                              Roll: {skillCheckResult.dice_roll} + Modifier: {skillCheckResult.applied_modifier} = {skillCheckResult.total_roll}
+                              {' '}(DC: {skillCheckResult.dc})
+                            </p>
+                          </div>
+                        )}
+                        <p className="text-gray-300 leading-relaxed">
+                          {skillCheckResult ? skillCheckResult.outcome.description : currentOutcome?.description}
+                        </p>
+                      </>
+                    )}
                   </div>
                 </div>
 
                 {/* Action Buttons */}
                 <div>
-                  {phase === 'exploring' && !encounter && (
-                    <div className="grid grid-cols-2 gap-4">
-                      <button
-                        onClick={handleExplore}
-                        className="bg-orange-500 hover:bg-orange-600 text-white font-semibold py-4 rounded-lg transition-colors"
-                      >
-                        🔍 Explore
-                      </button>
-                      <button
-                        onClick={handleBossEncounter}
-                        disabled={floor.floorNumber > progress.deepestFloorReached}
-                        className="bg-red-500 hover:bg-red-600 disabled:bg-slate-700 disabled:cursor-not-allowed text-white font-semibold py-4 rounded-lg transition-colors"
-                      >
-                        👹 Face Boss
-                      </button>
-                      <button
-                        onClick={handleDescendFloor}
-                        disabled={progress.deepestFloorReached < floor.floorNumber + 1}
-                        className="bg-purple-500 hover:bg-purple-600 disabled:bg-slate-700 disabled:cursor-not-allowed text-white font-semibold py-4 rounded-lg transition-colors"
-                      >
-                        ⬇️ Descend
-                      </button>
-                      <button
-                        onClick={onClose}
-                        className="bg-slate-700 hover:bg-slate-600 text-white font-semibold py-4 rounded-lg transition-colors"
-                      >
-                        🚪 Leave Dungeon
-                      </button>
-                    </div>
-                  )}
-
-                  {phase === 'encounter' && encounter?.type === 'enemy' && (
-                    <div className="grid grid-cols-2 gap-4">
-                      <button
-                        onClick={handleStartCombat}
-                        className="bg-red-500 hover:bg-red-600 text-white font-semibold py-4 rounded-lg transition-colors"
-                      >
-                        ⚔️ Fight
-                      </button>
-                      <button
-                        onClick={handleFlee}
-                        className="bg-slate-700 hover:bg-slate-600 text-white font-semibold py-4 rounded-lg transition-colors"
-                      >
-                        🏃 Flee
-                      </button>
-                    </div>
-                  )}
-
-                  {phase === 'boss-warning' && (
-                    <div className="space-y-4">
-                      <div className="bg-red-900/50 border-2 border-red-500 rounded-lg p-4 text-center">
-                        <p className="text-red-400 font-bold">⚠️ WARNING: BOSS ENCOUNTER ⚠️</p>
-                        <p className="text-gray-300 text-sm mt-2">
-                          Prepare yourself. This will be a difficult fight!
-                        </p>
-                      </div>
-                      <div className="grid grid-cols-2 gap-4">
+                  {phase === 'narrative' && availableChoices.length > 0 && (
+                    <div className="space-y-3">
+                      {availableChoices.map((choice) => (
                         <button
-                          onClick={handleStartCombat}
-                          className="bg-red-500 hover:bg-red-600 text-white font-semibold py-4 rounded-lg transition-colors"
+                          key={choice.id}
+                          onClick={() => handleChoiceSelect(choice)}
+                          className="w-full bg-slate-700 hover:bg-slate-600 border-2 border-orange-500 hover:border-orange-400 text-white font-semibold py-4 px-6 rounded-lg transition-colors text-left"
                         >
-                          ⚔️ Accept Challenge
+                          <span className="mr-2">{choice.icon || '➤'}</span>
+                          {choice.choiceText}
+                          {choice.requiresSkillCheck && choice.skillType && (
+                            <span className="ml-3 text-xs bg-orange-500 px-2 py-1 rounded">
+                              {choice.skillType.toUpperCase()} DC {choice.skillDc}
+                            </span>
+                          )}
                         </button>
-                        <button
-                          onClick={() => {
-                            setPhase('exploring');
-                            setEncounter(null);
-                            setNarrativeText('You decide to explore more before facing the boss.');
-                          }}
-                          className="bg-slate-700 hover:bg-slate-600 text-white font-semibold py-4 rounded-lg transition-colors"
-                        >
-                          ← Retreat
-                        </button>
-                      </div>
+                      ))}
                     </div>
                   )}
 
-                  {phase === 'rest' && (
+                  {phase === 'skill-check' && (
                     <button
-                      onClick={handleRest}
-                      className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-4 rounded-lg transition-colors"
-                    >
-                      🔥 Rest & Recover
-                    </button>
-                  )}
-
-                  {phase === 'encounter' && encounter?.type === 'treasure' && (
-                    <button
-                      onClick={() => {
-                        setPhase('exploring');
-                        setEncounter(null);
-                        setNarrativeText('You continue your exploration...');
-                      }}
+                      onClick={handleStartChallenge}
                       className="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-4 rounded-lg transition-colors"
                     >
-                      💰 Claim Treasure & Continue
+                      💻 Start Coding Challenge
                     </button>
+                  )}
+
+                  {phase === 'challenge' && challenge && (
+                    <div>
+                      {challenge.choices && (
+                        <div className="space-y-3 mb-6">
+                          {challenge.choices.map((choice) => {
+                            const letter = choice.charAt(0);
+                            const isSelected = selectedAnswer === letter;
+                            return (
+                              <button
+                                key={letter}
+                                onClick={() => setSelectedAnswer(letter)}
+                                className={`w-full text-left p-4 rounded-lg border-2 transition-all ${
+                                  isSelected
+                                    ? 'bg-orange-500 border-orange-400 text-white'
+                                    : 'bg-slate-700 border-slate-600 text-gray-300 hover:border-orange-500 hover:bg-slate-600'
+                                }`}
+                              >
+                                {choice}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      )}
+
+                      <button
+                        onClick={handleChallengeSubmit}
+                        disabled={!selectedAnswer}
+                        className="w-full bg-orange-500 hover:bg-orange-600 disabled:bg-slate-700 disabled:cursor-not-allowed text-white font-semibold py-4 rounded-lg transition-colors"
+                      >
+                        Submit & Resolve
+                      </button>
+                    </div>
                   )}
                 </div>
               </div>

@@ -4,6 +4,11 @@
 
 -- Clear existing coding challenges (we'll add new multiple choice questions in seed data)
 -- This migration is safe to run multiple times
+
+-- First, delete challenge history (has FK to dungeon_challenges)
+DELETE FROM user_challenge_history;
+
+-- Then delete the challenges themselves
 DELETE FROM dungeon_challenges;
 
 -- Note: The 'choices' and 'correct_answer' columns are added via ALTER TABLE

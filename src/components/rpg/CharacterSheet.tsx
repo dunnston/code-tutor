@@ -1,350 +1,513 @@
-import React, { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
+import type {
+  CharacterStats,
+  CharacterEquipment,
+  EquipmentInventoryItem,
+  EquipmentItem,
+  UserAbilityWithLevel,
+} from '../../types/rpg';
 import {
   getCharacterStats,
-  getUserAbilities,
   getCharacterEquipment,
-  getEquipmentItems,
-  distributeStatPoints,
+  getEquipmentInventory,
+  getUserAbilitiesWithLevels,
+  equipItemToSlot,
+  unequipItemFromSlot,
+  spendStatPointOnHealth,
+  spendStatPointOnMana,
+  spendStatPointOnStat,
+  spendStatPointOnAbility,
 } from '../../lib/rpg';
-import type { CharacterStats, Ability, CharacterEquipment, EquipmentItem } from '../../types/rpg';
 
 interface CharacterSheetProps {
   userId: number;
+  isOpen: boolean;
   onClose: () => void;
 }
 
-export function CharacterSheet({ userId, onClose }: CharacterSheetProps) {
+type Tab = 'stats' | 'equipment' | 'inventory' | 'abilities';
+
+export function CharacterSheet({ userId, isOpen, onClose }: CharacterSheetProps) {
+  const [activeTab, setActiveTab] = useState<Tab>('stats');
   const [stats, setStats] = useState<CharacterStats | null>(null);
-  const [abilities, setAbilities] = useState<Ability[]>([]);
   const [equipment, setEquipment] = useState<CharacterEquipment | null>(null);
-  const [allEquipment, setAllEquipment] = useState<EquipmentItem[]>([]);
+  const [inventory, setInventory] = useState<EquipmentInventoryItem[]>([]);
+  const [abilities, setAbilities] = useState<UserAbilityWithLevel[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Stat point distribution
-  const [strPoints, setStrPoints] = useState(0);
-  const [intPoints, setIntPoints] = useState(0);
-  const [dexPoints, setDexPoints] = useState(0);
-
   useEffect(() => {
-    loadCharacterData();
-  }, [userId]);
+    if (isOpen) {
+      loadCharacterData();
+    }
+  }, [isOpen, userId]);
 
-  async function loadCharacterData() {
+  const loadCharacterData = async () => {
+    setLoading(true);
     try {
-      setLoading(true);
-      const [characterStats, userAbilities, characterEquipment, equipmentItems] = await Promise.all([
+      const [statsData, equipmentData, inventoryData, abilitiesData] = await Promise.all([
         getCharacterStats(userId),
-        getUserAbilities(userId),
         getCharacterEquipment(userId),
-        getEquipmentItems(),
+        getEquipmentInventory(userId),
+        getUserAbilitiesWithLevels(userId),
       ]);
-      setStats(characterStats);
-      setAbilities(userAbilities);
-      setEquipment(characterEquipment);
-      setAllEquipment(equipmentItems);
-    } catch (err) {
-      console.error('Failed to load character data:', err);
+      setStats(statsData);
+      setEquipment(equipmentData);
+      setInventory(inventoryData);
+      setAbilities(abilitiesData);
+    } catch (error) {
+      console.error('Failed to load character data:', error);
     } finally {
       setLoading(false);
     }
-  }
+  };
 
-  async function handleDistributePoints() {
-    if (!stats || strPoints + intPoints + dexPoints === 0) return;
-
+  const handleEquipItem = async (item: EquipmentItem, slot: string) => {
     try {
-      const updated = await distributeStatPoints(userId, strPoints, intPoints, dexPoints);
-      setStats(updated);
-      setStrPoints(0);
-      setIntPoints(0);
-      setDexPoints(0);
-    } catch (err) {
-      console.error('Failed to distribute stat points:', err);
+      const updatedEquipment = await equipItemToSlot(userId, item.id, slot);
+      setEquipment(updatedEquipment);
+      await loadCharacterData(); // Reload to update stats and inventory
+    } catch (error) {
+      console.error('Failed to equip item:', error);
+      alert('Failed to equip item');
     }
-  }
+  };
 
-  const pointsToSpend = (stats?.statPointsAvailable || 0) - (strPoints + intPoints + dexPoints);
+  const handleUnequipItem = async (slot: string) => {
+    try {
+      const updatedEquipment = await unequipItemFromSlot(userId, slot);
+      setEquipment(updatedEquipment);
+      await loadCharacterData(); // Reload to update stats and inventory
+    } catch (error) {
+      console.error('Failed to unequip item:', error);
+      alert('Failed to unequip item');
+    }
+  };
 
-  if (loading || !stats) {
-    return (
-      <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
-        <div className="bg-slate-800 rounded-lg p-8 max-w-4xl w-full mx-4 animate-pulse">
-          <div className="h-8 bg-slate-700 rounded w-48 mb-6" />
-          <div className="space-y-4">
-            <div className="h-32 bg-slate-700 rounded" />
-            <div className="h-32 bg-slate-700 rounded" />
-          </div>
-        </div>
-      </div>
-    );
-  }
+  const handleSpendPointOnHealth = async () => {
+    try {
+      const updatedStats = await spendStatPointOnHealth(userId);
+      setStats(updatedStats);
+    } catch (error) {
+      console.error('Failed to spend stat point:', error);
+      alert('Failed to spend stat point on health');
+    }
+  };
 
-  const equippedWeapon = allEquipment.find((item) => item.id === equipment?.weaponId);
-  const equippedArmor = allEquipment.find((item) => item.id === equipment?.armorId);
-  const equippedAccessory = allEquipment.find((item) => item.id === equipment?.accessoryId);
+  const handleSpendPointOnMana = async () => {
+    try {
+      const updatedStats = await spendStatPointOnMana(userId);
+      setStats(updatedStats);
+    } catch (error) {
+      console.error('Failed to spend stat point:', error);
+      alert('Failed to spend stat point on mana');
+    }
+  };
+
+  const handleSpendPointOnStat = async (statName: 'strength' | 'intelligence' | 'dexterity' | 'charisma') => {
+    try {
+      const updatedStats = await spendStatPointOnStat(userId, statName);
+      setStats(updatedStats);
+    } catch (error) {
+      console.error('Failed to spend stat point:', error);
+      alert(`Failed to spend stat point on ${statName}`);
+    }
+  };
+
+  const handleSpendPointOnAbility = async (abilityId: string) => {
+    try {
+      const updatedStats = await spendStatPointOnAbility(userId, abilityId);
+      setStats(updatedStats);
+      await loadCharacterData(); // Reload to update ability levels
+    } catch (error) {
+      console.error('Failed to spend stat point:', error);
+      alert('Failed to spend stat point on ability');
+    }
+  };
+
+  if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 overflow-y-auto">
-      <div className="bg-slate-800 rounded-lg max-w-4xl w-full my-8">
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+      <div className="bg-slate-800 rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-slate-700 p-6">
-          <h2 className="text-2xl font-bold text-orange-400">📋 Character Sheet</h2>
+        <div className="bg-slate-900 p-4 flex items-center justify-between border-b border-slate-700">
+          <div className="flex items-center gap-4">
+            <h2 className="text-2xl font-bold text-white">Character Sheet</h2>
+            {stats && stats.statPointsAvailable > 0 && (
+              <span className="bg-orange-500 text-white px-3 py-1 rounded-full text-sm font-bold animate-pulse">
+                {stats.statPointsAvailable} Unspent Point{stats.statPointsAvailable !== 1 ? 's' : ''}
+              </span>
+            )}
+          </div>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-white transition-colors text-2xl"
+            className="text-slate-400 hover:text-white transition-colors text-2xl"
           >
             ×
           </button>
         </div>
 
+        {/* Tabs */}
+        <div className="bg-slate-900 border-b border-slate-700 flex">
+          {(['stats', 'equipment', 'inventory', 'abilities'] as Tab[]).map((tab) => (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              className={`px-6 py-3 font-medium capitalize transition-colors ${
+                activeTab === tab
+                  ? 'bg-slate-800 text-orange-400 border-b-2 border-orange-400'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              {tab}
+            </button>
+          ))}
+        </div>
+
         {/* Content */}
-        <div className="p-6 space-y-6">
-          {/* Level & XP */}
-          <div className="bg-slate-700/50 rounded-lg p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-xl font-bold text-white">Level {stats.level}</h3>
-                <p className="text-sm text-gray-400">Adventurer</p>
+        <div className="p-6 overflow-y-auto max-h-[calc(90vh-140px)]">
+          {loading ? (
+            <div className="flex items-center justify-center py-12">
+              <div className="text-slate-400">Loading character data...</div>
+            </div>
+          ) : (
+            <>
+              {activeTab === 'stats' && stats && (
+                <StatsTab
+                  stats={stats}
+                  onSpendPointOnHealth={handleSpendPointOnHealth}
+                  onSpendPointOnMana={handleSpendPointOnMana}
+                  onSpendPointOnStat={handleSpendPointOnStat}
+                />
+              )}
+              {activeTab === 'equipment' && equipment && (
+                <EquipmentTab equipment={equipment} onUnequip={handleUnequipItem} />
+              )}
+              {activeTab === 'inventory' && (
+                <InventoryTab inventory={inventory} onEquip={handleEquipItem} />
+              )}
+              {activeTab === 'abilities' && (
+                <AbilitiesTab
+                  abilities={abilities}
+                  stats={stats}
+                  onSpendPoint={handleSpendPointOnAbility}
+                />
+              )}
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Stats Tab Component
+function StatsTab({
+  stats,
+  onSpendPointOnHealth,
+  onSpendPointOnMana,
+  onSpendPointOnStat,
+}: {
+  stats: CharacterStats;
+  onSpendPointOnHealth: () => void;
+  onSpendPointOnMana: () => void;
+  onSpendPointOnStat: (statName: 'strength' | 'intelligence' | 'dexterity' | 'charisma') => void;
+}) {
+  const hasPoints = stats.statPointsAvailable > 0;
+
+  return (
+    <div className="space-y-6">
+      {/* Character Info */}
+      <div className="bg-slate-900 rounded-lg p-6">
+        <h3 className="text-xl font-bold text-white mb-4">Character Info</h3>
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <div className="text-slate-400 text-sm">Level</div>
+            <div className="text-2xl font-bold text-white">{stats.level}</div>
+          </div>
+          <div>
+            <div className="text-slate-400 text-sm">Stat Points Available</div>
+            <div className="text-2xl font-bold text-orange-400">{stats.statPointsAvailable}</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Spend Stat Points */}
+      {hasPoints && (
+        <div className="bg-slate-900 rounded-lg p-6">
+          <h3 className="text-xl font-bold text-white mb-4">Spend Stat Points</h3>
+          <div className="space-y-3">
+            {/* Primary Stats */}
+            <div>
+              <div className="text-slate-400 text-sm mb-2">Primary Attributes (+1 each)</div>
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  onClick={() => onSpendPointOnStat('strength')}
+                  className="bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded font-medium transition-colors text-sm"
+                >
+                  💪 +1 Strength
+                </button>
+                <button
+                  onClick={() => onSpendPointOnStat('intelligence')}
+                  className="bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded font-medium transition-colors text-sm"
+                >
+                  🧠 +1 Intelligence
+                </button>
+                <button
+                  onClick={() => onSpendPointOnStat('dexterity')}
+                  className="bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded font-medium transition-colors text-sm"
+                >
+                  ⚡ +1 Dexterity
+                </button>
+                <button
+                  onClick={() => onSpendPointOnStat('charisma')}
+                  className="bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded font-medium transition-colors text-sm"
+                >
+                  ✨ +1 Charisma
+                </button>
               </div>
-              {stats.statPointsAvailable > 0 && (
-                <div className="text-right">
-                  <div className="text-orange-400 font-bold">{pointsToSpend} Points Available</div>
-                  <p className="text-xs text-gray-400">Distribute below</p>
-                </div>
+            </div>
+
+            {/* Resources */}
+            <div>
+              <div className="text-slate-400 text-sm mb-2">Resources (+5 each)</div>
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  onClick={onSpendPointOnHealth}
+                  className="bg-green-700 hover:bg-green-600 text-white px-4 py-2 rounded font-medium transition-colors text-sm"
+                >
+                  ❤️ +5 Max Health
+                </button>
+                <button
+                  onClick={onSpendPointOnMana}
+                  className="bg-blue-700 hover:bg-blue-600 text-white px-4 py-2 rounded font-medium transition-colors text-sm"
+                >
+                  💙 +5 Max Mana
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Primary Stats */}
+      <div className="bg-slate-900 rounded-lg p-6">
+        <h3 className="text-xl font-bold text-white mb-4">Primary Stats</h3>
+        <div className="grid grid-cols-2 gap-4">
+          <StatCard label="Strength" value={stats.strength} icon="💪" />
+          <StatCard label="Intelligence" value={stats.intelligence} icon="🧠" />
+          <StatCard label="Dexterity" value={stats.dexterity} icon="⚡" />
+          <StatCard label="Charisma" value={stats.charisma} icon="✨" />
+        </div>
+      </div>
+
+      {/* Health & Mana */}
+      <div className="bg-slate-900 rounded-lg p-6">
+        <h3 className="text-xl font-bold text-white mb-4">Health & Mana</h3>
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <div className="text-slate-400 text-sm mb-2">Health</div>
+            <div className="bg-slate-800 rounded-full h-8 overflow-hidden">
+              <div
+                className="bg-green-500 h-full flex items-center justify-center text-white text-sm font-bold"
+                style={{ width: `${(stats.currentHealth / stats.maxHealth) * 100}%` }}
+              >
+                {stats.currentHealth} / {stats.maxHealth}
+              </div>
+            </div>
+          </div>
+          <div>
+            <div className="text-slate-400 text-sm mb-2">Mana</div>
+            <div className="bg-slate-800 rounded-full h-8 overflow-hidden">
+              <div
+                className="bg-blue-500 h-full flex items-center justify-center text-white text-sm font-bold"
+                style={{ width: `${(stats.currentMana / stats.maxMana) * 100}%` }}
+              >
+                {stats.currentMana} / {stats.maxMana}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Combat Stats */}
+      <div className="bg-slate-900 rounded-lg p-6">
+        <h3 className="text-xl font-bold text-white mb-4">Combat Stats</h3>
+        <div className="grid grid-cols-2 gap-4">
+          <StatCard label="Base Damage" value={stats.baseDamage} icon="⚔️" />
+          <StatCard label="Defense" value={stats.defense} icon="🛡️" />
+          <StatCard label="Critical Chance" value={`${(stats.criticalChance * 100).toFixed(1)}%`} icon="💥" />
+          <StatCard label="Dodge Chance" value={`${(stats.dodgeChance * 100).toFixed(1)}%`} icon="💨" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function StatCard({ label, value, icon }: { label: string; value: number | string; icon: string }) {
+  return (
+    <div className="bg-slate-800 rounded-lg p-4">
+      <div className="text-slate-400 text-sm mb-1">{label}</div>
+      <div className="flex items-center gap-2">
+        <span className="text-2xl">{icon}</span>
+        <span className="text-xl font-bold text-white">{value}</span>
+      </div>
+    </div>
+  );
+}
+
+// Equipment Tab Component
+function EquipmentTab({
+  equipment,
+  onUnequip,
+}: {
+  equipment: CharacterEquipment;
+  onUnequip: (slot: string) => void;
+}) {
+  const slots = [
+    { key: 'weapon', id: equipment.weaponId, label: 'Weapon', icon: '⚔️' },
+    { key: 'shield', id: equipment.shieldId, label: 'Shield', icon: '🛡️' },
+    { key: 'helmet', id: equipment.helmetId, label: 'Helmet', icon: '⛑️' },
+    { key: 'chest', id: equipment.chestId, label: 'Chest Armor', icon: '🦺' },
+    { key: 'boots', id: equipment.bootsId, label: 'Boots', icon: '👢' },
+  ];
+
+  return (
+    <div className="space-y-4">
+      <h3 className="text-xl font-bold text-white mb-4">Equipped Items</h3>
+      <div className="grid grid-cols-2 gap-4">
+        {slots.map((slot) => (
+          <div key={slot.key} className="bg-slate-900 rounded-lg p-4">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2">
+                <span className="text-2xl">{slot.icon}</span>
+                <span className="text-slate-400 font-medium">{slot.label}</span>
+              </div>
+              {slot.id && (
+                <button
+                  onClick={() => onUnequip(slot.key)}
+                  className="text-red-400 hover:text-red-300 text-sm"
+                >
+                  Unequip
+                </button>
               )}
             </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Left Column */}
-            <div className="space-y-6">
-              {/* Health & Mana */}
-              <div className="bg-slate-700/50 rounded-lg p-4 space-y-3">
-                <h4 className="font-semibold text-white mb-3">Vitals</h4>
-                <div>
-                  <div className="flex justify-between text-sm mb-1">
-                    <span className="text-red-400">❤️ Health</span>
-                    <span className="text-gray-300">
-                      {stats.currentHealth}/{stats.maxHealth}
-                    </span>
-                  </div>
-                  <div className="h-2 bg-slate-600 rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-red-500"
-                      style={{ width: `${(stats.currentHealth / stats.maxHealth) * 100}%` }}
-                    />
-                  </div>
-                </div>
-                <div>
-                  <div className="flex justify-between text-sm mb-1">
-                    <span className="text-blue-400">💙 Mana</span>
-                    <span className="text-gray-300">
-                      {stats.currentMana}/{stats.maxMana}
-                    </span>
-                  </div>
-                  <div className="h-2 bg-slate-600 rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-blue-500"
-                      style={{ width: `${(stats.currentMana / stats.maxMana) * 100}%` }}
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Primary Stats */}
-              <div className="bg-slate-700/50 rounded-lg p-4">
-                <h4 className="font-semibold text-white mb-3">Primary Stats</h4>
-                <div className="space-y-3">
-                  {/* Strength */}
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <span className="text-2xl">💪</span>
-                      <div>
-                        <div className="text-white font-semibold">Strength</div>
-                        <div className="text-xs text-gray-400">Physical power</div>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-xl font-bold text-orange-400">{stats.strength + strPoints}</span>
-                      {pointsToSpend > 0 && (
-                        <button
-                          onClick={() => setStrPoints(strPoints + 1)}
-                          disabled={pointsToSpend === 0}
-                          className="bg-orange-500 hover:bg-orange-600 disabled:bg-slate-600 disabled:cursor-not-allowed text-white w-7 h-7 rounded flex items-center justify-center text-sm"
-                        >
-                          +
-                        </button>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Intelligence */}
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <span className="text-2xl">🧠</span>
-                      <div>
-                        <div className="text-white font-semibold">Intelligence</div>
-                        <div className="text-xs text-gray-400">Magical power</div>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-xl font-bold text-purple-400">{stats.intelligence + intPoints}</span>
-                      {pointsToSpend > 0 && (
-                        <button
-                          onClick={() => setIntPoints(intPoints + 1)}
-                          disabled={pointsToSpend === 0}
-                          className="bg-purple-500 hover:bg-purple-600 disabled:bg-slate-600 disabled:cursor-not-allowed text-white w-7 h-7 rounded flex items-center justify-center text-sm"
-                        >
-                          +
-                        </button>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Dexterity */}
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <span className="text-2xl">⚡</span>
-                      <div>
-                        <div className="text-white font-semibold">Dexterity</div>
-                        <div className="text-xs text-gray-400">Speed & precision</div>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-xl font-bold text-green-400">{stats.dexterity + dexPoints}</span>
-                      {pointsToSpend > 0 && (
-                        <button
-                          onClick={() => setDexPoints(dexPoints + 1)}
-                          disabled={pointsToSpend === 0}
-                          className="bg-green-500 hover:bg-green-600 disabled:bg-slate-600 disabled:cursor-not-allowed text-white w-7 h-7 rounded flex items-center justify-center text-sm"
-                        >
-                          +
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                </div>
-
-                {(strPoints + intPoints + dexPoints > 0) && (
-                  <button
-                    onClick={handleDistributePoints}
-                    className="w-full mt-4 bg-orange-500 hover:bg-orange-600 text-white font-semibold py-2 rounded"
-                  >
-                    Apply Changes
-                  </button>
-                )}
-              </div>
-
-              {/* Combat Stats */}
-              <div className="bg-slate-700/50 rounded-lg p-4">
-                <h4 className="font-semibold text-white mb-3">Combat Stats</h4>
-                <div className="grid grid-cols-2 gap-3 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-gray-400">⚔️ Damage:</span>
-                    <span className="text-white font-mono">{stats.baseDamage}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-400">🛡️ Defense:</span>
-                    <span className="text-white font-mono">{stats.defense}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-400">💥 Critical:</span>
-                    <span className="text-white font-mono">{(stats.criticalChance * 100).toFixed(1)}%</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-400">🌀 Dodge:</span>
-                    <span className="text-white font-mono">{(stats.dodgeChance * 100).toFixed(1)}%</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Right Column */}
-            <div className="space-y-6">
-              {/* Equipment */}
-              <div className="bg-slate-700/50 rounded-lg p-4">
-                <h4 className="font-semibold text-white mb-3">⚙️ Equipment</h4>
-                <div className="space-y-3">
-                  <div className="bg-slate-600/50 rounded p-3">
-                    <div className="text-xs text-gray-400 mb-1">Weapon</div>
-                    <div className="text-white">
-                      {equippedWeapon ? (
-                        <div className="flex items-center gap-2">
-                          <span>{equippedWeapon.icon}</span>
-                          <span>{equippedWeapon.name}</span>
-                          <span className="text-orange-400 text-sm">+{equippedWeapon.damageBonus} dmg</span>
-                        </div>
-                      ) : (
-                        <span className="text-gray-500">Empty</span>
-                      )}
-                    </div>
-                  </div>
-                  <div className="bg-slate-600/50 rounded p-3">
-                    <div className="text-xs text-gray-400 mb-1">Armor</div>
-                    <div className="text-white">
-                      {equippedArmor ? (
-                        <div className="flex items-center gap-2">
-                          <span>{equippedArmor.icon}</span>
-                          <span>{equippedArmor.name}</span>
-                          <span className="text-blue-400 text-sm">+{equippedArmor.defenseBonus} def</span>
-                        </div>
-                      ) : (
-                        <span className="text-gray-500">Empty</span>
-                      )}
-                    </div>
-                  </div>
-                  <div className="bg-slate-600/50 rounded p-3">
-                    <div className="text-xs text-gray-400 mb-1">Accessory</div>
-                    <div className="text-white">
-                      {equippedAccessory ? (
-                        <div className="flex items-center gap-2">
-                          <span>{equippedAccessory.icon}</span>
-                          <span>{equippedAccessory.name}</span>
-                        </div>
-                      ) : (
-                        <span className="text-gray-500">Empty</span>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Abilities */}
-              <div className="bg-slate-700/50 rounded-lg p-4">
-                <h4 className="font-semibold text-white mb-3">✨ Abilities ({abilities.length})</h4>
-                <div className="space-y-2 max-h-64 overflow-y-auto">
-                  {abilities.map((ability) => (
-                    <div key={ability.id} className="bg-slate-600/50 rounded p-3">
-                      <div className="flex items-center justify-between mb-1">
-                        <div className="flex items-center gap-2">
-                          <span className="text-xl">{ability.icon}</span>
-                          <span className="text-white font-semibold">{ability.name}</span>
-                        </div>
-                        {ability.manaCost > 0 && (
-                          <span className="text-blue-400 text-sm">{ability.manaCost} MP</span>
-                        )}
-                      </div>
-                      <p className="text-xs text-gray-400">{ability.description}</p>
-                    </div>
-                  ))}
-                  {abilities.length === 0 && (
-                    <p className="text-gray-500 text-sm text-center py-4">No abilities unlocked yet</p>
-                  )}
-                </div>
-              </div>
+            <div className="text-white font-medium">
+              {slot.id ? slot.id.replace(/_/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase()) : 'Empty'}
             </div>
           </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// Inventory Tab Component
+function InventoryTab({
+  inventory,
+  onEquip,
+}: {
+  inventory: EquipmentInventoryItem[];
+  onEquip: (item: EquipmentItem, slot: string) => void;
+}) {
+  // Use the item's slot field directly from the database
+  const getSlotForItem = (item: EquipmentItem): string => {
+    return item.slot;
+  };
+
+  return (
+    <div className="space-y-4">
+      <h3 className="text-xl font-bold text-white mb-4">Equipment Inventory</h3>
+      {inventory.length === 0 ? (
+        <div className="bg-slate-900 rounded-lg p-8 text-center text-slate-400">
+          No equipment in inventory
         </div>
+      ) : (
+        <div className="grid grid-cols-1 gap-3">
+          {inventory.map((item) => (
+            <div
+              key={item.id}
+              className="bg-slate-900 rounded-lg p-4 flex items-center justify-between"
+            >
+              <div>
+                <div className="text-white font-medium">{item.equipment.name}</div>
+                <div className="text-slate-400 text-sm">{item.equipment.description}</div>
+                <div className="text-slate-500 text-xs mt-1">
+                  Tier: {item.equipment.tier} | Level: {item.equipment.requiredLevel}
+                </div>
+              </div>
+              <button
+                onClick={() => onEquip(item.equipment, getSlotForItem(item.equipment))}
+                className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded font-medium transition-colors"
+              >
+                Equip
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
 
-        {/* Footer */}
-        <div className="border-t border-slate-700 p-6 flex justify-end">
-          <button
-            onClick={onClose}
-            className="bg-slate-700 hover:bg-slate-600 text-white px-6 py-2 rounded-lg transition-colors"
+// Abilities Tab Component
+function AbilitiesTab({
+  abilities,
+  stats,
+  onSpendPoint,
+}: {
+  abilities: UserAbilityWithLevel[];
+  stats: CharacterStats | null;
+  onSpendPoint: (abilityId: string) => void;
+}) {
+  const hasPoints = stats && stats.statPointsAvailable > 0;
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <h3 className="text-xl font-bold text-white">Abilities</h3>
+        {hasPoints && (
+          <div className="text-orange-400 text-sm font-medium">
+            Click "Level Up" to spend stat points on abilities
+          </div>
+        )}
+      </div>
+      <div className="grid grid-cols-1 gap-3">
+        {abilities.map((userAbility) => (
+          <div
+            key={userAbility.id}
+            className="bg-slate-900 rounded-lg p-4 flex items-center justify-between"
           >
-            Close
-          </button>
-        </div>
+            <div className="flex-1">
+              <div className="flex items-center gap-3 mb-2">
+                <span className="text-2xl">{userAbility.ability.icon}</span>
+                <div>
+                  <div className="text-white font-medium">{userAbility.ability.name}</div>
+                  <div className="text-slate-400 text-sm">{userAbility.ability.description}</div>
+                </div>
+              </div>
+              <div className="flex items-center gap-4 text-sm">
+                <span className="text-slate-500">
+                  Level: <span className="text-orange-400 font-bold">{userAbility.currentLevel}</span>
+                </span>
+                <span className="text-slate-500">
+                  Mana: <span className="text-blue-400">{userAbility.ability.manaCost}</span>
+                </span>
+                <span className="text-slate-500">
+                  Base Value: <span className="text-white">{userAbility.ability.baseValue}</span>
+                </span>
+              </div>
+            </div>
+            {hasPoints && (
+              <button
+                onClick={() => onSpendPoint(userAbility.ability.id)}
+                className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded font-medium transition-colors ml-4"
+              >
+                Level Up
+              </button>
+            )}
+          </div>
+        ))}
       </div>
     </div>
   );

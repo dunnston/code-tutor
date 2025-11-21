@@ -1,0 +1,14 @@
+-- Migration 016: Equipment Slot Types (No-op)
+--
+-- Note: The original equipment_items table has a CHECK constraint:
+--   slot IN ('weapon', 'armor', 'accessory')
+--
+-- We cannot update slot values to 'shield', 'helmet', 'chest', 'boots'
+-- without violating this constraint, and we cannot modify the CHECK constraint
+-- without recreating the table (which would break foreign key references).
+--
+-- Solution: All defensive equipment items use slot='armor' in the database.
+-- The frontend determines the specific equipment slot (shield, helmet, chest, boots)
+-- based on the item ID when equipping items.
+--
+-- This migration is intentionally empty to maintain migration numbering.

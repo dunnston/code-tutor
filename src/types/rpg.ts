@@ -4,7 +4,7 @@
 // CHARACTER SYSTEM
 // ============================================================================
 
-export type ScalingStat = 'strength' | 'intelligence' | 'dexterity' | 'none';
+export type ScalingStat = 'strength' | 'intelligence' | 'dexterity' | 'charisma' | 'none';
 
 export interface CharacterStatsRaw {
   user_id: number;
@@ -12,6 +12,7 @@ export interface CharacterStatsRaw {
   strength: number;
   intelligence: number;
   dexterity: number;
+  charisma: number;
   max_health: number;
   current_health: number;
   max_mana: number;
@@ -31,6 +32,7 @@ export interface CharacterStats {
   strength: number;
   intelligence: number;
   dexterity: number;
+  charisma: number;
   maxHealth: number;
   currentHealth: number;
   maxMana: number;
@@ -48,7 +50,7 @@ export interface CharacterStats {
 // EQUIPMENT SYSTEM
 // ============================================================================
 
-export type EquipmentSlot = 'weapon' | 'armor' | 'accessory';
+export type EquipmentSlot = 'weapon' | 'shield' | 'helmet' | 'chest' | 'boots' | 'armor' | 'accessory';
 export type EquipmentTier = 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
 
 export interface EquipmentItemRaw {
@@ -109,6 +111,10 @@ export interface CharacterEquipmentRaw {
   weapon_id: string | null;
   armor_id: string | null;
   accessory_id: string | null;
+  shield_id: string | null;
+  helmet_id: string | null;
+  chest_id: string | null;
+  boots_id: string | null;
   updated_at: string;
 }
 
@@ -117,7 +123,29 @@ export interface CharacterEquipment {
   weaponId: string | null;
   armorId: string | null;
   accessoryId: string | null;
+  shieldId: string | null;
+  helmetId: string | null;
+  chestId: string | null;
+  bootsId: string | null;
   updatedAt: Date;
+}
+
+export interface EquipmentInventoryItemRaw {
+  id: number;
+  user_id: number;
+  equipment_id: string;
+  equipment: EquipmentItemRaw;
+  quantity: number;
+  acquired_at: string;
+}
+
+export interface EquipmentInventoryItem {
+  id: number;
+  userId: number;
+  equipmentId: string;
+  equipment: EquipmentItem;
+  quantity: number;
+  acquiredAt: Date;
 }
 
 // ============================================================================
@@ -177,6 +205,26 @@ export interface UserAbility {
   ability: Ability;
   unlockedAt: Date;
   timesUsed: number;
+}
+
+export interface UserAbilityWithLevelRaw {
+  id: number;
+  user_id: number;
+  ability_id: string;
+  ability: AbilityRaw;
+  unlocked_at: string;
+  times_used: number;
+  current_level: number;
+}
+
+export interface UserAbilityWithLevel {
+  id: number;
+  userId: number;
+  abilityId: string;
+  ability: Ability;
+  unlockedAt: Date;
+  timesUsed: number;
+  currentLevel: number;
 }
 
 // ============================================================================
@@ -627,6 +675,7 @@ export function convertCharacterStats(raw: CharacterStatsRaw): CharacterStats {
     strength: raw.strength,
     intelligence: raw.intelligence,
     dexterity: raw.dexterity,
+    charisma: raw.charisma,
     maxHealth: raw.max_health,
     currentHealth: raw.current_health,
     maxMana: raw.max_mana,
@@ -684,6 +733,29 @@ export function convertAbility(raw: AbilityRaw): Ability {
     icon: raw.icon,
     animationText: raw.animation_text,
     createdAt: new Date(raw.created_at),
+  };
+}
+
+export function convertEquipmentInventoryItem(raw: EquipmentInventoryItemRaw): EquipmentInventoryItem {
+  return {
+    id: raw.id,
+    userId: raw.user_id,
+    equipmentId: raw.equipment_id,
+    equipment: convertEquipmentItem(raw.equipment),
+    quantity: raw.quantity,
+    acquiredAt: new Date(raw.acquired_at),
+  };
+}
+
+export function convertUserAbilityWithLevel(raw: UserAbilityWithLevelRaw): UserAbilityWithLevel {
+  return {
+    id: raw.id,
+    userId: raw.user_id,
+    abilityId: raw.ability_id,
+    ability: convertAbility(raw.ability),
+    unlockedAt: new Date(raw.unlocked_at),
+    timesUsed: raw.times_used,
+    currentLevel: raw.current_level,
   };
 }
 
@@ -819,5 +891,265 @@ export function convertDungeonAchievement(raw: DungeonAchievementRaw): DungeonAc
     rarity: raw.rarity,
     displayOrder: raw.display_order,
     createdAt: new Date(raw.created_at),
+  };
+}
+
+// ============================================================================
+// NARRATIVE DUNGEON SYSTEM
+// ============================================================================
+
+export type NarrativeLocationType = 'start' | 'choice_point' | 'combat' | 'skill_check' | 'treasure' | 'rest' | 'boss' | 'exit';
+export type SkillType = 'strength' | 'intelligence' | 'dexterity' | 'charisma';
+export type OutcomeType = 'success' | 'failure' | 'critical_success' | 'critical_failure' | 'default';
+
+export interface NarrativeLocationRaw {
+  id: string;
+  floor_number: number;
+  name: string;
+  description: string;
+  location_type: NarrativeLocationType;
+  is_repeatable: boolean;
+  icon: string;
+  created_at: string;
+}
+
+export interface NarrativeLocation {
+  id: string;
+  floorNumber: number;
+  name: string;
+  description: string;
+  locationType: NarrativeLocationType;
+  isRepeatable: boolean;
+  icon: string;
+  createdAt: Date;
+}
+
+export interface NarrativeChoiceRaw {
+  id: string;
+  location_id: string;
+  choice_text: string;
+  requires_skill_check: boolean;
+  skill_type: SkillType | null;
+  skill_dc: number | null;
+  challenge_action_type: ChallengeActionType | null;
+  display_order: number;
+  icon: string | null;
+  requires_flag: string | null; // JSON
+  created_at: string;
+}
+
+export interface NarrativeChoice {
+  id: string;
+  locationId: string;
+  choiceText: string;
+  requiresSkillCheck: boolean;
+  skillType: SkillType | null;
+  skillDc: number | null;
+  challengeActionType: ChallengeActionType | null;
+  displayOrder: number;
+  icon: string | null;
+  requiresFlag?: Record<string, boolean>;
+  createdAt: Date;
+}
+
+export interface NarrativeOutcomeRaw {
+  id: string;
+  choice_id: string;
+  outcome_type: OutcomeType;
+  description: string;
+  next_location_id: string | null;
+  rewards: string | null; // JSON
+  penalties: string | null; // JSON
+  sets_flags: string | null; // JSON
+  triggers_combat: boolean;
+  enemy_id: string | null;
+  enemy_count: number;
+  created_at: string;
+}
+
+export interface NarrativeOutcome {
+  id: string;
+  choiceId: string;
+  outcomeType: OutcomeType;
+  description: string;
+  nextLocationId: string | null;
+  rewards?: {
+    gold?: number;
+    xp?: number;
+    items?: string[];
+  };
+  penalties?: {
+    damage?: number;
+    goldLoss?: number;
+  };
+  setsFlags?: Record<string, boolean>;
+  triggersCombat: boolean;
+  enemyId: string | null;
+  enemyCount: number;
+  createdAt: Date;
+}
+
+export interface UserNarrativeProgressRaw {
+  user_id: number;
+  floor_number: number;
+  current_location_id: string | null;
+  visited_locations: string | null; // JSON array
+  completed_choices: string | null; // JSON array
+  story_flags: string | null; // JSON object
+  last_roll: number | null;
+  last_skill_type: string | null;
+  last_skill_dc: number | null;
+  last_modifier: number | null;
+  last_challenge_success: boolean | null;
+  total_skill_checks: number;
+  successful_skill_checks: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface UserNarrativeProgress {
+  userId: number;
+  floorNumber: number;
+  currentLocationId: string | null;
+  visitedLocations: string[];
+  completedChoices: string[];
+  storyFlags: Record<string, boolean>;
+  lastRoll: number | null;
+  lastSkillType: SkillType | null;
+  lastSkillDc: number | null;
+  lastModifier: number | null;
+  lastChallengeSuccess: boolean | null;
+  totalSkillChecks: number;
+  successfulSkillChecks: number;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface SkillCheckHistoryRaw {
+  id: number;
+  user_id: number;
+  choice_id: string;
+  skill_type: SkillType;
+  skill_dc: number;
+  dice_roll: number;
+  stat_modifier: number;
+  challenge_success: boolean;
+  total_roll: number;
+  check_passed: boolean;
+  outcome_type: OutcomeType;
+  timestamp: string;
+}
+
+export interface SkillCheckHistory {
+  id: number;
+  userId: number;
+  choiceId: string;
+  skillType: SkillType;
+  skillDc: number;
+  diceRoll: number;
+  statModifier: number;
+  challengeSuccess: boolean;
+  totalRoll: number;
+  checkPassed: boolean;
+  outcomeType: OutcomeType;
+  timestamp: Date;
+}
+
+export interface SkillCheckResult {
+  dice_roll: number;
+  stat_modifier: number;
+  challenge_success: boolean;
+  applied_modifier: number;
+  total_roll: number;
+  dc: number;
+  check_passed: boolean;
+  outcome_type: OutcomeType;
+  outcome: NarrativeOutcomeRaw;
+}
+
+// ============================================================================
+// NARRATIVE CONVERSION FUNCTIONS
+// ============================================================================
+
+export function convertNarrativeLocation(raw: NarrativeLocationRaw): NarrativeLocation {
+  return {
+    id: raw.id,
+    floorNumber: raw.floor_number,
+    name: raw.name,
+    description: raw.description,
+    locationType: raw.location_type,
+    isRepeatable: raw.is_repeatable,
+    icon: raw.icon,
+    createdAt: new Date(raw.created_at),
+  };
+}
+
+export function convertNarrativeChoice(raw: NarrativeChoiceRaw): NarrativeChoice {
+  return {
+    id: raw.id,
+    locationId: raw.location_id,
+    choiceText: raw.choice_text,
+    requiresSkillCheck: raw.requires_skill_check,
+    skillType: raw.skill_type,
+    skillDc: raw.skill_dc,
+    challengeActionType: raw.challenge_action_type,
+    displayOrder: raw.display_order,
+    icon: raw.icon,
+    requiresFlag: raw.requires_flag ? JSON.parse(raw.requires_flag) : undefined,
+    createdAt: new Date(raw.created_at),
+  };
+}
+
+export function convertNarrativeOutcome(raw: NarrativeOutcomeRaw): NarrativeOutcome {
+  return {
+    id: raw.id,
+    choiceId: raw.choice_id,
+    outcomeType: raw.outcome_type,
+    description: raw.description,
+    nextLocationId: raw.next_location_id,
+    rewards: raw.rewards ? JSON.parse(raw.rewards) : undefined,
+    penalties: raw.penalties ? JSON.parse(raw.penalties) : undefined,
+    setsFlags: raw.sets_flags ? JSON.parse(raw.sets_flags) : undefined,
+    triggersCombat: raw.triggers_combat,
+    enemyId: raw.enemy_id,
+    enemyCount: raw.enemy_count,
+    createdAt: new Date(raw.created_at),
+  };
+}
+
+export function convertUserNarrativeProgress(raw: UserNarrativeProgressRaw): UserNarrativeProgress {
+  return {
+    userId: raw.user_id,
+    floorNumber: raw.floor_number,
+    currentLocationId: raw.current_location_id,
+    visitedLocations: raw.visited_locations ? JSON.parse(raw.visited_locations) : [],
+    completedChoices: raw.completed_choices ? JSON.parse(raw.completed_choices) : [],
+    storyFlags: raw.story_flags ? JSON.parse(raw.story_flags) : {},
+    lastRoll: raw.last_roll,
+    lastSkillType: raw.last_skill_type as SkillType | null,
+    lastSkillDc: raw.last_skill_dc,
+    lastModifier: raw.last_modifier,
+    lastChallengeSuccess: raw.last_challenge_success,
+    totalSkillChecks: raw.total_skill_checks,
+    successfulSkillChecks: raw.successful_skill_checks,
+    createdAt: new Date(raw.created_at),
+    updatedAt: new Date(raw.updated_at),
+  };
+}
+
+export function convertSkillCheckHistory(raw: SkillCheckHistoryRaw): SkillCheckHistory {
+  return {
+    id: raw.id,
+    userId: raw.user_id,
+    choiceId: raw.choice_id,
+    skillType: raw.skill_type,
+    skillDc: raw.skill_dc,
+    diceRoll: raw.dice_roll,
+    statModifier: raw.stat_modifier,
+    challengeSuccess: raw.challenge_success,
+    totalRoll: raw.total_roll,
+    checkPassed: raw.check_passed,
+    outcomeType: raw.outcome_type,
+    timestamp: new Date(raw.timestamp),
   };
 }

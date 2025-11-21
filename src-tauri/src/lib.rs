@@ -6,6 +6,7 @@ mod gamification_commands;
 mod rpg_commands;
 mod dungeon_commands;
 mod combat_commands;
+mod narrative_commands;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -101,6 +102,15 @@ pub fn run() {
       rpg_commands::get_user_abilities,
       rpg_commands::unlock_ability,
       rpg_commands::check_ability_unlocks,
+      rpg_commands::get_user_abilities_with_levels,
+      rpg_commands::spend_stat_point_on_ability,
+      // RPG - Character Sheet commands
+      rpg_commands::get_equipment_inventory,
+      rpg_commands::equip_item_to_slot,
+      rpg_commands::unequip_item_from_slot,
+      rpg_commands::spend_stat_point_on_health,
+      rpg_commands::spend_stat_point_on_mana,
+      rpg_commands::spend_stat_point_on_stat,
       // Dungeon - Floor commands
       dungeon_commands::get_dungeon_floor,
       dungeon_commands::get_available_floors,
@@ -110,6 +120,7 @@ pub fn run() {
       // Dungeon - Enemy commands
       dungeon_commands::get_random_enemy_for_floor,
       dungeon_commands::get_boss_for_floor,
+      dungeon_commands::get_enemy_by_id,
       // Dungeon - Encounter commands
       dungeon_commands::get_random_encounter,
       // Dungeon - Challenge commands
@@ -123,6 +134,15 @@ pub fn run() {
       combat_commands::execute_combat_turn,
       combat_commands::end_combat_victory,
       combat_commands::end_combat_defeat,
+      // Narrative dungeon commands
+      narrative_commands::roll_d20,
+      narrative_commands::get_user_narrative_progress,
+      narrative_commands::get_narrative_location,
+      narrative_commands::get_location_choices,
+      narrative_commands::start_narrative_dungeon,
+      narrative_commands::resolve_skill_check,
+      narrative_commands::apply_narrative_outcome,
+      narrative_commands::make_simple_choice,
     ])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");

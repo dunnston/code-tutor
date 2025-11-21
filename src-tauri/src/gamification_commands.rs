@@ -165,11 +165,42 @@ pub fn get_or_create_user(app: AppHandle, username: String) -> Result<i64, Strin
 
     let user_id = conn.last_insert_rowid();
 
-    // Initialize currency for new user
+    log::info!("Created new user with id={} and username={}", user_id, username);
+
+    // Initialize all user-related tables for new user
+
+    // Currency
     conn.execute(
         "INSERT OR IGNORE INTO user_currency (user_id, gold, gems) VALUES (?, 0, 0)",
         params![user_id]
-    ).map_err(|e| e.to_string())?;
+    ).map_err(|e| format!("Failed to initialize currency: {}", e))?;
+
+    // Character stats (from migration 009, updated in migration 017)
+    // New defaults: all abilities start at 1, 2 stat points available
+    conn.execute(
+        "INSERT OR IGNORE INTO character_stats (user_id, level, strength, intelligence, dexterity, charisma, stat_points_available) VALUES (?, 1, 1, 1, 1, 1, 2)",
+        params![user_id]
+    ).map_err(|e| format!("Failed to initialize character stats: {}", e))?;
+
+    // Character equipment (from migration 009)
+    conn.execute(
+        "INSERT OR IGNORE INTO character_equipment (user_id) VALUES (?)",
+        params![user_id]
+    ).map_err(|e| format!("Failed to initialize character equipment: {}", e))?;
+
+    // Dungeon progress (from migration 011)
+    conn.execute(
+        "INSERT OR IGNORE INTO user_dungeon_progress (user_id, current_floor, deepest_floor_reached) VALUES (?, 1, 1)",
+        params![user_id]
+    ).map_err(|e| format!("Failed to initialize dungeon progress: {}", e))?;
+
+    // Unlock basic_attack ability (from rpg-dungeon-seed.sql)
+    conn.execute(
+        "INSERT OR IGNORE INTO user_abilities (user_id, ability_id) VALUES (?, 'basic_attack')",
+        params![user_id]
+    ).map_err(|e| format!("Failed to initialize starting ability: {}", e))?;
+
+    log::info!("New user fully initialized with all required data");
 
     Ok(user_id)
 }

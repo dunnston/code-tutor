@@ -7,7 +7,7 @@ import { PuzzleWidget } from './dashboard/PuzzleWidget'
 import { PlaygroundWidget } from './dashboard/PlaygroundWidget'
 import { CourseCatalog } from './dashboard/CourseCatalog'
 import { AchievementPreview } from './dashboard/AchievementPreview'
-import { DungeonWidget, DungeonExplorer } from './rpg'
+import { DungeonWidget, DungeonExplorer, CharacterSheet } from './rpg'
 import { useAppStore } from '@/lib/store'
 import type { CourseCategory } from '@/types/course'
 
@@ -19,6 +19,7 @@ export function Dashboard({ onLogout }: DashboardProps) {
   const [selectedCategory, setSelectedCategory] = useState<CourseCategory | 'all'>('all')
   const [searchQuery, setSearchQuery] = useState('')
   const [dungeonOpen, setDungeonOpen] = useState(false)
+  const [characterSheetOpen, setCharacterSheetOpen] = useState(false)
   const { currentUserId } = useAppStore()
 
   return (
@@ -26,7 +27,10 @@ export function Dashboard({ onLogout }: DashboardProps) {
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-6 py-8">
         {/* Profile Header */}
-        <ProfileHeader onLogout={onLogout} />
+        <ProfileHeader
+          onLogout={onLogout}
+          onOpenCharacterSheet={() => setCharacterSheetOpen(true)}
+        />
 
         {/* Playground Widget */}
         <section className="mt-6">
@@ -110,6 +114,15 @@ export function Dashboard({ onLogout }: DashboardProps) {
         <DungeonExplorer
           userId={currentUserId}
           onClose={() => setDungeonOpen(false)}
+        />
+      )}
+
+      {/* Character Sheet Modal */}
+      {currentUserId && (
+        <CharacterSheet
+          userId={currentUserId}
+          isOpen={characterSheetOpen}
+          onClose={() => setCharacterSheetOpen(false)}
         />
       )}
     </div>

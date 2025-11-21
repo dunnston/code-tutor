@@ -49,7 +49,7 @@ CREATE TABLE IF NOT EXISTS equipment_items (
     description TEXT,
 
     -- Equipment type
-    slot TEXT NOT NULL CHECK (slot IN ('weapon', 'armor', 'accessory')),
+    slot TEXT NOT NULL CHECK (slot IN ('weapon', 'shield', 'helmet', 'chest', 'boots', 'armor', 'accessory')),
     tier TEXT NOT NULL CHECK (tier IN ('common', 'uncommon', 'rare', 'epic', 'legendary')),
 
     -- Requirements

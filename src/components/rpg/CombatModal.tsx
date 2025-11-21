@@ -143,6 +143,21 @@ export function CombatModal({
         currentMana: result.playerCurrentMana,
       });
 
+      // Add answer feedback
+      if (challengeSuccess) {
+        addLogEntry(
+          result.turnNumber,
+          `Correct! Your ${selectedAbility.name} succeeds!`,
+          'status'
+        );
+      } else {
+        addLogEntry(
+          result.turnNumber,
+          `Wrong answer! The correct answer was ${challenge.correctAnswer}. Your attack fails!`,
+          'status'
+        );
+      }
+
       // Add combat log entries
       if (result.playerDamageDealt > 0) {
         const critText = result.isCritical ? ' Critical hit!' : '';
