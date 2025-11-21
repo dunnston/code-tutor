@@ -62,6 +62,31 @@ pub fn initialize_database(app: &AppHandle) -> Result<(), String> {
     conn.execute_batch(quest_updates_migration)
         .map_err(|e| format!("Failed to execute quest updates migration: {}", e))?;
 
+    // Execute RPG character system migration
+    let rpg_character_migration = include_str!("../migrations/009_rpg_character_system.sql");
+    conn.execute_batch(rpg_character_migration)
+        .map_err(|e| format!("Failed to execute RPG character system migration: {}", e))?;
+
+    // Execute RPG dungeon world migration
+    let rpg_dungeon_migration = include_str!("../migrations/010_rpg_dungeon_world.sql");
+    conn.execute_batch(rpg_dungeon_migration)
+        .map_err(|e| format!("Failed to execute RPG dungeon world migration: {}", e))?;
+
+    // Execute RPG progress and combat migration
+    let rpg_progress_migration = include_str!("../migrations/011_rpg_progress_combat.sql");
+    conn.execute_batch(rpg_progress_migration)
+        .map_err(|e| format!("Failed to execute RPG progress and combat migration: {}", e))?;
+
+    // Execute RPG achievements migration
+    let rpg_achievements_migration = include_str!("../migrations/012_rpg_achievements.sql");
+    conn.execute_batch(rpg_achievements_migration)
+        .map_err(|e| format!("Failed to execute RPG achievements migration: {}", e))?;
+
+    // Execute RPG dungeon seed data
+    let rpg_dungeon_seed = include_str!("../../course-framework-output/database/rpg-dungeon-seed.sql");
+    conn.execute_batch(rpg_dungeon_seed)
+        .map_err(|e| format!("Failed to execute RPG dungeon seed data: {}", e))?;
+
     // Execute solution_viewed migration (if columns don't exist yet)
     let solution_viewed_migration = r#"
         -- Add solution_viewed columns if they don't exist

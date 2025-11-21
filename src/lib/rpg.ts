@@ -1,0 +1,422 @@
+// RPG System API - TypeScript wrapper for Tauri commands
+import { invoke } from '@tauri-apps/api/core';
+import type {
+  CharacterStats,
+  CharacterStatsRaw,
+  EquipmentItem,
+  EquipmentItemRaw,
+  CharacterEquipment,
+  CharacterEquipmentRaw,
+  Ability,
+  AbilityRaw,
+  DungeonFloor,
+  DungeonFloorRaw,
+  UserDungeonProgress,
+  UserDungeonProgressRaw,
+  EnemyType,
+  EnemyTypeRaw,
+  BossEnemy,
+  BossEnemyRaw,
+  DungeonEncounter,
+  DungeonEncounterRaw,
+  DungeonChallenge,
+  DungeonChallengeRaw,
+  convertCharacterStats,
+  convertEquipmentItem,
+  convertAbility,
+  convertDungeonFloor,
+  convertEnemyType,
+  convertBossEnemy,
+  convertDungeonChallenge,
+} from '../types/rpg';
+
+// ============================================================================
+// CHARACTER MANAGEMENT
+// ============================================================================
+
+export async function getCharacterStats(userId: number): Promise<CharacterStats> {
+  const raw = await invoke<CharacterStatsRaw>('get_character_stats', { userId });
+  return convertCharacterStats(raw);
+}
+
+export async function updateCharacterHealth(
+  userId: number,
+  currentHealth: number
+): Promise<CharacterStats> {
+  const raw = await invoke<CharacterStatsRaw>('update_character_health', {
+    userId,
+    currentHealth,
+  });
+  return convertCharacterStats(raw);
+}
+
+export async function updateCharacterMana(
+  userId: number,
+  currentMana: number
+): Promise<CharacterStats> {
+  const raw = await invoke<CharacterStatsRaw>('update_character_mana', {
+    userId,
+    currentMana,
+  });
+  return convertCharacterStats(raw);
+}
+
+export async function distributeStatPoints(
+  userId: number,
+  strengthIncrease: number,
+  intelligenceIncrease: number,
+  dexterityIncrease: number
+): Promise<CharacterStats> {
+  const raw = await invoke<CharacterStatsRaw>('distribute_stat_points', {
+    userId,
+    strengthIncrease,
+    intelligenceIncrease,
+    dexterityIncrease,
+  });
+  return convertCharacterStats(raw);
+}
+
+export async function restoreHealthAndMana(userId: number): Promise<CharacterStats> {
+  const raw = await invoke<CharacterStatsRaw>('restore_health_and_mana', { userId });
+  return convertCharacterStats(raw);
+}
+
+// ============================================================================
+// EQUIPMENT MANAGEMENT
+// ============================================================================
+
+export async function getEquipmentItems(): Promise<EquipmentItem[]> {
+  const rawItems = await invoke<EquipmentItemRaw[]>('get_equipment_items');
+  return rawItems.map(convertEquipmentItem);
+}
+
+export async function getCharacterEquipment(userId: number): Promise<CharacterEquipment> {
+  const raw = await invoke<CharacterEquipmentRaw>('get_character_equipment', { userId });
+  return {
+    userId: raw.user_id,
+    weaponId: raw.weapon_id,
+    armorId: raw.armor_id,
+    accessoryId: raw.accessory_id,
+    updatedAt: new Date(raw.updated_at),
+  };
+}
+
+export async function equipItem(
+  userId: number,
+  itemId: string,
+  slot: string
+): Promise<CharacterEquipment> {
+  const raw = await invoke<CharacterEquipmentRaw>('equip_item', {
+    userId,
+    itemId,
+    slot,
+  });
+  return {
+    userId: raw.user_id,
+    weaponId: raw.weapon_id,
+    armorId: raw.armor_id,
+    accessoryId: raw.accessory_id,
+    updatedAt: new Date(raw.updated_at),
+  };
+}
+
+export async function unequipItem(userId: number, slot: string): Promise<CharacterEquipment> {
+  const raw = await invoke<CharacterEquipmentRaw>('unequip_item', {
+    userId,
+    slot,
+  });
+  return {
+    userId: raw.user_id,
+    weaponId: raw.weapon_id,
+    armorId: raw.armor_id,
+    accessoryId: raw.accessory_id,
+    updatedAt: new Date(raw.updated_at),
+  };
+}
+
+// ============================================================================
+// ABILITIES
+// ============================================================================
+
+export async function getUserAbilities(userId: number): Promise<Ability[]> {
+  const rawAbilities = await invoke<AbilityRaw[]>('get_user_abilities', { userId });
+  return rawAbilities.map(convertAbility);
+}
+
+export async function unlockAbility(userId: number, abilityId: string): Promise<void> {
+  await invoke('unlock_ability', { userId, abilityId });
+}
+
+export async function checkAbilityUnlocks(userId: number): Promise<Ability[]> {
+  const rawAbilities = await invoke<AbilityRaw[]>('check_ability_unlocks', { userId });
+  return rawAbilities.map(convertAbility);
+}
+
+// ============================================================================
+// DUNGEON EXPLORATION
+// ============================================================================
+
+export async function getDungeonFloor(floorNumber: number): Promise<DungeonFloor> {
+  const raw = await invoke<DungeonFloorRaw>('get_dungeon_floor', { floorNumber });
+  return convertDungeonFloor(raw);
+}
+
+export async function getAvailableFloors(): Promise<DungeonFloor[]> {
+  const rawFloors = await invoke<DungeonFloorRaw[]>('get_available_floors');
+  return rawFloors.map(convertDungeonFloor);
+}
+
+export async function getUserDungeonProgress(userId: number): Promise<UserDungeonProgress> {
+  const raw = await invoke<UserDungeonProgressRaw>('get_user_dungeon_progress', { userId });
+  return {
+    userId: raw.user_id,
+    currentFloor: raw.current_floor,
+    deepestFloorReached: raw.deepest_floor_reached,
+    inCombat: raw.in_combat,
+    currentEnemyId: raw.current_enemy_id,
+    currentEnemyHealth: raw.current_enemy_health,
+    currentRoomType: raw.current_room_type,
+    totalEnemiesDefeated: raw.total_enemies_defeated,
+    totalBossesDefeated: raw.total_bosses_defeated,
+    totalFloorsCleared: raw.total_floors_cleared,
+    totalDeaths: raw.total_deaths,
+    totalGoldEarned: raw.total_gold_earned,
+    totalXpEarned: raw.total_xp_earned,
+    lastRoomDescription: raw.last_room_description,
+    lastActionTimestamp: raw.last_action_timestamp ? new Date(raw.last_action_timestamp) : null,
+    createdAt: new Date(raw.created_at),
+    updatedAt: new Date(raw.updated_at),
+  };
+}
+
+export async function updateDungeonFloor(
+  userId: number,
+  floorNumber: number
+): Promise<UserDungeonProgress> {
+  const raw = await invoke<UserDungeonProgressRaw>('update_dungeon_floor', {
+    userId,
+    floorNumber,
+  });
+  return {
+    userId: raw.user_id,
+    currentFloor: raw.current_floor,
+    deepestFloorReached: raw.deepest_floor_reached,
+    inCombat: raw.in_combat,
+    currentEnemyId: raw.current_enemy_id,
+    currentEnemyHealth: raw.current_enemy_health,
+    currentRoomType: raw.current_room_type,
+    totalEnemiesDefeated: raw.total_enemies_defeated,
+    totalBossesDefeated: raw.total_bosses_defeated,
+    totalFloorsCleared: raw.total_floors_cleared,
+    totalDeaths: raw.total_deaths,
+    totalGoldEarned: raw.total_gold_earned,
+    totalXpEarned: raw.total_xp_earned,
+    lastRoomDescription: raw.last_room_description,
+    lastActionTimestamp: raw.last_action_timestamp ? new Date(raw.last_action_timestamp) : null,
+    createdAt: new Date(raw.created_at),
+    updatedAt: new Date(raw.updated_at),
+  };
+}
+
+// ============================================================================
+// ENEMIES
+// ============================================================================
+
+export async function getRandomEnemyForFloor(floorNumber: number): Promise<EnemyType> {
+  const raw = await invoke<EnemyTypeRaw>('get_random_enemy_for_floor', { floorNumber });
+  return convertEnemyType(raw);
+}
+
+export async function getBossForFloor(floorNumber: number): Promise<BossEnemy> {
+  const raw = await invoke<BossEnemyRaw>('get_boss_for_floor', { floorNumber });
+  return convertBossEnemy(raw);
+}
+
+// ============================================================================
+// ENCOUNTERS
+// ============================================================================
+
+export async function getRandomEncounter(
+  floorNumber: number,
+  encounterType: string
+): Promise<DungeonEncounter> {
+  const raw = await invoke<DungeonEncounterRaw>('get_random_encounter', {
+    floorNumber,
+    encounterType,
+  });
+  return {
+    id: raw.id,
+    type: raw.encounter_type as any,
+    floorNumber: raw.floor_number,
+    descriptionPrompt: raw.description_prompt,
+    requiredStat: raw.required_stat as any,
+    difficultyRating: raw.difficulty_rating,
+    rewards: raw.rewards ? JSON.parse(raw.rewards) : undefined,
+    penalties: raw.penalties ? JSON.parse(raw.penalties) : undefined,
+    rarity: raw.rarity as any,
+    createdAt: new Date(raw.created_at),
+  };
+}
+
+// ============================================================================
+// CHALLENGES
+// ============================================================================
+
+export async function getChallengeForAction(
+  actionType: string,
+  floorNumber: number,
+  difficulty?: string
+): Promise<DungeonChallenge> {
+  const raw = await invoke<DungeonChallengeRaw>('get_challenge_for_action', {
+    actionType,
+    floorNumber,
+    difficulty,
+  });
+  return convertDungeonChallenge(raw);
+}
+
+export async function recordChallengeAttempt(
+  userId: number,
+  challengeId: string,
+  success: boolean,
+  timeTakenSeconds: number
+): Promise<void> {
+  await invoke('record_challenge_attempt', {
+    userId,
+    challengeId,
+    success,
+    timeTakenSeconds,
+  });
+}
+
+// ============================================================================
+// COMBAT
+// ============================================================================
+
+export interface ActiveCombat {
+  userId: number;
+  enemyId: string;
+  enemyName: string;
+  enemyCurrentHealth: number;
+  enemyMaxHealth: number;
+  enemyDamage: number;
+  enemyDefense: number;
+  isBoss: boolean;
+  icon: string;
+  combatTurn: number;
+  abilityCooldowns?: Record<string, number>;
+  activeBuffs?: Array<{ type: string; turnsRemaining: number }>;
+  activeDebuffs?: Array<{ type: string; turnsRemaining: number }>;
+}
+
+export interface DamageResult {
+  damage: number;
+  isCritical: boolean;
+  isDodged: boolean;
+}
+
+export interface CombatTurnResult {
+  playerDamageDealt: number;
+  playerDamageTaken: number;
+  enemyCurrentHealth: number;
+  playerCurrentHealth: number;
+  playerCurrentMana: number;
+  enemyDefeated: boolean;
+  playerDefeated: boolean;
+  isCritical: boolean;
+  isDodged: boolean;
+  turnNumber: number;
+}
+
+export interface CombatRewards {
+  xpGained: number;
+  goldGained: number;
+  itemsLooted: string[];
+}
+
+export async function startCombat(userId: number, enemy: EnemyType): Promise<ActiveCombat> {
+  const result = await invoke<any>('start_combat', { userId, enemy });
+  return {
+    userId: result.user_id,
+    enemyId: result.enemy_id,
+    enemyName: result.enemy_name,
+    enemyCurrentHealth: result.enemy_current_health,
+    enemyMaxHealth: result.enemy_max_health,
+    enemyDamage: result.enemy_damage,
+    enemyDefense: result.enemy_defense,
+    isBoss: result.is_boss,
+    icon: result.icon,
+    combatTurn: result.combat_turn,
+    abilityCooldowns: result.ability_cooldowns ? JSON.parse(result.ability_cooldowns) : undefined,
+    activeBuffs: result.active_buffs ? JSON.parse(result.active_buffs) : undefined,
+    activeDebuffs: result.active_debuffs ? JSON.parse(result.active_debuffs) : undefined,
+  };
+}
+
+export async function startBossCombat(userId: number, boss: BossEnemy): Promise<ActiveCombat> {
+  const result = await invoke<any>('start_boss_combat', { userId, boss });
+  return {
+    userId: result.user_id,
+    enemyId: result.enemy_id,
+    enemyName: result.enemy_name,
+    enemyCurrentHealth: result.enemy_current_health,
+    enemyMaxHealth: result.enemy_max_health,
+    enemyDamage: result.enemy_damage,
+    enemyDefense: result.enemy_defense,
+    isBoss: result.is_boss,
+    icon: result.icon,
+    combatTurn: result.combat_turn,
+    abilityCooldowns: result.ability_cooldowns ? JSON.parse(result.ability_cooldowns) : undefined,
+    activeBuffs: result.active_buffs ? JSON.parse(result.active_buffs) : undefined,
+    activeDebuffs: result.active_debuffs ? JSON.parse(result.active_debuffs) : undefined,
+  };
+}
+
+export async function executeCombatTurn(
+  userId: number,
+  abilityId: string,
+  challengeSuccess: boolean
+): Promise<CombatTurnResult> {
+  const result = await invoke<any>('execute_combat_turn', {
+    userId,
+    abilityId,
+    challengeSuccess,
+  });
+  return {
+    playerDamageDealt: result.player_damage_dealt,
+    playerDamageTaken: result.player_damage_taken,
+    enemyCurrentHealth: result.enemy_current_health,
+    playerCurrentHealth: result.player_current_health,
+    playerCurrentMana: result.player_current_mana,
+    enemyDefeated: result.enemy_defeated,
+    playerDefeated: result.player_defeated,
+    isCritical: result.is_critical,
+    isDodged: result.is_dodged,
+    turnNumber: result.turn_number,
+  };
+}
+
+export async function endCombatVictory(
+  userId: number,
+  enemy: EnemyType,
+  turnsTaken: number,
+  damageDealt: number,
+  damageTaken: number
+): Promise<CombatRewards> {
+  const result = await invoke<any>('end_combat_victory', {
+    userId,
+    enemy,
+    turnsTaken,
+    damageDealt,
+    damageTaken,
+  });
+  return {
+    xpGained: result.xp_gained,
+    goldGained: result.gold_gained,
+    itemsLooted: result.items_looted,
+  };
+}
+
+export async function endCombatDefeat(userId: number): Promise<void> {
+  await invoke('end_combat_defeat', { userId });
+}

@@ -3,6 +3,9 @@ mod db;
 mod puzzle_commands;
 mod playground_commands;
 mod gamification_commands;
+mod rpg_commands;
+mod dungeon_commands;
+mod combat_commands;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -82,6 +85,44 @@ pub fn run() {
       // Gamification - Level rewards
       gamification_commands::get_level_rewards,
       gamification_commands::claim_level_rewards,
+      // RPG - Character commands
+      rpg_commands::get_character_stats,
+      rpg_commands::update_character_health,
+      rpg_commands::update_character_mana,
+      rpg_commands::distribute_stat_points,
+      rpg_commands::recalculate_derived_stats,
+      rpg_commands::restore_health_and_mana,
+      // RPG - Equipment commands
+      rpg_commands::get_equipment_items,
+      rpg_commands::get_character_equipment,
+      rpg_commands::equip_item,
+      rpg_commands::unequip_item,
+      // RPG - Ability commands
+      rpg_commands::get_user_abilities,
+      rpg_commands::unlock_ability,
+      rpg_commands::check_ability_unlocks,
+      // Dungeon - Floor commands
+      dungeon_commands::get_dungeon_floor,
+      dungeon_commands::get_available_floors,
+      // Dungeon - Progress commands
+      dungeon_commands::get_user_dungeon_progress,
+      dungeon_commands::update_dungeon_floor,
+      // Dungeon - Enemy commands
+      dungeon_commands::get_random_enemy_for_floor,
+      dungeon_commands::get_boss_for_floor,
+      // Dungeon - Encounter commands
+      dungeon_commands::get_random_encounter,
+      // Dungeon - Challenge commands
+      dungeon_commands::get_challenge_for_action,
+      dungeon_commands::record_challenge_attempt,
+      // Combat commands
+      combat_commands::start_combat,
+      combat_commands::start_boss_combat,
+      combat_commands::calculate_player_damage,
+      combat_commands::calculate_enemy_damage,
+      combat_commands::execute_combat_turn,
+      combat_commands::end_combat_victory,
+      combat_commands::end_combat_defeat,
     ])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");
