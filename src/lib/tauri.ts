@@ -7,17 +7,20 @@ import type { SupportedLanguage } from '@/types/language'
  * @param language - Programming language to execute
  * @param code - Code to execute
  * @param timeoutMs - Timeout in milliseconds (default: 5000ms)
+ * @param customExecutablePath - Optional custom path to language executable
  */
 export async function executeCode(
   language: SupportedLanguage,
   code: string,
-  timeoutMs?: number
+  timeoutMs?: number,
+  customExecutablePath?: string
 ): Promise<ExecutionResult> {
   try {
     const result = await invoke<ExecutionResult>('execute_code', {
       language,
       code,
       timeoutMs,
+      customExecutablePath,
     })
     return result
   } catch (error) {

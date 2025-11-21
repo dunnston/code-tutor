@@ -3,6 +3,7 @@ import { invoke } from '@tauri-apps/api/core';
 import Editor from '@monaco-editor/react';
 import { useAppStore } from '@/lib/store';
 import { LANGUAGE_REGISTRY } from '@/lib/languageRegistry';
+import { getRuntimePath } from '@/lib/runtimePaths';
 import {
   getPlaygroundProjects,
   getPlaygroundTemplates,
@@ -163,6 +164,9 @@ export default function PlaygroundView() {
       // Convert input values to stdin string (newline-separated)
       const stdin = stdinValues ? stdinValues.join('\n') + '\n' : null;
 
+      // Get custom runtime path if configured
+      const customPath = getRuntimePath(playgroundLanguage as any);
+
       const result = await invoke<{
         stdout: string;
         stderr: string;
@@ -172,6 +176,7 @@ export default function PlaygroundView() {
         code: playgroundCode,
         language: playgroundLanguage,
         stdin,
+        customExecutablePath: customPath,
       });
 
       const output: string[] = [];

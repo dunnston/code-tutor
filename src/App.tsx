@@ -27,6 +27,7 @@ import { useAppStore } from '@/lib/store'
 import { executeCode } from '@/lib/tauri'
 import { validateCode, getValidationSummary } from '@/lib/validation'
 import { updateStreak, recordLessonAttempt, clearAllData } from '@/lib/storage'
+import { getRuntimePath } from '@/lib/runtimePaths'
 import { hasCompletedOnboarding, completeOnboarding, resetOnboarding } from '@/lib/preferences'
 import { getCurrentProfile, ensureProfileHasDbUser, type UserProfile } from '@/lib/profiles'
 import { aiService } from '@/lib/ai'
@@ -192,8 +193,11 @@ function App() {
         content: '▶ Running code...',
       })
 
+      // Get custom runtime path if configured
+      const customPath = getRuntimePath(currentLesson.language)
+
       // Execute code in the lesson's language via Tauri backend
-      const result = await executeCode(currentLesson.language, code)
+      const result = await executeCode(currentLesson.language, code, undefined, customPath)
 
       // Store result for validation
       lastExecutionResult.current = result

@@ -4,12 +4,14 @@ import type { SupportedLanguage } from '@/types/language'
 import { open } from '@tauri-apps/plugin-shell'
 import { setRuntimePath, clearRuntimePath, getExecutableName } from '@/lib/runtimePaths'
 import { open as openDialog } from '@tauri-apps/plugin-dialog'
+import { useAppStore } from '@/lib/store'
 
 export function RuntimeStatusPanel() {
   const [runtimes, setRuntimes] = useState<Record<SupportedLanguage, RuntimeStatus> | null>(null)
   const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
   const [browsing, setBrowsing] = useState<SupportedLanguage | null>(null)
+  const triggerRuntimeRefresh = useAppStore((state) => state.triggerRuntimeRefresh)
 
   useEffect(() => {
     loadRuntimes()
@@ -31,6 +33,8 @@ export function RuntimeStatusPanel() {
     setRefreshing(true)
     await loadRuntimes()
     setRefreshing(false)
+    // Trigger global refresh so other components (like CourseCatalog) update
+    triggerRuntimeRefresh()
   }
 
   const handleInstall = async (url: string) => {
@@ -60,6 +64,9 @@ export function RuntimeStatusPanel() {
 
         // Refresh runtimes to check if the path works
         await loadRuntimes()
+
+        // Trigger global refresh so other components (like CourseCatalog) update
+        triggerRuntimeRefresh()
       }
     } catch (error) {
       console.error('Failed to select executable:', error)
@@ -71,6 +78,8 @@ export function RuntimeStatusPanel() {
   const handleClearPath = async (language: SupportedLanguage) => {
     clearRuntimePath(language)
     await loadRuntimes()
+    // Trigger global refresh so other components (like CourseCatalog) update
+    triggerRuntimeRefresh()
   }
 
   if (loading || !runtimes) {
@@ -181,6 +190,11 @@ export function RuntimeStatusPanel() {
                   <p className="text-xs text-gray-400">
                     {getInstallInstructions(runtime.language)}
                   </p>
+                  {runtime.language === 'gdscript' && (
+                    <p className="text-xs text-blue-400 mt-1">
+                      💡 Godot can run as a standalone executable. Use the Browse button to locate it (e.g., on your Desktop or Downloads folder).
+                    </p>
+                  )}
 
                   {/* Show custom path if configured */}
                   {runtime.customPath && (

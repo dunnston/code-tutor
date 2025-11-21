@@ -5,6 +5,7 @@ import { checkAllRuntimes, type RuntimeStatus } from '@/lib/runtimeDetection'
 import type { CourseCategory } from '@/types/course'
 import type { SupportedLanguage } from '@/types/language'
 import { CourseCard } from './CourseCard'
+import { useAppStore } from '@/lib/store'
 
 interface CourseCatalogProps {
   category?: CourseCategory
@@ -13,14 +14,15 @@ interface CourseCatalogProps {
 
 export function CourseCatalog({ category, searchQuery = '' }: CourseCatalogProps) {
   const [runtimeStatuses, setRuntimeStatuses] = useState<Record<SupportedLanguage, RuntimeStatus> | null>(null)
+  const runtimeRefreshTrigger = useAppStore((state) => state.runtimeRefreshTrigger)
 
   let courses = getAllCourses()
   const activatedCourseIds = getActivatedCourses()
 
-  // Check runtime availability
+  // Check runtime availability (re-run when runtimeRefreshTrigger changes)
   useEffect(() => {
     checkAllRuntimes().then(setRuntimeStatuses)
-  }, [])
+  }, [runtimeRefreshTrigger])
 
   // Filter out activated courses (only show courses that can be activated)
   courses = courses.filter((course) => !activatedCourseIds.includes(course.id))

@@ -93,7 +93,7 @@ function getPathKey(language: SupportedLanguage): keyof RuntimePaths | null {
 export function getExecutableName(language: SupportedLanguage): string {
   switch (language) {
     case 'gdscript':
-      return 'godot.exe'
+      return 'Godot executable (e.g., Godot_v4.x.exe or Godot.exe)'
     case 'csharp':
       return 'dotnet.exe'
     case 'ruby':
@@ -107,13 +107,19 @@ export function getExecutableName(language: SupportedLanguage): string {
  * Common installation directories to check
  */
 export function getCommonInstallPaths(language: SupportedLanguage): string[] {
+  const username = typeof window !== 'undefined' && window.process?.env?.USERNAME
+  const userPath = username || 'YourUsername'
+
   switch (language) {
     case 'gdscript':
       return [
+        `C:\\Users\\${userPath}\\Desktop\\Godot.exe`,
+        `C:\\Users\\${userPath}\\Desktop\\Godot_v4.*.exe`,
+        `C:\\Users\\${userPath}\\Downloads\\Godot.exe`,
+        `C:\\Users\\${userPath}\\Downloads\\Godot_v4.*.exe`,
         'C:\\Program Files\\Godot\\Godot.exe',
         'C:\\Program Files (x86)\\Godot\\Godot.exe',
         'C:\\Godot\\Godot.exe',
-        'C:\\Users\\' + (process.env.USERNAME || '') + '\\Downloads\\Godot.exe',
       ]
     case 'csharp':
       return [

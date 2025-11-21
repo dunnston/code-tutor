@@ -130,7 +130,7 @@ export function getInstallInstructions(language: SupportedLanguage): string {
     javascript: 'Download and install Node.js LTS from nodejs.org',
     bash: 'Install Git for Windows (includes Git Bash)',
     csharp: 'Install .NET 8 SDK from dotnet.microsoft.com',
-    gdscript: 'Download Godot Engine from godotengine.org and add to PATH',
+    gdscript: 'Download Godot 4.x from godotengine.org (Standard or Mono version)',
     ruby: 'Download and install Ruby from ruby-lang.org',
   }
 

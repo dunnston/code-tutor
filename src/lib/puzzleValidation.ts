@@ -4,6 +4,7 @@
  */
 
 import { executeCode } from '@/lib/tauri'
+import { getRuntimePath } from '@/lib/runtimePaths'
 import type {
   TestCase,
   TestResult,
@@ -60,8 +61,11 @@ async function runTestCase(
     // Build test code that calls the user's function
     const testCode = buildTestCode(userCode, language, testCase)
 
+    // Get custom runtime path if configured
+    const customPath = getRuntimePath(language)
+
     // Execute the test
-    const executionResult = await executeCode(language, testCode)
+    const executionResult = await executeCode(language, testCode, undefined, customPath)
     const executionTime = Date.now() - startTime
 
     if (executionResult.exitCode !== 0) {

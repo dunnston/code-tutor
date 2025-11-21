@@ -135,6 +135,10 @@ interface AppState {
   // Settings & Preferences
   settings: UserSettings
   updateSettings: (settings: UserSettings) => void
+
+  // Runtime status tracking
+  runtimeRefreshTrigger: number
+  triggerRuntimeRefresh: () => void
 }
 
 // Auto-save timeout
@@ -432,5 +436,11 @@ export const useAppStore = create<AppState>((set, get) => ({
     }
 
     set({ settings, aiProvider: settings.aiProvider })
+  },
+
+  // Runtime status tracking
+  runtimeRefreshTrigger: 0,
+  triggerRuntimeRefresh: () => {
+    set((state) => ({ runtimeRefreshTrigger: state.runtimeRefreshTrigger + 1 }))
   },
 }))

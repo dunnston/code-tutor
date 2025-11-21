@@ -80,6 +80,24 @@ impl LanguageConfig {
     }
 }
 
+/// Wrap code for languages that need special structure
+fn wrap_code_if_needed(code: &str, language: &str) -> String {
+    match language.to_lowercase().as_str() {
+        "gdscript" => {
+            // GDScript for headless execution needs to extend SceneTree
+            // and call quit() to exit properly
+            format!(
+                "extends SceneTree\n\nfunc _initialize():\n{}\n\tquit()\n",
+                code.lines()
+                    .map(|line| format!("\t{}", line))
+                    .collect::<Vec<_>>()
+                    .join("\n")
+            )
+        }
+        _ => code.to_string(),
+    }
+}
+
 /// Execute code in the specified language
 async fn execute_with_config(
     config: LanguageConfig,
@@ -198,12 +216,24 @@ pub async fn execute_code(
     code: String,
     timeout_ms: Option<u64>,
     stdin: Option<String>,
+    custom_executable_path: Option<String>,
 ) -> Result<ExecutionResult, String> {
     let timeout_duration = Duration::from_millis(timeout_ms.unwrap_or(5000));
-    let config = LanguageConfig::get_config(&language)?;
+    let mut config = LanguageConfig::get_config(&language)?;
+
+    // If a custom executable path is provided, use it instead of the default command
+    if let Some(custom_path) = custom_executable_path {
+        // Replace the first element (executable name) with the custom path
+        config.command[0] = custom_path.clone();
+        // Clear fallback since we're using a specific path
+        config.fallback_command = None;
+    }
+
+    // Wrap code if needed for the language (e.g., GDScript needs extends/func structure)
+    let wrapped_code = wrap_code_if_needed(&code, &language);
 
     // Try primary command
-    let result = execute_with_config(config.clone(), code.clone(), stdin.clone(), timeout_duration).await;
+    let result = execute_with_config(config.clone(), wrapped_code.clone(), stdin.clone(), timeout_duration).await;
 
     // If primary fails and fallback exists, try fallback
     if result.is_err() && config.fallback_command.is_some() {
@@ -213,7 +243,7 @@ pub async fn execute_code(
             execution_mode: config.execution_mode.clone(),
             extension: config.extension.clone(),
         };
-        return execute_with_config(fallback_config, code, stdin, timeout_duration).await;
+        return execute_with_config(fallback_config, wrapped_code, stdin, timeout_duration).await;
     }
 
     result
@@ -255,7 +285,7 @@ pub async fn check_language_runtime(language: String) -> Result<bool, String> {
 /// Legacy Python execution command (kept for backward compatibility)
 #[tauri::command]
 pub async fn execute_python(code: String, timeout_ms: Option<u64>) -> Result<ExecutionResult, String> {
-    execute_code("python".to_string(), code, timeout_ms, None).await
+    execute_code("python".to_string(), code, timeout_ms, None, None).await
 }
 
 // Claude API types
