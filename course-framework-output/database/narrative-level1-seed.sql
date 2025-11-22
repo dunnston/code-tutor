@@ -188,14 +188,14 @@ INSERT OR IGNORE INTO narrative_outcomes (id, choice_id, outcome_type, descripti
  'The wolves not only accept you, but one nuzzles your hand affectionately! They lead you to a hidden cache with treasure before leaving peacefully.',
  'level1_garden', '{"gold": 35, "xp": 100}', FALSE);
 
--- Add enemy references for combat outcomes (using goblin as test enemy)
-UPDATE narrative_outcomes SET enemy_id = 'goblin', enemy_count = 2 WHERE id = 'outcome_wolf_calm_failure';
+-- Add enemy references for combat outcomes
+UPDATE narrative_outcomes SET enemy_id = 'wolf', enemy_count = 2 WHERE id = 'outcome_wolf_calm_failure';
 
 -- Attack wolves outcome (always triggers combat for easy testing)
 INSERT OR IGNORE INTO narrative_outcomes (id, choice_id, outcome_type, description, next_location_id, triggers_combat, enemy_id, enemy_count) VALUES
 ('outcome_wolf_attack', 'wolf_attack', 'default',
- 'You draw your weapon and charge! Two goblins emerge from the shadows, ready for battle!',
- 'level1_garden', TRUE, 'goblin', 2);
+ 'You draw your weapon and charge! Two wild wolves emerge from the shadows, ready for battle!',
+ 'level1_garden', TRUE, 'wolf', 2);
 
 -- Sneak past outcomes
 INSERT OR IGNORE INTO narrative_outcomes (id, choice_id, outcome_type, description, next_location_id, rewards, triggers_combat, enemy_id, enemy_count) VALUES
@@ -205,7 +205,7 @@ INSERT OR IGNORE INTO narrative_outcomes (id, choice_id, outcome_type, descripti
 
 ('outcome_wolf_sneak_failure', 'wolf_sneak', 'failure',
  'A twig snaps under your foot! The wolves whip around and spot you immediately!',
- 'level1_garden', NULL, TRUE, 'goblin', 2);
+ 'level1_garden', NULL, TRUE, 'wolf', 2);
 
 -- Avoid wolves (go around)
 INSERT OR IGNORE INTO narrative_outcomes (id, choice_id, outcome_type, description, next_location_id, triggers_combat) VALUES

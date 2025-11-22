@@ -94,7 +94,7 @@ export function CharacterStatsDisplay({ stats, compact = false }: CharacterStats
         <h4 className="text-sm font-semibold text-gray-400 uppercase mb-2">
           Primary Stats
         </h4>
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-2 gap-3">
           <div className="bg-slate-700/50 rounded p-2 text-center">
             <div className="text-2xl font-bold text-orange-400">{stats.strength}</div>
             <div className="text-xs text-gray-400">💪 STR</div>
@@ -106,6 +106,10 @@ export function CharacterStatsDisplay({ stats, compact = false }: CharacterStats
           <div className="bg-slate-700/50 rounded p-2 text-center">
             <div className="text-2xl font-bold text-green-400">{stats.dexterity}</div>
             <div className="text-xs text-gray-400">⚡ DEX</div>
+          </div>
+          <div className="bg-slate-700/50 rounded p-2 text-center">
+            <div className="text-2xl font-bold text-pink-400">{stats.charisma}</div>
+            <div className="text-xs text-gray-400">✨ CHA</div>
           </div>
         </div>
       </div>

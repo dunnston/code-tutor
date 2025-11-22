@@ -47,12 +47,16 @@ INSERT OR IGNORE INTO equipment_items (id, name, description, slot, tier, requir
 
 INSERT OR IGNORE INTO enemy_types (id, name, description, base_health, base_damage, base_defense, behavior_type, gold_drop_min, gold_drop_max, xp_reward, loot_table, icon) VALUES
 ('rat', 'Giant Rat', 'An oversized rat with beady red eyes and sharp teeth', 30, 5, 0, 'aggressive', 15, 30, 50, '[{"item": "wooden_sword", "chance": 0.05}, {"item": "leather_armor", "chance": 0.03}]', '🐀'),
-('slime', 'Slime', 'A gelatinous blob that oozes menacingly', 40, 7, 2, 'balanced', 20, 40, 60, '[{"item": "ring_of_power", "chance": 0.02}]', '🟢');
+('slime', 'Slime', 'A gelatinous blob that oozes menacingly', 40, 7, 2, 'balanced', 20, 40, 60, '[{"item": "ring_of_power", "chance": 0.02}]', '🟢'),
+('goblin', 'Goblin', 'A small green-skinned creature with sharp claws and a wicked grin', 35, 6, 1, 'aggressive', 18, 35, 55, '[{"item": "wooden_sword", "chance": 0.04}, {"item": "leather_armor", "chance": 0.03}]', '👺'),
+('wolf', 'Wild Wolf', 'A fierce wolf with matted fur and hungry eyes', 45, 8, 1, 'aggressive', 22, 42, 65, '[{"item": "leather_armor", "chance": 0.05}, {"item": "ring_of_power", "chance": 0.03}]', '🐺');
 
 -- Associate enemies with Floor 1
 INSERT OR IGNORE INTO floor_enemies (floor_number, enemy_id, spawn_weight) VALUES
-(1, 'rat', 60),  -- 60% of spawns
-(1, 'slime', 40);  -- 40% of spawns
+(1, 'rat', 40),  -- 40% of spawns
+(1, 'slime', 30),  -- 30% of spawns
+(1, 'goblin', 20),  -- 20% of spawns
+(1, 'wolf', 10);  -- 10% of spawns (rarer)
 
 -- ============================================================================
 -- BOSS: GIANT RAT KING (Floor 1)

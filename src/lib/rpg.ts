@@ -536,9 +536,11 @@ export async function endCombatVictory(
   damageDealt: number,
   damageTaken: number
 ): Promise<CombatRewards> {
+  // Convert enemy to raw format for Rust backend
+  const enemyRaw = convertEnemyTypeToRaw(enemy);
   const result = await invoke<any>('end_combat_victory', {
     userId,
-    enemy,
+    enemy: enemyRaw,
     turnsTaken,
     damageDealt,
     damageTaken,

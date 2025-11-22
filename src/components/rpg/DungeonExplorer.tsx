@@ -244,7 +244,7 @@ export function DungeonExplorer({ userId, onClose }: DungeonExplorerProps) {
       case 'dexterity':
         return Math.floor((stats.dexterity - 10) / 2);
       case 'charisma':
-        return 0; // We don't have charisma stat yet
+        return Math.floor((stats.charisma - 10) / 2);
       default:
         return 0;
     }
@@ -275,6 +275,12 @@ export function DungeonExplorer({ userId, onClose }: DungeonExplorerProps) {
 
     // Return to current location after showing victory
     setTimeout(async () => {
+      setCurrentOutcome(null);
+      setSelectedChoice(null);
+      setDiceRoll(null);
+      setChallenge(null);
+      setSelectedAnswer('');
+      setSkillCheckResult(null);
       await loadDungeonState();
     }, 3000);
   }
@@ -321,6 +327,12 @@ export function DungeonExplorer({ userId, onClose }: DungeonExplorerProps) {
     setEncounter(null);
 
     setTimeout(async () => {
+      setCurrentOutcome(null);
+      setSelectedChoice(null);
+      setDiceRoll(null);
+      setChallenge(null);
+      setSelectedAnswer('');
+      setSkillCheckResult(null);
       await loadDungeonState();
     }, 2000);
   }
@@ -362,9 +374,8 @@ export function DungeonExplorer({ userId, onClose }: DungeonExplorerProps) {
           <div className="flex items-center justify-between border-b border-slate-700 p-6">
             <div>
               <h2 className="text-2xl font-bold text-orange-400">
-                🗺️ {floor.name} - Floor {floor.floorNumber}
+                🗺️ {floor.name}
               </h2>
-              <p className="text-sm text-gray-400">Difficulty: /10</p>
             </div>
             <button
               onClick={onClose}
@@ -504,12 +515,12 @@ export function DungeonExplorer({ userId, onClose }: DungeonExplorerProps) {
                     <div>
                       {challenge.choices && (
                         <div className="space-y-3 mb-6">
-                          {challenge.choices.map((choice) => {
+                          {challenge.choices.map((choice, index) => {
                             const letter = choice.charAt(0);
                             const isSelected = selectedAnswer === letter;
                             return (
                               <button
-                                key={letter}
+                                key={`${challenge.id}-${index}`}
                                 onClick={() => setSelectedAnswer(letter)}
                                 className={`w-full text-left p-4 rounded-lg border-2 transition-all ${
                                   isSelected

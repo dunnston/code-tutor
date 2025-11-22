@@ -126,6 +126,8 @@ export function CombatModal({
 
       // Execute combat turn
       const result: CombatTurnResult = await executeCombatTurn(userId, selectedAbility.id, challengeSuccess);
+      console.log('Combat turn result:', result);
+      console.log('Enemy defeated?', result.enemyDefeated, 'Enemy HP:', result.enemyCurrentHealth);
 
       // Update combat state
       if (combat) {
@@ -178,7 +180,9 @@ export function CombatModal({
       }
 
       // Check for victory or defeat
+      console.log('Checking victory/defeat conditions...');
       if (result.enemyDefeated) {
+        console.log('VICTORY DETECTED! Ending combat...');
         setPhase('victory');
         const rewards = await endCombatVictory(
           userId,
@@ -367,12 +371,12 @@ export function CombatModal({
               {/* Multiple Choice Options */}
               {challenge.choices && (
                 <div className="space-y-3 mb-6">
-                  {challenge.choices.map((choice) => {
+                  {challenge.choices.map((choice, index) => {
                     const letter = choice.charAt(0); // Extract "A", "B", "C", or "D"
                     const isSelected = selectedAnswer === letter;
                     return (
                       <button
-                        key={letter}
+                        key={`${challenge.id}-${index}`}
                         onClick={() => setSelectedAnswer(letter)}
                         className={`w-full text-left p-4 rounded-lg border-2 transition-all ${
                           isSelected
