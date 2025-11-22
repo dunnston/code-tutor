@@ -5,12 +5,17 @@ import type {
   EquipmentInventoryItem,
   EquipmentItem,
   UserAbilityWithLevel,
+  AbilityWithUnlockStatus,
 } from '../../types/rpg';
 import {
   getCharacterStats,
   getCharacterEquipment,
   getEquipmentInventory,
   getUserAbilitiesWithLevels,
+  getAllAbilitiesWithStatus,
+  unlockAbility,
+  setActiveAbility,
+  removeActiveAbility,
   equipItemToSlot,
   unequipItemFromSlot,
   spendStatPointOnHealth,
@@ -32,7 +37,7 @@ export function CharacterSheet({ userId, isOpen, onClose }: CharacterSheetProps)
   const [stats, setStats] = useState<CharacterStats | null>(null);
   const [equipment, setEquipment] = useState<CharacterEquipment | null>(null);
   const [inventory, setInventory] = useState<EquipmentInventoryItem[]>([]);
-  const [abilities, setAbilities] = useState<UserAbilityWithLevel[]>([]);
+  const [abilities, setAbilities] = useState<AbilityWithUnlockStatus[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -48,7 +53,7 @@ export function CharacterSheet({ userId, isOpen, onClose }: CharacterSheetProps)
         getCharacterStats(userId),
         getCharacterEquipment(userId),
         getEquipmentInventory(userId),
-        getUserAbilitiesWithLevels(userId),
+        getAllAbilitiesWithStatus(userId),
       ]);
       setStats(statsData);
       setEquipment(equipmentData);
@@ -190,7 +195,8 @@ export function CharacterSheet({ userId, isOpen, onClose }: CharacterSheetProps)
                 <AbilitiesTab
                   abilities={abilities}
                   stats={stats}
-                  onSpendPoint={handleSpendPointOnAbility}
+                  userId={userId}
+                  onReload={loadCharacterData}
                 />
               )}
             </>
@@ -454,60 +460,184 @@ function InventoryTab({
 function AbilitiesTab({
   abilities,
   stats,
-  onSpendPoint,
+  userId,
+  onReload,
 }: {
-  abilities: UserAbilityWithLevel[];
+  abilities: AbilityWithUnlockStatus[];
   stats: CharacterStats | null;
-  onSpendPoint: (abilityId: string) => void;
+  userId: number;
+  onReload: () => void;
 }) {
   const hasPoints = stats && stats.statPointsAvailable > 0;
+  const activeAbilities = abilities.filter((a) => a.isActive).sort((a, b) => (a.activeSlot || 0) - (b.activeSlot || 0));
+  const canUnlock = (ability: AbilityWithUnlockStatus) => {
+    return stats && !ability.isUnlocked && stats.level >= ability.requiredLevel && hasPoints;
+  };
+
+  const handleUnlock = async (abilityId: string) => {
+    try {
+      await unlockAbility(userId, abilityId);
+      await onReload();
+    } catch (error) {
+      console.error('Failed to unlock ability:', error);
+      alert('Failed to unlock ability');
+    }
+  };
+
+  const handleSetActive = async (abilityId: string, slot: number) => {
+    try {
+      await setActiveAbility(userId, abilityId, slot);
+      await onReload();
+    } catch (error) {
+      console.error('Failed to set active ability:', error);
+      alert('Failed to set active ability');
+    }
+  };
+
+  const handleRemoveActive = async (slot: number) => {
+    try {
+      await removeActiveAbility(userId, slot);
+      await onReload();
+    } catch (error) {
+      console.error('Failed to remove active ability:', error);
+      alert('Failed to remove active ability');
+    }
+  };
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h3 className="text-xl font-bold text-white">Abilities</h3>
-        {hasPoints && (
-          <div className="text-orange-400 text-sm font-medium">
-            Click "Level Up" to spend stat points on abilities
-          </div>
-        )}
+    <div className="space-y-6">
+      {/* Active Ability Slots */}
+      <div>
+        <h3 className="text-xl font-bold text-white mb-3">Active Abilities (Combat Loadout)</h3>
+        <p className="text-slate-400 text-sm mb-4">
+          Select up to 3 abilities to use in combat. Click an empty slot or an ability to equip it.
+        </p>
+        <div className="grid grid-cols-3 gap-3">
+          {[1, 2, 3].map((slot) => {
+            const activeAbility = activeAbilities.find((a) => a.activeSlot === slot);
+            return (
+              <div
+                key={slot}
+                className="bg-slate-900 rounded-lg p-4 border-2 border-slate-700 min-h-[100px]"
+              >
+                <div className="text-slate-500 text-xs font-semibold mb-2">SLOT {slot}</div>
+                {activeAbility ? (
+                  <div>
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="text-2xl">{activeAbility.icon}</span>
+                      <div className="flex-1">
+                        <div className="text-white text-sm font-medium">{activeAbility.name}</div>
+                        <div className="text-xs text-slate-400">
+                          {activeAbility.manaCost > 0 && `${activeAbility.manaCost} MP`}
+                          {activeAbility.cooldownTurns > 0 && ` • ${activeAbility.cooldownTurns}T CD`}
+                        </div>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => handleRemoveActive(slot)}
+                      className="text-red-400 hover:text-red-300 text-xs w-full text-center"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                ) : (
+                  <div className="text-slate-600 text-sm text-center py-4">Empty Slot</div>
+                )}
+              </div>
+            );
+          })}
+        </div>
       </div>
-      <div className="grid grid-cols-1 gap-3">
-        {abilities.map((userAbility) => (
-          <div
-            key={userAbility.id}
-            className="bg-slate-900 rounded-lg p-4 flex items-center justify-between"
-          >
-            <div className="flex-1">
-              <div className="flex items-center gap-3 mb-2">
-                <span className="text-2xl">{userAbility.ability.icon}</span>
-                <div>
-                  <div className="text-white font-medium">{userAbility.ability.name}</div>
-                  <div className="text-slate-400 text-sm">{userAbility.ability.description}</div>
+
+      {/* All Abilities */}
+      <div>
+        <h3 className="text-xl font-bold text-white mb-3">All Abilities</h3>
+        <div className="space-y-2">
+          {abilities.map((ability) => {
+            const isLocked = !ability.isUnlocked;
+            const meetsLevel = stats && stats.level >= ability.requiredLevel;
+            const nextEmptySlot = activeAbilities.length < 3 ? activeAbilities.length + 1 : null;
+
+            return (
+              <div
+                key={ability.id}
+                className={`bg-slate-900 rounded-lg p-4 border-2 transition-all ${
+                  isLocked
+                    ? 'border-slate-800 opacity-60'
+                    : ability.isActive
+                    ? 'border-orange-500'
+                    : 'border-slate-700'
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex-1 flex items-center gap-3">
+                    <span className="text-3xl">{ability.icon}</span>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="text-white font-semibold">{ability.name}</span>
+                        {isLocked && (
+                          <span className="text-xs bg-red-900 text-red-200 px-2 py-0.5 rounded">
+                            🔒 Req. Level {ability.requiredLevel}
+                          </span>
+                        )}
+                        {ability.isActive && (
+                          <span className="text-xs bg-orange-500 text-white px-2 py-0.5 rounded">
+                            Slot {ability.activeSlot}
+                          </span>
+                        )}
+                      </div>
+                      <div className="text-slate-400 text-sm mb-2">{ability.description}</div>
+                      <div className="flex items-center gap-4 text-xs">
+                        {ability.manaCost > 0 && (
+                          <span className="text-blue-400">💙 {ability.manaCost} Mana</span>
+                        )}
+                        {ability.cooldownTurns > 0 && (
+                          <span className="text-purple-400">⏱️ {ability.cooldownTurns} Turn CD</span>
+                        )}
+                        {ability.baseValue && (
+                          <span className="text-orange-400">⚡ {ability.baseValue} Base</span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="ml-4 flex flex-col gap-2">
+                    {isLocked ? (
+                      <button
+                        onClick={() => handleUnlock(ability.id)}
+                        disabled={!canUnlock(ability)}
+                        className={`px-4 py-2 rounded font-medium transition-colors text-sm ${
+                          canUnlock(ability)
+                            ? 'bg-green-600 hover:bg-green-700 text-white'
+                            : 'bg-slate-800 text-slate-600 cursor-not-allowed'
+                        }`}
+                      >
+                        {meetsLevel ? 'Unlock' : `Level ${ability.requiredLevel}`}
+                      </button>
+                    ) : ability.isActive ? (
+                      <button
+                        onClick={() => handleRemoveActive(ability.activeSlot!)}
+                        className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded font-medium transition-colors text-sm"
+                      >
+                        Unequip
+                      </button>
+                    ) : nextEmptySlot ? (
+                      <button
+                        onClick={() => handleSetActive(ability.id, nextEmptySlot)}
+                        className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded font-medium transition-colors text-sm"
+                      >
+                        Equip
+                      </button>
+                    ) : (
+                      <div className="text-slate-500 text-xs text-center px-4 py-2">
+                        All slots full
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
-              <div className="flex items-center gap-4 text-sm">
-                <span className="text-slate-500">
-                  Level: <span className="text-orange-400 font-bold">{userAbility.currentLevel}</span>
-                </span>
-                <span className="text-slate-500">
-                  Mana: <span className="text-blue-400">{userAbility.ability.manaCost}</span>
-                </span>
-                <span className="text-slate-500">
-                  Base Value: <span className="text-white">{userAbility.ability.baseValue}</span>
-                </span>
-              </div>
-            </div>
-            {hasPoints && (
-              <button
-                onClick={() => onSpendPoint(userAbility.ability.id)}
-                className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded font-medium transition-colors ml-4"
-              >
-                Level Up
-              </button>
-            )}
-          </div>
-        ))}
+            );
+          })}
+        </div>
       </div>
     </div>
   );

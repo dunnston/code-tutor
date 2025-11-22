@@ -104,6 +104,9 @@ pub fn run() {
       rpg_commands::check_ability_unlocks,
       rpg_commands::get_user_abilities_with_levels,
       rpg_commands::spend_stat_point_on_ability,
+      rpg_commands::get_all_abilities_with_status,
+      rpg_commands::set_active_ability,
+      rpg_commands::remove_active_ability,
       // RPG - Character Sheet commands
       rpg_commands::get_equipment_inventory,
       rpg_commands::equip_item_to_slot,

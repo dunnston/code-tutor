@@ -227,6 +227,46 @@ export interface UserAbilityWithLevel {
   currentLevel: number;
 }
 
+export interface AbilityWithUnlockStatusRaw {
+  id: string;
+  name: string;
+  description: string;
+  type: AbilityType;
+  required_level: number;
+  mana_cost: number;
+  cooldown_turns: number;
+  base_value: number | null;
+  scaling_stat: string | null;
+  scaling_ratio: number | null;
+  additional_effects: string | null;
+  icon: string;
+  animation_text: string;
+  created_at: string;
+  is_unlocked: boolean;
+  is_active: boolean;
+  active_slot: number | null;
+}
+
+export interface AbilityWithUnlockStatus {
+  id: string;
+  name: string;
+  description: string;
+  type: AbilityType;
+  requiredLevel: number;
+  manaCost: number;
+  cooldownTurns: number;
+  baseValue: number | null;
+  scalingStat: string | null;
+  scalingRatio: number | null;
+  additionalEffects: string | null;
+  icon: string;
+  animationText: string;
+  createdAt: Date;
+  isUnlocked: boolean;
+  isActive: boolean;
+  activeSlot: number | null;
+}
+
 // ============================================================================
 // DUNGEON WORLD
 // ============================================================================
@@ -756,6 +796,28 @@ export function convertUserAbilityWithLevel(raw: UserAbilityWithLevelRaw): UserA
     unlockedAt: new Date(raw.unlocked_at),
     timesUsed: raw.times_used,
     currentLevel: raw.current_level,
+  };
+}
+
+export function convertAbilityWithUnlockStatus(raw: AbilityWithUnlockStatusRaw): AbilityWithUnlockStatus {
+  return {
+    id: raw.id,
+    name: raw.name,
+    description: raw.description,
+    type: raw.type,
+    requiredLevel: raw.required_level,
+    manaCost: raw.mana_cost,
+    cooldownTurns: raw.cooldown_turns,
+    baseValue: raw.base_value,
+    scalingStat: raw.scaling_stat,
+    scalingRatio: raw.scaling_ratio,
+    additionalEffects: raw.additional_effects ? JSON.parse(raw.additional_effects) : undefined,
+    icon: raw.icon,
+    animationText: raw.animation_text,
+    createdAt: new Date(raw.created_at),
+    isUnlocked: raw.is_unlocked,
+    isActive: raw.is_active,
+    activeSlot: raw.active_slot,
   };
 }
 

@@ -1031,3 +1031,123 @@ pub fn get_user_abilities_with_levels(
 
     Ok(abilities)
 }
+
+// Get all abilities with their unlock status for a user
+#[derive(serde::Serialize)]
+pub struct AbilityWithUnlockStatus {
+    #[serde(flatten)]
+    pub ability: Ability,
+    pub is_unlocked: bool,
+    pub is_active: bool,
+    pub active_slot: Option<i64>,
+}
+
+#[tauri::command]
+pub fn get_all_abilities_with_status(
+    app: AppHandle,
+    user_id: i64,
+) -> Result<Vec<AbilityWithUnlockStatus>, String> {
+    let conn = get_connection(&app)?;
+
+    let mut stmt = conn
+        .prepare(
+            "SELECT a.id, a.name, a.description, a.type, a.required_level, a.mana_cost,
+                    a.cooldown_turns, a.base_value, a.scaling_stat, a.scaling_ratio,
+                    a.additional_effects, a.icon, a.animation_text, a.created_at,
+                    CASE WHEN ua.user_id IS NOT NULL THEN 1 ELSE 0 END as is_unlocked,
+                    CASE WHEN uaa.user_id IS NOT NULL THEN 1 ELSE 0 END as is_active,
+                    uaa.slot_number
+             FROM abilities a
+             LEFT JOIN user_abilities ua ON a.id = ua.ability_id AND ua.user_id = ?
+             LEFT JOIN user_active_abilities uaa ON a.id = uaa.ability_id AND uaa.user_id = ?
+             ORDER BY a.required_level, a.name",
+        )
+        .map_err(|e| format!("Failed to prepare statement: {}", e))?;
+
+    let abilities = stmt
+        .query_map(params![user_id, user_id], |row| {
+            Ok(AbilityWithUnlockStatus {
+                ability: Ability {
+                    id: row.get(0)?,
+                    name: row.get(1)?,
+                    description: row.get(2)?,
+                    ability_type: row.get(3)?,
+                    required_level: row.get(4)?,
+                    mana_cost: row.get(5)?,
+                    cooldown_turns: row.get(6)?,
+                    base_value: row.get(7)?,
+                    scaling_stat: row.get(8)?,
+                    scaling_ratio: row.get(9)?,
+                    additional_effects: row.get(10)?,
+                    icon: row.get(11)?,
+                    animation_text: row.get(12)?,
+                    created_at: row.get(13)?,
+                },
+                is_unlocked: row.get::<_, i64>(14)? == 1,
+                is_active: row.get::<_, i64>(15)? == 1,
+                active_slot: row.get(16).ok(),
+            })
+        })
+        .map_err(|e| format!("Failed to query abilities: {}", e))?
+        .collect::<SqlResult<Vec<AbilityWithUnlockStatus>>>()
+        .map_err(|e| format!("Failed to collect abilities: {}", e))?;
+
+    Ok(abilities)
+}
+
+// Set an ability as active in a specific slot (1, 2, or 3)
+#[tauri::command]
+pub fn set_active_ability(
+    app: AppHandle,
+    user_id: i64,
+    ability_id: String,
+    slot_number: i64,
+) -> Result<(), String> {
+    if slot_number < 1 || slot_number > 3 {
+        return Err("Slot number must be between 1 and 3".to_string());
+    }
+
+    let conn = get_connection(&app)?;
+
+    // Check if ability is unlocked
+    let is_unlocked: bool = conn
+        .query_row(
+            "SELECT EXISTS(SELECT 1 FROM user_abilities WHERE user_id = ? AND ability_id = ?)",
+            params![user_id, &ability_id],
+            |row| row.get(0),
+        )
+        .map_err(|e| format!("Failed to check if ability is unlocked: {}", e))?;
+
+    if !is_unlocked {
+        return Err("Ability is not unlocked".to_string());
+    }
+
+    // Insert or replace the ability in the slot
+    conn.execute(
+        "INSERT INTO user_active_abilities (user_id, slot_number, ability_id)
+         VALUES (?, ?, ?)
+         ON CONFLICT(user_id, slot_number) DO UPDATE SET ability_id = excluded.ability_id",
+        params![user_id, slot_number, &ability_id],
+    )
+    .map_err(|e| format!("Failed to set active ability: {}", e))?;
+
+    Ok(())
+}
+
+// Remove an ability from an active slot
+#[tauri::command]
+pub fn remove_active_ability(app: AppHandle, user_id: i64, slot_number: i64) -> Result<(), String> {
+    if slot_number < 1 || slot_number > 3 {
+        return Err("Slot number must be between 1 and 3".to_string());
+    }
+
+    let conn = get_connection(&app)?;
+
+    conn.execute(
+        "DELETE FROM user_active_abilities WHERE user_id = ? AND slot_number = ?",
+        params![user_id, slot_number],
+    )
+    .map_err(|e| format!("Failed to remove active ability: {}", e))?;
+
+    Ok(())
+}

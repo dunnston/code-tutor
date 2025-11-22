@@ -13,6 +13,8 @@ import type {
   AbilityRaw,
   UserAbilityWithLevel,
   UserAbilityWithLevelRaw,
+  AbilityWithUnlockStatus,
+  AbilityWithUnlockStatusRaw,
   DungeonFloor,
   DungeonFloorRaw,
   UserDungeonProgress,
@@ -41,6 +43,7 @@ import {
   convertEquipmentInventoryItem,
   convertAbility,
   convertUserAbilityWithLevel,
+  convertAbilityWithUnlockStatus,
   convertDungeonFloor,
   convertEnemyType,
   convertEnemyTypeToRaw,
@@ -274,6 +277,27 @@ export async function unlockAbility(userId: number, abilityId: string): Promise<
 export async function checkAbilityUnlocks(userId: number): Promise<Ability[]> {
   const rawAbilities = await invoke<AbilityRaw[]>('check_ability_unlocks', { userId });
   return rawAbilities.map(convertAbility);
+}
+
+export async function getAllAbilitiesWithStatus(
+  userId: number
+): Promise<AbilityWithUnlockStatus[]> {
+  const rawAbilities = await invoke<AbilityWithUnlockStatusRaw[]>('get_all_abilities_with_status', {
+    userId,
+  });
+  return rawAbilities.map(convertAbilityWithUnlockStatus);
+}
+
+export async function setActiveAbility(
+  userId: number,
+  abilityId: string,
+  slotNumber: number
+): Promise<void> {
+  await invoke('set_active_ability', { userId, abilityId, slotNumber });
+}
+
+export async function removeActiveAbility(userId: number, slotNumber: number): Promise<void> {
+  await invoke('remove_active_ability', { userId, slotNumber });
 }
 
 // ============================================================================
