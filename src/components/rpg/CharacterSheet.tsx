@@ -6,6 +6,7 @@ import type {
   EquipmentItem,
   UserAbilityWithLevel,
   AbilityWithUnlockStatus,
+  UserConsumableInventoryItem,
 } from '../../types/rpg';
 import {
   getCharacterStats,
@@ -22,6 +23,8 @@ import {
   spendStatPointOnMana,
   spendStatPointOnStat,
   spendStatPointOnAbility,
+  getConsumableInventory,
+  useConsumable,
 } from '../../lib/rpg';
 
 interface CharacterSheetProps {
@@ -30,13 +33,14 @@ interface CharacterSheetProps {
   onClose: () => void;
 }
 
-type Tab = 'stats' | 'equipment' | 'inventory' | 'abilities';
+type Tab = 'stats' | 'equipment' | 'inventory' | 'potions' | 'abilities';
 
 export function CharacterSheet({ userId, isOpen, onClose }: CharacterSheetProps) {
   const [activeTab, setActiveTab] = useState<Tab>('stats');
   const [stats, setStats] = useState<CharacterStats | null>(null);
   const [equipment, setEquipment] = useState<CharacterEquipment | null>(null);
   const [inventory, setInventory] = useState<EquipmentInventoryItem[]>([]);
+  const [potions, setPotions] = useState<UserConsumableInventoryItem[]>([]);
   const [abilities, setAbilities] = useState<AbilityWithUnlockStatus[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -49,15 +53,17 @@ export function CharacterSheet({ userId, isOpen, onClose }: CharacterSheetProps)
   const loadCharacterData = async () => {
     setLoading(true);
     try {
-      const [statsData, equipmentData, inventoryData, abilitiesData] = await Promise.all([
+      const [statsData, equipmentData, inventoryData, potionsData, abilitiesData] = await Promise.all([
         getCharacterStats(userId),
         getCharacterEquipment(userId),
         getEquipmentInventory(userId),
+        getConsumableInventory(userId),
         getAllAbilitiesWithStatus(userId),
       ]);
       setStats(statsData);
       setEquipment(equipmentData);
       setInventory(inventoryData);
+      setPotions(potionsData);
       setAbilities(abilitiesData);
     } catch (error) {
       console.error('Failed to load character data:', error);
@@ -129,6 +135,17 @@ export function CharacterSheet({ userId, isOpen, onClose }: CharacterSheetProps)
     }
   };
 
+  const handleUsePotion = async (consumableId: string) => {
+    try {
+      const updatedStats = await useConsumable(userId, consumableId);
+      setStats(updatedStats);
+      await loadCharacterData(); // Reload to update potion inventory
+    } catch (error) {
+      console.error('Failed to use potion:', error);
+      alert(error instanceof Error ? error.message : 'Failed to use potion');
+    }
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -154,7 +171,7 @@ export function CharacterSheet({ userId, isOpen, onClose }: CharacterSheetProps)
 
         {/* Tabs */}
         <div className="bg-slate-900 border-b border-slate-700 flex">
-          {(['stats', 'equipment', 'inventory', 'abilities'] as Tab[]).map((tab) => (
+          {(['stats', 'equipment', 'inventory', 'potions', 'abilities'] as Tab[]).map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
@@ -190,6 +207,9 @@ export function CharacterSheet({ userId, isOpen, onClose }: CharacterSheetProps)
               )}
               {activeTab === 'inventory' && (
                 <InventoryTab inventory={inventory} onEquip={handleEquipItem} />
+              )}
+              {activeTab === 'potions' && stats && (
+                <PotionsTab potions={potions} stats={stats} onUsePotion={handleUsePotion} />
               )}
               {activeTab === 'abilities' && (
                 <AbilitiesTab
@@ -638,6 +658,133 @@ function AbilitiesTab({
             );
           })}
         </div>
+      </div>
+    </div>
+  );
+}
+
+// Potions Tab Component
+function PotionsTab({
+  potions,
+  stats,
+  onUsePotion,
+}: {
+  potions: UserConsumableInventoryItem[];
+  stats: CharacterStats;
+  onUsePotion: (consumableId: string) => void;
+}) {
+  function getTierColor(tier: string): string {
+    switch (tier) {
+      case 'legendary': return 'text-orange-400';
+      case 'epic': return 'text-purple-400';
+      case 'rare': return 'text-blue-400';
+      case 'uncommon': return 'text-green-400';
+      default: return 'text-gray-400';
+    }
+  }
+
+  function canUsePotion(potion: UserConsumableInventoryItem): boolean {
+    const consumable = potion.consumable;
+
+    // Can't use health potion if at max health
+    if (consumable.healthRestore > 0 && stats.currentHealth >= stats.maxHealth) {
+      return false;
+    }
+
+    // Can't use mana potion if at max mana
+    if (consumable.manaRestore > 0 && stats.currentMana >= stats.maxMana) {
+      return false;
+    }
+
+    return true;
+  }
+
+  function getUseButtonText(potion: UserConsumableInventoryItem): string {
+    const consumable = potion.consumable;
+
+    if (consumable.healthRestore > 0 && stats.currentHealth >= stats.maxHealth) {
+      return 'Health Full';
+    }
+
+    if (consumable.manaRestore > 0 && stats.currentMana >= stats.maxMana) {
+      return 'Mana Full';
+    }
+
+    return 'Use';
+  }
+
+  if (potions.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center py-12">
+        <div className="text-6xl mb-4">🧪</div>
+        <p className="text-slate-400 text-center">
+          No potions in inventory
+          <br />
+          <span className="text-sm">Visit the shop to purchase potions</span>
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="p-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {potions.map((potion) => {
+          const consumable = potion.consumable;
+          const canUse = canUsePotion(potion);
+
+          return (
+            <div
+              key={potion.id}
+              className="bg-slate-700 border-2 border-slate-600 rounded-lg p-4"
+            >
+              <div className="flex items-start gap-3">
+                <div className="text-4xl">{consumable.icon}</div>
+                <div className="flex-1">
+                  <div className="flex items-center justify-between mb-1">
+                    <h3 className={`font-bold ${getTierColor(consumable.tier)}`}>
+                      {consumable.name}
+                    </h3>
+                    <span className="text-sm text-gray-400">x{potion.quantity}</span>
+                  </div>
+                  <p className="text-xs text-gray-500 uppercase mb-2">{consumable.tier}</p>
+                  <p className="text-sm text-gray-300 mb-3">{consumable.description}</p>
+
+                  {/* Effects */}
+                  <div className="space-y-1 mb-3">
+                    {consumable.healthRestore > 0 && (
+                      <div className="text-sm text-green-400">
+                        ❤️ {consumable.healthRestore === 999 ? 'Fully restores health' : `Restores ${consumable.healthRestore} HP`}
+                      </div>
+                    )}
+                    {consumable.manaRestore > 0 && (
+                      <div className="text-sm text-blue-400">
+                        💙 {consumable.manaRestore === 999 ? 'Fully restores mana' : `Restores ${consumable.manaRestore} Mana`}
+                      </div>
+                    )}
+                    {consumable.buffType && (
+                      <div className="text-sm text-purple-400">
+                        ⚡ +{consumable.buffValue} {consumable.buffType} ({consumable.buffDurationTurns} turns)
+                      </div>
+                    )}
+                  </div>
+
+                  <button
+                    onClick={() => onUsePotion(consumable.id)}
+                    disabled={!canUse}
+                    className={`w-full py-2 px-4 rounded font-medium transition-colors ${
+                      canUse
+                        ? 'bg-orange-500 hover:bg-orange-600 text-white'
+                        : 'bg-slate-600 text-gray-500 cursor-not-allowed'
+                    }`}
+                  >
+                    {getUseButtonText(potion)}
+                  </button>
+                </div>
+              </div>
+            </div>
+          );
+        })}
       </div>
     </div>
   );

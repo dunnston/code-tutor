@@ -125,10 +125,30 @@ pub fn initialize_database(app: &AppHandle) -> Result<(), String> {
     conn.execute_batch(charisma_migration)
         .map_err(|e| format!("Failed to execute charisma stat migration: {}", e))?;
 
+    // Execute active abilities system migration
+    let active_abilities_migration = include_str!("../migrations/018_active_abilities_system.sql");
+    conn.execute_batch(active_abilities_migration)
+        .map_err(|e| format!("Failed to execute active abilities migration: {}", e))?;
+
+    // Execute shop system migration
+    let shop_migration = include_str!("../migrations/019_shop_system.sql");
+    conn.execute_batch(shop_migration)
+        .map_err(|e| format!("Failed to execute shop system migration: {}", e))?;
+
     // Execute RPG dungeon seed data
     let rpg_dungeon_seed = include_str!("../../course-framework-output/database/rpg-dungeon-seed.sql");
     conn.execute_batch(rpg_dungeon_seed)
         .map_err(|e| format!("Failed to execute RPG dungeon seed data: {}", e))?;
+
+    // Add all equipment items to shop inventory (now that equipment_items are seeded)
+    let shop_equipment_seed = r#"
+        -- Add all equipment items to shop inventory with appropriate level requirements
+        INSERT OR IGNORE INTO shop_inventory (item_type, item_id, available, required_level, stock_quantity)
+        SELECT 'equipment', id, TRUE, required_level, NULL
+        FROM equipment_items;
+    "#;
+    conn.execute_batch(shop_equipment_seed)
+        .map_err(|e| format!("Failed to add equipment to shop: {}", e))?;
 
     // Execute multiple choice challenges seed data
     let multiple_choice_seed = include_str!("../../course-framework-output/database/rpg-challenges-multiple-choice.sql");

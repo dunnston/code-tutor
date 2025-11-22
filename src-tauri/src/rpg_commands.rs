@@ -25,12 +25,13 @@ pub struct CharacterStats {
     pub critical_chance: f64,
     pub dodge_chance: f64,
     pub stat_points_available: i64,
+    pub current_gold: i64,
     pub created_at: String,
     pub updated_at: String,
 }
 
 impl CharacterStats {
-    fn from_row(row: &Row) -> SqlResult<Self> {
+    pub fn from_row(row: &Row) -> SqlResult<Self> {
         Ok(CharacterStats {
             user_id: row.get(0)?,
             level: row.get(1)?,
@@ -47,8 +48,9 @@ impl CharacterStats {
             critical_chance: row.get(12)?,
             dodge_chance: row.get(13)?,
             stat_points_available: row.get(14)?,
-            created_at: row.get(15)?,
-            updated_at: row.get(16)?,
+            current_gold: row.get(15)?,
+            created_at: row.get(16)?,
+            updated_at: row.get(17)?,
         })
     }
 }
@@ -71,13 +73,13 @@ pub fn get_character_stats(app: AppHandle, user_id: i64) -> Result<CharacterStat
     }
 
     // Initialize character if doesn't exist (with default starting stats)
-    // New defaults: all abilities start at 1, 2 stat points available, health=50, mana=30
+    // New defaults: all abilities start at 1, 2 stat points available, health=50, mana=30, 100 gold
     conn.execute(
         "INSERT OR IGNORE INTO character_stats (
             user_id, level, strength, intelligence, dexterity, charisma, max_health, current_health,
             max_mana, current_mana, base_damage, defense, critical_chance, dodge_chance,
-            stat_points_available, created_at, updated_at
-        ) VALUES (?, 1, 1, 1, 1, 1, 50, 50, 30, 30, 10, 5, 0.05, 0.05, 2, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)",
+            stat_points_available, current_gold, created_at, updated_at
+        ) VALUES (?, 1, 1, 1, 1, 1, 50, 50, 30, 30, 10, 5, 0.05, 0.05, 2, 100, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)",
         params![user_id],
     )
     .map_err(|e| format!("Failed to initialize character: {}", e))?;
@@ -85,7 +87,7 @@ pub fn get_character_stats(app: AppHandle, user_id: i64) -> Result<CharacterStat
     conn.query_row(
         "SELECT user_id, level, strength, intelligence, dexterity, charisma, max_health, current_health,
                 max_mana, current_mana, base_damage, defense, critical_chance, dodge_chance,
-                stat_points_available, created_at, updated_at
+                stat_points_available, current_gold, created_at, updated_at
          FROM character_stats
          WHERE user_id = ?",
         params![user_id],
@@ -270,7 +272,7 @@ pub struct EquipmentItem {
 }
 
 impl EquipmentItem {
-    fn from_row(row: &Row) -> SqlResult<Self> {
+    pub fn from_row(row: &Row) -> SqlResult<Self> {
         Ok(EquipmentItem {
             id: row.get(0)?,
             name: row.get(1)?,

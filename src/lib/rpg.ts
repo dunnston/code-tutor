@@ -36,6 +36,13 @@ import type {
   UserNarrativeProgress,
   UserNarrativeProgressRaw,
   SkillCheckResult,
+  ShopItem,
+  ShopItemDisplay,
+  ShopItemType,
+  ConsumableItem,
+  ConsumableItemRaw,
+  UserConsumableInventoryItem,
+  UserConsumableInventoryItemRaw,
 } from '../types/rpg';
 import {
   convertCharacterStats,
@@ -54,6 +61,8 @@ import {
   convertNarrativeChoice,
   convertNarrativeOutcome,
   convertUserNarrativeProgress,
+  convertShopItem,
+  convertUserConsumableInventoryItem,
 } from '../types/rpg';
 
 // ============================================================================
@@ -657,4 +666,65 @@ export async function makeSimpleChoice(
     outcome: convertNarrativeOutcome(result[0]),
     progress: convertUserNarrativeProgress(result[1]),
   };
+}
+
+// ============================================================================
+// SHOP SYSTEM
+// ============================================================================
+
+export async function getShopItems(userId: number): Promise<ShopItemDisplay[]> {
+  const items = await invoke<ShopItem[]>('get_rpg_shop_items', { userId });
+  return items.map(convertShopItem);
+}
+
+export async function purchaseShopItem(
+  userId: number,
+  shopId: number,
+  itemType: ShopItemType,
+  itemId: string,
+  quantity: number = 1
+): Promise<CharacterStats> {
+  const raw = await invoke<CharacterStatsRaw>('purchase_shop_item', {
+    userId,
+    shopId,
+    itemType,
+    itemId,
+    quantity,
+  });
+  return convertCharacterStats(raw);
+}
+
+export async function sellEquipmentItem(
+  userId: number,
+  equipmentId: string
+): Promise<CharacterStats> {
+  const raw = await invoke<CharacterStatsRaw>('sell_equipment_item', {
+    userId,
+    equipmentId,
+  });
+  return convertCharacterStats(raw);
+}
+
+export async function getConsumableInventory(userId: number): Promise<UserConsumableInventoryItem[]> {
+  const items = await invoke<UserConsumableInventoryItemRaw[]>('get_consumable_inventory', { userId });
+  return items.map(convertUserConsumableInventoryItem);
+}
+
+export async function useConsumable(
+  userId: number,
+  consumableId: string
+): Promise<CharacterStats> {
+  const raw = await invoke<CharacterStatsRaw>('use_consumable', {
+    userId,
+    consumableId,
+  });
+  return convertCharacterStats(raw);
+}
+
+export async function setTownState(userId: number, inTown: boolean): Promise<void> {
+  await invoke('set_town_state', { userId, inTown });
+}
+
+export async function getTownState(userId: number): Promise<boolean> {
+  return await invoke<boolean>('get_town_state', { userId });
 }

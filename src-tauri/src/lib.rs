@@ -7,6 +7,7 @@ mod rpg_commands;
 mod dungeon_commands;
 mod combat_commands;
 mod narrative_commands;
+mod shop_commands;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -146,6 +147,14 @@ pub fn run() {
       narrative_commands::resolve_skill_check,
       narrative_commands::apply_narrative_outcome,
       narrative_commands::make_simple_choice,
+      // Shop commands
+      shop_commands::get_rpg_shop_items,
+      shop_commands::purchase_shop_item,
+      shop_commands::sell_equipment_item,
+      shop_commands::get_consumable_inventory,
+      shop_commands::use_consumable,
+      shop_commands::set_town_state,
+      shop_commands::get_town_state,
     ])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");

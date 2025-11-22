@@ -22,6 +22,7 @@ export interface CharacterStatsRaw {
   critical_chance: number;
   dodge_chance: number;
   stat_points_available: number;
+  current_gold: number;
   created_at: string;
   updated_at: string;
 }
@@ -42,6 +43,7 @@ export interface CharacterStats {
   criticalChance: number;
   dodgeChance: number;
   statPointsAvailable: number;
+  currentGold: number;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -725,6 +727,7 @@ export function convertCharacterStats(raw: CharacterStatsRaw): CharacterStats {
     criticalChance: raw.critical_chance,
     dodgeChance: raw.dodge_chance,
     statPointsAvailable: raw.stat_points_available,
+    currentGold: raw.current_gold,
     createdAt: new Date(raw.created_at),
     updatedAt: new Date(raw.updated_at),
   };
@@ -1214,4 +1217,164 @@ export function convertSkillCheckHistory(raw: SkillCheckHistoryRaw): SkillCheckH
     outcomeType: raw.outcome_type,
     timestamp: new Date(raw.timestamp),
   };
+}
+
+// ============================================================================
+// SHOP SYSTEM
+// ============================================================================
+
+export type ConsumableType = 'health_potion' | 'mana_potion' | 'buff_potion' | 'scroll';
+
+export interface ConsumableItemRaw {
+  id: string;
+  name: string;
+  description: string;
+  type: ConsumableType;
+  health_restore: number;
+  mana_restore: number;
+  buff_type: string | null;
+  buff_value: number;
+  buff_duration_turns: number;
+  buy_price: number;
+  sell_price: number;
+  icon: string;
+  tier: EquipmentTier;
+  stack_size: number;
+  created_at: string;
+}
+
+export interface ConsumableItem {
+  id: string;
+  name: string;
+  description: string;
+  type: ConsumableType;
+  healthRestore: number;
+  manaRestore: number;
+  buffType?: string;
+  buffValue: number;
+  buffDurationTurns: number;
+  buyPrice: number;
+  sellPrice: number;
+  icon: string;
+  tier: EquipmentTier;
+  stackSize: number;
+  createdAt: Date;
+}
+
+export interface UserConsumableInventoryItemRaw {
+  id: number;
+  user_id: number;
+  consumable_id: string;
+  consumable: ConsumableItemRaw;
+  quantity: number;
+  acquired_at: string;
+}
+
+export interface UserConsumableInventoryItem {
+  id: number;
+  userId: number;
+  consumableId: string;
+  consumable: ConsumableItem;
+  quantity: number;
+  acquiredAt: Date;
+}
+
+export type ShopItemType = 'equipment' | 'consumable';
+
+export type ShopItem =
+  | {
+      itemType: 'Equipment';
+      shop_id: number;
+      equipment: EquipmentItemRaw;
+      price: number;
+      in_stock: boolean;
+      required_level: number;
+    }
+  | {
+      itemType: 'Consumable';
+      shop_id: number;
+      consumable: ConsumableItemRaw;
+      price: number;
+      in_stock: boolean;
+      required_level: number;
+    };
+
+export interface ShopItemDisplay {
+  shopId: number;
+  itemType: ShopItemType;
+  itemId: string;
+  name: string;
+  description: string;
+  icon: string;
+  tier: EquipmentTier;
+  price: number;
+  inStock: boolean;
+  requiredLevel: number;
+  item: EquipmentItem | ConsumableItem;
+}
+
+// Converter functions
+export function convertConsumableItem(raw: ConsumableItemRaw): ConsumableItem {
+  return {
+    id: raw.id,
+    name: raw.name,
+    description: raw.description,
+    type: raw.type,
+    healthRestore: raw.health_restore,
+    manaRestore: raw.mana_restore,
+    buffType: raw.buff_type || undefined,
+    buffValue: raw.buff_value,
+    buffDurationTurns: raw.buff_duration_turns,
+    buyPrice: raw.buy_price,
+    sellPrice: raw.sell_price,
+    icon: raw.icon,
+    tier: raw.tier,
+    stackSize: raw.stack_size,
+    createdAt: new Date(raw.created_at),
+  };
+}
+
+export function convertUserConsumableInventoryItem(raw: UserConsumableInventoryItemRaw): UserConsumableInventoryItem {
+  return {
+    id: raw.id,
+    userId: raw.user_id,
+    consumableId: raw.consumable_id,
+    consumable: convertConsumableItem(raw.consumable),
+    quantity: raw.quantity,
+    acquiredAt: new Date(raw.acquired_at),
+  };
+}
+
+export function convertShopItem(raw: ShopItem): ShopItemDisplay {
+  if (raw.itemType === 'Equipment') {
+    const equipment = convertEquipmentItem(raw.equipment);
+    return {
+      shopId: raw.shop_id,
+      itemType: 'equipment',
+      itemId: raw.equipment.id,
+      name: raw.equipment.name,
+      description: raw.equipment.description,
+      icon: raw.equipment.icon,
+      tier: raw.equipment.tier,
+      price: raw.price,
+      inStock: raw.in_stock,
+      requiredLevel: raw.required_level,
+      item: equipment,
+    };
+  } else {
+    const consumable = convertConsumableItem(raw.consumable);
+    return {
+      shopId: raw.shop_id,
+      itemType: 'consumable',
+      itemId: raw.consumable.id,
+      name: raw.consumable.name,
+      description: raw.consumable.description,
+      icon: raw.consumable.icon,
+      tier: raw.consumable.tier,
+      price: raw.price,
+      inStock: raw.in_stock,
+      requiredLevel: raw.required_level,
+      item: consumable,
+    };
+  }
 }

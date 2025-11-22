@@ -7,7 +7,7 @@ import { PuzzleWidget } from './dashboard/PuzzleWidget'
 import { PlaygroundWidget } from './dashboard/PlaygroundWidget'
 import { CourseCatalog } from './dashboard/CourseCatalog'
 import { AchievementPreview } from './dashboard/AchievementPreview'
-import { DungeonWidget, DungeonExplorer, CharacterSheet } from './rpg'
+import { DungeonWidget, TownHub, CharacterSheet } from './rpg'
 import { useAppStore } from '@/lib/store'
 import type { CourseCategory } from '@/types/course'
 
@@ -109,9 +109,9 @@ export function Dashboard({ onLogout }: DashboardProps) {
         </section>
       </div>
 
-      {/* RPG Dungeon Explorer Modal */}
+      {/* RPG Town Hub Modal */}
       {dungeonOpen && currentUserId && (
-        <DungeonExplorer
+        <TownHub
           userId={currentUserId}
           onClose={() => setDungeonOpen(false)}
         />
