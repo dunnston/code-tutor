@@ -33,6 +33,7 @@ import type {
   DungeonChallenge,
   SkillType,
 } from '../../types/rpg';
+import { convertNarrativeOutcome } from '../../types/rpg';
 import { CharacterStatsDisplay } from './CharacterStats';
 import { CombatModal } from './CombatModal';
 import type { CombatRewards } from '../../lib/rpg';
@@ -171,8 +172,11 @@ export function DungeonExplorer({ userId, onClose }: DungeonExplorerProps) {
         challengeSuccess
       );
 
+      // Convert the outcome from snake_case (Rust) to camelCase (TypeScript)
+      const convertedOutcome = convertNarrativeOutcome(result.outcome);
+
       setSkillCheckResult(result);
-      await handleOutcome(result.outcome);
+      await handleOutcome(convertedOutcome);
     } catch (err) {
       console.error('Failed to submit challenge:', err);
     }
@@ -184,28 +188,57 @@ export function DungeonExplorer({ userId, onClose }: DungeonExplorerProps) {
     setCurrentOutcome(outcome);
     setPhase('outcome');
 
-    // Check if combat is triggered
+    // Check if combat is triggered - preload the enemy but don't start combat yet
     if (outcome.triggersCombat && outcome.enemyId) {
-      // Load the SPECIFIC enemy from the outcome
-      console.log('Loading enemy:', outcome.enemyId);
+      console.log('Combat will be triggered! Loading enemy:', outcome.enemyId);
       try {
         const enemy = await getEnemyById(outcome.enemyId);
         console.log('Loaded enemy:', enemy);
         setEncounter({ type: 'enemy', enemy, isBoss: false });
-        setTimeout(() => {
-          setPhase('combat');
-        }, 2000);
+        // Don't auto-start combat - wait for Continue button
       } catch (err) {
         console.error('Failed to load enemy:', err);
       }
+    }
+
+    // Don't auto-continue - wait for user to click Continue button
+  }
+
+  async function handleContinueFromOutcome() {
+    if (!currentOutcome) return;
+
+    console.log('Continue from outcome:', currentOutcome);
+
+    // Handle combat defeat - close the dungeon
+    if (currentOutcome.id === 'combat_defeat') {
+      onClose();
       return;
     }
 
-    // Wait for player to read outcome, then move to next location
-    setTimeout(async () => {
-      if (outcome.nextLocationId) {
-        console.log('Moving to next location:', outcome.nextLocationId);
-        const nextLocation = await getNarrativeLocation(outcome.nextLocationId);
+    // Handle combat victory or flee - reload dungeon state
+    if (currentOutcome.id === 'combat_victory' || currentOutcome.id === 'combat_flee') {
+      setCurrentOutcome(null);
+      setSelectedChoice(null);
+      setDiceRoll(null);
+      setChallenge(null);
+      setSelectedAnswer('');
+      setSkillCheckResult(null);
+      await loadDungeonState();
+      return;
+    }
+
+    // Check if this outcome should trigger combat
+    if (currentOutcome.triggersCombat && encounter) {
+      console.log('Starting combat from Continue button!');
+      setPhase('combat');
+      return;
+    }
+
+    // Handle narrative outcomes - ALWAYS move to next location if provided
+    if (currentOutcome.nextLocationId) {
+      console.log('Moving to next location:', currentOutcome.nextLocationId);
+      try {
+        const nextLocation = await getNarrativeLocation(currentOutcome.nextLocationId);
         console.log('Loaded next location:', nextLocation);
         setCurrentLocation(nextLocation);
         const choices = await getLocationChoices(nextLocation.id, userId);
@@ -219,32 +252,35 @@ export function DungeonExplorer({ userId, onClose }: DungeonExplorerProps) {
         setSelectedAnswer('');
         setSkillCheckResult(null);
         setCurrentOutcome(null);
-      } else {
-        console.log('No next location, staying at current location');
-        // No next location - stay at current location
-        setPhase('narrative');
-        setSelectedChoice(null);
-        setDiceRoll(null);
-        setChallenge(null);
-        setSelectedAnswer('');
-        setSkillCheckResult(null);
-        setCurrentOutcome(null);
+      } catch (err) {
+        console.error('Failed to load next location:', err);
+        // Fallback to reloading dungeon state
+        await loadDungeonState();
       }
-    }, 3000);
+    } else {
+      console.warn('No nextLocationId in outcome! This might be a data issue.');
+      console.log('Current outcome:', currentOutcome);
+      console.log('nextLocationId value:', currentOutcome.nextLocationId);
+      console.log('Type of nextLocationId:', typeof currentOutcome.nextLocationId);
+      console.log('All outcome keys:', Object.keys(currentOutcome));
+      // This shouldn't happen - reload dungeon state as fallback
+      await loadDungeonState();
+    }
   }
 
   function getStatModifier(skillType: SkillType | null, stats: CharacterStats): number {
     if (!skillType) return 0;
 
+    // Simple 1:1 mapping - stat value is the modifier
     switch (skillType) {
       case 'strength':
-        return Math.floor((stats.strength - 10) / 2);
+        return stats.strength;
       case 'intelligence':
-        return Math.floor((stats.intelligence - 10) / 2);
+        return stats.intelligence;
       case 'dexterity':
-        return Math.floor((stats.dexterity - 10) / 2);
+        return stats.dexterity;
       case 'charisma':
-        return Math.floor((stats.charisma - 10) / 2);
+        return stats.charisma;
       default:
         return 0;
     }
@@ -272,17 +308,7 @@ export function DungeonExplorer({ userId, onClose }: DungeonExplorerProps) {
 
     setPhase('outcome');
     setEncounter(null);
-
-    // Return to current location after showing victory
-    setTimeout(async () => {
-      setCurrentOutcome(null);
-      setSelectedChoice(null);
-      setDiceRoll(null);
-      setChallenge(null);
-      setSelectedAnswer('');
-      setSkillCheckResult(null);
-      await loadDungeonState();
-    }, 3000);
+    // Don't auto-continue, wait for Continue button
   }
 
   function handleCombatDefeat() {
@@ -302,10 +328,7 @@ export function DungeonExplorer({ userId, onClose }: DungeonExplorerProps) {
 
     setPhase('outcome');
     setEncounter(null);
-
-    setTimeout(() => {
-      onClose();
-    }, 3000);
+    // Don't auto-continue, wait for Continue button (or close if defeat)
   }
 
   function handleFlee() {
@@ -325,16 +348,7 @@ export function DungeonExplorer({ userId, onClose }: DungeonExplorerProps) {
 
     setPhase('outcome');
     setEncounter(null);
-
-    setTimeout(async () => {
-      setCurrentOutcome(null);
-      setSelectedChoice(null);
-      setDiceRoll(null);
-      setChallenge(null);
-      setSelectedAnswer('');
-      setSkillCheckResult(null);
-      await loadDungeonState();
-    }, 2000);
+    // Don't auto-continue, wait for Continue button
   }
 
   async function handleDescendFloor() {
@@ -343,7 +357,7 @@ export function DungeonExplorer({ userId, onClose }: DungeonExplorerProps) {
     try {
       const nextFloor = floor.floorNumber + 1;
       await updateDungeonFloor(userId, nextFloor);
-      setNarrativeText(`Descending to Floor ${nextFloor}...`);
+      console.log(`Descending to Floor ${nextFloor}...`);
       setTimeout(() => {
         loadDungeonState();
       }, 1500);
@@ -466,10 +480,24 @@ export function DungeonExplorer({ userId, onClose }: DungeonExplorerProps) {
                             <p className="font-bold mb-2">
                               {skillCheckResult.check_passed ? '✅ Success!' : '❌ Failure'}
                             </p>
-                            <p className="text-sm">
-                              Roll: {skillCheckResult.dice_roll} + Modifier: {skillCheckResult.applied_modifier} = {skillCheckResult.total_roll}
-                              {' '}(DC: {skillCheckResult.dc})
-                            </p>
+                            <div className="space-y-1 text-sm">
+                              <p>
+                                <span className="text-gray-400">d20 Roll:</span> <span className="font-bold">{skillCheckResult.dice_roll}</span>
+                              </p>
+                              <p>
+                                <span className="text-gray-400">Modifier Applied:</span>{' '}
+                                <span className={`font-bold ${skillCheckResult.applied_modifier >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                                  {skillCheckResult.applied_modifier >= 0 ? '+' : ''}{skillCheckResult.applied_modifier}
+                                </span>
+                                {skillCheckResult.applied_modifier === 0 && skillCheckResult.dice_roll !== skillCheckResult.total_roll && (
+                                  <span className="text-yellow-400 ml-2">(Challenge failed - no bonus)</span>
+                                )}
+                              </p>
+                              <p>
+                                <span className="text-gray-400">Total:</span> <span className="font-bold">{skillCheckResult.total_roll}</span>
+                                {' '}<span className="text-gray-400">vs DC</span> <span className="font-bold">{skillCheckResult.dc}</span>
+                              </p>
+                            </div>
                           </div>
                         )}
                         <p className="text-gray-300 leading-relaxed">
@@ -543,6 +571,15 @@ export function DungeonExplorer({ userId, onClose }: DungeonExplorerProps) {
                         Submit & Resolve
                       </button>
                     </div>
+                  )}
+
+                  {phase === 'outcome' && (
+                    <button
+                      onClick={handleContinueFromOutcome}
+                      className="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-4 rounded-lg transition-colors"
+                    >
+                      Continue
+                    </button>
                   )}
                 </div>
               </div>

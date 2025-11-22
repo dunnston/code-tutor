@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getTownState, setTownState, getCharacterStats } from '../../lib/rpg';
+import { getTownState, setTownState, getCharacterStats, restoreHealthAndMana, updateDungeonFloor } from '../../lib/rpg';
 import { ShopWidget } from './ShopWidget';
 import { DungeonExplorer } from './DungeonExplorer';
 import { CharacterSheet } from './CharacterSheet';
@@ -17,6 +17,7 @@ export function TownHub({ userId, onClose }: TownHubProps) {
   const [inTown, setInTown] = useState(true);
   const [stats, setStats] = useState<CharacterStats | null>(null);
   const [loading, setLoading] = useState(true);
+  const [showReturnWarning, setShowReturnWarning] = useState(false);
 
   useEffect(() => {
     loadTownState();
@@ -55,18 +56,40 @@ export function TownHub({ userId, onClose }: TownHubProps) {
 
   async function handleReturnToTown() {
     try {
+      // Reset dungeon progress to floor 1
+      await updateDungeonFloor(userId, 1);
       await setTownState(userId, true);
       setInTown(true);
       setViewMode('town');
+      setShowReturnWarning(false);
       await loadTownState(); // Refresh stats
     } catch (err) {
       console.error('Failed to return to town:', err);
     }
   }
 
+  function handleReturnToTownClick() {
+    setShowReturnWarning(true);
+  }
+
+  function handleCancelReturn() {
+    setShowReturnWarning(false);
+  }
+
   function handleShopPurchase() {
     // Refresh stats after purchase
     loadTownState();
+  }
+
+  async function handleRestAtInn() {
+    try {
+      await restoreHealthAndMana(userId);
+      await loadTownState();
+      // Visual feedback - we could add a toast notification system later
+      console.log('Rested at inn - health and mana restored!');
+    } catch (err) {
+      console.error('Failed to rest:', err);
+    }
   }
 
   // If in dungeon, show dungeon explorer with return button
@@ -77,7 +100,7 @@ export function TownHub({ userId, onClose }: TownHubProps) {
         <div className="sticky top-0 z-10 bg-slate-900/95 border-b border-slate-700 backdrop-blur-sm">
           <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
             <button
-              onClick={handleReturnToTown}
+              onClick={handleReturnToTownClick}
               className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors"
             >
               <span>🏰</span>
@@ -94,37 +117,43 @@ export function TownHub({ userId, onClose }: TownHubProps) {
 
         <DungeonExplorer
           userId={userId}
-          onClose={handleReturnToTown}
+          onClose={handleReturnToTownClick}
         />
+
+        {/* Return to Town Warning Modal */}
+        {showReturnWarning && (
+          <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-[60] p-4">
+            <div className="bg-slate-800 rounded-lg border-2 border-orange-500 max-w-md w-full p-6">
+              <h3 className="text-2xl font-bold text-orange-400 mb-4">⚠️ Return to Town?</h3>
+              <p className="text-gray-300 mb-6">
+                Returning to town will reset your dungeon progress back to <strong className="text-red-400">Floor 1</strong>.
+                You will keep all gold, items, and experience you've earned, but you'll have to start over from the beginning.
+              </p>
+              <div className="flex gap-3">
+                <button
+                  onClick={handleReturnToTown}
+                  className="flex-1 bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 rounded-lg transition-colors"
+                >
+                  Yes, Return to Town
+                </button>
+                <button
+                  onClick={handleCancelReturn}
+                  className="flex-1 bg-slate-700 hover:bg-slate-600 text-white font-semibold py-3 rounded-lg transition-colors"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     );
   }
 
-  // Show character sheet in modal
+  // Show character sheet in modal - CharacterSheet has its own modal wrapper
   if (viewMode === 'character') {
     return (
-      <div className="fixed inset-0 bg-black/90 z-50 overflow-auto">
-        <div className="min-h-screen p-4">
-          <div className="max-w-4xl mx-auto">
-            <div className="mb-4 flex justify-between items-center">
-              <button
-                onClick={() => setViewMode('town')}
-                className="flex items-center gap-2 bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded-lg transition-colors"
-              >
-                <span>←</span>
-                <span>Back to Town</span>
-              </button>
-              <button
-                onClick={onClose}
-                className="text-gray-400 hover:text-white transition-colors text-2xl px-4"
-              >
-                ×
-              </button>
-            </div>
-            <CharacterSheet userId={userId} />
-          </div>
-        </div>
-      </div>
+      <CharacterSheet userId={userId} isOpen={true} onClose={() => setViewMode('town')} />
     );
   }
 
@@ -265,14 +294,7 @@ export function TownHub({ userId, onClose }: TownHubProps) {
 
             {/* Rest (Heal) */}
             <button
-              onClick={async () => {
-                try {
-                  await getCharacterStats(userId); // Trigger healing by reloading
-                  await loadTownState();
-                } catch (err) {
-                  console.error('Failed to rest:', err);
-                }
-              }}
+              onClick={handleRestAtInn}
               className="bg-gradient-to-br from-green-900 to-slate-800 hover:from-green-800 hover:to-slate-700 p-8 rounded-lg border-2 border-green-700 hover:border-green-500 transition-all text-left group"
             >
               <div className="text-6xl mb-4">🛏️</div>

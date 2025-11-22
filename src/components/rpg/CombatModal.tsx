@@ -27,7 +27,7 @@ interface CombatModalProps {
   onFlee: () => void;
 }
 
-type CombatPhase = 'ability-select' | 'challenge' | 'executing' | 'victory' | 'defeat';
+type CombatPhase = 'ability-select' | 'challenge' | 'executing' | 'victory' | 'defeat' | 'flee-roll' | 'flee-challenge' | 'flee-result';
 
 interface CombatLogEntry {
   turn: number;
@@ -54,6 +54,8 @@ export function CombatModal({
   const [phase, setPhase] = useState<CombatPhase>('ability-select');
   const [combatLog, setCombatLog] = useState<CombatLogEntry[]>([]);
   const [loading, setLoading] = useState(true);
+  const [fleeRoll, setFleeRoll] = useState<number | null>(null);
+  const [fleeDamage, setFleeDamage] = useState<number>(0);
 
   useEffect(() => {
     initializeCombat();
@@ -216,6 +218,94 @@ export function CombatModal({
     setCombatLog((prev) => [...prev, { turn, message, type }]);
   }
 
+  async function handleFleeAttempt() {
+    if (!combat) return;
+
+    // Roll d20 for dexterity check
+    const roll = Math.floor(Math.random() * 20) + 1;
+    setFleeRoll(roll);
+    setPhase('flee-roll');
+
+    addLogEntry(combat.combatTurn, `You attempt to flee! Rolling for dexterity check...`, 'action');
+  }
+
+  async function handleStartFleeChallenge() {
+    try {
+      // Try to load a dexterity/dodge challenge, fallback to basic_attack if none exist
+      let challengeData;
+      try {
+        challengeData = await getChallengeForAction('dodge', floorNumber, undefined);
+      } catch (dodgeErr) {
+        console.log('No dodge challenges found, using basic_attack as fallback');
+        challengeData = await getChallengeForAction('basic_attack', floorNumber, undefined);
+      }
+      setChallenge(challengeData);
+      setSelectedAnswer('');
+      setPhase('flee-challenge');
+    } catch (err) {
+      console.error('Failed to load flee challenge:', err);
+      addLogEntry(combat?.combatTurn || 0, 'Error loading flee challenge!', 'status');
+    }
+  }
+
+  async function handleFleeChallengeSubmit() {
+    if (!combat || !challenge || !selectedAnswer || fleeRoll === null) return;
+
+    // Check if answer is correct
+    const challengeSuccess = selectedAnswer === challenge.correctAnswer;
+
+    // Simple modifier - dexterity stat value is the modifier
+    const dexModifier = playerStats.dexterity;
+    const appliedModifier = challengeSuccess ? dexModifier : 0;
+    const total = fleeRoll + appliedModifier;
+
+    // DC is 10 + enemy's damage (representing their speed/ability to catch you)
+    const dc = 10 + Math.floor(combat.enemyDamage / 2);
+
+    addLogEntry(
+      combat.combatTurn,
+      `Dexterity check: ${fleeRoll} + ${appliedModifier} = ${total} (DC ${dc})`,
+      'action'
+    );
+
+    // Enemy gets a free attack (use enemy's damage with defense reduction)
+    const enemyAttack = Math.max(0, combat.enemyDamage - Math.floor(playerStats.defense / 2));
+
+    if (total >= dc) {
+      // Success - dodge the attack!
+      addLogEntry(combat.combatTurn, `Success! You dodge the enemy's attack and escape!`, 'status');
+      setFleeDamage(0);
+    } else {
+      // Failure - take the attack
+      const damage = Math.max(1, enemyAttack);
+      setFleeDamage(damage);
+      addLogEntry(combat.combatTurn, `Failed! The enemy lands a free attack for ${damage} damage!`, 'damage');
+
+      // Update player health
+      const newHealth = Math.max(0, playerStats.currentHealth - damage);
+      setPlayerStats({
+        ...playerStats,
+        currentHealth: newHealth,
+      });
+
+      // Check if player died from the flee attack
+      if (newHealth <= 0) {
+        addLogEntry(combat.combatTurn, 'You were struck down while fleeing!', 'status');
+        setPhase('defeat');
+        await endCombatDefeat(userId);
+        setTimeout(() => onDefeat(), 2000);
+        return;
+      }
+    }
+
+    setPhase('flee-result');
+
+    // Show the result for 3 seconds then flee
+    setTimeout(() => {
+      onFlee();
+    }, 3000);
+  }
+
   if (loading || !combat) {
     return (
       <div className="fixed inset-0 bg-black/90 flex items-center justify-center z-50">
@@ -242,8 +332,8 @@ export function CombatModal({
             ⚔️ Combat - Turn {combat.combatTurn}
           </h2>
           <button
-            onClick={onFlee}
-            disabled={phase === 'executing' || phase === 'victory' || phase === 'defeat'}
+            onClick={handleFleeAttempt}
+            disabled={phase === 'executing' || phase === 'victory' || phase === 'defeat' || phase === 'flee-roll' || phase === 'flee-challenge' || phase === 'flee-result'}
             className="text-gray-400 hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Flee
@@ -434,6 +524,81 @@ export function CombatModal({
               <div className="text-6xl mb-4">💀</div>
               <h3 className="text-3xl font-bold text-red-400 mb-2">Defeated</h3>
               <p className="text-gray-300">You have been vanquished...</p>
+            </div>
+          )}
+
+          {phase === 'flee-roll' && fleeRoll !== null && (
+            <div className="text-center py-8">
+              <div className="text-6xl mb-4">🎲</div>
+              <h3 className="text-3xl font-bold text-blue-400 mb-2">Dexterity Check!</h3>
+              <div className="bg-slate-700/50 rounded-lg p-6 mb-4 max-w-md mx-auto">
+                <p className="text-gray-300 mb-4">
+                  You rolled a <span className="text-orange-400 font-bold text-2xl">{fleeRoll}</span> on your d20!
+                </p>
+                <p className="text-sm text-gray-400">
+                  Answer the coding challenge correctly to add your DEX modifier (+{playerStats.dexterity}) to the roll!
+                </p>
+              </div>
+              <button
+                onClick={handleStartFleeChallenge}
+                className="bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 px-8 rounded-lg transition-colors"
+              >
+                💻 Start Coding Challenge
+              </button>
+            </div>
+          )}
+
+          {phase === 'flee-challenge' && challenge && (
+            <div>
+              <div className="mb-4">
+                <h4 className="text-lg font-semibold text-white mb-2">{challenge.title}</h4>
+                <p className="text-gray-300 text-sm whitespace-pre-line">{challenge.description}</p>
+              </div>
+
+              {/* Multiple Choice Options */}
+              {challenge.choices && (
+                <div className="space-y-3 mb-6">
+                  {challenge.choices.map((choice, index) => {
+                    const letter = choice.charAt(0);
+                    const isSelected = selectedAnswer === letter;
+                    return (
+                      <button
+                        key={`flee-${challenge.id}-${index}`}
+                        onClick={() => setSelectedAnswer(letter)}
+                        className={`w-full text-left p-4 rounded-lg border-2 transition-all ${
+                          isSelected
+                            ? 'bg-orange-500 border-orange-400 text-white'
+                            : 'bg-slate-700 border-slate-600 text-gray-300 hover:border-orange-500 hover:bg-slate-600'
+                        }`}
+                      >
+                        {choice}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+
+              <button
+                onClick={handleFleeChallengeSubmit}
+                disabled={!selectedAnswer}
+                className="w-full bg-orange-500 hover:bg-orange-600 disabled:bg-slate-700 disabled:cursor-not-allowed text-white font-semibold py-3 rounded-lg transition-colors"
+              >
+                Submit & Attempt Flee
+              </button>
+            </div>
+          )}
+
+          {phase === 'flee-result' && fleeRoll !== null && (
+            <div className="text-center py-8">
+              <div className="text-6xl mb-4">🏃</div>
+              <h3 className="text-3xl font-bold text-blue-400 mb-2">
+                {fleeDamage === 0 ? 'Escaped!' : 'Hit While Fleeing!'}
+              </h3>
+              <p className="text-gray-300">
+                {fleeDamage === 0
+                  ? 'You successfully dodged the enemy\'s attack and escaped!'
+                  : `You took ${fleeDamage} damage while fleeing!`}
+              </p>
             </div>
           )}
         </div>
