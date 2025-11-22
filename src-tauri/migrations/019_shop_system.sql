@@ -104,7 +104,7 @@ CREATE INDEX IF NOT EXISTS idx_shop_purchases_user ON shop_purchases(user_id, pu
 -- ============================================================================
 
 -- Health Potions
-INSERT INTO consumable_items
+INSERT OR IGNORE INTO consumable_items
 (id, name, description, type, health_restore, buy_price, sell_price, icon, tier) VALUES
 ('minor_health_potion', 'Minor Health Potion', 'Restores 25 health.', 'health_potion', 25, 10, 5, '🧪', 'common'),
 ('health_potion', 'Health Potion', 'Restores 50 health.', 'health_potion', 50, 25, 12, '🧪', 'common'),
@@ -113,7 +113,7 @@ INSERT INTO consumable_items
 ('ultimate_health_potion', 'Ultimate Health Potion', 'Fully restores health.', 'health_potion', 999, 250, 125, '🧪', 'epic');
 
 -- Mana Potions
-INSERT INTO consumable_items
+INSERT OR IGNORE INTO consumable_items
 (id, name, description, type, mana_restore, buy_price, sell_price, icon, tier) VALUES
 ('minor_mana_potion', 'Minor Mana Potion', 'Restores 15 mana.', 'mana_potion', 15, 10, 5, '💙', 'common'),
 ('mana_potion', 'Mana Potion', 'Restores 30 mana.', 'mana_potion', 30, 25, 12, '💙', 'common'),
@@ -122,7 +122,7 @@ INSERT INTO consumable_items
 ('ultimate_mana_potion', 'Ultimate Mana Potion', 'Fully restores mana.', 'mana_potion', 999, 250, 125, '💙', 'epic');
 
 -- Buff Potions
-INSERT INTO consumable_items
+INSERT OR IGNORE INTO consumable_items
 (id, name, description, type, buff_type, buff_value, buff_duration_turns, buy_price, sell_price, icon, tier) VALUES
 ('strength_elixir', 'Strength Elixir', 'Increases strength by 5 for 3 turns.', 'buff_potion', 'strength', 5, 3, 40, 20, '💪', 'uncommon'),
 ('intelligence_elixir', 'Intelligence Elixir', 'Increases intelligence by 5 for 3 turns.', 'buff_potion', 'intelligence', 5, 3, 40, 20, '🧠', 'uncommon'),
@@ -135,7 +135,7 @@ INSERT INTO consumable_items
 -- ============================================================================
 
 -- Add all consumables to shop (unlimited stock)
-INSERT INTO shop_inventory (item_type, item_id, available, required_level, stock_quantity)
+INSERT OR IGNORE INTO shop_inventory (item_type, item_id, available, required_level, stock_quantity)
 SELECT 'consumable', id, TRUE, 1, NULL
 FROM consumable_items;
 
