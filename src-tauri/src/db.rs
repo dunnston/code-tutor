@@ -130,6 +130,10 @@ pub fn initialize_database(app: &AppHandle) -> Result<(), String> {
     conn.execute_batch(active_abilities_migration)
         .map_err(|e| format!("Failed to execute active abilities migration: {}", e))?;
 
+    // Add shop system columns (safe to run multiple times - ignores errors if columns exist)
+    let _ = conn.execute("ALTER TABLE character_stats ADD COLUMN current_gold INTEGER DEFAULT 100", []);
+    let _ = conn.execute("ALTER TABLE user_dungeon_progress ADD COLUMN in_town BOOLEAN DEFAULT TRUE", []);
+
     // Execute shop system migration
     let shop_migration = include_str!("../migrations/019_shop_system.sql");
     conn.execute_batch(shop_migration)

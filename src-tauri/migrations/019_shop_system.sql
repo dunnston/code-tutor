@@ -5,11 +5,8 @@
 -- GOLD CURRENCY
 -- ============================================================================
 
--- Add current gold to character_stats
-ALTER TABLE character_stats ADD COLUMN current_gold INTEGER DEFAULT 100;
-
--- Add town/adventure state to dungeon progress
-ALTER TABLE user_dungeon_progress ADD COLUMN in_town BOOLEAN DEFAULT TRUE;
+-- Note: current_gold and in_town columns are added in db.rs
+-- to handle cases where they might already exist
 
 -- ============================================================================
 -- CONSUMABLE ITEMS (Potions)
