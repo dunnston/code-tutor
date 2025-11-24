@@ -23,6 +23,7 @@ import PlaygroundView from '@components/playground/PlaygroundView'
 import { ShopView } from '@components/shop/ShopView'
 import { InventoryView } from '@components/inventory/InventoryView'
 import { QuestBoardView } from '@components/quests/QuestBoardView'
+import { DevPanel } from '@components/DevPanel'
 import { useAppStore } from '@/lib/store'
 import { executeCode } from '@/lib/tauri'
 import { validateCode, getValidationSummary } from '@/lib/validation'
@@ -59,6 +60,7 @@ function App() {
   const [currentProfile, setCurrentProfile] = useState<UserProfile | null>(getCurrentProfile())
   const [showWelcome, setShowWelcome] = useState(false)
   const [showSolutionModal, setShowSolutionModal] = useState(false)
+  const [showDevPanel, setShowDevPanel] = useState(false)
 
   // Store last execution result for validation
   const lastExecutionResult = useRef<ExecutionResult | undefined>()
@@ -366,11 +368,16 @@ function App() {
         e.preventDefault()
         handleRun()
       }
+      // Ctrl/Cmd + Shift + D to toggle dev panel
+      if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'D') {
+        e.preventDefault()
+        setShowDevPanel(!showDevPanel)
+      }
     }
 
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [code])
+  }, [code, showDevPanel])
 
   // Show profile selector if no profile is active
   if (!currentProfile) {
@@ -487,6 +494,9 @@ function App() {
         onConfirm={handleConfirmShowSolution}
         onCancel={handleCancelShowSolution}
       />
+
+      {/* Developer Panel */}
+      {showDevPanel && <DevPanel onClose={() => setShowDevPanel(false)} />}
     </div>
   )
 }

@@ -8,6 +8,7 @@ mod dungeon_commands;
 mod combat_commands;
 mod narrative_commands;
 mod shop_commands;
+mod dev_commands;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -155,6 +156,15 @@ pub fn run() {
       shop_commands::use_consumable,
       shop_commands::set_town_state,
       shop_commands::get_town_state,
+      // Developer commands
+      dev_commands::dev_add_gold,
+      dev_commands::dev_add_gems,
+      dev_commands::dev_add_skill_points,
+      dev_commands::dev_add_levels,
+      dev_commands::dev_add_xp,
+      dev_commands::dev_add_charisma,
+      dev_commands::dev_generate_loot,
+      dev_commands::dev_reset_character,
     ])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");
