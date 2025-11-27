@@ -112,12 +112,199 @@ pub enum ShopItem {
     },
 }
 
+// Shop refresh state
+#[derive(Debug, Serialize, Deserialize)]
+pub struct ShopRefreshState {
+    pub last_refresh_time: String,
+    pub next_refresh_time: String,
+    pub refresh_count: i64,
+}
+
+// Rarity weight configuration
+#[derive(Debug)]
+struct RarityWeight {
+    tier: String,
+    weight: f64,
+    max_items: i64,
+}
+
+// ============================================================================
+// SHOP REFRESH LOGIC
+// ============================================================================
+
+/// Check if shop needs refresh and refresh if necessary
+fn check_and_refresh_shop(app: &AppHandle) -> Result<bool, String> {
+    let conn = get_connection(app)?;
+
+    // Ensure refresh state exists (create if missing)
+    conn.execute(
+        "INSERT OR IGNORE INTO shop_refresh_state (id, last_refresh_time, next_refresh_time, refresh_count)
+         VALUES (1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0)",
+        [],
+    )
+    .map_err(|e| format!("Failed to initialize refresh state: {}", e))?;
+
+    // Get current refresh state
+    let (last_refresh, next_refresh): (String, String) = conn
+        .query_row(
+            "SELECT last_refresh_time, next_refresh_time FROM shop_refresh_state WHERE id = 1",
+            [],
+            |row| Ok((row.get(0)?, row.get(1)?)),
+        )
+        .map_err(|e| format!("Failed to get refresh state: {}", e))?;
+
+    // Check if refresh is needed (current time >= next_refresh_time)
+    let needs_refresh: bool = conn
+        .query_row(
+            "SELECT CURRENT_TIMESTAMP >= ?",
+            params![next_refresh],
+            |row| row.get(0),
+        )
+        .unwrap_or(true); // Default to true if check fails
+
+    if needs_refresh {
+        log::info!("Shop refresh triggered. Last refresh: {}, Next: {}", last_refresh, next_refresh);
+        refresh_shop_inventory(&conn)?;
+        return Ok(true);
+    }
+
+    Ok(false)
+}
+
+/// Refresh shop inventory with random items based on rarity weights
+fn refresh_shop_inventory(conn: &rusqlite::Connection) -> Result<(), String> {
+    // Ensure rarity weights exist
+    conn.execute(
+        "INSERT OR IGNORE INTO shop_rarity_weights (tier, weight, max_items_per_refresh) VALUES
+         ('common', 0.60, 8),
+         ('uncommon', 0.25, 5),
+         ('rare', 0.10, 3),
+         ('epic', 0.04, 2),
+         ('legendary', 0.01, 1)",
+        [],
+    )
+    .map_err(|e| format!("Failed to initialize rarity weights: {}", e))?;
+
+    // Get rarity weights
+    let mut stmt = conn
+        .prepare("SELECT tier, weight, max_items_per_refresh FROM shop_rarity_weights ORDER BY weight DESC")
+        .map_err(|e| format!("Failed to get rarity weights: {}", e))?;
+
+    let weights: Vec<RarityWeight> = stmt
+        .query_map([], |row| {
+            Ok(RarityWeight {
+                tier: row.get(0)?,
+                weight: row.get(1)?,
+                max_items: row.get(2)?,
+            })
+        })
+        .map_err(|e| format!("Failed to query weights: {}", e))?
+        .collect::<Result<Vec<_>, _>>()
+        .map_err(|e| format!("Failed to collect weights: {}", e))?;
+
+    if weights.is_empty() {
+        return Err("No rarity weights configured".to_string());
+    }
+
+    // Clear current active inventory
+    conn.execute("DELETE FROM shop_active_inventory", [])
+        .map_err(|e| format!("Failed to clear active inventory: {}", e))?;
+
+    let mut display_order = 0;
+    let mut rng = rand::thread_rng();
+
+    // For each rarity tier, select random items
+    for rarity in &weights {
+        // Get all available items of this tier
+        let mut equipment_items: Vec<(String, i64)> = Vec::new();
+        let mut consumable_items: Vec<(String, i64)> = Vec::new();
+
+        // Fetch equipment items
+        let mut eq_stmt = conn
+            .prepare("SELECT id, value FROM equipment_items WHERE tier = ?")
+            .map_err(|e| format!("Failed to prepare equipment query: {}", e))?;
+
+        let eq_results = eq_stmt
+            .query_map(params![rarity.tier], |row| {
+                Ok((row.get::<_, String>(0)?, row.get::<_, i64>(1)?))
+            })
+            .map_err(|e| format!("Failed to query equipment: {}", e))?;
+
+        for item in eq_results {
+            equipment_items.push(item.map_err(|e| format!("Failed to get equipment item: {}", e))?);
+        }
+
+        // Fetch consumable items
+        let mut cons_stmt = conn
+            .prepare("SELECT id, buy_price FROM consumable_items WHERE tier = ?")
+            .map_err(|e| format!("Failed to prepare consumable query: {}", e))?;
+
+        let cons_results = cons_stmt
+            .query_map(params![rarity.tier], |row| {
+                Ok((row.get::<_, String>(0)?, row.get::<_, i64>(1)?))
+            })
+            .map_err(|e| format!("Failed to query consumables: {}", e))?;
+
+        for item in cons_results {
+            consumable_items.push(item.map_err(|e| format!("Failed to get consumable item: {}", e))?);
+        }
+
+        // Combine all items
+        let mut all_items: Vec<(String, String, i64)> = Vec::new();
+        for (id, price) in equipment_items {
+            all_items.push(("equipment".to_string(), id, price));
+        }
+        for (id, price) in consumable_items {
+            all_items.push(("consumable".to_string(), id, price));
+        }
+
+        // Randomly select up to max_items
+        let num_to_select = (rarity.max_items as usize).min(all_items.len());
+
+        // Shuffle and take first N items
+        use rand::seq::SliceRandom;
+        all_items.shuffle(&mut rng);
+
+        for (item_type, item_id, price) in all_items.iter().take(num_to_select) {
+            conn.execute(
+                "INSERT INTO shop_active_inventory (item_type, item_id, display_order, price, stock_quantity)
+                 VALUES (?, ?, ?, ?, NULL)",
+                params![item_type, item_id, display_order, price],
+            )
+            .map_err(|e| format!("Failed to insert active inventory item: {}", e))?;
+
+            display_order += 1;
+        }
+
+        log::info!("Selected {} {} items for shop", num_to_select, rarity.tier);
+    }
+
+    // Update refresh state
+    conn.execute(
+        "UPDATE shop_refresh_state
+         SET last_refresh_time = CURRENT_TIMESTAMP,
+             next_refresh_time = datetime(CURRENT_TIMESTAMP, '+2 hours'),
+             refresh_count = refresh_count + 1,
+             updated_at = CURRENT_TIMESTAMP
+         WHERE id = 1",
+        [],
+    )
+    .map_err(|e| format!("Failed to update refresh state: {}", e))?;
+
+    log::info!("Shop inventory refreshed successfully. {} items added.", display_order);
+
+    Ok(())
+}
+
 // ============================================================================
 // TAURI COMMANDS
 // ============================================================================
 
 #[tauri::command]
 pub fn get_rpg_shop_items(app: AppHandle, user_id: i64) -> Result<Vec<ShopItem>, String> {
+    // Check and refresh shop if needed
+    check_and_refresh_shop(&app)?;
+
     let conn = get_connection(&app)?;
 
     // Get user's level for filtering
@@ -131,26 +318,35 @@ pub fn get_rpg_shop_items(app: AppHandle, user_id: i64) -> Result<Vec<ShopItem>,
 
     let mut shop_items = Vec::new();
 
-    // Get shop inventory
+    // Get active shop inventory (from shop_active_inventory instead of shop_inventory)
     let mut stmt = conn
         .prepare(
-            "SELECT id, item_type, item_id, available, required_level,
-                    stock_quantity, price_override, added_at
-             FROM shop_inventory
-             WHERE available = TRUE",
+            "SELECT id, item_type, item_id, display_order, price, stock_quantity, added_at
+             FROM shop_active_inventory
+             ORDER BY display_order ASC",
         )
         .map_err(|e| format!("Failed to prepare shop query: {}", e))?;
 
-    let inventory_items = stmt
-        .query_map([], ShopInventoryItem::from_row)
+    let inventory_items: Vec<(i64, String, String, i64, i64, Option<i64>, String)> = stmt
+        .query_map([], |row| {
+            Ok((
+                row.get(0)?, // id
+                row.get(1)?, // item_type
+                row.get(2)?, // item_id
+                row.get(3)?, // display_order
+                row.get(4)?, // price
+                row.get(5)?, // stock_quantity
+                row.get(6)?, // added_at
+            ))
+        })
         .map_err(|e| format!("Failed to query shop inventory: {}", e))?
         .collect::<Result<Vec<_>, _>>()
         .map_err(|e| format!("Failed to collect shop inventory: {}", e))?;
 
-    for inv_item in inventory_items {
-        let in_stock = inv_item.stock_quantity.map_or(true, |stock| stock > 0);
+    for (id, item_type, item_id, _display_order, price, stock_quantity, _added_at) in inventory_items {
+        let in_stock = stock_quantity.map_or(true, |stock| stock > 0);
 
-        if inv_item.item_type == "equipment" {
+        if item_type == "equipment" {
             // Fetch equipment details
             let equipment: crate::rpg_commands::EquipmentItem = conn
                 .query_row(
@@ -162,21 +358,19 @@ pub fn get_rpg_shop_items(app: AppHandle, user_id: i64) -> Result<Vec<ShopItem>,
                             icon, value, created_at
                      FROM equipment_items
                      WHERE id = ?",
-                    params![inv_item.item_id],
+                    params![item_id],
                     crate::rpg_commands::EquipmentItem::from_row,
                 )
                 .map_err(|e| format!("Failed to get equipment item: {}", e))?;
 
-            let price = inv_item.price_override.unwrap_or(equipment.value);
-
             shop_items.push(ShopItem::Equipment {
-                shop_id: inv_item.id,
+                shop_id: id,
                 equipment,
                 price,
                 in_stock,
-                required_level: inv_item.required_level,
+                required_level: 1, // Can be made dynamic later
             });
-        } else if inv_item.item_type == "consumable" {
+        } else if item_type == "consumable" {
             // Fetch consumable details
             let consumable: ConsumableItem = conn
                 .query_row(
@@ -185,19 +379,17 @@ pub fn get_rpg_shop_items(app: AppHandle, user_id: i64) -> Result<Vec<ShopItem>,
                             icon, tier, stack_size, created_at
                      FROM consumable_items
                      WHERE id = ?",
-                    params![inv_item.item_id],
+                    params![item_id],
                     ConsumableItem::from_row,
                 )
                 .map_err(|e| format!("Failed to get consumable item: {}", e))?;
 
-            let price = inv_item.price_override.unwrap_or(consumable.buy_price);
-
             shop_items.push(ShopItem::Consumable {
-                shop_id: inv_item.id,
+                shop_id: id,
                 consumable,
                 price,
                 in_stock,
-                required_level: inv_item.required_level,
+                required_level: 1, // Can be made dynamic later
             });
         }
     }
@@ -580,4 +772,43 @@ pub fn get_town_state(app: AppHandle, user_id: i64) -> Result<bool, String> {
         .unwrap_or(true); // Default to town if not set
 
     Ok(in_town)
+}
+
+#[tauri::command]
+pub fn get_shop_refresh_state(app: AppHandle) -> Result<ShopRefreshState, String> {
+    let conn = get_connection(&app)?;
+
+    // Ensure refresh state exists
+    conn.execute(
+        "INSERT OR IGNORE INTO shop_refresh_state (id, last_refresh_time, next_refresh_time, refresh_count)
+         VALUES (1, CURRENT_TIMESTAMP, datetime(CURRENT_TIMESTAMP, '+2 hours'), 0)",
+        [],
+    )
+    .map_err(|e| format!("Failed to initialize refresh state: {}", e))?;
+
+    let state = conn
+        .query_row(
+            "SELECT last_refresh_time, next_refresh_time, refresh_count
+             FROM shop_refresh_state
+             WHERE id = 1",
+            [],
+            |row| {
+                Ok(ShopRefreshState {
+                    last_refresh_time: row.get(0)?,
+                    next_refresh_time: row.get(1)?,
+                    refresh_count: row.get(2)?,
+                })
+            },
+        )
+        .map_err(|e| format!("Failed to get refresh state: {}", e))?;
+
+    Ok(state)
+}
+
+#[tauri::command]
+pub fn force_shop_refresh(app: AppHandle) -> Result<(), String> {
+    let conn = get_connection(&app)?;
+    refresh_shop_inventory(&conn)?;
+    log::info!("Shop refresh forced manually");
+    Ok(())
 }

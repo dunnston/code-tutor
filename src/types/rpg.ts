@@ -132,6 +132,44 @@ export interface CharacterEquipment {
   updatedAt: Date;
 }
 
+export interface CharacterEquipmentWithDetailsRaw {
+  user_id: number;
+  weapon_id: string | null;
+  weapon: EquipmentItemRaw | null;
+  shield_id: string | null;
+  shield: EquipmentItemRaw | null;
+  helmet_id: string | null;
+  helmet: EquipmentItemRaw | null;
+  chest_id: string | null;
+  chest: EquipmentItemRaw | null;
+  boots_id: string | null;
+  boots: EquipmentItemRaw | null;
+  armor_id: string | null;
+  armor: EquipmentItemRaw | null;
+  accessory_id: string | null;
+  accessory: EquipmentItemRaw | null;
+  updated_at: string;
+}
+
+export interface CharacterEquipmentWithDetails {
+  userId: number;
+  weaponId: string | null;
+  weapon: EquipmentItem | null;
+  shieldId: string | null;
+  shield: EquipmentItem | null;
+  helmetId: string | null;
+  helmet: EquipmentItem | null;
+  chestId: string | null;
+  chest: EquipmentItem | null;
+  bootsId: string | null;
+  boots: EquipmentItem | null;
+  armorId: string | null;
+  armor: EquipmentItem | null;
+  accessoryId: string | null;
+  accessory: EquipmentItem | null;
+  updatedAt: Date;
+}
+
 export interface EquipmentInventoryItemRaw {
   id: number;
   user_id: number;
@@ -757,6 +795,27 @@ export function convertEquipmentItem(raw: EquipmentItemRaw): EquipmentItem {
     icon: raw.icon,
     value: raw.value,
     createdAt: new Date(raw.created_at),
+  };
+}
+
+export function convertCharacterEquipmentWithDetails(raw: CharacterEquipmentWithDetailsRaw): CharacterEquipmentWithDetails {
+  return {
+    userId: raw.user_id,
+    weaponId: raw.weapon_id,
+    weapon: raw.weapon ? convertEquipmentItem(raw.weapon) : null,
+    shieldId: raw.shield_id,
+    shield: raw.shield ? convertEquipmentItem(raw.shield) : null,
+    helmetId: raw.helmet_id,
+    helmet: raw.helmet ? convertEquipmentItem(raw.helmet) : null,
+    chestId: raw.chest_id,
+    chest: raw.chest ? convertEquipmentItem(raw.chest) : null,
+    bootsId: raw.boots_id,
+    boots: raw.boots ? convertEquipmentItem(raw.boots) : null,
+    armorId: raw.armor_id,
+    armor: raw.armor ? convertEquipmentItem(raw.armor) : null,
+    accessoryId: raw.accessory_id,
+    accessory: raw.accessory ? convertEquipmentItem(raw.accessory) : null,
+    updatedAt: new Date(raw.updated_at),
   };
 }
 

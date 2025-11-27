@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { getShopItems, purchaseShopItem, getCharacterStats } from '../../lib/rpg';
+import { getShopItems, purchaseShopItem, getCharacterStats, getShopRefreshState, forceShopRefresh, type ShopRefreshState } from '../../lib/rpg';
 import type { ShopItemDisplay, CharacterStats, EquipmentItem, ConsumableItem } from '../../types/rpg';
 
 interface ShopWidgetProps {
@@ -16,26 +16,73 @@ export function ShopWidget({ userId, onPurchase }: ShopWidgetProps) {
   const [purchasing, setPurchasing] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<TabType>('all');
+  const [refreshState, setRefreshState] = useState<ShopRefreshState | null>(null);
+  const [timeUntilRefresh, setTimeUntilRefresh] = useState<string>('');
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   useEffect(() => {
     loadShopData();
   }, [userId]);
 
+  // Update countdown timer
+  useEffect(() => {
+    if (!refreshState) return;
+
+    const updateTimer = () => {
+      const now = new Date();
+      const nextRefresh = new Date(refreshState.nextRefreshTime);
+      const diff = nextRefresh.getTime() - now.getTime();
+
+      if (diff <= 0) {
+        setTimeUntilRefresh('Refreshing...');
+        // Reload shop when time is up
+        loadShopData();
+      } else {
+        const hours = Math.floor(diff / (1000 * 60 * 60));
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+        setTimeUntilRefresh(`${hours}h ${minutes}m ${seconds}s`);
+      }
+    };
+
+    updateTimer();
+    const interval = setInterval(updateTimer, 1000);
+    return () => clearInterval(interval);
+  }, [refreshState]);
+
   async function loadShopData() {
     try {
       setLoading(true);
       setError(null);
-      const [shopItems, characterStats] = await Promise.all([
+      const [shopItems, characterStats, shopRefreshState] = await Promise.all([
         getShopItems(userId),
         getCharacterStats(userId),
+        getShopRefreshState(),
       ]);
       setItems(shopItems);
       setStats(characterStats);
+      setRefreshState(shopRefreshState);
     } catch (err) {
       console.error('Failed to load shop data:', err);
       setError(err instanceof Error ? err.message : 'Failed to load shop');
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function handleForceRefresh() {
+    if (isRefreshing) return;
+
+    try {
+      setIsRefreshing(true);
+      setError(null);
+      await forceShopRefresh();
+      await loadShopData();
+    } catch (err) {
+      console.error('Failed to refresh shop:', err);
+      setError(err instanceof Error ? err.message : 'Failed to refresh shop');
+    } finally {
+      setIsRefreshing(false);
     }
   }
 
@@ -167,7 +214,24 @@ export function ShopWidget({ userId, onPurchase }: ShopWidgetProps) {
       {/* Header */}
       <div className="p-6 border-b border-slate-700">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-2xl font-bold text-orange-400">🏪 Town Shop</h2>
+          <div>
+            <h2 className="text-2xl font-bold text-orange-400">🏪 Town Shop</h2>
+            {refreshState && (
+              <div className="flex items-center gap-2 mt-2">
+                <div className="text-xs text-gray-400">
+                  Next refresh: <span className="text-blue-400 font-mono">{timeUntilRefresh}</span>
+                </div>
+                <button
+                  onClick={handleForceRefresh}
+                  disabled={isRefreshing}
+                  className="text-xs px-2 py-1 bg-slate-700 hover:bg-slate-600 rounded text-gray-300 disabled:opacity-50"
+                  title="Force refresh (for testing)"
+                >
+                  {isRefreshing ? '⚙️' : '🔄'}
+                </button>
+              </div>
+            )}
+          </div>
           {stats && (
             <div className="text-right">
               <div className="text-sm text-gray-400">Your Gold</div>

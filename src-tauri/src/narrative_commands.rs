@@ -438,6 +438,10 @@ pub fn resolve_skill_check(
     )
     .map_err(|e| format!("Failed to record skill check: {}", e))?;
 
+    // Apply the outcome (rewards/penalties/flags)
+    log::info!("Applying skill check outcome for user {}", user_id);
+    apply_narrative_outcome(app, user_id, outcome.clone())?;
+
     Ok(SkillCheckResult {
         dice_roll,
         stat_modifier,
@@ -512,8 +516,98 @@ pub fn apply_narrative_outcome(
         .map_err(|e| format!("Failed to update location: {}", e))?;
     }
 
-    // Apply rewards/penalties (you can expand this to actually modify character stats)
-    // For now, just return updated progress
+    // Apply rewards if any
+    if let Some(ref rewards_str) = outcome.rewards {
+        log::info!("Applying rewards: {}", rewards_str);
+        if let Ok(rewards) = serde_json::from_str::<serde_json::Value>(rewards_str) {
+            // Award gold
+            if let Some(gold) = rewards.get("gold").and_then(|v| v.as_i64()) {
+                log::info!("Awarding {} gold to user {}", gold, user_id);
+                let rows_affected = conn.execute(
+                    "UPDATE user_currency
+                     SET gold = gold + ?,
+                         lifetime_gold_earned = lifetime_gold_earned + ?
+                     WHERE user_id = ?",
+                    params![gold, gold, user_id],
+                )
+                .map_err(|e| format!("Failed to award gold: {}", e))?;
+                log::info!("Gold awarded, rows affected: {}", rows_affected);
+            }
+
+            // Award XP
+            if let Some(xp) = rewards.get("xp").and_then(|v| v.as_i64()) {
+                log::info!("Awarding {} XP to user {}", xp, user_id);
+                conn.execute(
+                    "UPDATE user_dungeon_progress
+                     SET total_xp_earned = total_xp_earned + ?
+                     WHERE user_id = ?",
+                    params![xp, user_id],
+                )
+                .map_err(|e| format!("Failed to award XP: {}", e))?;
+            }
+
+            // Handle healing
+            if let Some(heal) = rewards.get("heal") {
+                if heal == "full" {
+                    // Restore to full HP
+                    conn.execute(
+                        "UPDATE character_stats
+                         SET current_health = max_health
+                         WHERE user_id = ?",
+                        params![user_id],
+                    )
+                    .map_err(|e| format!("Failed to heal: {}", e))?;
+                } else if let Some(heal_amount) = heal.as_i64() {
+                    // Heal specific amount
+                    conn.execute(
+                        "UPDATE character_stats
+                         SET current_health = MIN(current_health + ?, max_health)
+                         WHERE user_id = ?",
+                        params![heal_amount, user_id],
+                    )
+                    .map_err(|e| format!("Failed to heal: {}", e))?;
+                }
+            }
+
+            // TODO: Handle items/equipment rewards
+            // This would require inserting into character_inventory table
+        }
+    }
+
+    // Apply penalties if any
+    if let Some(ref penalties_str) = outcome.penalties {
+        log::info!("Applying penalties: {}", penalties_str);
+        if let Ok(penalties) = serde_json::from_str::<serde_json::Value>(penalties_str) {
+            // Apply damage
+            if let Some(damage) = penalties.get("damage").and_then(|v| v.as_i64()) {
+                log::info!("Applying {} damage to user {}", damage, user_id);
+                let rows_affected = conn.execute(
+                    "UPDATE character_stats
+                     SET current_health = MAX(0, current_health - ?)
+                     WHERE user_id = ?",
+                    params![damage, user_id],
+                )
+                .map_err(|e| format!("Failed to apply damage: {}", e))?;
+                log::info!("Damage applied, rows affected: {}", rows_affected);
+                if rows_affected == 0 {
+                    log::warn!("No character_stats row found for user {}! Damage was not applied.", user_id);
+                }
+            }
+
+            // Lose gold (if specified)
+            if let Some(gold_lost) = penalties.get("gold").and_then(|v| v.as_i64()) {
+                log::info!("Removing {} gold from user {}", gold_lost, user_id);
+                conn.execute(
+                    "UPDATE user_currency
+                     SET gold = MAX(0, gold - ?)
+                     WHERE user_id = ?",
+                    params![gold_lost, user_id],
+                )
+                .map_err(|e| format!("Failed to remove gold: {}", e))?;
+            }
+        }
+    }
+
     get_user_narrative_progress(app, user_id)
 }
 
@@ -537,6 +631,34 @@ pub fn make_simple_choice(
             NarrativeOutcome::from_row,
         )
         .map_err(|e| format!("Failed to get outcome: {}", e))?;
+
+    // Apply the outcome
+    let progress = apply_narrative_outcome(app, user_id, outcome.clone())?;
+
+    Ok((outcome, progress))
+}
+
+#[tauri::command]
+pub fn get_outcome_by_type(
+    app: AppHandle,
+    user_id: i64,
+    choice_id: String,
+    outcome_type: String,
+) -> Result<(NarrativeOutcome, UserNarrativeProgress), String> {
+    let conn = get_connection(&app)?;
+
+    // Get the outcome for this choice with the specified outcome type
+    let outcome: NarrativeOutcome = conn
+        .query_row(
+            "SELECT id, choice_id, outcome_type, description, next_location_id, rewards, penalties,
+                    sets_flags, triggers_combat, enemy_id, enemy_count, created_at
+             FROM narrative_outcomes
+             WHERE choice_id = ? AND outcome_type = ?
+             LIMIT 1",
+            params![choice_id, outcome_type],
+            NarrativeOutcome::from_row,
+        )
+        .map_err(|e| format!("Failed to get outcome for choice {} with type {}: {}", choice_id, outcome_type, e))?;
 
     // Apply the outcome
     let progress = apply_narrative_outcome(app, user_id, outcome.clone())?;

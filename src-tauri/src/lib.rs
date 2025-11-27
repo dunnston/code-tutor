@@ -98,6 +98,7 @@ pub fn run() {
       // RPG - Equipment commands
       rpg_commands::get_equipment_items,
       rpg_commands::get_character_equipment,
+      rpg_commands::get_character_equipment_with_details,
       rpg_commands::equip_item,
       rpg_commands::unequip_item,
       // RPG - Ability commands
@@ -148,6 +149,7 @@ pub fn run() {
       narrative_commands::resolve_skill_check,
       narrative_commands::apply_narrative_outcome,
       narrative_commands::make_simple_choice,
+      narrative_commands::get_outcome_by_type,
       // Shop commands
       shop_commands::get_rpg_shop_items,
       shop_commands::purchase_shop_item,
@@ -156,6 +158,8 @@ pub fn run() {
       shop_commands::use_consumable,
       shop_commands::set_town_state,
       shop_commands::get_town_state,
+      shop_commands::get_shop_refresh_state,
+      shop_commands::force_shop_refresh,
       // Developer commands
       dev_commands::dev_add_gold,
       dev_commands::dev_add_gems,

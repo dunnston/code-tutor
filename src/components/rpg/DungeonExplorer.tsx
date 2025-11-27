@@ -18,6 +18,10 @@ import {
   makeSimpleChoice,
   getChallengeForAction,
   recordChallengeAttempt,
+  getOutcomeByType,
+  // Consumables
+  getConsumableInventory,
+  useConsumable,
 } from '../../lib/rpg';
 import type {
   DungeonFloor,
@@ -32,6 +36,7 @@ import type {
   SkillCheckResult,
   DungeonChallenge,
   SkillType,
+  UserConsumableInventoryItem,
 } from '../../types/rpg';
 import { convertNarrativeOutcome } from '../../types/rpg';
 import { CharacterStatsDisplay } from './CharacterStats';
@@ -70,6 +75,11 @@ export function DungeonExplorer({ userId, onClose }: DungeonExplorerProps) {
   const [selectedAnswer, setSelectedAnswer] = useState<string>('');
   const [skillCheckResult, setSkillCheckResult] = useState<SkillCheckResult | null>(null);
   const [currentOutcome, setCurrentOutcome] = useState<NarrativeOutcome | null>(null);
+  const [combatChoiceId, setCombatChoiceId] = useState<string | null>(null);
+
+  // Consumables inventory state
+  const [consumables, setConsumables] = useState<UserConsumableInventoryItem[]>([]);
+  const [showPotions, setShowPotions] = useState(false);
 
   useEffect(() => {
     loadDungeonState();
@@ -78,9 +88,10 @@ export function DungeonExplorer({ userId, onClose }: DungeonExplorerProps) {
   async function loadDungeonState() {
     try {
       setLoading(true);
-      const [userProgress, characterStats] = await Promise.all([
+      const [userProgress, characterStats, consumableInventory] = await Promise.all([
         getUserDungeonProgress(userId),
         getCharacterStats(userId),
+        getConsumableInventory(userId),
       ]);
 
       const currentFloor = await getDungeonFloor(userProgress.currentFloor);
@@ -88,6 +99,7 @@ export function DungeonExplorer({ userId, onClose }: DungeonExplorerProps) {
       setProgress(userProgress);
       setStats(characterStats);
       setFloor(currentFloor);
+      setConsumables(consumableInventory);
 
       // Start narrative dungeon - this gets the starting location
       console.log('Starting narrative dungeon for user', userId);
@@ -108,6 +120,22 @@ export function DungeonExplorer({ userId, onClose }: DungeonExplorerProps) {
     }
   }
 
+  async function handleUsePotion(consumableId: string) {
+    try {
+      const updatedStats = await useConsumable(userId, consumableId);
+      setStats(updatedStats);
+
+      // Reload consumables inventory
+      const updatedConsumables = await getConsumableInventory(userId);
+      setConsumables(updatedConsumables);
+
+      console.log(`Used potion ${consumableId}`);
+    } catch (err) {
+      console.error('Failed to use potion:', err);
+      alert(`Failed to use potion: ${err}`);
+    }
+  }
+
   // Handle selecting a choice
   async function handleChoiceSelect(choice: NarrativeChoice) {
     setSelectedChoice(choice);
@@ -123,6 +151,15 @@ export function DungeonExplorer({ userId, onClose }: DungeonExplorerProps) {
         console.log('Making simple choice:', choice.id);
         const { outcome, progress: narrativeProgress } = await makeSimpleChoice(userId, choice.id);
         console.log('Got outcome:', outcome);
+        console.log('Outcome triggers combat?', outcome.triggersCombat);
+        console.log('Outcome enemy ID:', outcome.enemyId);
+
+        // IMPORTANT: Store choice ID BEFORE handling outcome in case combat is triggered
+        if (outcome.triggersCombat && outcome.enemyId) {
+          console.log('PRE-STORING combat choice ID:', choice.id);
+          setCombatChoiceId(choice.id);
+        }
+
         await handleOutcome(outcome);
       } catch (err) {
         console.error('Failed to make choice:', err);
@@ -191,6 +228,11 @@ export function DungeonExplorer({ userId, onClose }: DungeonExplorerProps) {
     // Check if combat is triggered - preload the enemy but don't start combat yet
     if (outcome.triggersCombat && outcome.enemyId) {
       console.log('Combat will be triggered! Loading enemy:', outcome.enemyId);
+      // Store the choice ID that triggered combat so we can apply the success outcome later
+      if (selectedChoice) {
+        setCombatChoiceId(selectedChoice.id);
+        console.log('Stored combat choice ID:', selectedChoice.id);
+      }
       try {
         const enemy = await getEnemyById(outcome.enemyId);
         console.log('Loaded enemy:', enemy);
@@ -238,6 +280,11 @@ export function DungeonExplorer({ userId, onClose }: DungeonExplorerProps) {
     if (currentOutcome.nextLocationId) {
       console.log('Moving to next location:', currentOutcome.nextLocationId);
       try {
+        // Reload character stats to reflect any damage/healing/rewards
+        const updatedStats = await getCharacterStats(userId);
+        setStats(updatedStats);
+        console.log('Reloaded character stats after outcome');
+
         const nextLocation = await getNarrativeLocation(currentOutcome.nextLocationId);
         console.log('Loaded next location:', nextLocation);
         setCurrentLocation(nextLocation);
@@ -290,10 +337,33 @@ export function DungeonExplorer({ userId, onClose }: DungeonExplorerProps) {
     setPhase('combat');
   }
 
-  function handleCombatVictory(rewards: CombatRewards) {
+  async function handleCombatVictory(rewards: CombatRewards) {
     console.log('Combat victory! Rewards:', rewards);
 
-    // Show victory message as an outcome
+    // If we have the combat choice ID, get the success outcome
+    if (combatChoiceId) {
+      console.log('Fetching success outcome for combat choice:', combatChoiceId);
+      try {
+        const { outcome } = await getOutcomeByType(userId, combatChoiceId, 'success');
+        console.log('Got success outcome:', outcome);
+
+        // Apply the proper success outcome (with rewards message appended)
+        setCurrentOutcome({
+          ...outcome,
+          description: `${outcome.description}\n\nYou earned ${rewards.xpGained} XP and ${rewards.goldGained} gold!`,
+        });
+        setPhase('outcome');
+        setEncounter(null);
+        setCombatChoiceId(null); // Clear the stored choice ID
+        return;
+      } catch (err) {
+        console.error('Failed to get success outcome, using fallback:', err);
+        // Fall through to fallback behavior
+      }
+    }
+
+    // Fallback: Show victory message as a generic outcome
+    console.warn('No combat choice ID found or failed to fetch outcome, using fallback');
     setCurrentOutcome({
       id: 'combat_victory',
       choiceId: '',
@@ -424,6 +494,70 @@ export function DungeonExplorer({ userId, onClose }: DungeonExplorerProps) {
                       <span className="text-white">{progress.totalBossesDefeated}</span>
                     </div>
                   </div>
+                </div>
+
+                {/* Potions/Consumables Panel */}
+                <div className="mt-4 bg-slate-700/50 rounded-lg p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <h4 className="text-sm font-semibold text-gray-400 uppercase">
+                      🧪 Potions
+                    </h4>
+                    <button
+                      onClick={() => setShowPotions(!showPotions)}
+                      className="text-xs text-orange-400 hover:text-orange-300"
+                    >
+                      {showPotions ? 'Hide' : 'Show'}
+                    </button>
+                  </div>
+
+                  {showPotions && (
+                    <div className="space-y-2 max-h-64 overflow-y-auto">
+                      {consumables.length === 0 ? (
+                        <p className="text-sm text-gray-400 italic">No potions available</p>
+                      ) : (
+                        consumables.map((item) => (
+                          <div
+                            key={item.id}
+                            className="bg-slate-800 rounded p-2 flex items-start gap-2"
+                          >
+                            <span className="text-xl">{item.consumable.icon}</span>
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center justify-between gap-2">
+                                <span className="text-sm font-medium text-white truncate">
+                                  {item.consumable.name}
+                                </span>
+                                <span className="text-xs text-gray-400 flex-shrink-0">
+                                  x{item.quantity}
+                                </span>
+                              </div>
+                              <p className="text-xs text-gray-400 line-clamp-2 mt-1">
+                                {item.consumable.description}
+                              </p>
+                              <div className="flex items-center gap-2 mt-2">
+                                {item.consumable.healthRestore > 0 && (
+                                  <span className="text-xs text-green-400">
+                                    +{item.consumable.healthRestore === 999 ? 'Full' : item.consumable.healthRestore} HP
+                                  </span>
+                                )}
+                                {item.consumable.manaRestore > 0 && (
+                                  <span className="text-xs text-blue-400">
+                                    +{item.consumable.manaRestore === 999 ? 'Full' : item.consumable.manaRestore} MP
+                                  </span>
+                                )}
+                              </div>
+                              <button
+                                onClick={() => handleUsePotion(item.consumable.id)}
+                                disabled={phase === 'combat'}
+                                className="w-full mt-2 bg-orange-500 hover:bg-orange-600 disabled:bg-slate-600 disabled:cursor-not-allowed text-white text-xs font-semibold py-1 px-2 rounded transition-colors"
+                              >
+                                Use
+                              </button>
+                            </div>
+                          </div>
+                        ))
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
 

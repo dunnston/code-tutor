@@ -185,26 +185,99 @@ pub fn recalculate_derived_stats(app: AppHandle, user_id: i64) -> Result<(), Str
     // Get current stats
     let stats = get_character_stats(app.clone(), user_id)?;
 
-    // Calculate new max_health: Base 100 + (Level × 10)
-    let new_max_health = 100 + (stats.level * 10);
+    // Get equipped items to calculate bonuses
+    let equipment = get_character_equipment(app.clone(), user_id)?;
 
-    // Calculate new max_mana: Base 50 + (Intelligence × 2)
-    let new_max_mana = 50 + (stats.intelligence * 2);
+    // Helper function to get equipment bonuses
+    let get_equipment_bonuses = |item_id: &Option<String>| -> (i64, i64, i64, i64, i64, i64, i64, f64, f64) {
+        match item_id {
+            Some(id) => {
+                conn.query_row(
+                    "SELECT damage_bonus, defense_bonus, hp_bonus, mana_bonus, strength_bonus,
+                            intelligence_bonus, dexterity_bonus, critical_chance_bonus, dodge_chance_bonus
+                     FROM equipment_items WHERE id = ?",
+                    params![id],
+                    |row| {
+                        Ok((
+                            row.get::<_, i64>(0).unwrap_or(0),
+                            row.get::<_, i64>(1).unwrap_or(0),
+                            row.get::<_, i64>(2).unwrap_or(0),
+                            row.get::<_, i64>(3).unwrap_or(0),
+                            row.get::<_, i64>(4).unwrap_or(0),
+                            row.get::<_, i64>(5).unwrap_or(0),
+                            row.get::<_, i64>(6).unwrap_or(0),
+                            row.get::<_, f64>(7).unwrap_or(0.0),
+                            row.get::<_, f64>(8).unwrap_or(0.0),
+                        ))
+                    },
+                )
+                .unwrap_or((0, 0, 0, 0, 0, 0, 0, 0.0, 0.0))
+            }
+            None => (0, 0, 0, 0, 0, 0, 0, 0.0, 0.0),
+        }
+    };
 
-    // Calculate new defense: 5 + (STR / 5)
-    let new_defense = 5 + (stats.strength / 5);
+    // Sum up all equipment bonuses
+    let mut total_damage_bonus = 0i64;
+    let mut total_defense_bonus = 0i64;
+    let mut total_hp_bonus = 0i64;
+    let mut total_mana_bonus = 0i64;
+    let mut total_strength_bonus = 0i64;
+    let mut total_intelligence_bonus = 0i64;
+    let mut total_dexterity_bonus = 0i64;
+    let mut total_crit_bonus = 0.0f64;
+    let mut total_dodge_bonus = 0.0f64;
 
-    // Calculate new critical_chance: 5% + (DEX × 0.5%)
-    let new_critical_chance = 0.05 + (stats.dexterity as f64 * 0.005);
+    for item_id in [
+        &equipment.weapon_id,
+        &equipment.shield_id,
+        &equipment.helmet_id,
+        &equipment.chest_id,
+        &equipment.boots_id,
+        &equipment.armor_id,
+        &equipment.accessory_id,
+    ] {
+        let (dmg, def, hp, mana, str, int, dex, crit, dodge) = get_equipment_bonuses(item_id);
+        total_damage_bonus += dmg;
+        total_defense_bonus += def;
+        total_hp_bonus += hp;
+        total_mana_bonus += mana;
+        total_strength_bonus += str;
+        total_intelligence_bonus += int;
+        total_dexterity_bonus += dex;
+        total_crit_bonus += crit;
+        total_dodge_bonus += dodge;
+    }
 
-    // Calculate new dodge_chance: 5% + (DEX × 0.3%)
-    let new_dodge_chance = 0.05 + (stats.dexterity as f64 * 0.003);
+    // Calculate effective stats with equipment bonuses
+    let effective_strength = stats.strength + total_strength_bonus;
+    let effective_intelligence = stats.intelligence + total_intelligence_bonus;
+    let effective_dexterity = stats.dexterity + total_dexterity_bonus;
+
+    // Calculate new max_health: Base 100 + (Level × 10) + HP bonuses from equipment
+    let new_max_health = 100 + (stats.level * 10) + total_hp_bonus;
+
+    // Calculate new max_mana: Base 50 + (Intelligence × 2) + Mana bonuses from equipment
+    let new_max_mana = 50 + (effective_intelligence * 2) + total_mana_bonus;
+
+    // Calculate new base_damage: Base 10 + damage bonuses from equipment
+    let new_base_damage = 10 + total_damage_bonus;
+
+    // Calculate new defense: 5 + (STR / 5) + defense bonuses from equipment
+    let new_defense = 5 + (effective_strength / 5) + total_defense_bonus;
+
+    // Calculate new critical_chance: 5% + (DEX × 0.5%) + crit bonuses from equipment
+    let new_critical_chance = 0.05 + (effective_dexterity as f64 * 0.005) + total_crit_bonus;
+
+    // Calculate new dodge_chance: 5% + (DEX × 0.3%) + dodge bonuses from equipment
+    let new_dodge_chance = 0.05 + (effective_dexterity as f64 * 0.003) + total_dodge_bonus;
 
     // Update derived stats
     conn.execute(
         "UPDATE character_stats
          SET max_health = ?,
              max_mana = ?,
+             base_damage = ?,
              defense = ?,
              critical_chance = ?,
              dodge_chance = ?,
@@ -213,6 +286,7 @@ pub fn recalculate_derived_stats(app: AppHandle, user_id: i64) -> Result<(), Str
         params![
             new_max_health,
             new_max_mana,
+            new_base_damage,
             new_defense,
             new_critical_chance,
             new_dodge_chance,
@@ -338,6 +412,26 @@ pub fn get_equipment_items(app: AppHandle) -> Result<Vec<EquipmentItem>, String>
     Ok(items)
 }
 
+#[derive(Debug, Serialize, Deserialize)]
+pub struct CharacterEquipmentWithDetails {
+    pub user_id: i64,
+    pub weapon_id: Option<String>,
+    pub weapon: Option<EquipmentItem>,
+    pub shield_id: Option<String>,
+    pub shield: Option<EquipmentItem>,
+    pub helmet_id: Option<String>,
+    pub helmet: Option<EquipmentItem>,
+    pub chest_id: Option<String>,
+    pub chest: Option<EquipmentItem>,
+    pub boots_id: Option<String>,
+    pub boots: Option<EquipmentItem>,
+    pub armor_id: Option<String>,
+    pub armor: Option<EquipmentItem>,
+    pub accessory_id: Option<String>,
+    pub accessory: Option<EquipmentItem>,
+    pub updated_at: String,
+}
+
 #[tauri::command]
 pub fn get_character_equipment(app: AppHandle, user_id: i64) -> Result<CharacterEquipment, String> {
     let conn = get_connection(&app)?;
@@ -362,6 +456,56 @@ pub fn get_character_equipment(app: AppHandle, user_id: i64) -> Result<Character
         },
     )
     .map_err(|e| format!("Failed to get character equipment: {}", e))
+}
+
+#[tauri::command]
+pub fn get_character_equipment_with_details(app: AppHandle, user_id: i64) -> Result<CharacterEquipmentWithDetails, String> {
+    let conn = get_connection(&app)?;
+
+    // Get equipped item IDs
+    let equipment = get_character_equipment(app.clone(), user_id)?;
+
+    // Helper function to get equipment details by ID
+    let get_item_details = |item_id: &Option<String>| -> Result<Option<EquipmentItem>, String> {
+        match item_id {
+            Some(id) => {
+                let item = conn
+                    .query_row(
+                        "SELECT id, name, description, slot, tier, required_level, required_strength,
+                                required_intelligence, required_dexterity, damage_bonus, defense_bonus,
+                                hp_bonus, mana_bonus, strength_bonus, intelligence_bonus, dexterity_bonus,
+                                critical_chance_bonus, dodge_chance_bonus, special_effects, icon, value,
+                                created_at
+                         FROM equipment_items
+                         WHERE id = ?",
+                        params![id],
+                        EquipmentItem::from_row,
+                    )
+                    .ok();
+                Ok(item)
+            }
+            None => Ok(None),
+        }
+    };
+
+    Ok(CharacterEquipmentWithDetails {
+        user_id: equipment.user_id,
+        weapon_id: equipment.weapon_id.clone(),
+        weapon: get_item_details(&equipment.weapon_id)?,
+        shield_id: equipment.shield_id.clone(),
+        shield: get_item_details(&equipment.shield_id)?,
+        helmet_id: equipment.helmet_id.clone(),
+        helmet: get_item_details(&equipment.helmet_id)?,
+        chest_id: equipment.chest_id.clone(),
+        chest: get_item_details(&equipment.chest_id)?,
+        boots_id: equipment.boots_id.clone(),
+        boots: get_item_details(&equipment.boots_id)?,
+        armor_id: equipment.armor_id.clone(),
+        armor: get_item_details(&equipment.armor_id)?,
+        accessory_id: equipment.accessory_id.clone(),
+        accessory: get_item_details(&equipment.accessory_id)?,
+        updated_at: equipment.updated_at,
+    })
 }
 
 #[tauri::command]

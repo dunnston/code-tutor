@@ -159,10 +159,57 @@ pub fn initialize_database(app: &AppHandle) -> Result<(), String> {
     conn.execute_batch(multiple_choice_seed)
         .map_err(|e| format!("Failed to execute multiple choice seed data: {}", e))?;
 
-    // Execute narrative Level 1 seed data
-    let narrative_level1_seed = include_str!("../../course-framework-output/database/narrative-level1-seed.sql");
-    conn.execute_batch(narrative_level1_seed)
-        .map_err(|e| format!("Failed to execute narrative Level 1 seed data: {}", e))?;
+    // Note: narrative-level1-seed.sql is deprecated - using migrations 020-023 instead
+
+    // Execute Level 1 enemies migration
+    log::info!("Loading Level 1 enemies migration...");
+    let level1_enemies_migration = include_str!("../migrations/020_level1_enemies.sql");
+    conn.execute_batch(level1_enemies_migration)
+        .map_err(|e| {
+            log::error!("Level 1 enemies migration failed: {}", e);
+            format!("Failed to execute Level 1 enemies migration: {}", e)
+        })?;
+    log::info!("Level 1 enemies migration completed successfully");
+
+    // Execute Level 1 locations migration
+    log::info!("Loading Level 1 locations migration...");
+    let level1_locations_migration = include_str!("../migrations/021_level1_locations.sql");
+    conn.execute_batch(level1_locations_migration)
+        .map_err(|e| {
+            log::error!("Level 1 locations migration failed: {}", e);
+            format!("Failed to execute Level 1 locations migration: {}", e)
+        })?;
+    log::info!("Level 1 locations migration completed successfully");
+
+    // Execute Level 1 choices migration
+    log::info!("Loading Level 1 choices migration...");
+    let level1_choices_migration = include_str!("../migrations/022_level1_choices.sql");
+    conn.execute_batch(level1_choices_migration)
+        .map_err(|e| {
+            log::error!("Level 1 choices migration failed: {}", e);
+            format!("Failed to execute Level 1 choices migration: {}", e)
+        })?;
+    log::info!("Level 1 choices migration completed successfully");
+
+    // Execute Level 1 outcomes migration
+    log::info!("Loading Level 1 outcomes migration...");
+    let level1_outcomes_migration = include_str!("../migrations/023_level1_outcomes.sql");
+    conn.execute_batch(level1_outcomes_migration)
+        .map_err(|e| {
+            log::error!("Level 1 outcomes migration failed: {}", e);
+            format!("Failed to execute Level 1 outcomes migration: {}", e)
+        })?;
+    log::info!("Level 1 outcomes migration completed successfully");
+
+    // Execute shop refresh system migration
+    log::info!("Loading shop refresh system migration...");
+    let shop_refresh_migration = include_str!("../migrations/025_shop_refresh_system.sql");
+    conn.execute_batch(shop_refresh_migration)
+        .map_err(|e| {
+            log::error!("Shop refresh system migration failed: {}", e);
+            format!("Failed to execute shop refresh system migration: {}", e)
+        })?;
+    log::info!("Shop refresh system migration completed successfully");
 
     // Execute solution_viewed migration (if columns don't exist yet)
     let solution_viewed_migration = r#"

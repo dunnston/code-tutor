@@ -7,6 +7,8 @@ import type {
   EquipmentItemRaw,
   CharacterEquipment,
   CharacterEquipmentRaw,
+  CharacterEquipmentWithDetails,
+  CharacterEquipmentWithDetailsRaw,
   EquipmentInventoryItem,
   EquipmentInventoryItemRaw,
   Ability,
@@ -48,6 +50,7 @@ import {
   convertCharacterStats,
   convertEquipmentItem,
   convertEquipmentInventoryItem,
+  convertCharacterEquipmentWithDetails,
   convertAbility,
   convertUserAbilityWithLevel,
   convertAbilityWithUnlockStatus,
@@ -138,6 +141,11 @@ export async function getCharacterEquipment(userId: number): Promise<CharacterEq
     bootsId: raw.boots_id,
     updatedAt: new Date(raw.updated_at),
   };
+}
+
+export async function getCharacterEquipmentWithDetails(userId: number): Promise<CharacterEquipmentWithDetails> {
+  const raw = await invoke<CharacterEquipmentWithDetailsRaw>('get_character_equipment_with_details', { userId });
+  return convertCharacterEquipmentWithDetails(raw);
 }
 
 export async function equipItem(
@@ -668,6 +676,22 @@ export async function makeSimpleChoice(
   };
 }
 
+export async function getOutcomeByType(
+  userId: number,
+  choiceId: string,
+  outcomeType: string
+): Promise<{ outcome: NarrativeOutcome; progress: UserNarrativeProgress }> {
+  const result = await invoke<[NarrativeOutcomeRaw, UserNarrativeProgressRaw]>('get_outcome_by_type', {
+    userId,
+    choiceId,
+    outcomeType,
+  });
+  return {
+    outcome: convertNarrativeOutcome(result[0]),
+    progress: convertUserNarrativeProgress(result[1]),
+  };
+}
+
 // ============================================================================
 // SHOP SYSTEM
 // ============================================================================
@@ -727,4 +751,28 @@ export async function setTownState(userId: number, inTown: boolean): Promise<voi
 
 export async function getTownState(userId: number): Promise<boolean> {
   return await invoke<boolean>('get_town_state', { userId });
+}
+
+export interface ShopRefreshState {
+  lastRefreshTime: string;
+  nextRefreshTime: string;
+  refreshCount: number;
+}
+
+export async function getShopRefreshState(): Promise<ShopRefreshState> {
+  const raw = await invoke<{
+    last_refresh_time: string;
+    next_refresh_time: string;
+    refresh_count: number;
+  }>('get_shop_refresh_state', {});
+
+  return {
+    lastRefreshTime: raw.last_refresh_time,
+    nextRefreshTime: raw.next_refresh_time,
+    refreshCount: raw.refresh_count,
+  };
+}
+
+export async function forceShopRefresh(): Promise<void> {
+  await invoke('force_shop_refresh', {});
 }

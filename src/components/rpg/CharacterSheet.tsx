@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import type {
   CharacterStats,
   CharacterEquipment,
+  CharacterEquipmentWithDetails,
   EquipmentInventoryItem,
   EquipmentItem,
   UserAbilityWithLevel,
@@ -11,6 +12,7 @@ import type {
 import {
   getCharacterStats,
   getCharacterEquipment,
+  getCharacterEquipmentWithDetails,
   getEquipmentInventory,
   getUserAbilitiesWithLevels,
   getAllAbilitiesWithStatus,
@@ -38,7 +40,7 @@ type Tab = 'stats' | 'equipment' | 'inventory' | 'potions' | 'abilities';
 export function CharacterSheet({ userId, isOpen, onClose }: CharacterSheetProps) {
   const [activeTab, setActiveTab] = useState<Tab>('stats');
   const [stats, setStats] = useState<CharacterStats | null>(null);
-  const [equipment, setEquipment] = useState<CharacterEquipment | null>(null);
+  const [equipment, setEquipment] = useState<CharacterEquipmentWithDetails | null>(null);
   const [inventory, setInventory] = useState<EquipmentInventoryItem[]>([]);
   const [potions, setPotions] = useState<UserConsumableInventoryItem[]>([]);
   const [abilities, setAbilities] = useState<AbilityWithUnlockStatus[]>([]);
@@ -55,7 +57,7 @@ export function CharacterSheet({ userId, isOpen, onClose }: CharacterSheetProps)
     try {
       const [statsData, equipmentData, inventoryData, potionsData, abilitiesData] = await Promise.all([
         getCharacterStats(userId),
-        getCharacterEquipment(userId),
+        getCharacterEquipmentWithDetails(userId),
         getEquipmentInventory(userId),
         getConsumableInventory(userId),
         getAllAbilitiesWithStatus(userId),
@@ -387,39 +389,86 @@ function EquipmentTab({
   equipment,
   onUnequip,
 }: {
-  equipment: CharacterEquipment;
+  equipment: CharacterEquipmentWithDetails;
   onUnequip: (slot: string) => void;
 }) {
   const slots = [
-    { key: 'weapon', id: equipment.weaponId, label: 'Weapon', icon: '⚔️' },
-    { key: 'shield', id: equipment.shieldId, label: 'Shield', icon: '🛡️' },
-    { key: 'helmet', id: equipment.helmetId, label: 'Helmet', icon: '⛑️' },
-    { key: 'chest', id: equipment.chestId, label: 'Chest Armor', icon: '🦺' },
-    { key: 'boots', id: equipment.bootsId, label: 'Boots', icon: '👢' },
+    { key: 'weapon', item: equipment.weapon, label: 'Weapon', icon: '⚔️' },
+    { key: 'shield', item: equipment.shield, label: 'Shield', icon: '🛡️' },
+    { key: 'helmet', item: equipment.helmet, label: 'Helmet', icon: '⛑️' },
+    { key: 'chest', item: equipment.chest, label: 'Chest Armor', icon: '🦺' },
+    { key: 'boots', item: equipment.boots, label: 'Boots', icon: '👢' },
   ];
+
+  const getTierColor = (tier: string) => {
+    switch (tier) {
+      case 'legendary': return 'text-orange-400';
+      case 'epic': return 'text-purple-400';
+      case 'rare': return 'text-blue-400';
+      case 'uncommon': return 'text-green-400';
+      default: return 'text-gray-400';
+    }
+  };
+
+  const getBonusDisplay = (item: EquipmentItem) => {
+    const bonuses = [];
+    if (item.damageBonus > 0) bonuses.push(`⚔️ +${item.damageBonus} Damage`);
+    if (item.defenseBonus > 0) bonuses.push(`🛡️ +${item.defenseBonus} Defense`);
+    if (item.hpBonus > 0) bonuses.push(`❤️ +${item.hpBonus} HP`);
+    if (item.manaBonus > 0) bonuses.push(`💙 +${item.manaBonus} Mana`);
+    if (item.strengthBonus > 0) bonuses.push(`💪 +${item.strengthBonus} Strength`);
+    if (item.intelligenceBonus > 0) bonuses.push(`🧠 +${item.intelligenceBonus} Intelligence`);
+    if (item.dexterityBonus > 0) bonuses.push(`⚡ +${item.dexterityBonus} Dexterity`);
+    if (item.criticalChanceBonus > 0) bonuses.push(`💥 +${(item.criticalChanceBonus * 100).toFixed(1)}% Crit`);
+    if (item.dodgeChanceBonus > 0) bonuses.push(`💨 +${(item.dodgeChanceBonus * 100).toFixed(1)}% Dodge`);
+    return bonuses;
+  };
 
   return (
     <div className="space-y-4">
       <h3 className="text-xl font-bold text-white mb-4">Equipped Items</h3>
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-4">
         {slots.map((slot) => (
-          <div key={slot.key} className="bg-slate-900 rounded-lg p-4">
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center gap-2">
-                <span className="text-2xl">{slot.icon}</span>
-                <span className="text-slate-400 font-medium">{slot.label}</span>
+          <div key={slot.key} className="bg-slate-900 rounded-lg p-4 border-2 border-slate-700">
+            <div className="flex items-start justify-between mb-2">
+              <div className="flex items-start gap-3 flex-1">
+                <span className="text-3xl">{slot.icon}</span>
+                <div className="flex-1">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-slate-400 font-medium text-sm">{slot.label}</span>
+                    {slot.item && (
+                      <button
+                        onClick={() => onUnequip(slot.key)}
+                        className="text-red-400 hover:text-red-300 text-sm font-medium"
+                      >
+                        Unequip
+                      </button>
+                    )}
+                  </div>
+                  {slot.item ? (
+                    <>
+                      <div className={`font-bold text-lg mb-1 ${getTierColor(slot.item.tier)}`}>
+                        {slot.item.name}
+                      </div>
+                      <div className="text-slate-400 text-sm mb-2">{slot.item.description}</div>
+                      {getBonusDisplay(slot.item).length > 0 && (
+                        <div className="flex flex-wrap gap-2 mt-2">
+                          {getBonusDisplay(slot.item).map((bonus, idx) => (
+                            <span
+                              key={idx}
+                              className="text-xs bg-slate-800 text-green-400 px-2 py-1 rounded"
+                            >
+                              {bonus}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    <div className="text-slate-600 italic">Empty Slot</div>
+                  )}
+                </div>
               </div>
-              {slot.id && (
-                <button
-                  onClick={() => onUnequip(slot.key)}
-                  className="text-red-400 hover:text-red-300 text-sm"
-                >
-                  Unequip
-                </button>
-              )}
-            </div>
-            <div className="text-white font-medium">
-              {slot.id ? slot.id.replace(/_/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase()) : 'Empty'}
             </div>
           </div>
         ))}
@@ -441,6 +490,30 @@ function InventoryTab({
     return item.slot;
   };
 
+  const getTierColor = (tier: string) => {
+    switch (tier) {
+      case 'legendary': return 'text-orange-400';
+      case 'epic': return 'text-purple-400';
+      case 'rare': return 'text-blue-400';
+      case 'uncommon': return 'text-green-400';
+      default: return 'text-gray-400';
+    }
+  };
+
+  const getBonusDisplay = (item: EquipmentItem) => {
+    const bonuses = [];
+    if (item.damageBonus > 0) bonuses.push(`⚔️ +${item.damageBonus} Damage`);
+    if (item.defenseBonus > 0) bonuses.push(`🛡️ +${item.defenseBonus} Defense`);
+    if (item.hpBonus > 0) bonuses.push(`❤️ +${item.hpBonus} HP`);
+    if (item.manaBonus > 0) bonuses.push(`💙 +${item.manaBonus} Mana`);
+    if (item.strengthBonus > 0) bonuses.push(`💪 +${item.strengthBonus} Strength`);
+    if (item.intelligenceBonus > 0) bonuses.push(`🧠 +${item.intelligenceBonus} Intelligence`);
+    if (item.dexterityBonus > 0) bonuses.push(`⚡ +${item.dexterityBonus} Dexterity`);
+    if (item.criticalChanceBonus > 0) bonuses.push(`💥 +${(item.criticalChanceBonus * 100).toFixed(1)}% Crit`);
+    if (item.dodgeChanceBonus > 0) bonuses.push(`💨 +${(item.dodgeChanceBonus * 100).toFixed(1)}% Dodge`);
+    return bonuses;
+  };
+
   return (
     <div className="space-y-4">
       <h3 className="text-xl font-bold text-white mb-4">Equipment Inventory</h3>
@@ -453,18 +526,32 @@ function InventoryTab({
           {inventory.map((item) => (
             <div
               key={item.id}
-              className="bg-slate-900 rounded-lg p-4 flex items-center justify-between"
+              className="bg-slate-900 rounded-lg p-4 border-2 border-slate-700 flex items-start justify-between gap-4"
             >
-              <div>
-                <div className="text-white font-medium">{item.equipment.name}</div>
-                <div className="text-slate-400 text-sm">{item.equipment.description}</div>
-                <div className="text-slate-500 text-xs mt-1">
-                  Tier: {item.equipment.tier} | Level: {item.equipment.requiredLevel}
+              <div className="flex-1">
+                <div className={`font-bold text-lg mb-1 ${getTierColor(item.equipment.tier)}`}>
+                  {item.equipment.name}
                 </div>
+                <div className="text-slate-400 text-sm mb-2">{item.equipment.description}</div>
+                <div className="text-slate-500 text-xs mb-2">
+                  {item.equipment.tier.charAt(0).toUpperCase() + item.equipment.tier.slice(1)} | Level {item.equipment.requiredLevel}
+                </div>
+                {getBonusDisplay(item.equipment).length > 0 && (
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {getBonusDisplay(item.equipment).map((bonus, idx) => (
+                      <span
+                        key={idx}
+                        className="text-xs bg-slate-800 text-green-400 px-2 py-1 rounded"
+                      >
+                        {bonus}
+                      </span>
+                    ))}
+                  </div>
+                )}
               </div>
               <button
                 onClick={() => onEquip(item.equipment, getSlotForItem(item.equipment))}
-                className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded font-medium transition-colors"
+                className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded font-medium transition-colors whitespace-nowrap"
               >
                 Equip
               </button>

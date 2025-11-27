@@ -5,7 +5,7 @@
 -- STARTING POINT
 -- ============================================================================
 
-INSERT INTO narrative_locations (id, floor_number, name, description, location_type, is_repeatable, icon) VALUES
+INSERT OR IGNORE INTO narrative_locations (id, floor_number, name, description, location_type, is_repeatable, icon) VALUES
 ('level1_start', 1, 'The Crumbling Gate',
 'You stand before the moss-covered entrance of an ancient fortress. The air smells of decay and old stone. Torch light flickers from within, casting dancing shadows. Three paths lie ahead.',
 'start', FALSE, '🏰');
@@ -14,7 +14,7 @@ INSERT INTO narrative_locations (id, floor_number, name, description, location_t
 -- PATH A: MAIN COURTYARD
 -- ============================================================================
 
-INSERT INTO narrative_locations (id, floor_number, name, description, location_type, is_repeatable, icon) VALUES
+INSERT OR IGNORE INTO narrative_locations (id, floor_number, name, description, location_type, is_repeatable, icon) VALUES
 ('path_a_courtyard', 1, 'The Courtyard',
 'A wide-open courtyard with scattered debris, broken weapon racks, and a dried fountain in the center. Giant rats scatter through the rubble.',
 'combat', FALSE, '⚔️'),
@@ -59,7 +59,7 @@ INSERT INTO narrative_locations (id, floor_number, name, description, location_t
 -- PATH B: DARK CORRIDOR
 -- ============================================================================
 
-INSERT INTO narrative_locations (id, floor_number, name, description, location_type, is_repeatable, icon) VALUES
+INSERT OR IGNORE INTO narrative_locations (id, floor_number, name, description, location_type, is_repeatable, icon) VALUES
 ('path_b_trapped_hall', 1, 'The Trapped Hallway',
 'A narrow hallway with flickering torches. Scorch marks cover the walls, and a pressure plate is clearly visible on the floor.',
 'skill_check', FALSE, '⚠️'),
@@ -79,6 +79,10 @@ INSERT INTO narrative_locations (id, floor_number, name, description, location_t
 ('path_b_storage_room3', 1, 'Storage Room - Third Chamber',
 'A skeleton guardian animates as you enter, drawn by ancient magic to protect this chamber!',
 'combat', FALSE, '💀'),
+
+('path_b_storage_room3_cleared', 1, 'Storage Room - Third Chamber (Cleared)',
+'The skeleton has been defeated. On the wall, you spot an ancient map showing the fortress layout. A door at the back of the room leads onward, or you can return to the fork.',
+'choice_point', FALSE, '🗺️'),
 
 ('path_b_throne_approach', 1, 'Throne Room Approach',
 'Suits of armor line the walls of this hallway. Something feels wrong about this place...',
@@ -104,7 +108,7 @@ INSERT INTO narrative_locations (id, floor_number, name, description, location_t
 -- PATH C: OVERGROWN GARDEN
 -- ============================================================================
 
-INSERT INTO narrative_locations (id, floor_number, name, description, location_type, is_repeatable, icon) VALUES
+INSERT OR IGNORE INTO narrative_locations (id, floor_number, name, description, location_type, is_repeatable, icon) VALUES
 ('path_c_wild_garden', 1, 'The Wild Garden',
 'Wild vegetation has overtaken this area. Moonlight streams through breaks in the ceiling. Strange animal sounds echo nearby - wolves, by the sound of it.',
 'choice_point', FALSE, '🌿'),
@@ -133,7 +137,7 @@ INSERT INTO narrative_locations (id, floor_number, name, description, location_t
 -- SECONDARY & SECRET AREAS
 -- ============================================================================
 
-INSERT INTO narrative_locations (id, floor_number, name, description, location_type, is_repeatable, icon) VALUES
+INSERT OR IGNORE INTO narrative_locations (id, floor_number, name, description, location_type, is_repeatable, icon) VALUES
 ('underground_aqueduct', 1, 'Underground Aqueduct',
 'Ancient waterways beneath the fortress. Ankle-deep water flows through the tunnels, and you can see three passages branching off.',
 'combat', FALSE, '💧'),
@@ -178,7 +182,7 @@ INSERT INTO narrative_locations (id, floor_number, name, description, location_t
 -- CONVERGENCE & FINALE
 -- ============================================================================
 
-INSERT INTO narrative_locations (id, floor_number, name, description, location_type, is_repeatable, icon) VALUES
+INSERT OR IGNORE INTO narrative_locations (id, floor_number, name, description, location_type, is_repeatable, icon) VALUES
 ('great_hall', 1, 'The Great Hall',
 'A massive hall with a balcony above and long tables overturned. This is where many paths converge. Goblins and a tamed wolf emerge to fight!',
 'combat', FALSE, '🏛️'),

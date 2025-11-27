@@ -5,7 +5,7 @@
 -- COMMON ENEMIES
 -- ============================================================================
 
-INSERT INTO enemy_types (id, name, description, base_health, base_damage, base_defense, behavior_type, gold_drop_min, gold_drop_max, xp_reward, icon) VALUES
+INSERT OR IGNORE INTO enemy_types (id, name, description, base_health, base_damage, base_defense, behavior_type, gold_drop_min, gold_drop_max, xp_reward, icon) VALUES
 ('giant_rat', 'Giant Rat', 'A filthy rodent the size of a large dog, with matted fur and gleaming teeth.', 25, 3, 1, 'aggressive', 3, 8, 15, '🐀'),
 ('goblin', 'Goblin', 'A small, green-skinned humanoid wielding crude weapons and wearing scraps of armor.', 35, 5, 2, 'balanced', 5, 12, 25, '👺'),
 ('skeleton', 'Skeleton', 'An animated pile of bones held together by dark magic, wielding a rusty sword.', 30, 6, 3, 'defensive', 8, 15, 30, '💀'),
@@ -19,7 +19,7 @@ INSERT INTO enemy_types (id, name, description, base_health, base_damage, base_d
 -- BOSS ENEMIES
 -- ============================================================================
 
-INSERT INTO boss_enemies (id, name, description, floor_number, health, damage, defense, abilities, phases, gold_reward, xp_reward, guaranteed_loot, icon) VALUES
+INSERT OR IGNORE INTO boss_enemies (id, name, description, floor_number, health, damage, defense, abilities, phases, gold_reward, xp_reward, guaranteed_loot, icon) VALUES
 ('gelatinous_cube_boss', 'Gelatinous Cube', 'A massive, translucent cube of acidic ooze that fills the ceremonial hall. Bones and treasures float within its gelatinous mass.', 1, 150, 12, 3,
 '["Acid Touch", "Engulf", "Acid Splash"]',
 '[{"hpThreshold": 50, "effect": "Enraged - Increased attack speed", "description": "The cube pulses angrily, moving faster!"}]',
