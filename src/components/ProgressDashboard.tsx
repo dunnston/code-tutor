@@ -2,9 +2,7 @@ import { useAppStore } from '@/lib/store'
 import {
   xpForNextLevel,
   xpProgressToNextLevel,
-  BADGES,
   exportProgress,
-  type BadgeId,
 } from '@/lib/storage'
 
 export function ProgressDashboard() {
@@ -116,8 +114,8 @@ export function ProgressDashboard() {
               <div className="text-xs text-gray-400 mt-1">Total XP</div>
             </div>
             <div className="bg-slate-700 rounded-lg p-4 text-center">
-              <div className="text-2xl font-bold text-purple-400">{progress.badges.length}</div>
-              <div className="text-xs text-gray-400 mt-1">Badges Earned</div>
+              <div className="text-2xl font-bold text-purple-400">{progress.streak.totalDaysActive}</div>
+              <div className="text-xs text-gray-400 mt-1">Total Days Active</div>
             </div>
             <div className="bg-slate-700 rounded-lg p-4 text-center">
               <div className="text-2xl font-bold text-yellow-400">
@@ -127,35 +125,9 @@ export function ProgressDashboard() {
             </div>
             <div className="bg-slate-700 rounded-lg p-4 text-center">
               <div className="text-2xl font-bold text-green-400">
-                {progress.streak.totalDaysActive}
+                {completedCount}
               </div>
-              <div className="text-xs text-gray-400 mt-1">Days Active</div>
-            </div>
-          </div>
-
-          {/* Badges Section */}
-          <div className="mb-8">
-            <h3 className="text-xl font-bold text-gray-100 mb-4">Achievements</h3>
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-              {(Object.keys(BADGES) as BadgeId[]).map((badgeId) => {
-                const badge = BADGES[badgeId]
-                const earned = progress.badges.includes(badgeId)
-                return (
-                  <div
-                    key={badgeId}
-                    className={`bg-slate-700 rounded-lg p-4 text-center transition-all ${
-                      earned ? 'opacity-100' : 'opacity-40 grayscale'
-                    }`}
-                    title={badge.description}
-                  >
-                    <div className="text-4xl mb-2">{badge.icon}</div>
-                    <div className={`text-sm font-medium ${earned ? 'text-gray-100' : 'text-gray-500'}`}>
-                      {badge.name}
-                    </div>
-                    <div className="text-xs text-gray-500 mt-1">{badge.description}</div>
-                  </div>
-                )
-              })}
+              <div className="text-xs text-gray-400 mt-1">Lessons Done</div>
             </div>
           </div>
 

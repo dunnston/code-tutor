@@ -59,21 +59,6 @@ export function Header() {
           </div>
         )}
 
-        {/* Badge Count */}
-        {progress.badges.length > 0 && (
-          <button
-            onClick={toggleDashboard}
-            className="flex items-center gap-2 px-3 py-1.5 bg-navy-900 rounded-lg border border-navy-700 hover:border-purple-500 transition-colors"
-            title="View your badges"
-          >
-            <span className="text-lg">🏅</span>
-            <div className="text-sm">
-              <span className="text-purple-400 font-bold">{progress.badges.length}</span>
-              <span className="text-gray-400 ml-1">badges</span>
-            </div>
-          </button>
-        )}
-
         {/* Achievements Button */}
         <button
           onClick={() => setCurrentView('achievements')}
