@@ -26,6 +26,7 @@ import { ShopView } from '@components/shop/ShopView'
 import { InventoryView } from '@components/inventory/InventoryView'
 import { QuestBoardView } from '@components/quests/QuestBoardView'
 import { DevPanel } from '@components/DevPanel'
+import { DungeonNodeEditor } from '@components/dungeon-editor/DungeonNodeEditor'
 import { useAppStore } from '@/lib/store'
 import { executeCode } from '@/lib/tauri'
 import { validateCode, getValidationSummary } from '@/lib/validation'
@@ -67,6 +68,7 @@ function App() {
   const [showWelcome, setShowWelcome] = useState(false)
   const [showSolutionModal, setShowSolutionModal] = useState(false)
   const [showDevPanel, setShowDevPanel] = useState(false)
+  const [showDungeonEditor, setShowDungeonEditor] = useState(false)
 
   // Store last execution result for validation
   const lastExecutionResult = useRef<ExecutionResult | undefined>()
@@ -392,11 +394,19 @@ function App() {
         e.preventDefault()
         setShowDevPanel(!showDevPanel)
       }
+      // Ctrl/Cmd + Shift + E to toggle dungeon editor (dev only)
+      if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'E') {
+        // Only allow in development mode
+        if (import.meta.env.DEV) {
+          e.preventDefault()
+          setShowDungeonEditor(!showDungeonEditor)
+        }
+      }
     }
 
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [code, showDevPanel])
+  }, [code, showDevPanel, showDungeonEditor])
 
   // Show profile selector if no profile is active
   if (!currentProfile) {
@@ -520,6 +530,13 @@ function App() {
 
       {/* Developer Panel */}
       {showDevPanel && <DevPanel onClose={() => setShowDevPanel(false)} />}
+
+      {/* Dungeon Editor (Dev Only) */}
+      {showDungeonEditor && import.meta.env.DEV && (
+        <div className="fixed inset-0 z-50">
+          <DungeonNodeEditor onClose={() => setShowDungeonEditor(false)} />
+        </div>
+      )}
     </div>
   )
 }

@@ -10,6 +10,10 @@ mod narrative_commands;
 mod shop_commands;
 mod dev_commands;
 mod achievement_commands;
+mod dungeon_level_commands;
+mod enemy_commands;
+mod mcq_commands;
+mod item_commands;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -178,6 +182,38 @@ pub fn run() {
       achievement_commands::mark_achievement_notification_shown,
       achievement_commands::claim_achievement_rewards,
       achievement_commands::mark_achievements_as_viewed,
+      // Dungeon Level Editor commands
+      dungeon_level_commands::save_dungeon_level,
+      dungeon_level_commands::load_dungeon_level,
+      dungeon_level_commands::list_dungeon_levels,
+      dungeon_level_commands::delete_dungeon_level,
+      dungeon_level_commands::duplicate_dungeon_level,
+      dungeon_level_commands::update_level_sequence,
+      dungeon_level_commands::get_levels_in_sequence,
+      // Custom Enemy commands
+      enemy_commands::save_custom_enemy,
+      enemy_commands::load_custom_enemy,
+      enemy_commands::list_custom_enemies,
+      enemy_commands::delete_custom_enemy,
+      enemy_commands::duplicate_custom_enemy,
+      // MCQ Question commands
+      mcq_commands::save_mcq_question,
+      mcq_commands::load_mcq_question,
+      mcq_commands::list_mcq_questions,
+      mcq_commands::delete_mcq_question,
+      mcq_commands::duplicate_mcq_question,
+      mcq_commands::get_random_mcq_question,
+      mcq_commands::import_dungeon_challenges_to_mcq,
+      // Item commands
+      item_commands::list_equipment_items,
+      item_commands::list_consumable_items,
+      item_commands::list_all_loot_items,
+      item_commands::save_custom_consumable,
+      item_commands::save_custom_equipment,
+      item_commands::get_equipment_item,
+      item_commands::get_consumable_item,
+      item_commands::delete_equipment_item,
+      item_commands::delete_consumable_item,
     ])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");

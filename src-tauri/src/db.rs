@@ -271,6 +271,34 @@ pub fn initialize_database(app: &AppHandle) -> Result<(), String> {
     // Try to execute migration, but don't fail if columns already exist
     let _ = conn.execute_batch(solution_viewed_migration);
 
+    // Execute dungeon level editor migration
+    log::info!("Loading dungeon level editor migration...");
+    let dungeon_levels_migration = include_str!("../migrations/030_dungeon_levels.sql");
+    conn.execute_batch(dungeon_levels_migration)
+        .map_err(|e| {
+            log::error!("Dungeon levels migration failed: {}", e);
+            format!("Failed to execute dungeon levels migration: {}", e)
+        })?;
+    log::info!("Dungeon levels migration completed successfully");
+
+    // Execute level sequencing migration
+    log::info!("Loading level sequencing migration...");
+    let level_sequencing_migration = include_str!("../migrations/031_level_sequencing.sql");
+    let _ = conn.execute_batch(level_sequencing_migration); // Allow failure if column already exists
+    log::info!("Level sequencing migration completed");
+
+    // Execute custom enemies migration
+    log::info!("Loading custom enemies migration...");
+    let custom_enemies_migration = include_str!("../migrations/032_custom_enemies.sql");
+    let _ = conn.execute_batch(custom_enemies_migration); // Allow failure if table already exists
+    log::info!("Custom enemies migration completed");
+
+    // Execute MCQ questions migration
+    log::info!("Loading MCQ questions migration...");
+    let mcq_migration = include_str!("../migrations/033_mcq_questions.sql");
+    let _ = conn.execute_batch(mcq_migration); // Allow failure if table already exists
+    log::info!("MCQ questions migration completed");
+
     log::info!("Database initialized successfully at {:?}", db_path);
     Ok(())
 }
