@@ -241,14 +241,24 @@ pub fn initialize_database(app: &AppHandle) -> Result<(), String> {
         })?;
     log::info!("Achievement seed data completed successfully");
 
-    // Execute achievement viewed tracking migration
+    // Execute achievement viewed tracking migration (idempotent)
     log::info!("Loading achievement viewed tracking migration...");
-    let achievement_viewed_migration = include_str!("../migrations/029_achievement_viewed_tracking.sql");
-    conn.execute_batch(achievement_viewed_migration)
-        .map_err(|e| {
-            log::error!("Achievement viewed tracking migration failed: {}", e);
-            format!("Failed to execute achievement viewed tracking migration: {}", e)
-        })?;
+
+    // Try to add the viewed_at column - ignore error if column already exists
+    let _ = conn.execute(
+        "ALTER TABLE user_achievement_progress ADD COLUMN viewed_at TEXT",
+        [],
+    );
+
+    // Create index (IF NOT EXISTS handles idempotency)
+    conn.execute(
+        "CREATE INDEX IF NOT EXISTS idx_user_achievement_viewed ON user_achievement_progress(user_id, viewed_at)",
+        [],
+    ).map_err(|e| {
+        log::error!("Failed to create achievement viewed index: {}", e);
+        format!("Failed to create achievement viewed index: {}", e)
+    })?;
+
     log::info!("Achievement viewed tracking migration completed successfully");
 
     // Execute solution_viewed migration (if columns don't exist yet)
