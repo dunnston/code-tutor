@@ -6,7 +6,6 @@ import { GamificationWidget } from './dashboard/GamificationWidget'
 import { PuzzleWidget } from './dashboard/PuzzleWidget'
 import { PlaygroundWidget } from './dashboard/PlaygroundWidget'
 import { CourseCatalog } from './dashboard/CourseCatalog'
-import { AchievementPreview } from './dashboard/AchievementPreview'
 import { DungeonWidget, TownHub, CharacterSheet } from './rpg'
 import { useAppStore } from '@/lib/store'
 import type { CourseCategory } from '@/types/course'
@@ -65,11 +64,6 @@ export function Dashboard({ onLogout }: DashboardProps) {
         {/* Puzzle Widget */}
         <section className="mt-8">
           <PuzzleWidget />
-        </section>
-
-        {/* Achievements Preview */}
-        <section className="mt-8">
-          <AchievementPreview />
         </section>
 
         {/* Course Catalog */}

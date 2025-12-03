@@ -57,13 +57,6 @@ export function StatsGrid() {
       bgColor: 'bg-purple-500/10',
     },
     {
-      label: 'Badges Earned',
-      value: progress.badges.length,
-      icon: '🏅',
-      color: 'text-yellow-400',
-      bgColor: 'bg-yellow-500/10',
-    },
-    {
       label: 'Avg. Session',
       value: avgMinutes > 0 ? `${avgMinutes} min` : '-',
       icon: '📊',
