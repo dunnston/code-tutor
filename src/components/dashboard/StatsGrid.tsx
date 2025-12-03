@@ -1,7 +1,12 @@
 import { useAppStore } from '@/lib/store'
+import { invoke } from '@tauri-apps/api/core'
+import { useEffect, useState } from 'react'
+import type { AchievementStats } from '@/lib/achievements'
 
 export function StatsGrid() {
   const progress = useAppStore((state) => state.progress)
+  const setCurrentView = useAppStore((state) => state.setCurrentView)
+  const [achievementStats, setAchievementStats] = useState<AchievementStats | null>(null)
 
   // Calculate total lessons completed
   const totalLessonsCompleted = progress.completedLessons.length
@@ -26,6 +31,21 @@ export function StatsGrid() {
     return new Date(session.completedAt).getTime() > oneWeekAgo
   })
   const lessonsThisWeek = recentSessions.length
+
+  // Fetch achievement stats
+  useEffect(() => {
+    const fetchAchievementStats = async () => {
+      try {
+        const stats = await invoke<AchievementStats>('get_achievement_stats', {
+          userId: 1, // TODO: Get from current profile
+        })
+        setAchievementStats(stats)
+      } catch (error) {
+        console.error('Failed to fetch achievement stats:', error)
+      }
+    }
+    fetchAchievementStats()
+  }, [])
 
   const stats = [
     {
@@ -81,6 +101,23 @@ export function StatsGrid() {
             <div className="text-xs text-gray-400">{stat.label}</div>
           </div>
         ))}
+
+        {/* Achievements Card - Clickable */}
+        <button
+          onClick={() => setCurrentView('achievements')}
+          className="bg-navy-800 rounded-lg p-4 border border-navy-700 hover:border-yellow-500 transition-colors text-left group"
+        >
+          <div className="text-3xl mb-2 bg-yellow-500/10 w-12 h-12 rounded-lg flex items-center justify-center">
+            🏆
+          </div>
+          <div className="text-2xl font-bold text-yellow-400 mb-1">
+            {achievementStats ? achievementStats.total_completed : 0}
+          </div>
+          <div className="text-xs text-gray-400 flex items-center gap-1">
+            Achievements
+            <span className="text-yellow-500 opacity-0 group-hover:opacity-100 transition-opacity">→</span>
+          </div>
+        </button>
       </div>
     </div>
   )
