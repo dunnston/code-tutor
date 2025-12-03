@@ -93,8 +93,8 @@ interface AppState {
   toggleDashboard: () => void
   settingsOpen: boolean
   toggleSettings: () => void
-  currentView: 'dashboard' | 'learning' | 'puzzles' | 'puzzle-list' | 'puzzle-solver' | 'playground' | 'shop' | 'inventory' | 'quests' | 'puzzle-all' | 'puzzle-leaderboard' | 'puzzle-achievements'
-  setCurrentView: (view: 'dashboard' | 'learning' | 'puzzles' | 'puzzle-list' | 'puzzle-solver' | 'playground' | 'shop' | 'inventory' | 'quests' | 'puzzle-all' | 'puzzle-leaderboard' | 'puzzle-achievements') => void
+  currentView: 'dashboard' | 'learning' | 'puzzles' | 'puzzle-list' | 'puzzle-solver' | 'playground' | 'shop' | 'inventory' | 'quests' | 'puzzle-all' | 'puzzle-leaderboard' | 'puzzle-achievements' | 'achievements'
+  setCurrentView: (view: 'dashboard' | 'learning' | 'puzzles' | 'puzzle-list' | 'puzzle-solver' | 'playground' | 'shop' | 'inventory' | 'quests' | 'puzzle-all' | 'puzzle-leaderboard' | 'puzzle-achievements' | 'achievements') => void
 
   // Puzzle state
   currentPuzzleCategoryId: string | null

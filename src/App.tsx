@@ -19,6 +19,7 @@ import { PuzzleSolver } from '@components/puzzles/PuzzleSolver'
 import { AllPuzzlesList } from '@components/puzzles/AllPuzzlesList'
 import { PuzzleLeaderboard } from '@components/puzzles/PuzzleLeaderboard'
 import { PuzzleAchievements } from '@components/puzzles/PuzzleAchievements'
+import { AchievementsList } from '@components/achievements/AchievementsList'
 import { AchievementNotificationManager } from '@components/achievements/AchievementNotification'
 import PlaygroundView from '@components/playground/PlaygroundView'
 import { ShopView } from '@components/shop/ShopView'
@@ -34,6 +35,7 @@ import { hasCompletedOnboarding, completeOnboarding, resetOnboarding } from '@/l
 import { getCurrentProfile, ensureProfileHasDbUser, type UserProfile } from '@/lib/profiles'
 import { aiService } from '@/lib/ai'
 import { incrementQuestProgress, initializeQuestProgress } from '@/lib/gamification'
+import { useAchievements } from '@/hooks/useAchievements'
 import type { ExecutionResult } from '@/types/execution'
 import type { LanguageId } from '@/types/language'
 
@@ -56,6 +58,9 @@ function App() {
   const currentPuzzleCategoryId = useAppStore((state) => state.currentPuzzleCategoryId)
   const currentPuzzleId = useAppStore((state) => state.currentPuzzleId)
   const currentUserId = useAppStore((state) => state.currentUserId)
+
+  // Achievement tracking
+  const { trackLessonCompleted, trackPerfectLesson, trackXpEarned } = useAchievements()
 
   // Profile & Onboarding state
   const [currentProfile, setCurrentProfile] = useState<UserProfile | null>(getCurrentProfile())
@@ -307,6 +312,19 @@ function App() {
           }
         }
 
+        // Track achievements
+        try {
+          await trackLessonCompleted()
+          if (currentLesson.xpReward > 0) {
+            await trackXpEarned(currentLesson.xpReward)
+          }
+          if (hintsRevealed === 0) {
+            await trackPerfectLesson()
+          }
+        } catch (error) {
+          console.error('Failed to track achievements:', error)
+        }
+
         addConsoleMessage({
           type: 'system',
           content: `🎉 All tests passed! (${summary.passed}/${summary.total}) - Earned ${currentLesson.xpReward} XP!`,
@@ -414,6 +432,9 @@ function App() {
 
       {/* Puzzle Achievements View */}
       {currentView === 'puzzle-achievements' && <PuzzleAchievements />}
+
+      {/* Unified Achievements View */}
+      {currentView === 'achievements' && <AchievementsList />}
 
       {/* Playground View */}
       {currentView === 'playground' && <PlaygroundView />}

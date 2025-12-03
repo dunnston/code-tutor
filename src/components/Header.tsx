@@ -73,6 +73,16 @@ export function Header() {
             </div>
           </button>
         )}
+
+        {/* Achievements Button */}
+        <button
+          onClick={() => setCurrentView('achievements')}
+          className="flex items-center gap-2 px-3 py-1.5 bg-navy-900 rounded-lg border border-navy-700 hover:border-yellow-500 transition-colors"
+          title="View all achievements"
+        >
+          <span className="text-lg">🏆</span>
+          <span className="text-sm text-gray-400">Achievements</span>
+        </button>
       </div>
 
       {/* Progress indicator */}

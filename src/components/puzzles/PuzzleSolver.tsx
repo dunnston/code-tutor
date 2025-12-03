@@ -13,6 +13,7 @@ import { validatePuzzleSolution, formatTestResults } from '@/lib/puzzleValidatio
 import { useAppStore } from '@/lib/store'
 import { executeCode } from '@/lib/tauri'
 import { incrementQuestProgress } from '@/lib/gamification'
+import { useAchievements } from '@/hooks/useAchievements'
 import type {
   Puzzle,
   PuzzleImplementation,
@@ -57,6 +58,9 @@ export function PuzzleSolver({ puzzleId }: PuzzleSolverProps) {
   const addXP = useAppStore((state) => state.addXP)
   const consoleMessages = useAppStore((state) => state.consoleMessages)
   const currentUserId = useAppStore((state) => state.currentUserId)
+
+  // Achievement tracking
+  const { trackPuzzleSolved, trackPerfectPuzzle, trackXpEarned } = useAchievements()
 
   const lastExecutionResult = useRef<ExecutionResult | undefined>()
 
@@ -227,6 +231,19 @@ export function PuzzleSolver({ puzzleId }: PuzzleSolverProps) {
           } catch (error) {
             console.error('Failed to update quest progress:', error)
           }
+        }
+
+        // Track achievements
+        try {
+          await trackPuzzleSolved()
+          if (points > 0) {
+            await trackXpEarned(points)
+          }
+          if (hintsRevealed === 0 && !solutionViewed) {
+            await trackPerfectPuzzle()
+          }
+        } catch (error) {
+          console.error('Failed to track achievements:', error)
         }
 
         addConsoleMessage({

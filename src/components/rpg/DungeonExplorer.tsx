@@ -43,6 +43,7 @@ import { CharacterStatsDisplay } from './CharacterStats';
 import { CombatModal } from './CombatModal';
 import type { CombatRewards } from '../../lib/rpg';
 import { getCurrentProfile } from '../../lib/profiles';
+import { useAchievements } from '../../hooks/useAchievements';
 
 interface DungeonExplorerProps {
   userId: number;
@@ -84,6 +85,9 @@ export function DungeonExplorer({ userId, onClose }: DungeonExplorerProps) {
 
   // Player avatar
   const [playerAvatar, setPlayerAvatar] = useState<string>('');
+
+  // Achievement tracking
+  const { trackEnemyDefeated, trackBossDefeated, trackFloorCleared, trackGoldEarned, trackXpEarned } = useAchievements();
 
   useEffect(() => {
     loadDungeonState();
@@ -349,6 +353,23 @@ export function DungeonExplorer({ userId, onClose }: DungeonExplorerProps) {
 
   async function handleCombatVictory(rewards: CombatRewards) {
     console.log('Combat victory! Rewards:', rewards);
+
+    // Track achievement progress
+    try {
+      await trackEnemyDefeated();
+      if (rewards.xpGained > 0) {
+        await trackXpEarned(rewards.xpGained);
+      }
+      if (rewards.goldGained > 0) {
+        await trackGoldEarned(rewards.goldGained);
+      }
+      // Check if it was a boss (you might want to add a flag in rewards for this)
+      if (encounter?.enemy && 'isBoss' in encounter.enemy) {
+        await trackBossDefeated();
+      }
+    } catch (error) {
+      console.error('Failed to track combat achievements:', error);
+    }
 
     // If we have the combat choice ID, get the success outcome
     if (combatChoiceId) {
