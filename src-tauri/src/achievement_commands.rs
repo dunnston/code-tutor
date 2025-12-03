@@ -1,7 +1,7 @@
 use rusqlite::{params, Connection, Result};
 use serde::{Deserialize, Serialize};
-use std::sync::Mutex;
-use tauri::State;
+use tauri::AppHandle;
+use crate::db;
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Achievement {
@@ -73,13 +73,13 @@ pub struct AchievementNotification {
 /// Get all achievements with user progress
 #[tauri::command]
 pub fn get_achievements(
-    db: State<'_, Mutex<Connection>>,
+    app: AppHandle,
     user_id: i32,
     category_filter: Option<String>,
     tier_filter: Option<String>,
     completion_filter: Option<String>, // 'all', 'completed', 'locked'
 ) -> Result<Vec<AchievementWithProgress>, String> {
-    let conn = db.lock().unwrap();
+    let conn = db::get_connection(&app)?;
 
     let mut query = String::from(
         "SELECT
@@ -172,10 +172,10 @@ pub fn get_achievements(
 /// Get achievement statistics for a user
 #[tauri::command]
 pub fn get_achievement_stats(
-    db: State<'_, Mutex<Connection>>,
+    app: AppHandle,
     user_id: i32,
 ) -> Result<AchievementStats, String> {
-    let conn = db.lock().unwrap();
+    let conn = db::get_connection(&app)?;
 
     // Total achievements
     let total_achievements: i32 = conn
@@ -267,12 +267,12 @@ pub fn get_achievement_stats(
 /// Update achievement progress by tracking key
 #[tauri::command]
 pub fn update_achievement_progress(
-    db: State<'_, Mutex<Connection>>,
+    app: AppHandle,
     user_id: i32,
     tracking_key: String,
     increment: i32,
 ) -> Result<Vec<String>, String> {
-    let mut conn = db.lock().unwrap();
+    let mut conn = db::get_connection(&app)?;
     let tx = conn.transaction().map_err(|e| e.to_string())?;
 
     // Update the user_achievement_stats table
@@ -366,10 +366,10 @@ pub fn update_achievement_progress(
 /// Get pending achievement notifications
 #[tauri::command]
 pub fn get_pending_achievement_notifications(
-    db: State<'_, Mutex<Connection>>,
+    app: AppHandle,
     user_id: i32,
 ) -> Result<Vec<AchievementNotification>, String> {
-    let conn = db.lock().unwrap();
+    let conn = db::get_connection(&app)?;
 
     let mut stmt = conn
         .prepare(
@@ -428,10 +428,10 @@ pub fn get_pending_achievement_notifications(
 /// Mark achievement notification as shown
 #[tauri::command]
 pub fn mark_achievement_notification_shown(
-    db: State<'_, Mutex<Connection>>,
+    app: AppHandle,
     notification_id: i32,
 ) -> Result<(), String> {
-    let conn = db.lock().unwrap();
+    let conn = db::get_connection(&app)?;
 
     conn.execute(
         "UPDATE achievement_notifications SET shown = TRUE, shown_at = CURRENT_TIMESTAMP WHERE id = ?1",
@@ -445,11 +445,11 @@ pub fn mark_achievement_notification_shown(
 /// Claim achievement rewards
 #[tauri::command]
 pub fn claim_achievement_rewards(
-    db: State<'_, Mutex<Connection>>,
+    app: AppHandle,
     user_id: i32,
     achievement_id: String,
 ) -> Result<(), String> {
-    let mut conn = db.lock().unwrap();
+    let mut conn = db::get_connection(&app)?;
     let tx = conn.transaction().map_err(|e| e.to_string())?;
 
     // Check if already claimed
