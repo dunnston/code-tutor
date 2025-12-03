@@ -24,14 +24,11 @@ export interface AvatarOption {
 }
 
 export const AVATAR_OPTIONS: AvatarOption[] = [
-  { id: 'boy', name: 'Boy', path: '/src/images/avatars/boy-avatar.png' },
-  { id: 'girl', name: 'Girl', path: '/src/images/avatars/girl-avatar.png' },
-  { id: 'sword', name: 'Sword Warrior', path: '/src/images/avatars/sword-avatar.png' },
-  { id: 'archer', name: 'Archer', path: '/src/images/avatars/archer-womanpng.png' },
-  { id: 'armor', name: 'Armored Warrior', path: '/src/images/avatars/woman-armor.png' },
   { id: 'dragon', name: 'Dragon Born', path: '/src/images/avatars/dragon-born.png' },
-  { id: 'male-elf', name: 'Male Elf', path: '/src/images/avatars/male-elf.png' },
-  { id: 'female-elf', name: 'Female Elf', path: '/src/images/avatars/female-elf.png' },
+  { id: 'female-archer', name: 'Female Archer', path: '/src/images/avatars/female-archer.png' },
+  { id: 'female-rouge', name: 'Female Rogue', path: '/src/images/avatars/female-rouge.png' },
+  { id: 'male-rouge', name: 'Male Rogue', path: '/src/images/avatars/male-rouge.png' },
+  { id: 'wizard', name: 'Wizard', path: '/src/images/avatars/wizzard.png' },
 ]
 
 /**

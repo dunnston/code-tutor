@@ -15,12 +15,15 @@ import {
 import type { Ability, EnemyType, BossEnemy, DungeonChallenge } from '../../types/rpg';
 import { CharacterStatsDisplay } from './CharacterStats';
 import type { CharacterStats } from '../../types/rpg';
+import { getEnemyImage } from '../../lib/enemyImages';
+import { getPlayerAttackAnimation, getEnemyAttackAnimation } from '../../lib/combatAnimations';
 
 interface CombatModalProps {
   userId: number;
   enemy: EnemyType | BossEnemy;
   isBoss: boolean;
   playerStats: CharacterStats;
+  playerAvatar?: string; // Player's avatar image path
   floorNumber: number;
   onVictory: (rewards: CombatRewards) => void;
   onDefeat: () => void;
@@ -40,6 +43,7 @@ export function CombatModal({
   enemy,
   isBoss,
   playerStats: initialPlayerStats,
+  playerAvatar,
   floorNumber,
   onVictory,
   onDefeat,
@@ -48,6 +52,13 @@ export function CombatModal({
   const [combat, setCombat] = useState<ActiveCombat | null>(null);
   const [playerStats, setPlayerStats] = useState(initialPlayerStats);
   const [abilities, setAbilities] = useState<Ability[]>([]);
+
+  // Convert cropped avatar to full-size version for combat
+  const getFullAvatar = (croppedPath: string | undefined): string => {
+    if (!croppedPath) return '/src/images/avatars/full/dragon-born.png';
+    // Replace /avatars/ with /avatars/full/
+    return croppedPath.replace('/avatars/', '/avatars/full/');
+  };
   const [selectedAbility, setSelectedAbility] = useState<Ability | null>(null);
   const [challenge, setChallenge] = useState<DungeonChallenge | null>(null);
   const [selectedAnswer, setSelectedAnswer] = useState<string>('');
@@ -56,6 +67,10 @@ export function CombatModal({
   const [loading, setLoading] = useState(true);
   const [fleeRoll, setFleeRoll] = useState<number | null>(null);
   const [fleeDamage, setFleeDamage] = useState<number>(0);
+
+  // Animation state
+  const [showPlayerAnimation, setShowPlayerAnimation] = useState(false);
+  const [showEnemyAnimation, setShowEnemyAnimation] = useState(false);
 
   useEffect(() => {
     initializeCombat();
@@ -131,23 +146,22 @@ export function CombatModal({
       console.log('Combat turn result:', result);
       console.log('Enemy defeated?', result.enemyDefeated, 'Enemy HP:', result.enemyCurrentHealth);
 
-      // Update combat state
+      // Update turn number immediately
       if (combat) {
         setCombat({
           ...combat,
-          enemyCurrentHealth: result.enemyCurrentHealth,
           combatTurn: result.turnNumber,
+          enemyCurrentHealth: combat.enemyCurrentHealth, // Don't update health yet
         });
       }
 
-      // Update player stats
+      // Update mana immediately (consumed on attack)
       setPlayerStats({
         ...playerStats,
-        currentHealth: result.playerCurrentHealth,
         currentMana: result.playerCurrentMana,
       });
 
-      // Add answer feedback
+      // Add answer feedback immediately
       if (challengeSuccess) {
         addLogEntry(
           result.turnNumber,
@@ -162,50 +176,162 @@ export function CombatModal({
         );
       }
 
-      // Add combat log entries
-      if (result.playerDamageDealt > 0) {
-        const critText = result.isCritical ? ' Critical hit!' : '';
-        addLogEntry(
-          result.turnNumber,
-          `You dealt ${result.playerDamageDealt} damage!${critText}`,
-          'damage'
-        );
-      }
+      // Determine if attacks happened
+      const hasPlayerAttack = result.playerDamageDealt > 0;
+      const hasEnemyAttack = result.playerDamageTaken > 0;
 
-      if (result.playerDamageTaken > 0) {
-        const dodgeText = result.isDodged ? ' You dodged!' : '';
-        addLogEntry(
-          result.turnNumber,
-          `${combat.enemyName} dealt ${result.playerDamageTaken} damage!${dodgeText}`,
-          'damage'
-        );
-      }
+      // Play animations sequentially and sync damage/logs with animation timing
+      if (hasPlayerAttack) {
+        // Start player attack animation
+        setShowPlayerAnimation(true);
 
-      // Check for victory or defeat
-      console.log('Checking victory/defeat conditions...');
-      if (result.enemyDefeated) {
-        console.log('VICTORY DETECTED! Ending combat...');
-        setPhase('victory');
-        const rewards = await endCombatVictory(
-          userId,
-          enemy as EnemyType,
-          result.turnNumber,
-          result.playerDamageDealt,
-          result.playerDamageTaken
-        );
-        addLogEntry(result.turnNumber, `Victory! ${combat.enemyName} defeated!`, 'status');
-        setTimeout(() => onVictory(rewards), 2000);
-      } else if (result.playerDefeated) {
-        setPhase('defeat');
-        await endCombatDefeat(userId);
-        addLogEntry(result.turnNumber, 'You have been defeated...', 'status');
-        setTimeout(() => onDefeat(), 2000);
+        // Show damage log in middle of animation (1250ms)
+        setTimeout(() => {
+          const critText = result.isCritical ? ' Critical hit!' : '';
+          addLogEntry(
+            result.turnNumber,
+            `You dealt ${result.playerDamageDealt} damage!${critText}`,
+            'damage'
+          );
+
+          // Apply enemy damage
+          if (combat) {
+            setCombat({
+              ...combat,
+              enemyCurrentHealth: result.enemyCurrentHealth,
+              combatTurn: result.turnNumber,
+            });
+          }
+        }, 1250);
+
+        // Wait for player animation to complete (2500ms)
+        setTimeout(() => {
+          setShowPlayerAnimation(false);
+
+          // Check if enemy is defeated
+          if (result.enemyDefeated) {
+            console.log('VICTORY DETECTED! Ending combat...');
+            setTimeout(async () => {
+              setPhase('victory');
+              const rewards = await endCombatVictory(
+                userId,
+                enemy as EnemyType,
+                result.turnNumber,
+                result.playerDamageDealt,
+                result.playerDamageTaken
+              );
+              addLogEntry(result.turnNumber, `Victory! ${combat.enemyName} defeated!`, 'status');
+              setTimeout(() => onVictory(rewards), 2000);
+            }, 500);
+            return;
+          }
+
+          // If enemy attacks, start enemy animation after a pause (1000ms)
+          if (hasEnemyAttack) {
+            setTimeout(() => {
+              setShowEnemyAnimation(true);
+
+              // Show damage log and apply damage in middle of animation (1250ms)
+              setTimeout(() => {
+                const dodgeText = result.isDodged ? ' You dodged!' : '';
+                addLogEntry(
+                  result.turnNumber,
+                  `${combat.enemyName} dealt ${result.playerDamageTaken} damage!${dodgeText}`,
+                  'damage'
+                );
+
+                // Apply player damage
+                setPlayerStats({
+                  ...playerStats,
+                  currentHealth: result.playerCurrentHealth,
+                  currentMana: result.playerCurrentMana,
+                });
+              }, 1250);
+
+              // Wait for enemy animation to complete (2500ms)
+              setTimeout(() => {
+                setShowEnemyAnimation(false);
+
+                // Check if player is defeated
+                if (result.playerDefeated) {
+                  setTimeout(async () => {
+                    setPhase('defeat');
+                    await endCombatDefeat(userId);
+                    addLogEntry(result.turnNumber, 'You have been defeated...', 'status');
+                    setTimeout(() => onDefeat(), 2000);
+                  }, 500);
+                } else {
+                  // Reset for next turn after a brief delay
+                  setTimeout(() => {
+                    setPhase('ability-select');
+                    setSelectedAbility(null);
+                    setChallenge(null);
+                    setSelectedAnswer('');
+                  }, 500);
+                }
+              }, 2500);
+            }, 1000);
+          } else {
+            // No enemy attack, just reset for next turn
+            setTimeout(() => {
+              setPhase('ability-select');
+              setSelectedAbility(null);
+              setChallenge(null);
+              setSelectedAnswer('');
+            }, 500);
+          }
+        }, 2500);
+      } else if (hasEnemyAttack) {
+        // Only enemy attacks (player missed or didn't attack)
+        setShowEnemyAnimation(true);
+
+        // Show damage log and apply damage in middle of animation (1250ms)
+        setTimeout(() => {
+          const dodgeText = result.isDodged ? ' You dodged!' : '';
+          addLogEntry(
+            result.turnNumber,
+            `${combat.enemyName} dealt ${result.playerDamageTaken} damage!${dodgeText}`,
+            'damage'
+          );
+
+          // Apply player damage
+          setPlayerStats({
+            ...playerStats,
+            currentHealth: result.playerCurrentHealth,
+            currentMana: result.playerCurrentMana,
+          });
+        }, 1250);
+
+        // Wait for animation to complete
+        setTimeout(() => {
+          setShowEnemyAnimation(false);
+
+          // Check if player is defeated
+          if (result.playerDefeated) {
+            setTimeout(async () => {
+              setPhase('defeat');
+              await endCombatDefeat(userId);
+              addLogEntry(result.turnNumber, 'You have been defeated...', 'status');
+              setTimeout(() => onDefeat(), 2000);
+            }, 500);
+          } else {
+            // Reset for next turn
+            setTimeout(() => {
+              setPhase('ability-select');
+              setSelectedAbility(null);
+              setChallenge(null);
+              setSelectedAnswer('');
+            }, 500);
+          }
+        }, 2500);
       } else {
-        // Reset for next turn
-        setPhase('ability-select');
-        setSelectedAbility(null);
-        setChallenge(null);
-        setSelectedAnswer('');
+        // No attacks at all, just reset
+        setTimeout(() => {
+          setPhase('ability-select');
+          setSelectedAbility(null);
+          setChallenge(null);
+          setSelectedAnswer('');
+        }, 500);
       }
     } catch (err) {
       console.error('Combat turn failed:', err);
@@ -346,7 +472,17 @@ export function CombatModal({
             {/* Enemy Side */}
             <div className="bg-red-900/20 border-2 border-red-700 rounded-lg p-4">
               <div className="text-center mb-4">
-                <div className="text-6xl mb-2">{combat.icon}</div>
+                <div className="mb-2 flex justify-center items-center mx-auto" style={{ width: '192px', height: '192px' }}>
+                  <img
+                    src={showEnemyAnimation && getEnemyAttackAnimation(enemy.id)
+                      ? getEnemyAttackAnimation(enemy.id)!
+                      : getEnemyImage(enemy.id)}
+                    alt={combat.enemyName}
+                    className="max-w-full max-h-full"
+                    style={{ width: '192px', height: '192px', objectFit: 'contain' }}
+                    key={showEnemyAnimation ? 'enemy-attack' : 'enemy-idle'}
+                  />
+                </div>
                 <h3 className="text-xl font-bold text-red-400">{combat.enemyName}</h3>
                 {combat.isBoss && (
                   <span className="text-xs bg-red-500 text-white px-2 py-1 rounded">BOSS</span>
@@ -383,7 +519,17 @@ export function CombatModal({
             {/* Player Side */}
             <div className="bg-blue-900/20 border-2 border-blue-700 rounded-lg p-4">
               <div className="text-center mb-4">
-                <div className="text-6xl mb-2">🧙</div>
+                <div className="mb-2 flex justify-center items-center mx-auto" style={{ width: '192px', height: '192px' }}>
+                  <img
+                    src={showPlayerAnimation && getPlayerAttackAnimation(playerAvatar)
+                      ? getPlayerAttackAnimation(playerAvatar)!
+                      : getFullAvatar(playerAvatar)}
+                    alt="Player"
+                    className="max-w-full max-h-full"
+                    style={{ width: '192px', height: '192px', objectFit: 'contain' }}
+                    key={showPlayerAnimation ? 'player-attack' : 'player-idle'}
+                  />
+                </div>
                 <h3 className="text-xl font-bold text-blue-400">You</h3>
                 <span className="text-xs text-gray-400">Level {playerStats.level}</span>
               </div>

@@ -42,6 +42,7 @@ import { convertNarrativeOutcome } from '../../types/rpg';
 import { CharacterStatsDisplay } from './CharacterStats';
 import { CombatModal } from './CombatModal';
 import type { CombatRewards } from '../../lib/rpg';
+import { getCurrentProfile } from '../../lib/profiles';
 
 interface DungeonExplorerProps {
   userId: number;
@@ -81,6 +82,9 @@ export function DungeonExplorer({ userId, onClose }: DungeonExplorerProps) {
   const [consumables, setConsumables] = useState<UserConsumableInventoryItem[]>([]);
   const [showPotions, setShowPotions] = useState(false);
 
+  // Player avatar
+  const [playerAvatar, setPlayerAvatar] = useState<string>('');
+
   useEffect(() => {
     loadDungeonState();
   }, [userId]);
@@ -100,6 +104,12 @@ export function DungeonExplorer({ userId, onClose }: DungeonExplorerProps) {
       setStats(characterStats);
       setFloor(currentFloor);
       setConsumables(consumableInventory);
+
+      // Load player avatar from profile
+      const currentProfile = getCurrentProfile();
+      if (currentProfile) {
+        setPlayerAvatar(currentProfile.avatar);
+      }
 
       // Start narrative dungeon - this gets the starting location
       console.log('Starting narrative dungeon for user', userId);
@@ -729,6 +739,7 @@ export function DungeonExplorer({ userId, onClose }: DungeonExplorerProps) {
           enemy={encounter.enemy}
           isBoss={encounter.isBoss || false}
           playerStats={stats}
+          playerAvatar={playerAvatar}
           floorNumber={floor.floorNumber}
           onVictory={handleCombatVictory}
           onDefeat={handleCombatDefeat}

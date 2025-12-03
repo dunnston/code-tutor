@@ -16,7 +16,7 @@ export function ProfileSelector({ onProfileSelected }: ProfileSelectorProps) {
   const [profiles, setProfiles] = useState<UserProfile[]>(loadProfiles())
   const [showCreateForm, setShowCreateForm] = useState(profiles.length === 0)
   const [newName, setNewName] = useState('')
-  const [selectedAvatar, setSelectedAvatar] = useState(AVATAR_OPTIONS[0]?.path || '/src/images/avatars/boy-avatar.png')
+  const [selectedAvatar, setSelectedAvatar] = useState(AVATAR_OPTIONS[0]?.path || '/src/images/avatars/dragon-born.png')
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null)
 
   const handleSelectProfile = (profile: UserProfile) => {
