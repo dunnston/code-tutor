@@ -134,3 +134,36 @@ textarea {
 .animate-slide-in {
   animation: slide-in 0.3s ease-out;
 }
+
+/* Achievement notification animations */
+@keyframes bounce-slow {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+@keyframes float-particle {
+  0% {
+    transform: translateY(0) translateX(0) scale(1);
+    opacity: 0.7;
+  }
+  50% {
+    transform: translateY(-100px) translateX(50px) scale(1.5);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-200px) translateX(0) scale(0.5);
+    opacity: 0;
+  }
+}
+
+.animate-bounce-slow {
+  animation: bounce-slow 2s infinite;
+}
+
+.animate-float-particle {
+  animation: float-particle 3s infinite;
+}

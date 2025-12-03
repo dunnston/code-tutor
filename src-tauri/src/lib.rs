@@ -9,6 +9,7 @@ mod combat_commands;
 mod narrative_commands;
 mod shop_commands;
 mod dev_commands;
+mod achievement_commands;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -169,6 +170,13 @@ pub fn run() {
       dev_commands::dev_add_charisma,
       dev_commands::dev_generate_loot,
       dev_commands::dev_reset_character,
+      // Achievement commands
+      achievement_commands::get_achievements,
+      achievement_commands::get_achievement_stats,
+      achievement_commands::update_achievement_progress,
+      achievement_commands::get_pending_achievement_notifications,
+      achievement_commands::mark_achievement_notification_shown,
+      achievement_commands::claim_achievement_rewards,
     ])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");

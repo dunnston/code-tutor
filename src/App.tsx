@@ -19,6 +19,7 @@ import { PuzzleSolver } from '@components/puzzles/PuzzleSolver'
 import { AllPuzzlesList } from '@components/puzzles/AllPuzzlesList'
 import { PuzzleLeaderboard } from '@components/puzzles/PuzzleLeaderboard'
 import { PuzzleAchievements } from '@components/puzzles/PuzzleAchievements'
+import { AchievementNotificationManager } from '@components/achievements/AchievementNotification'
 import PlaygroundView from '@components/playground/PlaygroundView'
 import { ShopView } from '@components/shop/ShopView'
 import { InventoryView } from '@components/inventory/InventoryView'
@@ -477,6 +478,7 @@ function App() {
       {/* Gamification UI */}
       <NotificationContainer />
       <ProgressDashboard />
+      <AchievementNotificationManager />
 
       {/* Onboarding & Settings */}
       {showWelcome && <WelcomeScreen onComplete={handleOnboardingComplete} />}

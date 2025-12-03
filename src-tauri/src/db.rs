@@ -211,6 +211,36 @@ pub fn initialize_database(app: &AppHandle) -> Result<(), String> {
         })?;
     log::info!("Shop refresh system migration completed successfully");
 
+    // Execute remove duplicate choices migration
+    log::info!("Loading remove duplicate choices migration...");
+    let remove_duplicate_choices_migration = include_str!("../migrations/026_remove_duplicate_choices.sql");
+    conn.execute_batch(remove_duplicate_choices_migration)
+        .map_err(|e| {
+            log::error!("Remove duplicate choices migration failed: {}", e);
+            format!("Failed to execute remove duplicate choices migration: {}", e)
+        })?;
+    log::info!("Remove duplicate choices migration completed successfully");
+
+    // Execute unified achievement system migration
+    log::info!("Loading unified achievement system migration...");
+    let unified_achievement_migration = include_str!("../migrations/027_unified_achievement_system.sql");
+    conn.execute_batch(unified_achievement_migration)
+        .map_err(|e| {
+            log::error!("Unified achievement system migration failed: {}", e);
+            format!("Failed to execute unified achievement system migration: {}", e)
+        })?;
+    log::info!("Unified achievement system migration completed successfully");
+
+    // Execute achievement seed data
+    log::info!("Loading achievement seed data...");
+    let achievement_seed_data = include_str!("../migrations/028_achievement_seed_data.sql");
+    conn.execute_batch(achievement_seed_data)
+        .map_err(|e| {
+            log::error!("Achievement seed data failed: {}", e);
+            format!("Failed to execute achievement seed data: {}", e)
+        })?;
+    log::info!("Achievement seed data completed successfully");
+
     // Execute solution_viewed migration (if columns don't exist yet)
     let solution_viewed_migration = r#"
         -- Add solution_viewed columns if they don't exist
