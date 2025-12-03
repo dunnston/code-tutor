@@ -105,18 +105,24 @@ export function StatsGrid() {
         {/* Achievements Card - Clickable */}
         <button
           onClick={() => setCurrentView('achievements')}
-          className="bg-navy-800 rounded-lg p-4 border border-navy-700 hover:border-yellow-500 transition-colors text-left group"
+          className="bg-navy-800 rounded-lg p-4 border border-navy-700 hover:border-yellow-500 transition-colors text-left group relative"
         >
           <div className="text-3xl mb-2 bg-yellow-500/10 w-12 h-12 rounded-lg flex items-center justify-center">
             🏆
           </div>
           <div className="text-2xl font-bold text-yellow-400 mb-1">
-            {achievementStats ? achievementStats.total_completed : 0}
+            {achievementStats ? achievementStats.completed_achievements : 0}
           </div>
           <div className="text-xs text-gray-400 flex items-center gap-1">
             Achievements
             <span className="text-yellow-500 opacity-0 group-hover:opacity-100 transition-opacity">→</span>
           </div>
+          {/* Unviewed Badge */}
+          {achievementStats && achievementStats.unviewed_achievements > 0 && (
+            <div className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center animate-pulse">
+              {achievementStats.unviewed_achievements}
+            </div>
+          )}
         </button>
       </div>
     </div>

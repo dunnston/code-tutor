@@ -177,6 +177,7 @@ pub fn run() {
       achievement_commands::get_pending_achievement_notifications,
       achievement_commands::mark_achievement_notification_shown,
       achievement_commands::claim_achievement_rewards,
+      achievement_commands::mark_achievements_as_viewed,
     ])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");

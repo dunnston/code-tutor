@@ -44,6 +44,7 @@ export interface UserAchievementProgress {
   completed: boolean
   completed_at: string | null
   times_completed: number
+  viewed_at: string | null
 }
 
 export interface AchievementWithProgress extends Achievement {
@@ -53,6 +54,7 @@ export interface AchievementWithProgress extends Achievement {
 export interface AchievementStats {
   total_achievements: number
   completed_achievements: number
+  unviewed_achievements: number
   completion_percentage: number
   total_xp_earned: number
   total_gold_earned: number

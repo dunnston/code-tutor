@@ -1,6 +1,9 @@
 import { useAppStore } from '@/lib/store'
 import { xpForNextLevel, xpProgressToNextLevel } from '@/lib/storage'
 import { getCurrentProfile } from '@/lib/profiles'
+import { invoke } from '@tauri-apps/api/core'
+import { useEffect, useState } from 'react'
+import type { AchievementStats } from '@/lib/achievements'
 
 export function Header() {
   const currentLesson = useAppStore((state) => state.currentLesson)
@@ -8,8 +11,28 @@ export function Header() {
   const toggleDashboard = useAppStore((state) => state.toggleDashboard)
   const toggleSettings = useAppStore((state) => state.toggleSettings)
   const setCurrentView = useAppStore((state) => state.setCurrentView)
+  const [achievementStats, setAchievementStats] = useState<AchievementStats | null>(null)
 
   const currentProfile = getCurrentProfile()
+
+  // Fetch achievement stats for unviewed badge
+  useEffect(() => {
+    const fetchAchievementStats = async () => {
+      try {
+        const stats = await invoke<AchievementStats>('get_achievement_stats', {
+          userId: 1, // TODO: Get from current profile
+        })
+        setAchievementStats(stats)
+      } catch (error) {
+        console.error('Failed to fetch achievement stats:', error)
+      }
+    }
+    fetchAchievementStats()
+
+    // Refresh stats every 10 seconds to catch new achievements
+    const interval = setInterval(fetchAchievementStats, 10000)
+    return () => clearInterval(interval)
+  }, [])
 
   const currentLevel = progress.level
   const currentXP = progress.xpEarned
@@ -62,11 +85,17 @@ export function Header() {
         {/* Achievements Button */}
         <button
           onClick={() => setCurrentView('achievements')}
-          className="flex items-center gap-2 px-3 py-1.5 bg-navy-900 rounded-lg border border-navy-700 hover:border-yellow-500 transition-colors"
+          className="flex items-center gap-2 px-3 py-1.5 bg-navy-900 rounded-lg border border-navy-700 hover:border-yellow-500 transition-colors relative"
           title="View all achievements"
         >
           <span className="text-lg">🏆</span>
           <span className="text-sm text-gray-400">Achievements</span>
+          {/* Unviewed Badge */}
+          {achievementStats && achievementStats.unviewed_achievements > 0 && (
+            <div className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center animate-pulse">
+              {achievementStats.unviewed_achievements}
+            </div>
+          )}
         </button>
       </div>
 

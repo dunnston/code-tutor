@@ -34,6 +34,7 @@ pub struct UserAchievementProgress {
     pub completed: bool,
     pub completed_at: Option<String>,
     pub times_completed: i32,
+    pub viewed_at: Option<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -47,6 +48,7 @@ pub struct AchievementWithProgress {
 pub struct AchievementStats {
     pub total_achievements: i32,
     pub completed_achievements: i32,
+    pub unviewed_achievements: i32,
     pub completion_percentage: f32,
     pub total_xp_earned: i32,
     pub total_gold_earned: i32,
@@ -89,7 +91,7 @@ pub fn get_achievements(
             a.unlock_item_id, a.unlock_item_type,
             a.is_secret, a.required_level, a.required_achievement_id,
             a.display_order, a.is_repeatable, a.tracking_key,
-            p.current_progress, p.completed, p.completed_at, p.times_completed
+            p.current_progress, p.completed, p.completed_at, p.times_completed, p.viewed_at
         FROM achievements a
         LEFT JOIN user_achievement_progress p ON a.id = p.achievement_id AND p.user_id = ?1
         WHERE 1=1"
@@ -139,6 +141,7 @@ pub fn get_achievements(
                     completed: row.get(21)?,
                     completed_at: row.get(22)?,
                     times_completed: row.get(23)?,
+                    viewed_at: row.get(24)?,
                 })
             } else {
                 None
@@ -191,6 +194,16 @@ pub fn get_achievement_stats(
         .query_row(
             "SELECT COUNT(*) FROM user_achievement_progress
              WHERE user_id = ?1 AND completed = TRUE",
+            [user_id],
+            |row| row.get(0),
+        )
+        .map_err(|e| e.to_string())?;
+
+    // Unviewed achievements (completed but not viewed)
+    let unviewed_achievements: i32 = conn
+        .query_row(
+            "SELECT COUNT(*) FROM user_achievement_progress
+             WHERE user_id = ?1 AND completed = TRUE AND viewed_at IS NULL",
             [user_id],
             |row| row.get(0),
         )
@@ -256,6 +269,7 @@ pub fn get_achievement_stats(
     Ok(AchievementStats {
         total_achievements,
         completed_achievements,
+        unviewed_achievements,
         completion_percentage,
         total_xp_earned: rewards.0,
         total_gold_earned: rewards.1,
@@ -503,6 +517,40 @@ pub fn claim_achievement_rewards(
     .map_err(|e| e.to_string())?;
 
     tx.commit().map_err(|e| e.to_string())?;
+
+    Ok(())
+}
+
+/// Mark achievements as viewed (for notification badge)
+#[tauri::command]
+pub fn mark_achievements_as_viewed(
+    app: AppHandle,
+    user_id: i32,
+    achievement_ids: Option<Vec<String>>,
+) -> Result<(), String> {
+    let conn = db::get_connection(&app)?;
+
+    if let Some(ids) = achievement_ids {
+        // Mark specific achievements as viewed
+        for achievement_id in ids {
+            conn.execute(
+                "UPDATE user_achievement_progress
+                 SET viewed_at = CURRENT_TIMESTAMP
+                 WHERE user_id = ?1 AND achievement_id = ?2 AND completed = TRUE AND viewed_at IS NULL",
+                params![user_id, &achievement_id],
+            )
+            .map_err(|e| e.to_string())?;
+        }
+    } else {
+        // Mark all completed achievements as viewed
+        conn.execute(
+            "UPDATE user_achievement_progress
+             SET viewed_at = CURRENT_TIMESTAMP
+             WHERE user_id = ?1 AND completed = TRUE AND viewed_at IS NULL",
+            [user_id],
+        )
+        .map_err(|e| e.to_string())?;
+    }
 
     Ok(())
 }

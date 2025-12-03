@@ -241,6 +241,16 @@ pub fn initialize_database(app: &AppHandle) -> Result<(), String> {
         })?;
     log::info!("Achievement seed data completed successfully");
 
+    // Execute achievement viewed tracking migration
+    log::info!("Loading achievement viewed tracking migration...");
+    let achievement_viewed_migration = include_str!("../migrations/029_achievement_viewed_tracking.sql");
+    conn.execute_batch(achievement_viewed_migration)
+        .map_err(|e| {
+            log::error!("Achievement viewed tracking migration failed: {}", e);
+            format!("Failed to execute achievement viewed tracking migration: {}", e)
+        })?;
+    log::info!("Achievement viewed tracking migration completed successfully");
+
     // Execute solution_viewed migration (if columns don't exist yet)
     let solution_viewed_migration = r#"
         -- Add solution_viewed columns if they don't exist

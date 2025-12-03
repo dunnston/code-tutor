@@ -32,6 +32,26 @@ export function AchievementsList() {
     loadStats()
   }, [categoryFilter, tierFilter])
 
+  // Mark all completed achievements as viewed when this component mounts
+  useEffect(() => {
+    const markAsViewed = async () => {
+      try {
+        await invoke('mark_achievements_as_viewed', {
+          userId,
+          achievementIds: null, // null = mark all completed as viewed
+        })
+        // Reload stats to clear the badge count
+        loadStats()
+      } catch (err) {
+        console.error('Failed to mark achievements as viewed:', err)
+      }
+    }
+
+    // Delay slightly to give user a chance to see the "NEW" badges
+    const timeout = setTimeout(markAsViewed, 2000)
+    return () => clearTimeout(timeout)
+  }, [])
+
   const loadAchievements = async () => {
     try {
       setLoading(true)
@@ -350,17 +370,25 @@ interface AchievementCardProps {
 
 function AchievementCard({ achievement }: AchievementCardProps) {
   const isCompleted = achievement.progress?.completed ?? false
+  const isNewlyCompleted = isCompleted && !achievement.progress?.viewed_at
   const progress = getProgressPercentage(achievement)
   const tierConfig = TIER_CONFIG[achievement.tier]
 
   return (
     <div
-      className={`bg-navy-800 border rounded-lg p-5 transition-all ${
+      className={`bg-navy-800 border rounded-lg p-5 transition-all relative ${
         isCompleted
           ? 'border-green-500/50 shadow-lg shadow-green-500/10'
           : 'border-navy-700 opacity-90 hover:opacity-100'
       }`}
     >
+      {/* NEW Badge for unviewed achievements */}
+      {isNewlyCompleted && (
+        <div className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full animate-pulse shadow-lg">
+          NEW!
+        </div>
+      )}
+
       {/* Tier Badge */}
       <div className="flex items-start justify-between mb-3">
         <div className={`text-5xl ${isCompleted ? '' : 'grayscale opacity-50'}`}>
