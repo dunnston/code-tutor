@@ -405,8 +405,8 @@ function App() {
 
   return (
     <div className="h-screen flex flex-col bg-navy-900">
-      {/* Show Header only in learning view */}
-      {currentView === 'learning' && <Header />}
+      {/* Show Header on dashboard, learning, and achievements views */}
+      {(currentView === 'learning' || currentView === 'dashboard' || currentView === 'achievements') && <Header />}
 
       {/* Dashboard View */}
       {currentView === 'dashboard' && <Dashboard onLogout={handleLogout} />}
