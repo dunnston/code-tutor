@@ -1,0 +1,22 @@
+{
+  "id": 115,
+  "trackId": 2,
+  "language": "gdscript",
+  "title": "The Difficulty Selector",
+  "subtitle": "Multiple Conditions with Elif",
+  "difficulty": 2,
+  "estimatedTime": "20-25 minutes",
+  "xpReward": 150,
+  "description": "# More Than Two Choices\n\nLearn to handle multiple options with elif!\n\n## The elif Statement\n\n```gdscript\nvar difficulty = \"medium\"\n\nif difficulty == \"easy\":\n    var enemy_health = 50\nelif difficulty == \"medium\":\n    var enemy_health = 100\nelif difficulty == \"hard\":\n    var enemy_health = 200\nelse:\n    var enemy_health = 100  # default\n```\n\n## Your Quest\n\nCreate a difficulty selector that sets different enemy stats based on user choice (easy/medium/hard).",
+  "starterCode": "# Difficulty Selector\nvar difficulty = \"medium\"  # Try: easy, medium, hard\n\nvar enemy_health\nvar enemy_damage\n\n# Set stats based on difficulty\n\n",
+  "solutionCode": "# Difficulty Selector\nvar difficulty = \"medium\"\n\nvar enemy_health\nvar enemy_damage\n\n# Set stats based on difficulty\nif difficulty == \"easy\":\n    enemy_health = 50\n    enemy_damage = 5\n    print(\"EASY MODE\")\nelif difficulty == \"medium\":\n    enemy_health = 100\n    enemy_damage = 15\n    print(\"MEDIUM MODE\")\nelif difficulty == \"hard\":\n    enemy_health = 200\n    enemy_damage = 30\n    print(\"HARD MODE\")\nelse:\n    enemy_health = 100\n    enemy_damage = 15\n    print(\"Invalid! Default to MEDIUM\")\n\nprint(\"Enemy HP: \", enemy_health)\nprint(\"Enemy Damage: \", enemy_damage)",
+  "hints": ["Use elif for multiple conditions", "Check string equality with ==", "Set multiple variables in each branch"],
+  "validationTests": [
+    {"type": "code_contains", "value": "elif", "description": "Should use elif"},
+    {"type": "output_contains", "value": "100", "description": "Should show medium difficulty stats"}
+  ],
+  "learningObjectives": ["Use elif for multiple conditions", "Handle multiple scenarios", "Set values conditionally"],
+  "previousLessonId": 114,
+  "nextLessonId": 116,
+  "tags": ["beginner", "elif", "conditionals", "godot"]
+}

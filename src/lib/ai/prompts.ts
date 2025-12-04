@@ -717,9 +717,24 @@ function buildContextSection(context: Partial<PromptContext>): string {
     }
   }
 
-  // Completed Lessons (for playground mode)
+  // Last Completed Lesson (for playground mode challenges)
+  if (context.playgroundMode && context.lastCompletedLesson) {
+    contextStr += '\n🎯 MOST RECENT LESSON COMPLETED:\n'
+    contextStr += `- Course: ${context.lastCompletedLesson.courseName}\n`
+    contextStr += `- Lesson: ${context.lastCompletedLesson.title}\n`
+    contextStr += `- Language: ${context.lastCompletedLesson.language}\n`
+    if (context.lastCompletedLesson.description) {
+      contextStr += `- Description: ${context.lastCompletedLesson.description}\n`
+    }
+    if (context.lastCompletedLesson.tags && context.lastCompletedLesson.tags.length > 0) {
+      contextStr += `- Concepts Learned: ${context.lastCompletedLesson.tags.join(', ')}\n`
+    }
+    contextStr += '\n💡 For challenges, prioritize concepts from this recent lesson to reinforce learning!\n\n'
+  }
+
+  // Completed Lessons (for playground mode) - filtered to match current language
   if (context.playgroundMode && context.completedLessons && context.completedLessons.length > 0) {
-    contextStr += '\nCOMPLETED LESSONS (What the student has learned):\n'
+    contextStr += '\nCOMPLETED LESSONS (What the student has learned in this language):\n'
     context.completedLessons.forEach((lesson) => {
       contextStr += `- ${lesson.title}\n`
       if (lesson.tags.length > 0) {
@@ -727,6 +742,20 @@ function buildContextSection(context: Partial<PromptContext>): string {
       }
     })
     contextStr += '\n'
+  }
+
+  // No completed lessons - beginner guidance
+  if (
+    context.playgroundMode &&
+    (!context.completedLessons || context.completedLessons.length === 0) &&
+    !context.lastCompletedLesson
+  ) {
+    contextStr += '\n⚠️ BEGINNER STATUS:\n'
+    contextStr += `This student has not completed any ${context.language || 'coding'} lessons yet.\n`
+    contextStr +=
+      'For challenges: Keep it VERY simple - absolute beginner level (basic syntax, variables, simple operations).\n'
+    contextStr +=
+      'For ideas: Suggest starting with lessons first, or provide very basic exercises.\n\n'
   }
 
   return contextStr

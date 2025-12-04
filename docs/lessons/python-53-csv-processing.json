@@ -1,0 +1,21 @@
+{
+  "id": 53,
+  "trackId": 7,
+  "language": "python",
+  "title": "The Data Analyst",
+  "subtitle": "CSV Data Processing",
+  "difficulty": 5,
+  "estimatedTime": "25 minutes",
+  "xpReward": 150,
+  "description": "# CSV Data Processing\n\nFilter, transform, and aggregate CSV data!\n\n⚔️ Process battle statistics!",
+  "starterCode": "import csv\nimport io\n\nBATTLE_LOG = '''name,damage,target,result\nWarrior,45,Goblin,hit\nMage,60,Orc,hit\nRogue,35,Goblin,miss\nWarrior,50,Orc,hit'''\n\nreader = csv.DictReader(io.StringIO(BATTLE_LOG))\n\n# TODO: Calculate total damage from successful hits\ntotal_damage = 0\nfor row in reader:\n    if row['result'] == 'hit':\n        total_damage += int(row['damage'])\n\nprint(f'Total damage dealt: {total_damage}')",
+  "solutionCode": "import csv\nimport io\n\nBATTLE_LOG = '''name,damage,target,result\nWarrior,45,Goblin,hit\nMage,60,Orc,hit\nRogue,35,Goblin,miss\nWarrior,50,Orc,hit'''\n\nreader = csv.DictReader(io.StringIO(BATTLE_LOG))\n\ntotal_damage = 0\nfor row in reader:\n    if row['result'] == 'hit':\n        total_damage += int(row['damage'])\n\nprint(f'Total damage dealt: {total_damage}')",
+  "hints": ["Filter rows with if condition", "Convert damage to int before summing"],
+  "validationTests": [
+    {"type": "output_contains", "value": "155", "description": "Should calculate total damage (45+60+50)"}
+  ],
+  "learningObjectives": ["Filter CSV data", "Aggregate numeric values", "Process battle logs"],
+  "nextLessonId": 54,
+  "previousLessonId": 52,
+  "tags": ["intermediate", "csv", "data-processing"]
+}

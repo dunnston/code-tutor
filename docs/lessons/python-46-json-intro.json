@@ -1,0 +1,81 @@
+{
+  "id": 46,
+  "trackId": 7,
+  "language": "python",
+  "title": "The Data Scroll Format",
+  "subtitle": "Introduction to JSON",
+  "difficulty": 4,
+  "estimatedTime": "20-25 minutes",
+  "xpReward": 100,
+  "description": "# JSON: The Universal Data Format\n\n📄 **JSON** (JavaScript Object Notation) is the most popular data exchange format!\n\n## What is JSON?\n\nJSON is a text format for storing and transporting data:\n\n```json\n{\n  \"name\": \"Warrior\",\n  \"level\": 5,\n  \"health\": 100,\n  \"items\": [\"sword\", \"shield\", \"potion\"]\n}\n```\n\n## Why Use JSON?\n\n- **Universal** - Works with any programming language\n- **Human-readable** - Easy to read and write\n- **Lightweight** - Smaller than XML\n- **Web standard** - Used by APIs everywhere\n- **Python friendly** - Looks like Python dictionaries!\n\n## JSON Data Types\n\n| JSON Type | Python Type | Example |\n|-----------|-------------|----------|\n| object | dict | `{\"key\": \"value\"}` |\n| array | list | `[1, 2, 3]` |\n| string | str | `\"hello\"` |\n| number | int/float | `42` or `3.14` |\n| boolean | bool | `true` / `false` |\n| null | None | `null` |\n\n## Python's json Module\n\n```python\nimport json\n\n# Python dict → JSON string\ndata = {\"name\": \"Hero\", \"level\": 5}\njson_string = json.dumps(data)\nprint(json_string)  # '{\"name\": \"Hero\", \"level\": 5}'\n\n# JSON string → Python dict\njson_string = '{\"name\": \"Hero\", \"level\": 5}'\ndata = json.loads(json_string)\nprint(data[\"name\"])  # \"Hero\"\n```\n\n## Key Functions\n\n**`json.dumps()`** - Python → JSON string (\"dump string\")\n```python\ndata = {\"hp\": 100}\njson_str = json.dumps(data)\n```\n\n**`json.loads()`** - JSON string → Python (\"load string\")\n```python\njson_str = '{\"hp\": 100}'\ndata = json.loads(json_str)\n```\n\n**`json.dump()`** - Python → JSON file\n```python\nwith open('data.json', 'w') as f:\n    json.dump(data, f)\n```\n\n**`json.load()`** - JSON file → Python\n```python\nwith open('data.json', 'r') as f:\n    data = json.load(f)\n```\n\n## Your Quest\n\nConvert RPG character data between Python and JSON:\n\n1. Create character dictionary\n2. Convert to JSON string with `json.dumps()`\n3. Parse JSON string with `json.loads()`\n4. Modify and re-encode\n5. Pretty print with indentation\n\n⚔️ Master data serialization!",
+  "starterCode": "# JSON Introduction - Character Data Conversion\n\nimport json\n\nprint(\"=== JSON Data Conversion ===\")\nprint()\n\n# Task 1: Create character data\nprint(\"--- Task 1: Create Character Data ---\")\n\n# TODO: Create a dictionary with character data\n# Include: name, class, level, health, inventory (list of items)\ncharacter = {\n    # TODO: Add character attributes\n}\n\nprint(f\"Python dict: {character}\")\nprint()\n\n# Task 2: Convert Python dict to JSON string\nprint(\"--- Task 2: Python → JSON String ---\")\n\n# TODO: Use json.dumps() to convert character to JSON string\njson_string = None  # TODO: json.dumps(character)\n\nprint(f\"JSON string: {json_string}\")\nprint(f\"Type: {type(json_string)}\")\nprint()\n\n# Task 3: Parse JSON string back to Python\nprint(\"--- Task 3: JSON String → Python ---\")\n\n# Sample JSON data\njson_data = '{\"name\": \"Mage\", \"class\": \"mage\", \"level\": 7, \"health\": 70, \"mana\": 150}'\n\n# TODO: Use json.loads() to parse JSON string\nparsed_data = None  # TODO: json.loads(json_data)\n\nprint(f\"Parsed data: {parsed_data}\")\nprint(f\"Type: {type(parsed_data)}\")\nprint(f\"Name: {parsed_data['name']}\")\nprint(f\"Level: {parsed_data['level']}\")\nprint()\n\n# Task 4: Pretty printing with indentation\nprint(\"--- Task 4: Pretty Print JSON ---\")\n\nparty = {\n    \"party_name\": \"Heroes of Light\",\n    \"members\": [\n        {\"name\": \"Warrior\", \"level\": 10, \"hp\": 150},\n        {\"name\": \"Mage\", \"level\": 12, \"hp\": 70},\n        {\"name\": \"Rogue\", \"level\": 11, \"hp\": 100}\n    ]\n}\n\n# TODO: Use json.dumps() with indent parameter for pretty printing\n# Hint: json.dumps(data, indent=2)\npretty_json = None  # TODO\n\nprint(\"Pretty printed JSON:\")\nprint(pretty_json)\nprint()\n\n# Task 5: Modify and re-encode\nprint(\"--- Task 5: Modify Data ---\")\n\n# TODO: Parse this JSON, level up the warrior, re-encode\njson_str = '{\"name\": \"Warrior\", \"level\": 5, \"exp\": 450}'\n\n# TODO: Load JSON\nwarrior = None  # json.loads(...)\n\n# TODO: Increase level by 1\n# TODO: Reset exp to 0\n\n# TODO: Convert back to JSON\nupdated_json = None  # json.dumps(...)\n\nprint(f\"Original: {json_str}\")\nprint(f\"Updated: {updated_json}\")\nprint()\n\nprint(\"JSON conversion complete!\")",
+  "solutionCode": "# JSON Introduction - Solution\n\nimport json\n\nprint(\"=== JSON Data Conversion ===\")\nprint()\n\nprint(\"--- Task 1: Create Character Data ---\")\n\ncharacter = {\n    \"name\": \"Warrior\",\n    \"class\": \"warrior\",\n    \"level\": 5,\n    \"health\": 100,\n    \"inventory\": [\"sword\", \"shield\", \"potion\"]\n}\n\nprint(f\"Python dict: {character}\")\nprint()\n\nprint(\"--- Task 2: Python → JSON String ---\")\n\njson_string = json.dumps(character)\n\nprint(f\"JSON string: {json_string}\")\nprint(f\"Type: {type(json_string)}\")\nprint()\n\nprint(\"--- Task 3: JSON String → Python ---\")\n\njson_data = '{\"name\": \"Mage\", \"class\": \"mage\", \"level\": 7, \"health\": 70, \"mana\": 150}'\nparsed_data = json.loads(json_data)\n\nprint(f\"Parsed data: {parsed_data}\")\nprint(f\"Type: {type(parsed_data)}\")\nprint(f\"Name: {parsed_data['name']}\")\nprint(f\"Level: {parsed_data['level']}\")\nprint()\n\nprint(\"--- Task 4: Pretty Print JSON ---\")\n\nparty = {\n    \"party_name\": \"Heroes of Light\",\n    \"members\": [\n        {\"name\": \"Warrior\", \"level\": 10, \"hp\": 150},\n        {\"name\": \"Mage\", \"level\": 12, \"hp\": 70},\n        {\"name\": \"Rogue\", \"level\": 11, \"hp\": 100}\n    ]\n}\n\npretty_json = json.dumps(party, indent=2)\n\nprint(\"Pretty printed JSON:\")\nprint(pretty_json)\nprint()\n\nprint(\"--- Task 5: Modify Data ---\")\n\njson_str = '{\"name\": \"Warrior\", \"level\": 5, \"exp\": 450}'\nwarrior = json.loads(json_str)\nwarrior['level'] += 1\nwarrior['exp'] = 0\nupdated_json = json.dumps(warrior)\n\nprint(f\"Original: {json_str}\")\nprint(f\"Updated: {updated_json}\")\nprint()\n\nprint(\"JSON conversion complete!\")",
+  "hints": [
+    "Import json at the top: import json",
+    "json.dumps() converts Python dict to JSON string. json.loads() does the opposite.",
+    "For pretty printing, add indent parameter: json.dumps(data, indent=2) or indent=4",
+    "After json.loads(), you have a regular Python dict that you can modify with dict['key'] = value",
+    "Complete conversion:\n```python\n# Python → JSON\njson_string = json.dumps(my_dict)\n\n# JSON → Python\nmy_dict = json.loads(json_string)\n```"
+  ],
+  "validationTests": [
+    {
+      "type": "code_contains",
+      "value": "import json",
+      "description": "Must import json module"
+    },
+    {
+      "type": "code_contains",
+      "value": "json.dumps(",
+      "description": "Must use json.dumps() to serialize"
+    },
+    {
+      "type": "code_contains",
+      "value": "json.loads(",
+      "description": "Must use json.loads() to parse"
+    },
+    {
+      "type": "code_contains",
+      "value": "indent=",
+      "description": "Must use indent parameter for pretty printing"
+    },
+    {
+      "type": "output_contains",
+      "value": "JSON string:",
+      "description": "Should convert character to JSON"
+    },
+    {
+      "type": "output_contains",
+      "value": "Parsed data:",
+      "description": "Should parse JSON back to Python"
+    },
+    {
+      "type": "output_contains",
+      "value": "Pretty printed JSON:",
+      "description": "Should pretty print with indentation"
+    }
+  ],
+  "learningObjectives": [
+    "Understand what JSON is and why it's used",
+    "Convert Python dictionaries to JSON strings",
+    "Parse JSON strings into Python dictionaries",
+    "Pretty print JSON with indentation",
+    "Modify data and re-encode to JSON"
+  ],
+  "nextLessonId": 47,
+  "previousLessonId": 45,
+  "tags": ["intermediate", "json", "data", "serialization"],
+  "commonMistakes": [
+    {
+      "mistake": "Confusing dumps/loads with dump/load",
+      "explanation": "dumps/loads work with STRINGS. dump/load work with FILES. Remember the 's' in dumps/loads stands for 'string'!"
+    },
+    {
+      "mistake": "Forgetting to import json",
+      "explanation": "You must import json at the top of your file before using any json functions."
+    },
+    {
+      "mistake": "Trying to parse Python dict as JSON",
+      "explanation": "json.loads() expects a STRING, not a dict. If you already have a dict, you don't need to parse it!"
+    }
+  ]
+}

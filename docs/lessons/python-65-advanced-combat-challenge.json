@@ -1,0 +1,132 @@
+{
+  "id": 65,
+  "trackId": 8,
+  "language": "python",
+  "title": "⭐ CHALLENGE: The Ultimate Combat Arena",
+  "subtitle": "Advanced Combat System with All Patterns",
+  "difficulty": 6,
+  "estimatedTime": "90-120 minutes",
+  "xpReward": 500,
+  "description": "# The Ultimate Challenge!\n\n⚔️ **This is your first advanced challenge!** Combine everything you've learned:\n- Properties & validation\n- Magic methods\n- Decorators\n- Design patterns (Singleton, Factory, Observer)\n\n## The Mission\n\nBuild a **professional combat system** from scratch that demonstrates ALL the advanced OOP concepts.\n\n## Requirements\n\n### 1. Character Class (Properties + Magic Methods)\n- Use **properties** for health, mana with validation\n- Computed properties: `health_percentage`, `is_alive`\n- Magic methods: `__repr__`, `__eq__` (by name), `__lt__` (by level)\n- Methods: `take_damage()`, `heal()`, `restore_mana()`, `level_up()`\n\n### 2. Ability System (Decorators + Factory)\n- **AbilityFactory** creates abilities by type\n- Ability types: \"fireball\", \"heal\", \"shield\", \"lightning\"\n- Each ability has: name, mana_cost, effect\n- Use **@cooldown** decorator on abilities\n- Use **@requires_mana** decorator to check mana cost\n\n### 3. Combat Manager (Singleton)\n- **CombatManager** singleton tracks all combats\n- Methods: `start_combat()`, `end_combat()`, `get_combat_count()`\n- Stores combat history\n\n### 4. Event System (Observer)\n- **CombatEventSystem** for game events\n- Events: \"damage_dealt\", \"ability_used\", \"character_died\", \"combat_ended\"\n- Create three observers:\n  - **CombatLogger**: Logs all events\n  - **AchievementTracker**: Tracks achievements (\"First Blood\", \"Overkill\", etc.)\n  - **StatisticsCollector**: Collects damage stats\n\n### 5. Full Combat Simulation\n- Create 2 characters\n- Subscribe all observers\n- Run a full combat with abilities, damage, healing\n- Demonstrate all patterns working together\n- Show event notifications\n- Print final statistics\n\n## Success Criteria\n\n✅ Character uses properties with validation\n✅ Character implements magic methods\n✅ AbilityFactory creates different ability types\n✅ Decorators work (@cooldown, @requires_mana)\n✅ CombatManager is a singleton\n✅ EventSystem notifies observers\n✅ All three observers respond to events\n✅ Full combat simulation runs without errors\n✅ Code is clean and well-organized\n\n## Architecture Example\n\n```python\n# Create combat system\ncombat = CombatManager()\nevents = CombatEventSystem()\n\n# Subscribe observers\nevents.subscribe(\"damage_dealt\", combat_logger.log)\nevents.subscribe(\"damage_dealt\", stats.record_damage)\n\n# Create characters\nhero = Character(\"Hero\", 10)\nvillain = Character(\"Villain\", 10)\n\n# Create abilities\nfireball = AbilityFactory.create_ability(\"fireball\")\n\n# Use ability\n@cooldown(5)\n@requires_mana(30)\ndef cast_ability(character, ability, target):\n    damage = ability.effect(target)\n    events.notify(\"damage_dealt\", {...})\n    return damage\n```\n\n⚔️ Build a professional, production-ready combat system!\n\n*Hint: Start with the architecture. Plan your classes and their relationships before coding.*",
+  "starterCode": "# ⭐ CHALLENGE: Advanced Combat System\n# Build a complete combat system using all advanced OOP concepts\n\nimport time\nfrom functools import wraps\n\n# ============= YOUR CODE HERE =============\n\n# TODO 1: Create Character class with properties and magic methods\n# - Properties: health, mana, max_health, max_mana (with validation)\n# - Computed: health_percentage, mana_percentage, is_alive\n# - Magic: __repr__, __str__, __eq__, __lt__\n# - Methods: take_damage(), heal(), restore_mana(), level_up()\n\nclass Character:\n    pass\n\n\n# TODO 2: Create decorators\n# @requires_mana(cost) - Check if character has enough mana\n# @cooldown(seconds) - Prevent ability spam\n\ndef requires_mana(cost):\n    pass\n\ndef cooldown(seconds):\n    pass\n\n\n# TODO 3: Create Ability system with Factory\n\nclass Ability:\n    \"\"\"Base ability class\"\"\"\n    pass\n\nclass Fireball(Ability):\n    # Costs 30 mana, deals 50 damage\n    pass\n\nclass HealSpell(Ability):\n    # Costs 20 mana, heals 40 HP\n    pass\n\nclass Shield(Ability):\n    # Costs 25 mana, reduces next damage by 30\n    pass\n\nclass Lightning(Ability):\n    # Costs 40 mana, deals 80 damage\n    pass\n\nclass AbilityFactory:\n    # Create abilities by type string\n    pass\n\n\n# TODO 4: Create CombatManager singleton\n\nclass CombatManager:\n    # Track combats, combat history\n    pass\n\n\n# TODO 5: Create EventSystem with Observer pattern\n\nclass CombatEventSystem:\n    # subscribe, unsubscribe, notify\n    pass\n\nclass CombatLogger:\n    # Log all combat events\n    pass\n\nclass AchievementTracker:\n    # Track achievements based on events\n    pass\n\nclass StatisticsCollector:\n    # Collect damage/healing statistics\n    pass\n\n\n# ============= COMBAT SIMULATION =============\n\nprint(\"=== ADVANCED COMBAT SYSTEM ===\")\nprint(\"\\nInitializing combat system...\")\n\n# Create singleton combat manager\ncombat = CombatManager()\n\n# Create event system and observers\nevents = CombatEventSystem()\nlogger = CombatLogger()\nachievements = AchievementTracker()\nstats = StatisticsCollector()\n\n# Subscribe observers to events\n# TODO: Subscribe logger to all events\n# TODO: Subscribe achievements to relevant events\n# TODO: Subscribe stats to damage/healing events\n\nprint(\"\\nCreating combatants...\")\n\n# Create two characters\nhero = Character(\"Aragorn\", char_class=\"Warrior\", level=10)\nvillain = Character(\"Sauron\", char_class=\"Dark Lord\", level=12)\n\nprint(f\"Hero: {hero}\")\nprint(f\"Villain: {villain}\")\n\n# Create abilities\nfireball = AbilityFactory.create_ability(\"fireball\")\nheal = AbilityFactory.create_ability(\"heal\")\nlightning = AbilityFactory.create_ability(\"lightning\")\n\nprint(\"\\n=== COMBAT START ===\")\ncombat.start_combat(hero, villain)\n\n# Round 1: Hero casts fireball\nprint(\"\\n--- Round 1 ---\")\nprint(f\"Hero casts {fireball.name}!\")\n# TODO: Implement ability usage with decorators and event notifications\n\n# Round 2: Villain casts lightning  \nprint(\"\\n--- Round 2 ---\")\nprint(f\"Villain casts {lightning.name}!\")\n# TODO: Implement ability usage\n\n# Round 3: Hero tries fireball again (should be on cooldown)\nprint(\"\\n--- Round 3 ---\")\nprint(\"Hero tries fireball again...\")\n# TODO: Test cooldown\n\n# Round 4: Hero heals\nprint(\"\\n--- Round 4 ---\")\nprint(f\"Hero casts {heal.name}!\")\n# TODO: Implement healing\n\n# Round 5: Final lightning (hero low health)\nprint(\"\\n--- Round 5 ---\")\nprint(f\"Villain casts {lightning.name} again!\")\n# TODO: Implement ability, trigger death if health <= 0\n\nprint(\"\\n=== COMBAT END ===\")\ncombat.end_combat()\n\n# Show statistics\nprint(\"\\n=== FINAL STATISTICS ===\")\nprint(f\"\\nCombat History: {combat.get_combat_count()} combats\")\nprint(f\"\\nAchievements Earned: {achievements.get_achievements()}\")\nprint(f\"\\nDamage Statistics: {stats.get_summary()}\")\n\n# Verify singleton\ncombat2 = CombatManager()\nprint(f\"\\nSingleton test: combat is combat2 = {combat is combat2}\")",
+  "solutionCode": "# ⭐ CHALLENGE: Advanced Combat System - SOLUTION\n\nimport time\nfrom functools import wraps\n\n# Track cooldowns globally\nlast_ability_use = {}\n\n# ============= CHARACTER CLASS =============\n\nclass Character:\n    def __init__(self, name, char_class, level=1):\n        self.name = name\n        self.char_class = char_class\n        self._level = level\n        self._max_health = 100 + (level - 1) * 20\n        self._health = self._max_health\n        self._max_mana = 100\n        self._mana = self._max_mana\n        self.shield_active = 0\n    \n    @property\n    def health(self):\n        return self._health\n    \n    @health.setter\n    def health(self, value):\n        self._health = max(0, min(value, self._max_health))\n    \n    @property\n    def mana(self):\n        return self._mana\n    \n    @mana.setter\n    def mana(self, value):\n        self._mana = max(0, min(value, self._max_mana))\n    \n    @property\n    def max_health(self):\n        return self._max_health\n    \n    @property\n    def max_mana(self):\n        return self._max_mana\n    \n    @property\n    def health_percentage(self):\n        return (self._health / self._max_health) * 100\n    \n    @property\n    def mana_percentage(self):\n        return (self._mana / self._max_mana) * 100\n    \n    @property\n    def is_alive(self):\n        return self._health > 0\n    \n    @property\n    def level(self):\n        return self._level\n    \n    def __repr__(self):\n        return f\"Character('{self.name}', '{self.char_class}', level={self._level})\"\n    \n    def __str__(self):\n        return f\"{self.name} (Level {self._level} {self.char_class}) - HP:{self._health}/{self._max_health} MP:{self._mana}/{self._max_mana}\"\n    \n    def __eq__(self, other):\n        return self.name == other.name\n    \n    def __lt__(self, other):\n        return self._level < other._level\n    \n    def take_damage(self, amount):\n        if self.shield_active > 0:\n            reduced = max(0, amount - self.shield_active)\n            self.shield_active = 0\n            amount = reduced\n        self.health -= amount\n        return amount\n    \n    def heal(self, amount):\n        old_health = self.health\n        self.health += amount\n        return self.health - old_health\n    \n    def restore_mana(self, amount):\n        self.mana += amount\n\n\n# ============= DECORATORS =============\n\ndef requires_mana(cost):\n    def decorator(func):\n        @wraps(func)\n        def wrapper(caster, *args, **kwargs):\n            if caster.mana < cost:\n                return f\"{caster.name} doesn't have enough mana! (Need {cost}, have {caster.mana})\"\n            caster.mana -= cost\n            return func(caster, *args, **kwargs)\n        return wrapper\n    return decorator\n\ndef cooldown(seconds):\n    def decorator(func):\n        @wraps(func)\n        def wrapper(*args, **kwargs):\n            current_time = time.time()\n            func_name = func.__name__\n            \n            if func_name in last_ability_use:\n                time_since = current_time - last_ability_use[func_name]\n                if time_since < seconds:\n                    return f\"Ability on cooldown! Wait {seconds - time_since:.1f}s\"\n            \n            last_ability_use[func_name] = current_time\n            return func(*args, **kwargs)\n        return wrapper\n    return decorator\n\n\n# ============= ABILITY SYSTEM =============\n\nclass Ability:\n    def __init__(self, name, mana_cost, damage=0, healing=0, shield=0):\n        self.name = name\n        self.mana_cost = mana_cost\n        self.damage = damage\n        self.healing = healing\n        self.shield = shield\n\nclass Fireball(Ability):\n    def __init__(self):\n        super().__init__(\"Fireball\", 30, damage=50)\n\nclass HealSpell(Ability):\n    def __init__(self):\n        super().__init__(\"Heal\", 20, healing=40)\n\nclass Shield(Ability):\n    def __init__(self):\n        super().__init__(\"Shield\", 25, shield=30)\n\nclass Lightning(Ability):\n    def __init__(self):\n        super().__init__(\"Lightning\", 40, damage=80)\n\nclass AbilityFactory:\n    @staticmethod\n    def create_ability(ability_type):\n        abilities = {\n            \"fireball\": Fireball,\n            \"heal\": HealSpell,\n            \"shield\": Shield,\n            \"lightning\": Lightning\n        }\n        if ability_type.lower() in abilities:\n            return abilities[ability_type.lower()]()\n        raise ValueError(f\"Unknown ability: {ability_type}\")\n\n\n# ============= COMBAT MANAGER =============\n\nclass CombatManager:\n    _instance = None\n    \n    def __new__(cls):\n        if cls._instance is None:\n            cls._instance = super().__new__(cls)\n        return cls._instance\n    \n    def __init__(self):\n        if not hasattr(self, 'initialized'):\n            self.combat_history = []\n            self.current_combat = None\n            self.initialized = True\n    \n    def start_combat(self, char1, char2):\n        self.current_combat = {\"char1\": char1, \"char2\": char2, \"rounds\": 0}\n        print(f\"Combat started: {char1.name} vs {char2.name}\")\n    \n    def end_combat(self):\n        if self.current_combat:\n            self.combat_history.append(self.current_combat)\n            self.current_combat = None\n    \n    def get_combat_count(self):\n        return len(self.combat_history)\n\n\n# ============= EVENT SYSTEM =============\n\nclass CombatEventSystem:\n    def __init__(self):\n        self.observers = {}\n    \n    def subscribe(self, event_name, callback):\n        if event_name not in self.observers:\n            self.observers[event_name] = []\n        self.observers[event_name].append(callback)\n    \n    def unsubscribe(self, event_name, callback):\n        if event_name in self.observers:\n            self.observers[event_name].remove(callback)\n    \n    def notify(self, event_name, data=None):\n        if event_name in self.observers:\n            for callback in self.observers[event_name]:\n                callback(data)\n\nclass CombatLogger:\n    def log(self, data):\n        event = data['event']\n        if event == \"damage_dealt\":\n            print(f\"  [LOG] {data['target']} took {data['amount']} damage from {data['ability']}\")\n        elif event == \"ability_used\":\n            print(f\"  [LOG] {data['caster']} used {data['ability']}\")\n        elif event == \"character_died\":\n            print(f\"  [LOG] {data['character']} has been defeated!\")\n        elif event == \"heal\":\n            print(f\"  [LOG] {data['target']} healed for {data['amount']} HP\")\n\nclass AchievementTracker:\n    def __init__(self):\n        self.achievements = []\n    \n    def track(self, data):\n        event = data['event']\n        if event == \"damage_dealt\":\n            if data['amount'] > 70:\n                if \"Overkill\" not in self.achievements:\n                    self.achievements.append(\"Overkill\")\n                    print(f\"  [ACHIEVEMENT] Overkill! (Dealt {data['amount']} damage)\")\n        elif event == \"character_died\":\n            if \"First Blood\" not in self.achievements:\n                self.achievements.append(\"First Blood\")\n                print(f\"  [ACHIEVEMENT] First Blood!\")\n    \n    def get_achievements(self):\n        return self.achievements\n\nclass StatisticsCollector:\n    def __init__(self):\n        self.total_damage = 0\n        self.total_healing = 0\n        self.abilities_used = 0\n    \n    def record(self, data):\n        event = data['event']\n        if event == \"damage_dealt\":\n            self.total_damage += data['amount']\n        elif event == \"heal\":\n            self.total_healing += data['amount']\n        elif event == \"ability_used\":\n            self.abilities_used += 1\n    \n    def get_summary(self):\n        return {\n            \"total_damage\": self.total_damage,\n            \"total_healing\": self.total_healing,\n            \"abilities_used\": self.abilities_used\n        }\n\n\n# ============= COMBAT SIMULATION =============\n\nprint(\"=== ADVANCED COMBAT SYSTEM ===\")\nprint(\"\\nInitializing combat system...\")\n\ncombat = CombatManager()\nevents = CombatEventSystem()\nlogger = CombatLogger()\nachievements = AchievementTracker()\nstats = StatisticsCollector()\n\nevents.subscribe(\"damage_dealt\", logger.log)\nevents.subscribe(\"ability_used\", logger.log)\nevents.subscribe(\"character_died\", logger.log)\nevents.subscribe(\"heal\", logger.log)\nevents.subscribe(\"damage_dealt\", achievements.track)\nevents.subscribe(\"character_died\", achievements.track)\nevents.subscribe(\"damage_dealt\", stats.record)\nevents.subscribe(\"heal\", stats.record)\nevents.subscribe(\"ability_used\", stats.record)\n\nprint(\"\\nCreating combatants...\")\n\nhero = Character(\"Aragorn\", char_class=\"Warrior\", level=10)\nvillain = Character(\"Sauron\", char_class=\"Dark Lord\", level=12)\n\nprint(f\"Hero: {hero}\")\nprint(f\"Villain: {villain}\")\n\nfireball = AbilityFactory.create_ability(\"fireball\")\nheal_spell = AbilityFactory.create_ability(\"heal\")\nlightning = AbilityFactory.create_ability(\"lightning\")\n\nprint(\"\\n=== COMBAT START ===\")\ncombat.start_combat(hero, villain)\n\n@cooldown(5)\n@requires_mana(30)\ndef cast_fireball(caster, target):\n    events.notify(\"ability_used\", {\"event\": \"ability_used\", \"caster\": caster.name, \"ability\": \"Fireball\"})\n    damage = target.take_damage(fireball.damage)\n    events.notify(\"damage_dealt\", {\"event\": \"damage_dealt\", \"target\": target.name, \"amount\": damage, \"ability\": \"Fireball\"})\n    if not target.is_alive:\n        events.notify(\"character_died\", {\"event\": \"character_died\", \"character\": target.name})\n\n@cooldown(5)\n@requires_mana(40)\ndef cast_lightning(caster, target):\n    events.notify(\"ability_used\", {\"event\": \"ability_used\", \"caster\": caster.name, \"ability\": \"Lightning\"})\n    damage = target.take_damage(lightning.damage)\n    events.notify(\"damage_dealt\", {\"event\": \"damage_dealt\", \"target\": target.name, \"amount\": damage, \"ability\": \"Lightning\"})\n    if not target.is_alive:\n        events.notify(\"character_died\", {\"event\": \"character_died\", \"character\": target.name})\n\n@cooldown(3)\n@requires_mana(20)\ndef cast_heal(caster):\n    events.notify(\"ability_used\", {\"event\": \"ability_used\", \"caster\": caster.name, \"ability\": \"Heal\"})\n    healed = caster.heal(heal_spell.healing)\n    events.notify(\"heal\", {\"event\": \"heal\", \"target\": caster.name, \"amount\": healed})\n\nprint(\"\\n--- Round 1 ---\")\nprint(f\"Hero casts Fireball!\")\ncast_fireball(hero, villain)\nprint(f\"Villain: {villain}\")\n\nprint(\"\\n--- Round 2 ---\")\nprint(f\"Villain casts Lightning!\")\ncast_lightning(villain, hero)\nprint(f\"Hero: {hero}\")\n\nprint(\"\\n--- Round 3 ---\")\nprint(\"Hero tries Fireball again (testing cooldown)...\")\nresult = cast_fireball(hero, villain)\nif isinstance(result, str):\n    print(f\"  {result}\")\n\nprint(\"\\n--- Round 4 ---\")\nprint(f\"Hero casts Heal!\")\ncast_heal(hero)\nprint(f\"Hero: {hero}\")\n\ntime.sleep(5.1)\nprint(\"\\n--- Round 5 ---\")\nprint(f\"Villain casts Lightning again!\")\ncast_lightning(villain, hero)\nprint(f\"Hero: {hero}\")\n\nprint(\"\\n=== COMBAT END ===\")\ncombat.end_combat()\n\nprint(\"\\n=== FINAL STATISTICS ===\")\nprint(f\"\\nCombat History: {combat.get_combat_count()} combats\")\nprint(f\"Achievements Earned: {achievements.get_achievements()}\")\nprint(f\"Damage Statistics: {stats.get_summary()}\")\n\ncombat2 = CombatManager()\nprint(f\"\\nSingleton test: combat is combat2 = {combat is combat2}\")",
+  "hints": [
+    "Start by implementing Character with properties. Make sure health and mana can't go negative or exceed maximums.",
+    "For decorators: @requires_mana needs to check caster.mana before calling the function. @cooldown needs to store last use time in a global dictionary.",
+    "AbilityFactory should be similar to EnemyFactory from the previous lesson. Map strings to ability classes.",
+    "CombatManager singleton: Use __new__ to control instance creation. Store _instance as class variable.",
+    "EventSystem: When notify is called, loop through all subscribers for that event and call each callback with the data.",
+    "In the simulation, call events.notify() whenever something important happens (damage, healing, ability use, death).",
+    "Don't forget to subscribe all observers to their relevant events BEFORE starting combat!"
+  ],
+  "validationTests": [
+    {
+      "type": "code_contains",
+      "value": "@property",
+      "description": "Character must use properties"
+    },
+    {
+      "type": "code_contains",
+      "value": "def __repr__",
+      "description": "Character must implement __repr__"
+    },
+    {
+      "type": "code_contains",
+      "value": "def __lt__",
+      "description": "Character must implement __lt__"
+    },
+    {
+      "type": "code_contains",
+      "value": "def requires_mana",
+      "description": "Must implement requires_mana decorator"
+    },
+    {
+      "type": "code_contains",
+      "value": "def cooldown",
+      "description": "Must implement cooldown decorator"
+    },
+    {
+      "type": "code_contains",
+      "value": "class AbilityFactory",
+      "description": "Must implement AbilityFactory"
+    },
+    {
+      "type": "code_contains",
+      "value": "def __new__",
+      "description": "CombatManager must be a singleton"
+    },
+    {
+      "type": "code_contains",
+      "value": "def subscribe",
+      "description": "EventSystem must have subscribe method"
+    },
+    {
+      "type": "code_contains",
+      "value": "def notify",
+      "description": "EventSystem must have notify method"
+    },
+    {
+      "type": "code_contains",
+      "value": "class CombatLogger",
+      "description": "Must implement CombatLogger observer"
+    },
+    {
+      "type": "code_contains",
+      "value": "class AchievementTracker",
+      "description": "Must implement AchievementTracker observer"
+    },
+    {
+      "type": "code_contains",
+      "value": "class StatisticsCollector",
+      "description": "Must implement StatisticsCollector observer"
+    },
+    {
+      "type": "output_contains",
+      "value": "Combat started",
+      "description": "Combat simulation must run"
+    },
+    {
+      "type": "output_contains",
+      "value": "Singleton test: combat is combat2 = True",
+      "description": "CombatManager must be a proper singleton"
+    }
+  ],
+  "learningObjectives": [
+    "Combine properties, magic methods, decorators, and design patterns",
+    "Build a complete system with multiple interacting components",
+    "Design professional architecture from scratch",
+    "Implement multiple design patterns in one system",
+    "Create observer pattern with multiple observers",
+    "Write clean, modular, maintainable code",
+    "Demonstrate mastery of advanced OOP concepts"
+  ],
+  "nextLessonId": 66,
+  "previousLessonId": 64,
+  "tags": ["advanced", "challenge", "oop", "patterns", "decorators", "properties", "combat", "architecture"],
+  "commonMistakes": [
+    {
+      "mistake": "Not subscribing observers before starting combat",
+      "explanation": "Events won't be logged if observers aren't subscribed first. Subscribe all observers immediately after creating the EventSystem."
+    },
+    {
+      "mistake": "Forgetting to notify events in ability functions",
+      "explanation": "The whole point of the observer pattern is event notifications! Call events.notify() for every important action."
+    },
+    {
+      "mistake": "Not handling mana cost in decorator properly",
+      "explanation": "The @requires_mana decorator should SUBTRACT mana before calling the function. Otherwise abilities are free!"
+    },
+    {
+      "mistake": "Creating new CombatManager instances instead of using singleton",
+      "explanation": "Use the same combat variable throughout. The singleton ensures it's always the same instance, but you need to use it consistently."
+    },
+    {
+      "mistake": "Overcomplicated combat simulation",
+      "explanation": "Keep it simple! A few rounds demonstrating each feature is enough. You don't need a fully playable game."
+    }
+  ],
+  "bonus": {
+    "description": "Enhance your combat system with these advanced features:\n- Add critical hit mechanic (random chance for 2x damage)\n- Implement status effects (poison, burn, stun)\n- Add combo system (abilities chain together)\n- Create boss enemy with special abilities\n- Add combat replay system\n- Implement turn-based combat with queue\n- Add elemental weaknesses/resistances",
+    "xpReward": 200
+  }
+}

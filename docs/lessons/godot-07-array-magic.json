@@ -1,0 +1,45 @@
+{
+  "id": 107,
+  "trackId": 2,
+  "language": "gdscript",
+  "title": "Array Magic",
+  "subtitle": "Advanced Array Operations",
+  "difficulty": 2,
+  "estimatedTime": "20-25 minutes",
+  "xpReward": 250,
+  "description": "# Array Magic: Advanced Operations\n\nTime to master Arrays! Learn powerful methods for managing game collections.\n\n## Common Array Methods\n\n**Check if item exists:**\n```gdscript\nvar items = [\"sword\", \"shield\"]\nif \"sword\" in items:\n    print(\"You have a sword!\")\n```\n\n**Find item index:**\n```gdscript\nvar index = items.find(\"shield\")  # Returns 1\n```\n\n**Remove by value:**\n```gdscript\nitems.erase(\"sword\")  # Removes \"sword\"\n```\n\n**Clear all:**\n```gdscript\nitems.clear()  # Empty the array\n```\n\n**Sort items:**\n```gdscript\nvar numbers = [5, 2, 8, 1]\nnumbers.sort()\nprint(numbers)  # [1, 2, 5, 8]\n```\n\n## Your Quest\n\nCreate an inventory management system:\n1. Start with an array of items\n2. Check if a specific item exists\n3. Add and remove items\n4. Sort and display the inventory",
+  "starterCode": "# Create inventory\nvar inventory = [\"potion\", \"key\", \"sword\"]\n\n# Check if \"key\" is in inventory\n\n# Add \"shield\" to inventory\n\n# Remove \"potion\" from inventory\n\n# Print final inventory\n\n",
+  "solutionCode": "# Create inventory\nvar inventory = [\"potion\", \"key\", \"sword\"]\n\n# Check if \"key\" is in inventory\nif \"key\" in inventory:\n    print(\"You have the key!\")\n\n# Add \"shield\" to inventory\ninventory.append(\"shield\")\n\n# Remove \"potion\" from inventory\ninventory.erase(\"potion\")\n\n# Print final inventory\nprint(\"Inventory: \", inventory)",
+  "hints": [
+    "Use 'in' keyword to check if item exists: if \"item\" in array",
+    "Use append() to add items",
+    "Use erase() to remove by value",
+    "Print the whole array to see all items"
+  ],
+  "validationTests": [
+    {
+      "type": "code_contains",
+      "value": "in inventory",
+      "description": "Should check if item is in array"
+    },
+    {
+      "type": "code_contains",
+      "value": ".append(",
+      "description": "Should add an item"
+    },
+    {
+      "type": "code_contains",
+      "value": ".erase(",
+      "description": "Should remove an item"
+    }
+  ],
+  "learningObjectives": [
+    "Check array membership with 'in'",
+    "Add and remove array items",
+    "Use array methods effectively",
+    "Build inventory systems"
+  ],
+  "previousLessonId": 106,
+  "nextLessonId": 108,
+  "tags": ["beginner", "arrays", "methods", "inventory", "godot"]
+}

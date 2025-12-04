@@ -1,0 +1,77 @@
+{
+  "id": 66,
+  "trackId": 8,
+  "language": "python",
+  "title": "The Testing Sanctum",
+  "subtitle": "Unit Testing with pytest",
+  "difficulty": 4,
+  "estimatedTime": "30-40 minutes",
+  "xpReward": 200,
+  "description": "# Welcome to Testing!\n\n✅ **Testing** ensures your code works and catches bugs before users do.\n\n## Why Test?\n\n- **Catch bugs early** - Find issues before deployment\n- **Prevent regressions** - Ensure fixes don't break\n- **Document behavior** - Tests show how code should work\n- **Enable refactoring** - Change confidently with safety net\n- **Professional standard** - All production code has tests\n\n## pytest Basics\n\n```python\nimport pytest\n\ndef add(a, b):\n    return a + b\n\n# Test function (starts with test_)\ndef test_add():\n    assert add(2, 3) == 5\n    assert add(-1, 1) == 0\n    assert add(0, 0) == 0\n\n# Run: pytest test_math.py\n```\n\n## Assertions\n\n```python\nassert value == expected\nassert value != unexpected\nassert value > 10\nassert value in [1, 2, 3]\nassert \"text\" in string\nassert callable(function)\n```\n\n## Testing Exceptions\n\n```python\ndef test_division_by_zero():\n    with pytest.raises(ZeroDivisionError):\n        result = 10 / 0\n```\n\n## Your Mission\n\nWrite tests for a Character class using pytest:\n- Test initialization\n- Test methods (take_damage, heal, gain_xp, level_up)\n- Test edge cases (negative values, overkill damage)\n- Test error conditions\n\n*Hint: Good tests are specific, isolated, and test one thing.*",
+  "starterCode": "# Character class to test (DO NOT MODIFY)\nclass Character:\n    def __init__(self, name, level=1):\n        self.name = name\n        self.level = level\n        self.health = 100\n        self.max_health = 100\n        self.xp = 0\n        self.xp_to_level = 100\n    \n    def take_damage(self, amount):\n        \"\"\"Reduce health, minimum 0\"\"\"\n        if amount < 0:\n            raise ValueError(\"Damage cannot be negative\")\n        self.health = max(0, self.health - amount)\n        return self.health\n    \n    def heal(self, amount):\n        \"\"\"Restore health, maximum max_health\"\"\"\n        if amount < 0:\n            raise ValueError(\"Healing cannot be negative\")\n        old_health = self.health\n        self.health = min(self.max_health, self.health + amount)\n        return self.health - old_health\n    \n    def gain_xp(self, amount):\n        \"\"\"Gain XP and level up if threshold reached\"\"\"\n        if amount < 0:\n            raise ValueError(\"XP cannot be negative\")\n        self.xp += amount\n        if self.xp >= self.xp_to_level:\n            self.level_up()\n    \n    def level_up(self):\n        \"\"\"Increase level and stats\"\"\"\n        self.level += 1\n        self.xp = 0\n        self.xp_to_level = self.level * 100\n        self.max_health += 20\n        self.health = self.max_health\n    \n    def is_alive(self):\n        return self.health > 0\n\n# ============= YOUR TESTS HERE =============\nimport pytest\n\n# TODO: Test initialization\ndef test_character_creation():\n    # Test that a new character has correct initial values\n    pass\n\n# TODO: Test take_damage normal case\ndef test_take_damage():\n    pass\n\n# TODO: Test take_damage with overkill (damage > health)\ndef test_take_damage_overkill():\n    pass\n\n# TODO: Test take_damage with negative value (should raise ValueError)\ndef test_take_damage_negative():\n    pass\n\n# TODO: Test heal normal case\ndef test_heal():\n    pass\n\n# TODO: Test heal beyond max_health\ndef test_heal_overheal():\n    pass\n\n# TODO: Test heal with negative value (should raise ValueError)\ndef test_heal_negative():\n    pass\n\n# TODO: Test gain_xp without leveling\ndef test_gain_xp():\n    pass\n\n# TODO: Test gain_xp with level up\ndef test_gain_xp_level_up():\n    pass\n\n# TODO: Test is_alive when alive and dead\ndef test_is_alive():\n    pass\n\n# TODO: Test level_up increases stats correctly\ndef test_level_up():\n    pass\n\n# Run all tests\nif __name__ == \"__main__\":\n    # Simple test runner for this lesson\n    test_character_creation()\n    test_take_damage()\n    test_take_damage_overkill()\n    test_take_damage_negative()\n    test_heal()\n    test_heal_overheal()\n    test_heal_negative()\n    test_gain_xp()\n    test_gain_xp_level_up()\n    test_is_alive()\n    test_level_up()\n    print(\"All tests passed!\")",
+  "solutionCode": "# Character class to test\nclass Character:\n    def __init__(self, name, level=1):\n        self.name = name\n        self.level = level\n        self.health = 100\n        self.max_health = 100\n        self.xp = 0\n        self.xp_to_level = 100\n    \n    def take_damage(self, amount):\n        if amount < 0:\n            raise ValueError(\"Damage cannot be negative\")\n        self.health = max(0, self.health - amount)\n        return self.health\n    \n    def heal(self, amount):\n        if amount < 0:\n            raise ValueError(\"Healing cannot be negative\")\n        old_health = self.health\n        self.health = min(self.max_health, self.health + amount)\n        return self.health - old_health\n    \n    def gain_xp(self, amount):\n        if amount < 0:\n            raise ValueError(\"XP cannot be negative\")\n        self.xp += amount\n        if self.xp >= self.xp_to_level:\n            self.level_up()\n    \n    def level_up(self):\n        self.level += 1\n        self.xp = 0\n        self.xp_to_level = self.level * 100\n        self.max_health += 20\n        self.health = self.max_health\n    \n    def is_alive(self):\n        return self.health > 0\n\n# ============= TESTS =============\nimport pytest\n\ndef test_character_creation():\n    char = Character(\"Hero\")\n    assert char.name == \"Hero\"\n    assert char.level == 1\n    assert char.health == 100\n    assert char.max_health == 100\n    assert char.xp == 0\n\ndef test_take_damage():\n    char = Character(\"Hero\")\n    char.take_damage(30)\n    assert char.health == 70\n\ndef test_take_damage_overkill():\n    char = Character(\"Hero\")\n    char.take_damage(150)\n    assert char.health == 0\n\ndef test_take_damage_negative():\n    char = Character(\"Hero\")\n    with pytest.raises(ValueError):\n        char.take_damage(-10)\n\ndef test_heal():\n    char = Character(\"Hero\")\n    char.health = 50\n    healed = char.heal(30)\n    assert char.health == 80\n    assert healed == 30\n\ndef test_heal_overheal():\n    char = Character(\"Hero\")\n    char.health = 90\n    healed = char.heal(20)\n    assert char.health == 100\n    assert healed == 10\n\ndef test_heal_negative():\n    char = Character(\"Hero\")\n    with pytest.raises(ValueError):\n        char.heal(-10)\n\ndef test_gain_xp():\n    char = Character(\"Hero\")\n    char.gain_xp(50)\n    assert char.xp == 50\n    assert char.level == 1\n\ndef test_gain_xp_level_up():\n    char = Character(\"Hero\")\n    char.gain_xp(100)\n    assert char.level == 2\n    assert char.xp == 0\n    assert char.max_health == 120\n\ndef test_is_alive():\n    char = Character(\"Hero\")\n    assert char.is_alive()\n    char.health = 0\n    assert not char.is_alive()\n\ndef test_level_up():\n    char = Character(\"Hero\")\n    char.health = 50\n    char.level_up()\n    assert char.level == 2\n    assert char.max_health == 120\n    assert char.health == 120\n    assert char.xp_to_level == 200\n\nif __name__ == \"__main__\":\n    test_character_creation()\n    test_take_damage()\n    test_take_damage_overkill()\n    test_take_damage_negative()\n    test_heal()\n    test_heal_overheal()\n    test_heal_negative()\n    test_gain_xp()\n    test_gain_xp_level_up()\n    test_is_alive()\n    test_level_up()\n    print(\"All tests passed!\")",
+  "hints": [
+    "Test functions must start with test_ for pytest to find them.",
+    "Use assert statements: assert actual == expected",
+    "For testing exceptions, use: with pytest.raises(ValueError): function_that_should_fail()",
+    "Each test should create its own Character instance to avoid tests affecting each other.",
+    "Test the return values AND the state changes. For example, test that heal() returns the amount healed AND that char.health changed correctly."
+  ],
+  "validationTests": [
+    {
+      "type": "code_contains",
+      "value": "def test_character_creation",
+      "description": "Must have test for character creation"
+    },
+    {
+      "type": "code_contains",
+      "value": "def test_take_damage",
+      "description": "Must test take_damage method"
+    },
+    {
+      "type": "code_contains",
+      "value": "pytest.raises",
+      "description": "Must test exceptions with pytest.raises"
+    },
+    {
+      "type": "code_contains",
+      "value": "def test_heal",
+      "description": "Must test heal method"
+    },
+    {
+      "type": "code_contains",
+      "value": "def test_level_up",
+      "description": "Must test level_up method"
+    },
+    {
+      "type": "output_contains",
+      "value": "All tests passed",
+      "description": "All tests should pass"
+    }
+  ],
+  "learningObjectives": [
+    "Write unit tests with pytest",
+    "Use assert statements for validation",
+    "Test normal cases and edge cases",
+    "Test error conditions with pytest.raises",
+    "Structure tests properly with arrange-act-assert",
+    "Understand test isolation and independence"
+  ],
+  "nextLessonId": 67,
+  "previousLessonId": 65,
+  "tags": ["advanced", "testing", "pytest", "unit-tests", "tdd"],
+  "commonMistakes": [
+    {
+      "mistake": "Not creating new Character instance for each test",
+      "explanation": "Tests should be independent! Create a fresh Character in each test function to avoid one test affecting another."
+    },
+    {
+      "mistake": "Testing multiple things in one test function",
+      "explanation": "Each test should check ONE behavior. Split complex tests into multiple smaller tests."
+    },
+    {
+      "mistake": "Not testing edge cases",
+      "explanation": "Test the boundaries: zero values, negative values, maximum values, empty states. That's where bugs hide!"
+    }
+  ]
+}

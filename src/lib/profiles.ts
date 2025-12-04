@@ -233,6 +233,8 @@ export function getProfileStorageKey(baseKey: string, profileId?: string): strin
 
 /**
  * Activate a course for the current profile
+ * Only one course can be active at a time
+ * @throws Error if another course is already active
  */
 export function activateCourse(courseId: number): void {
   const profile = getCurrentProfile()
@@ -243,6 +245,11 @@ export function activateCourse(courseId: number): void {
   // Don't add if already activated
   if (profile.activeCourses.includes(courseId)) {
     return
+  }
+
+  // Check if any other course is already active
+  if (profile.activeCourses.length > 0) {
+    throw new Error('COURSE_ALREADY_ACTIVE')
   }
 
   const profiles = loadProfiles()

@@ -1,0 +1,50 @@
+{
+  "id": 109,
+  "trackId": 2,
+  "language": "gdscript",
+  "title": "The Node Keeper",
+  "subtitle": "Understanding Godot's Scene Tree",
+  "difficulty": 3,
+  "estimatedTime": "25-30 minutes",
+  "xpReward": 300,
+  "description": "# The Node Keeper: Godot's Scene System\n\nWelcome to a unique lesson about Godot's most important concept: **Nodes and the Scene Tree**!\n\n## What are Nodes?\n\nIn Godot, everything is a **Node**. Nodes are building blocks that you combine to create games:\n\n- **Sprite2D**: Displays images\n- **CharacterBody2D**: A character that can move\n- **Area2D**: Detects collisions\n- **Timer**: Counts down time\n- **Label**: Shows text on screen\n\n## The Scene Tree\n\nNodes are organized in a tree structure:\n\n```\nPlayer (CharacterBody2D)\n├─ Sprite2D (shows player image)\n├─ CollisionShape2D (player hitbox)\n└─ HealthBar (ProgressBar)\n```\n\n## Accessing Nodes from Code\n\nUse `$` to access child nodes:\n\n```gdscript\n# Get a child node named \"Sprite2D\"\nvar sprite = $Sprite2D\n\n# Change its properties\nsprite.visible = false  # Hide the sprite\n```\n\n## Using get_node()\n\nAlternatively, use `get_node()`:\n\n```gdscript\nvar sprite = get_node(\"Sprite2D\")\n```\n\n## Common Node Operations\n\n**Hide/show nodes:**\n```gdscript\n$Sprite2D.hide()\n$Sprite2D.show()\n```\n\n**Change position:**\n```gdscript\n$Player.position = Vector2(100, 200)\n```\n\n**Queue free (delete):**\n```gdscript\n$Enemy.queue_free()  # Remove from scene\n```\n\n## Your Quest\n\nLearn to work with nodes through code:\n\n1. Print a message showing you understand nodes\n2. Create a dictionary representing a node's properties\n3. Simulate accessing and modifying node properties",
+  "starterCode": "# Understanding Nodes lesson\n\n# Simulate a player node's properties\nvar player_node = {\n    \"name\": \"Player\",\n    \"position_x\": 0,\n    \"position_y\": 0,\n    \"health\": 100,\n    \"visible\": true\n}\n\n# Print the node name\n\n# Move the player (change position)\n\n# Take damage (reduce health)\n\n# Hide the player (set visible to false)\n\n# Print final state\n\n",
+  "solutionCode": "# Understanding Nodes lesson\n\n# Simulate a player node's properties\nvar player_node = {\n    \"name\": \"Player\",\n    \"position_x\": 0,\n    \"position_y\": 0,\n    \"health\": 100,\n    \"visible\": true\n}\n\n# Print the node name\nprint(\"Node: \", player_node[\"name\"])\n\n# Move the player (change position)\nplayer_node[\"position_x\"] = 100\nplayer_node[\"position_y\"] = 200\nprint(\"Moved to: \", player_node[\"position_x\"], \", \", player_node[\"position_y\"])\n\n# Take damage (reduce health)\nplayer_node[\"health\"] -= 25\nprint(\"Health: \", player_node[\"health\"])\n\n# Hide the player (set visible to false)\nplayer_node[\"visible\"] = false\nprint(\"Visible: \", player_node[\"visible\"])",
+  "hints": [
+    "Access dictionary values with square brackets",
+    "Modify values by assigning new ones",
+    "Use -= to subtract from health",
+    "Set visible to false to hide"
+  ],
+  "validationTests": [
+    {
+      "type": "output_contains",
+      "value": "Player",
+      "description": "Should print player node name"
+    },
+    {
+      "type": "output_contains",
+      "value": "100",
+      "description": "Should show position change"
+    },
+    {
+      "type": "output_contains",
+      "value": "75",
+      "description": "Should show reduced health (100-25=75)"
+    },
+    {
+      "type": "output_contains",
+      "value": "false",
+      "description": "Should show visible set to false"
+    }
+  ],
+  "learningObjectives": [
+    "Understand Godot's node system",
+    "Learn about the scene tree",
+    "Simulate node property access",
+    "Prepare for real Godot development"
+  ],
+  "previousLessonId": 108,
+  "nextLessonId": 110,
+  "tags": ["beginner", "nodes", "scene-tree", "godot", "game-engine"]
+}

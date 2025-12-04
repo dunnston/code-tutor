@@ -1,0 +1,23 @@
+{
+  "id": 127,
+  "trackId": 2,
+  "language": "gdscript",
+  "title": "Nested Data Structures",
+  "subtitle": "Complex Game Data",
+  "difficulty": 4,
+  "estimatedTime": "30-35 minutes",
+  "xpReward": 300,
+  "description": "# Nested Data Structures\n\n## Arrays of Dictionaries\n\n```gdscript\nvar party = [\n    {\"name\": \"Knight\", \"health\": 100, \"role\": \"tank\"},\n    {\"name\": \"Mage\", \"health\": 80, \"role\": \"damage\"},\n    {\"name\": \"Healer\", \"health\": 90, \"role\": \"support\"}\n]\n\nfor member in party:\n    print(member[\"name\"], \" - \", member[\"role\"])\n```\n\n## Dictionaries with Arrays\n\n```gdscript\nvar player = {\n    \"name\": \"Hero\",\n    \"inventory\": [\"sword\", \"potion\", \"key\"],\n    \"skills\": [\"attack\", \"defend\", \"heal\"]\n}\n\nfor item in player[\"inventory\"]:\n    print(\"Has: \", item)\n```\n\n## Deeply Nested\n\n```gdscript\nvar game_data = {\n    \"players\": [\n        {\n            \"name\": \"Player1\",\n            \"stats\": {\"hp\": 100, \"mp\": 50},\n            \"equipment\": [\"sword\", \"shield\"]\n        }\n    ]\n}\n\nvar player = game_data[\"players\"][0]\nprint(player[\"name\"], \" HP: \", player[\"stats\"][\"hp\"])\n```\n\n## Your Quest\n\nCreate a guild management system with nested data.",
+  "starterCode": "# Nested Data Structures - Guild System\n\n# Create guild data with nested structure\nvar guild = {\n    \"name\": \"Dragon Slayers\",\n    \"level\": 5,\n    \"members\": [],  # Will hold member dictionaries\n    \"treasury\": 1000\n}\n\n# Add members with their own stats and inventory\n\n# Display guild information\n\n# Calculate total member power\n\n",
+  "solutionCode": "# Nested Data Structures - Guild System\n\n# Create guild data\nvar guild = {\n    \"name\": \"Dragon Slayers\",\n    \"level\": 5,\n    \"members\": [],\n    \"treasury\": 1000\n}\n\n# Add members with nested data\nguild[\"members\"].append({\n    \"name\": \"Knight\",\n    \"class\": \"Warrior\",\n    \"stats\": {\"health\": 100, \"strength\": 20, \"defense\": 15},\n    \"equipment\": [\"Iron Sword\", \"Steel Armor\"]\n})\n\nguild[\"members\"].append({\n    \"name\": \"Wizard\",\n    \"class\": \"Mage\",\n    \"stats\": {\"health\": 80, \"strength\": 8, \"defense\": 5, \"magic\": 25},\n    \"equipment\": [\"Staff\", \"Robe\"]\n})\n\nguild[\"members\"].append({\n    \"name\": \"Ranger\",\n    \"class\": \"Archer\",\n    \"stats\": {\"health\": 90, \"strength\": 12, \"defense\": 10},\n    \"equipment\": [\"Longbow\", \"Leather Armor\", \"Arrows\"]\n})\n\n# Display guild info\nprint(\"=== Guild: \", guild[\"name\"], \" ===\")\nprint(\"Level: \", guild[\"level\"])\nprint(\"Treasury: \", guild[\"treasury\"], \"g\")\nprint(\"Members: \", guild[\"members\"].size())\n\nprint(\"\\n=== Member Roster ===\")\nfor member in guild[\"members\"]:\n    print(\"\\n\", member[\"name\"], \" the \", member[\"class\"])\n    print(\"  Health: \", member[\"stats\"][\"health\"])\n    print(\"  Strength: \", member[\"stats\"][\"strength\"])\n    print(\"  Equipment: \", member[\"equipment\"].size(), \" items\")\n\n# Calculate total strength\nvar total_strength = 0\nfor member in guild[\"members\"]:\n    total_strength += member[\"stats\"][\"strength\"]\nprint(\"\\nGuild Total Strength: \", total_strength)",
+  "hints": ["Use arrays to hold multiple items", "Use dictionaries for structured data", "Access nested data with multiple brackets", "Loop through arrays in dictionaries", "Build data step by step"],
+  "validationTests": [
+    {"type": "code_contains", "value": "\"members\":", "description": "Should have members array"},
+    {"type": "code_contains", "value": "\"stats\":", "description": "Should have nested stats"},
+    {"type": "output_contains", "value": "Guild", "description": "Should display guild info"}
+  ],
+  "learningObjectives": ["Create nested data structures", "Access nested values", "Loop through complex data", "Model game systems"],
+  "previousLessonId": 126,
+  "nextLessonId": 128,
+  "tags": ["beginner", "nested-data", "arrays", "dictionaries", "game-data", "godot"]
+}

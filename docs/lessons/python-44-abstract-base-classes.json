@@ -1,0 +1,96 @@
+{
+  "id": 44,
+  "trackId": 7,
+  "language": "python",
+  "title": "The Abstract Contract",
+  "subtitle": "Abstract Base Classes",
+  "difficulty": 6,
+  "estimatedTime": "30-35 minutes",
+  "xpReward": 200,
+  "description": "# Abstract Base Classes: Enforcing Interfaces\n\n📋 **Abstract Base Classes (ABC)** enforce that child classes implement specific methods!\n\n## What are Abstract Base Classes?\n\nAn **abstract base class** defines methods that MUST be implemented by child classes:\n\n```python\nfrom abc import ABC, abstractmethod\n\nclass Animal(ABC):  # Inherit from ABC\n    @abstractmethod  # Mark as abstract\n    def speak(self):\n        pass  # No implementation - children MUST provide it\n\nclass Dog(Animal):\n    def speak(self):  # MUST implement this\n        return \"Woof!\"\n\n# This works:\ndog = Dog()\ndog.speak()\n\n# This would ERROR:\n# animal = Animal()  # Can't instantiate abstract class!\n\n# This would ERROR:\nclass Cat(Animal):\n    pass  # Missing speak() implementation!\n```\n\n## Why Use Abstract Base Classes?\n\n- **Enforce contracts** - Guarantee child classes have required methods\n- **Prevent incomplete classes** - Can't create instances of abstract class\n- **Documentation** - Shows what methods child classes need\n- **Design patterns** - Common in large applications\n\n## Creating Abstract Base Classes\n\n```python\nfrom abc import ABC, abstractmethod\n\nclass Shape(ABC):\n    @abstractmethod\n    def area(self):\n        \"\"\"Calculate area - must be implemented by children\"\"\"\n        pass\n    \n    @abstractmethod\n    def perimeter(self):\n        \"\"\"Calculate perimeter - must be implemented by children\"\"\"\n        pass\n    \n    # Can have regular methods too!\n    def describe(self):\n        return f\"Area: {self.area()}, Perimeter: {self.perimeter()}\"\n\nclass Rectangle(Shape):\n    def __init__(self, width, height):\n        self.width = width\n        self.height = height\n    \n    def area(self):  # Implement required method\n        return self.width * self.height\n    \n    def perimeter(self):  # Implement required method\n        return 2 * (self.width + self.height)\n\n# Now we can create Rectangle!\nrect = Rectangle(10, 5)\nprint(rect.describe())  # \"Area: 50, Perimeter: 30\"\n```\n\n## Abstract vs Concrete Methods\n\n- **Abstract method:** No implementation, child MUST provide\n- **Concrete method:** Has implementation, child can use or override\n\n```python\nclass Character(ABC):\n    @abstractmethod\n    def attack(self):  # Abstract - children MUST implement\n        pass\n    \n    def take_damage(self, amount):  # Concrete - children inherit\n        self.health -= amount\n```\n\n## Your Quest\n\nCreate an abstract game entity system:\n\n**Abstract Base:** `GameEntity(ABC)`\n- Abstract: `update()` - game loop update\n- Abstract: `render()` - drawing logic\n- Abstract: `get_position()` - return (x, y)\n- Concrete: `distance_to(other)` - calculate distance using positions\n\n**Implement three types:**\n- **Player:** updateable, renderable, moveable\n- **Enemy:** AI-controlled, chases player\n- **Item:** stationary, can be collected\n\nAll must implement the abstract contract!\n\n⚔️ Master interface design with ABC!",
+  "starterCode": "# Abstract Base Class System\n\nfrom abc import ABC, abstractmethod\nimport math\n\n# TODO: Create abstract GameEntity class\nclass GameEntity(ABC):\n    def __init__(self, name, x, y):\n        self.name = name\n        self.x = x\n        self.y = y\n    \n    # TODO: Add @abstractmethod decorator\n    def update(self):\n        \"\"\"Update entity each game frame - MUST be implemented\"\"\"\n        pass\n    \n    # TODO: Add @abstractmethod decorator\n    def render(self):\n        \"\"\"Render entity to screen - MUST be implemented\"\"\"\n        pass\n    \n    # TODO: Add @abstractmethod decorator\n    def get_position(self):\n        \"\"\"Return (x, y) tuple - MUST be implemented\"\"\"\n        pass\n    \n    # Concrete method - all children inherit this\n    def distance_to(self, other):\n        \"\"\"Calculate distance to another entity\"\"\"\n        x1, y1 = self.get_position()\n        x2, y2 = other.get_position()\n        return math.sqrt((x2 - x1)**2 + (y2 - y1)**2)\n    \n    def __str__(self):\n        x, y = self.get_position()\n        return f\"{self.name} at ({x}, {y})\"\n\n# TODO: Create Player class (inherits GameEntity)\nclass Player:\n    def __init__(self, name, x, y, health):\n        # TODO: Call super().__init__\n        # TODO: Add health attribute\n        pass\n    \n    # TODO: Implement required update() method\n    def update(self):\n        # Player update logic\n        pass\n    \n    # TODO: Implement required render() method\n    def render(self):\n        # Print render info\n        pass\n    \n    # TODO: Implement required get_position() method\n    def get_position(self):\n        # Return (x, y) tuple\n        pass\n    \n    def move(self, dx, dy):\n        self.x += dx\n        self.y += dy\n        print(f\"{self.name} moved to ({self.x}, {self.y})\")\n\n# TODO: Create Enemy class (inherits GameEntity)\nclass Enemy:\n    def __init__(self, name, x, y, damage):\n        # TODO: Call super().__init__\n        # TODO: Add damage attribute\n        pass\n    \n    # TODO: Implement required update() method\n    def update(self):\n        # Enemy AI logic\n        pass\n    \n    # TODO: Implement required render() method\n    def render(self):\n        pass\n    \n    # TODO: Implement required get_position() method\n    def get_position(self):\n        pass\n    \n    def chase(self, target):\n        distance = self.distance_to(target)  # Use inherited method!\n        print(f\"{self.name} chasing {target.name} (distance: {distance:.1f})\")\n\n# TODO: Create Item class (inherits GameEntity)\nclass Item:\n    def __init__(self, name, x, y, value):\n        # TODO: Call super().__init__\n        # TODO: Add value attribute\n        pass\n    \n    # TODO: Implement required update() method\n    def update(self):\n        # Items don't move\n        pass\n    \n    # TODO: Implement required render() method\n    def render(self):\n        pass\n    \n    # TODO: Implement required get_position() method\n    def get_position(self):\n        pass\n\n# Test the abstract base class system\nprint(\"=== Abstract Base Class System ===\")\nprint()\n\n# Create entities\nplayer = Player(\"Hero\", 0, 0, 100)\nenemy = Enemy(\"Goblin\", 10, 10, 15)\nitem = Item(\"Gold Coin\", 5, 5, 50)\n\nprint(\"--- Entities ---\")\nprint(player)\nprint(enemy)\nprint(item)\nprint()\n\nprint(\"--- Polymorphic Operations ---\")\n# All entities have these methods!\nentities = [player, enemy, item]\n\nfor entity in entities:\n    entity.update()  # Polymorphism!\n    entity.render()  # Each renders differently\nprint()\n\nprint(\"--- Distance Calculations (Inherited Method) ---\")\nprint(f\"Player to Enemy: {player.distance_to(enemy):.1f}\")\nprint(f\"Player to Item: {player.distance_to(item):.1f}\")\nprint(f\"Enemy to Item: {enemy.distance_to(item):.1f}\")\nprint()\n\nprint(\"--- Specialized Behavior ---\")\nplayer.move(3, 4)\nenemy.chase(player)\nprint()\n\nprint(\"Abstract base class system complete!\")",
+  "solutionCode": "# Abstract Base Class System - Solution\n\nfrom abc import ABC, abstractmethod\nimport math\n\nclass GameEntity(ABC):\n    def __init__(self, name, x, y):\n        self.name = name\n        self.x = x\n        self.y = y\n    \n    @abstractmethod\n    def update(self):\n        pass\n    \n    @abstractmethod\n    def render(self):\n        pass\n    \n    @abstractmethod\n    def get_position(self):\n        pass\n    \n    def distance_to(self, other):\n        x1, y1 = self.get_position()\n        x2, y2 = other.get_position()\n        return math.sqrt((x2 - x1)**2 + (y2 - y1)**2)\n    \n    def __str__(self):\n        x, y = self.get_position()\n        return f\"{self.name} at ({x}, {y})\"\n\nclass Player(GameEntity):\n    def __init__(self, name, x, y, health):\n        super().__init__(name, x, y)\n        self.health = health\n    \n    def update(self):\n        print(f\"Updating {self.name} (HP: {self.health})\")\n    \n    def render(self):\n        print(f\"Rendering Player: {self.name}\")\n    \n    def get_position(self):\n        return (self.x, self.y)\n    \n    def move(self, dx, dy):\n        self.x += dx\n        self.y += dy\n        print(f\"{self.name} moved to ({self.x}, {self.y})\")\n\nclass Enemy(GameEntity):\n    def __init__(self, name, x, y, damage):\n        super().__init__(name, x, y)\n        self.damage = damage\n    \n    def update(self):\n        print(f\"Updating {self.name} (DMG: {self.damage})\")\n    \n    def render(self):\n        print(f\"Rendering Enemy: {self.name}\")\n    \n    def get_position(self):\n        return (self.x, self.y)\n    \n    def chase(self, target):\n        distance = self.distance_to(target)\n        print(f\"{self.name} chasing {target.name} (distance: {distance:.1f})\")\n\nclass Item(GameEntity):\n    def __init__(self, name, x, y, value):\n        super().__init__(name, x, y)\n        self.value = value\n    \n    def update(self):\n        print(f\"Item {self.name} is stationary\")\n    \n    def render(self):\n        print(f\"Rendering Item: {self.name} (Value: {self.value})\")\n    \n    def get_position(self):\n        return (self.x, self.y)\n\nprint(\"=== Abstract Base Class System ===\")\nprint()\n\nplayer = Player(\"Hero\", 0, 0, 100)\nenemy = Enemy(\"Goblin\", 10, 10, 15)\nitem = Item(\"Gold Coin\", 5, 5, 50)\n\nprint(\"--- Entities ---\")\nprint(player)\nprint(enemy)\nprint(item)\nprint()\n\nprint(\"--- Polymorphic Operations ---\")\nentities = [player, enemy, item]\n\nfor entity in entities:\n    entity.update()\n    entity.render()\nprint()\n\nprint(\"--- Distance Calculations (Inherited Method) ---\")\nprint(f\"Player to Enemy: {player.distance_to(enemy):.1f}\")\nprint(f\"Player to Item: {player.distance_to(item):.1f}\")\nprint(f\"Enemy to Item: {enemy.distance_to(item):.1f}\")\nprint()\n\nprint(\"--- Specialized Behavior ---\")\nplayer.move(3, 4)\nenemy.chase(player)\nprint()\n\nprint(\"Abstract base class system complete!\")",
+  "hints": [
+    "Import ABC and abstractmethod at the top: from abc import ABC, abstractmethod",
+    "Make GameEntity inherit from ABC: class GameEntity(ABC):",
+    "Add @abstractmethod decorator BEFORE each abstract method definition",
+    "Child classes MUST implement all abstract methods or Python will give an error",
+    "Example abstract method:\n```python\n@abstractmethod\ndef update(self):\n    pass\n```",
+    "In child classes, just define the methods normally (no decorator needed):\n```python\nclass Player(GameEntity):\n    def update(self):\n        print('Updating player')\n```"
+  ],
+  "validationTests": [
+    {
+      "type": "code_contains",
+      "value": "from abc import ABC, abstractmethod",
+      "description": "Must import ABC and abstractmethod"
+    },
+    {
+      "type": "code_contains",
+      "value": "class GameEntity(ABC):",
+      "description": "GameEntity must inherit from ABC"
+    },
+    {
+      "type": "code_contains",
+      "value": "@abstractmethod",
+      "description": "Must use @abstractmethod decorator"
+    },
+    {
+      "type": "code_contains",
+      "value": "class Player(GameEntity):",
+      "description": "Player must inherit from GameEntity"
+    },
+    {
+      "type": "code_contains",
+      "value": "class Enemy(GameEntity):",
+      "description": "Enemy must inherit from GameEntity"
+    },
+    {
+      "type": "code_contains",
+      "value": "class Item(GameEntity):",
+      "description": "Item must inherit from GameEntity"
+    },
+    {
+      "type": "output_contains",
+      "value": "Updating Hero",
+      "description": "Player should implement update method"
+    },
+    {
+      "type": "output_contains",
+      "value": "Rendering",
+      "description": "All entities should implement render method"
+    },
+    {
+      "type": "output_contains",
+      "value": "distance:",
+      "description": "Should use inherited distance_to method"
+    }
+  ],
+  "learningObjectives": [
+    "Understand abstract base classes concept",
+    "Use ABC and @abstractmethod from abc module",
+    "Create abstract methods that enforce implementation",
+    "Combine abstract and concrete methods in base class",
+    "Know when to use ABC for interface design"
+  ],
+  "nextLessonId": 45,
+  "previousLessonId": 43,
+  "tags": ["intermediate", "oop", "abc", "abstract", "interfaces", "design-patterns"],
+  "commonMistakes": [
+    {
+      "mistake": "Forgetting to import ABC and abstractmethod",
+      "explanation": "You must import from abc module: from abc import ABC, abstractmethod"
+    },
+    {
+      "mistake": "Not inheriting from ABC",
+      "explanation": "Your abstract base class must inherit from ABC: class GameEntity(ABC):"
+    },
+    {
+      "mistake": "Missing @abstractmethod decorator",
+      "explanation": "Put @abstractmethod on the line BEFORE each abstract method definition, not after!"
+    },
+    {
+      "mistake": "Trying to create instance of abstract class",
+      "explanation": "You can't create instances of abstract classes directly. You can only create instances of concrete child classes that implement all abstract methods."
+    }
+  ]
+}

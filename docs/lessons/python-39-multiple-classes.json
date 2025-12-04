@@ -1,0 +1,86 @@
+{
+  "id": 39,
+  "trackId": 7,
+  "language": "python",
+  "title": "The Class Collaboration",
+  "subtitle": "Multiple Classes Working Together",
+  "difficulty": 5,
+  "estimatedTime": "30-35 minutes",
+  "xpReward": 200,
+  "description": "# Composition: Classes Using Other Classes\n\n🤝 Real applications use many classes that work together!\n\n## What is Composition?\n\n**Composition** means classes can contain other classes:\n\n```python\nclass Weapon:\n    def __init__(self, name, damage):\n        self.name = name\n        self.damage = damage\n\nclass Character:\n    def __init__(self, name, weapon):\n        self.name = name\n        self.weapon = weapon  # Character HAS-A weapon\n    \n    def attack(self):\n        return f\"{self.name} attacks with {self.weapon.name} for {self.weapon.damage} damage!\"\n\nsword = Weapon(\"Iron Sword\", 25)\nhero = Character(\"Hero\", sword)\nprint(hero.attack())\n```\n\n## Why Use Multiple Classes?\n\n- **Organize complex systems** - Each class has one responsibility\n- **Reuse code** - Same Weapon class can be used by many Characters\n- **Model relationships** - Character HAS-A Weapon, Battle USES Characters\n- **Easier to maintain** - Changes to Weapon don't break Character\n\n## Common Patterns\n\n### Pattern 1: HAS-A Relationship\n```python\nclass Engine:\n    pass\n\nclass Car:\n    def __init__(self):\n        self.engine = Engine()  # Car HAS-A Engine\n```\n\n### Pattern 2: Manager/Coordinator Class\n```python\nclass Player:\n    pass\n\nclass Enemy:\n    pass\n\nclass Battle:\n    def __init__(self, player, enemy):\n        self.player = player\n        self.enemy = enemy\n    \n    def fight(self):\n        # Coordinates combat between player and enemy\n        pass\n```\n\n### Pattern 3: Container Classes\n```python\nclass Item:\n    pass\n\nclass Inventory:\n    def __init__(self):\n        self.items = []  # List of Item objects\n    \n    def add_item(self, item):\n        self.items.append(item)\n```\n\n## Your Quest\n\nCreate a battle system with THREE classes:\n\n**1. Enemy Class:**\n- Attributes: name, health, damage\n- Method: `attack()` - returns damage amount\n- Method: `is_alive()` - returns bool\n\n**2. Character Class (from previous lessons):**\n- Already has health, name, take_damage(), is_alive()\n- Add method: `attack()` - returns damage amount\n\n**3. Battle Class:**\n- Attributes: character, enemy\n- Method: `fight_round()` - one round of combat\n- Method: `fight_until_end()` - battle until someone dies\n\nMake three classes work together in harmony!\n\n⚔️ Build a complete combat system with cooperating classes!",
+  "starterCode": "# Battle System - Multiple Classes\n\n# TODO: Create Enemy class\nclass Enemy:\n    def __init__(self, name, health, damage):\n        # TODO: Set attributes\n        pass\n    \n    def attack(self):\n        # TODO: Return damage amount\n        # Print: \"{name} attacks for {damage} damage!\"\n        pass\n    \n    def take_damage(self, amount):\n        # TODO: Reduce health, don't go below 0\n        pass\n    \n    def is_alive(self):\n        # TODO: Return True if health > 0\n        pass\n    \n    def __str__(self):\n        # TODO: Return string like \"Goblin (30 HP)\"\n        pass\n\n# Character class (simplified from previous lessons)\nclass Character:\n    def __init__(self, name, health, damage):\n        self.name = name\n        self.health = health\n        self.damage = damage\n    \n    def attack(self):\n        print(f\"{self.name} attacks for {self.damage} damage!\")\n        return self.damage\n    \n    def take_damage(self, amount):\n        self.health -= amount\n        if self.health < 0:\n            self.health = 0\n    \n    def is_alive(self):\n        return self.health > 0\n    \n    def __str__(self):\n        return f\"{self.name} ({self.health} HP)\"\n\n# TODO: Create Battle class\nclass Battle:\n    def __init__(self, character, enemy):\n        # TODO: Store character and enemy\n        pass\n    \n    def fight_round(self):\n        \"\"\"Execute one round of combat\"\"\"\n        # TODO: Character attacks enemy\n        # TODO: If enemy still alive, enemy attacks character\n        pass\n    \n    def fight_until_end(self):\n        \"\"\"Fight until one side dies\"\"\"\n        # TODO: Print battle start\n        # TODO: Loop fight_round while both alive\n        # TODO: Print battle result (who won)\n        pass\n\n# Test the battle system\nprint(\"=== Battle System Test ===\")\nprint()\n\n# Create combatants\nhero = Character(\"Warrior\", 100, 25)\ngoblin = Enemy(\"Goblin\", 50, 15)\n\nprint(\"Combatants:\")\nprint(f\"  {hero}\")\nprint(f\"  {goblin}\")\nprint()\n\n# Create and run battle\nbattle = Battle(hero, goblin)\nbattle.fight_until_end()\n\nprint()\nprint(\"Final Status:\")\nprint(f\"  {hero}\")\nprint(f\"  {goblin}\")\nprint()\n\nprint(\"Battle system complete!\")",
+  "solutionCode": "# Battle System - Complete Solution\n\nclass Enemy:\n    def __init__(self, name, health, damage):\n        self.name = name\n        self.health = health\n        self.damage = damage\n    \n    def attack(self):\n        print(f\"{self.name} attacks for {self.damage} damage!\")\n        return self.damage\n    \n    def take_damage(self, amount):\n        self.health -= amount\n        if self.health < 0:\n            self.health = 0\n    \n    def is_alive(self):\n        return self.health > 0\n    \n    def __str__(self):\n        return f\"{self.name} ({self.health} HP)\"\n\nclass Character:\n    def __init__(self, name, health, damage):\n        self.name = name\n        self.health = health\n        self.damage = damage\n    \n    def attack(self):\n        print(f\"{self.name} attacks for {self.damage} damage!\")\n        return self.damage\n    \n    def take_damage(self, amount):\n        self.health -= amount\n        if self.health < 0:\n            self.health = 0\n    \n    def is_alive(self):\n        return self.health > 0\n    \n    def __str__(self):\n        return f\"{self.name} ({self.health} HP)\"\n\nclass Battle:\n    def __init__(self, character, enemy):\n        self.character = character\n        self.enemy = enemy\n    \n    def fight_round(self):\n        # Character attacks\n        damage = self.character.attack()\n        self.enemy.take_damage(damage)\n        print(f\"  {self.enemy.name} HP: {self.enemy.health}\")\n        \n        # Enemy counter-attacks if still alive\n        if self.enemy.is_alive():\n            damage = self.enemy.attack()\n            self.character.take_damage(damage)\n            print(f\"  {self.character.name} HP: {self.character.health}\")\n        print()\n    \n    def fight_until_end(self):\n        print(\"=== BATTLE START ===\")\n        print(f\"{self.character.name} vs {self.enemy.name}\")\n        print()\n        \n        round_num = 1\n        while self.character.is_alive() and self.enemy.is_alive():\n            print(f\"--- Round {round_num} ---\")\n            self.fight_round()\n            round_num += 1\n        \n        print(\"=== BATTLE END ===\")\n        if self.character.is_alive():\n            print(f\"{self.character.name} wins!\")\n        else:\n            print(f\"{self.enemy.name} wins!\")\n\nprint(\"=== Battle System Test ===\")\nprint()\n\nhero = Character(\"Warrior\", 100, 25)\ngoblin = Enemy(\"Goblin\", 50, 15)\n\nprint(\"Combatants:\")\nprint(f\"  {hero}\")\nprint(f\"  {goblin}\")\nprint()\n\nbattle = Battle(hero, goblin)\nbattle.fight_until_end()\n\nprint()\nprint(\"Final Status:\")\nprint(f\"  {hero}\")\nprint(f\"  {goblin}\")\nprint()\n\nprint(\"Battle system complete!\")",
+  "hints": [
+    "The Enemy class is almost identical to the Character class. Use the same patterns for attack(), take_damage(), and is_alive().",
+    "In Battle.__init__, store the character and enemy as instance attributes: self.character = character and self.enemy = enemy",
+    "For fight_round(): call self.character.attack() to get damage, then self.enemy.take_damage(damage). Then check if enemy is alive before counter-attack.",
+    "For fight_until_end(): use a while loop that continues while BOTH are alive: `while self.character.is_alive() and self.enemy.is_alive():`",
+    "Complete Battle class structure:\n```python\nclass Battle:\n    def __init__(self, character, enemy):\n        self.character = character\n        self.enemy = enemy\n    \n    def fight_round(self):\n        damage = self.character.attack()\n        self.enemy.take_damage(damage)\n        if self.enemy.is_alive():\n            damage = self.enemy.attack()\n            self.character.take_damage(damage)\n```"
+  ],
+  "validationTests": [
+    {
+      "type": "code_contains",
+      "value": "class Enemy:",
+      "description": "Must create Enemy class"
+    },
+    {
+      "type": "code_contains",
+      "value": "class Battle:",
+      "description": "Must create Battle class"
+    },
+    {
+      "type": "code_contains",
+      "value": "def fight_round(self):",
+      "description": "Battle class must have fight_round method"
+    },
+    {
+      "type": "code_contains",
+      "value": "def fight_until_end(self):",
+      "description": "Battle class must have fight_until_end method"
+    },
+    {
+      "type": "output_contains",
+      "value": "BATTLE START",
+      "description": "Should print battle start message"
+    },
+    {
+      "type": "output_contains",
+      "value": "Warrior attacks",
+      "description": "Character should attack during battle"
+    },
+    {
+      "type": "output_contains",
+      "value": "Goblin attacks",
+      "description": "Enemy should attack during battle"
+    },
+    {
+      "type": "output_contains",
+      "value": "wins",
+      "description": "Should declare a winner at the end"
+    }
+  ],
+  "learningObjectives": [
+    "Create multiple classes that work together",
+    "Understand composition (HAS-A relationships)",
+    "Design coordinator/manager classes",
+    "Pass objects as parameters to other classes",
+    "Build systems with cooperating components"
+  ],
+  "nextLessonId": 40,
+  "previousLessonId": 38,
+  "tags": ["intermediate", "oop", "composition", "multiple-classes", "design"],
+  "commonMistakes": [
+    {
+      "mistake": "Not storing objects as instance attributes in Battle",
+      "explanation": "In Battle.__init__, you must save character and enemy as self.character and self.enemy to use them in methods."
+    },
+    {
+      "mistake": "Forgetting to check if enemy is alive before counter-attack",
+      "explanation": "After the character attacks, check self.enemy.is_alive() before letting enemy attack back. Dead enemies can't fight!"
+    },
+    {
+      "mistake": "Trying to access attributes directly instead of through objects",
+      "explanation": "Use self.character.attack() and self.enemy.attack(), not character.attack(). Access through the stored instance."
+    }
+  ]
+}

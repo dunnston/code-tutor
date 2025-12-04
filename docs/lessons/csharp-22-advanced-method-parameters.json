@@ -1,0 +1,52 @@
+{
+  "id": 222,
+  "trackId": 3,
+  "language": "csharp",
+  "title": "The Parameter Wizard",
+  "subtitle": "Advanced Method Parameters",
+  "difficulty": 3,
+  "estimatedTime": "20-25 minutes",
+  "xpReward": 150,
+  "description": "# Mastering Method Parameters\n\nYou've created basic methods, but there's more power in parameters! Learn to create flexible, reusable methods with optional parameters and method overloading.\n\n## Multiple Parameters\n\nMethods can accept multiple inputs:\n\n```csharp\nstatic int CalculateDamage(int baseDamage, double multiplier, int armor)\n{\n    int damage = (int)(baseDamage * multiplier) - armor;\n    return damage;\n}\n\nint result = CalculateDamage(50, 1.5, 10);\nConsole.WriteLine(result);  // 65\n```\n\n## Optional Parameters\n\nProvide default values for optional parameters:\n\n```csharp\nstatic string Greet(string name, string greeting = \"Hello\")\n{\n    return $\"{greeting}, {name}!\";\n}\n\nConsole.WriteLine(Greet(\"Aria\"));              // Hello, Aria!\nConsole.WriteLine(Greet(\"Aria\", \"Welcome\"));   // Welcome, Aria!\n```\n\n**Important:** Optional parameters must come AFTER required parameters!\n\n## Named Arguments\n\nYou can specify arguments by name:\n\n```csharp\nCalculateDamage(baseDamage: 50, armor: 10, multiplier: 1.5);\n// Order doesn't matter with named arguments!\n```\n\n## Method Overloading\n\nCreate multiple versions of the same method with different parameters:\n\n```csharp\nstatic int Add(int a, int b)\n{\n    return a + b;\n}\n\nstatic double Add(double a, double b)\n{\n    return a + b;\n}\n\nstatic int Add(int a, int b, int c)\n{\n    return a + b + c;\n}\n```\n\n## Your Quest\n\nCreate a character creation system with flexible methods:\n1. Method to create a character with name, class, level (optional, default 1)\n2. Method to calculate stats with base, bonus (optional, default 0), multiplier (optional, default 1.0)\n3. Overloaded DisplayCharacter methods for different output formats",
+  "starterCode": "using System;\n\nclass Program\n{\n    // Create a character with optional level parameter\n    static void CreateCharacter(string name, string characterClass, int level = /* default 1 */)\n    {\n        Console.WriteLine($\"Created: {name} the {characterClass} (Level {level})\");\n    }\n    \n    // Calculate stat with optional bonus and multiplier\n    static int CalculateStat(int baseValue, int bonus = /* default 0 */, double multiplier = /* default 1.0 */)\n    {\n        int total = /* Formula: (int)((baseValue + bonus) * multiplier) */;\n        return total;\n    }\n    \n    // Overloaded DisplayCharacter methods\n    static void DisplayCharacter(string name)\n    {\n        Console.WriteLine($\"Character: {name}\");\n    }\n    \n    static void DisplayCharacter(string name, int level)\n    {\n        Console.WriteLine($\"Character: {name} (Level {level})\");\n    }\n    \n    static void DisplayCharacter(string name, int level, string characterClass)\n    {\n        Console.WriteLine($\"Character: {name} the {characterClass} (Level {level})\");\n    }\n    \n    static void Main()\n    {\n        Console.WriteLine(\"=== CHARACTER CREATION ===\");\n        \n        // Create characters with different parameters\n        CreateCharacter(/* Fill in: \"Thorin\", \"Warrior\", 5 */);\n        CreateCharacter(/* Fill in: \"Elara\", \"Mage\" - use default level */);\n        CreateCharacter(/* Fill in with named arguments: \"Shadow\", \"Rogue\" */);\n        \n        Console.WriteLine(\"\\n=== STAT CALCULATIONS ===\");\n        \n        // Calculate stats with different combinations\n        int health = CalculateStat(100, 20, 1.5);  // All parameters\n        int strength = CalculateStat(50, bonus: 10);  // Use default multiplier\n        int magic = CalculateStat(75);  // Use both defaults\n        \n        Console.WriteLine($\"Health: {health}\");\n        Console.WriteLine($\"Strength: {strength}\");\n        Console.WriteLine($\"Magic: {magic}\");\n        \n        Console.WriteLine(\"\\n=== DISPLAY OVERLOADING ===\");\n        \n        // Test overloaded methods\n        DisplayCharacter(\"Aria\");\n        DisplayCharacter(\"Valor\", 10);\n        DisplayCharacter(\"Luna\", 15, \"Ranger\");\n    }\n}\n",
+  "solutionCode": "using System;\n\nclass Program\n{\n    // Create a character with optional level parameter\n    static void CreateCharacter(string name, string characterClass, int level = 1)\n    {\n        Console.WriteLine($\"Created: {name} the {characterClass} (Level {level})\");\n    }\n    \n    // Calculate stat with optional bonus and multiplier\n    static int CalculateStat(int baseValue, int bonus = 0, double multiplier = 1.0)\n    {\n        int total = (int)((baseValue + bonus) * multiplier);\n        return total;\n    }\n    \n    // Overloaded DisplayCharacter methods\n    static void DisplayCharacter(string name)\n    {\n        Console.WriteLine($\"Character: {name}\");\n    }\n    \n    static void DisplayCharacter(string name, int level)\n    {\n        Console.WriteLine($\"Character: {name} (Level {level})\");\n    }\n    \n    static void DisplayCharacter(string name, int level, string characterClass)\n    {\n        Console.WriteLine($\"Character: {name} the {characterClass} (Level {level})\");\n    }\n    \n    static void Main()\n    {\n        Console.WriteLine(\"=== CHARACTER CREATION ===\");\n        \n        // Create characters with different parameters\n        CreateCharacter(\"Thorin\", \"Warrior\", 5);\n        CreateCharacter(\"Elara\", \"Mage\");\n        CreateCharacter(\"Shadow\", \"Rogue\");\n        \n        Console.WriteLine(\"\\n=== STAT CALCULATIONS ===\");\n        \n        // Calculate stats with different combinations\n        int health = CalculateStat(100, 20, 1.5);\n        int strength = CalculateStat(50, bonus: 10);\n        int magic = CalculateStat(75);\n        \n        Console.WriteLine($\"Health: {health}\");\n        Console.WriteLine($\"Strength: {strength}\");\n        Console.WriteLine($\"Magic: {magic}\");\n        \n        Console.WriteLine(\"\\n=== DISPLAY OVERLOADING ===\");\n        \n        // Test overloaded methods\n        DisplayCharacter(\"Aria\");\n        DisplayCharacter(\"Valor\", 10);\n        DisplayCharacter(\"Luna\", 15, \"Ranger\");\n    }\n}\n",
+  "hints": [
+    "For optional parameters, set default values in the method signature: int level = 1",
+    "Optional parameters must come AFTER required parameters",
+    "Cast to int when working with doubles: (int)(value * multiplier)",
+    "Named arguments use colon syntax: bonus: 10",
+    "Overloaded methods have the same name but different parameter lists"
+  ],
+  "validationTests": [
+    {
+      "type": "code_contains",
+      "value": "static",
+      "description": "Must define static methods"
+    },
+    {
+      "type": "code_contains",
+      "value": "CreateCharacter",
+      "description": "Must have CreateCharacter method"
+    },
+    {
+      "type": "code_contains",
+      "value": "CalculateStat",
+      "description": "Must have CalculateStat method"
+    },
+    {
+      "type": "output_line_count",
+      "min": 9,
+      "description": "Should print multiple lines"
+    }
+  ],
+  "learningObjectives": [
+    "Define methods with multiple parameters",
+    "Use optional parameters with default values",
+    "Call methods with named arguments",
+    "Implement method overloading",
+    "Create flexible, reusable methods"
+  ],
+  "previousLessonId": 221,
+  "nextLessonId": 223,
+  "tags": ["advanced", "methods", "parameters", "defaults", "overloading"]
+}

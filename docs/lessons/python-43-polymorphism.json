@@ -1,0 +1,86 @@
+{
+  "id": 43,
+  "trackId": 7,
+  "language": "python",
+  "title": "The Many Forms",
+  "subtitle": "Polymorphism in Action",
+  "difficulty": 5,
+  "estimatedTime": "25-30 minutes",
+  "xpReward": 200,
+  "description": "# Polymorphism: One Interface, Many Implementations\n\n🎭 **Polymorphism** means \"many forms\" - treating different types the same way!\n\n## What is Polymorphism?\n\nPolymorphism lets you treat objects of different classes uniformly:\n\n```python\nclass Dog:\n    def speak(self):\n        return \"Woof!\"\n\nclass Cat:\n    def speak(self):\n        return \"Meow!\"\n\nclass Cow:\n    def speak(self):\n        return \"Moo!\"\n\n# All have speak() method - we can treat them the same!\nanimals = [Dog(), Cat(), Cow()]\n\nfor animal in animals:\n    print(animal.speak())  # Polymorphism in action!\n# Output:\n# Woof!\n# Meow!\n# Moo!\n```\n\n## Why Polymorphism Matters\n\n- **Write generic code** - Works with any class that has the right methods\n- **Extensibility** - Add new classes without changing existing code\n- **Flexibility** - Same code works with different types\n- **Clean design** - Interface-based programming\n\n## Polymorphism with Inheritance\n\n```python\nclass Character:\n    def attack(self):\n        pass  # Base interface\n\nclass Warrior(Character):\n    def attack(self):\n        return \"Swings sword!\"\n\nclass Mage(Character):\n    def attack(self):\n        return \"Casts fireball!\"\n\nclass Rogue(Character):\n    def attack(self):\n        return \"Throws dagger!\"\n\n# Polymorphic function - works with ANY Character\ndef make_attack(character):\n    print(character.attack())\n\nparty = [Warrior(), Mage(), Rogue()]\nfor member in party:\n    make_attack(member)  # Same code, different behavior!\n```\n\n## Duck Typing\n\nPython uses \"duck typing\" - if it has the right methods, it works:\n\n> \"If it walks like a duck and quacks like a duck, it's a duck!\"\n\n```python\nclass Dragon:\n    def attack(self):\n        return \"Breathes fire!\"\n\n# Dragon doesn't inherit from Character,\n# but it HAS attack() so it works!\nparty.append(Dragon())\nfor member in party:\n    make_attack(member)  # Works!\n```\n\n## Your Quest\n\nCreate a polymorphic enemy system:\n\n**Base Enemy class** with:\n- `attack()` method\n- `take_damage()` method\n- `is_alive()` method\n\n**Three enemy types:**\n- **Goblin:** Weak attack (10), low health (30)\n- **Orc:** Strong attack (25), medium health (60)\n- **Dragon:** Massive attack (50), high health (150)\n\n**Create polymorphic functions:**\n- `battle_round(player, enemy)` - Works with ANY enemy type\n- `simulate_battle(player, enemies)` - Fights a list of different enemies\n\nSame code, different enemies!\n\n⚔️ Master polymorphic programming!",
+  "starterCode": "# Polymorphic Enemy System\n\n# TODO: Create base Enemy class\nclass Enemy:\n    def __init__(self, name, health, damage):\n        # TODO: Initialize attributes\n        pass\n    \n    def attack(self):\n        # TODO: Return damage and print attack message\n        pass\n    \n    def take_damage(self, amount):\n        # TODO: Reduce health, don't go below 0\n        pass\n    \n    def is_alive(self):\n        # TODO: Return True if health > 0\n        pass\n    \n    def __str__(self):\n        # TODO: Return enemy info\n        pass\n\n# TODO: Create Goblin class (inherits Enemy)\nclass Goblin(Enemy):\n    def __init__(self):\n        # TODO: Call super().__init__ with: \"Goblin\", 30 health, 10 damage\n        pass\n    \n    # TODO: Override attack() with unique goblin message\n    def attack(self):\n        pass\n\n# TODO: Create Orc class (inherits Enemy)\nclass Orc(Enemy):\n    def __init__(self):\n        # TODO: Call super().__init__ with: \"Orc\", 60 health, 25 damage\n        pass\n    \n    # TODO: Override attack() with unique orc message\n    def attack(self):\n        pass\n\n# TODO: Create Dragon class (inherits Enemy)\nclass Dragon(Enemy):\n    def __init__(self):\n        # TODO: Call super().__init__ with: \"Dragon\", 150 health, 50 damage\n        pass\n    \n    # TODO: Override attack() with unique dragon message\n    def attack(self):\n        pass\n\n# Player class (simplified)\nclass Player:\n    def __init__(self, name, health, damage):\n        self.name = name\n        self.health = health\n        self.damage = damage\n    \n    def attack(self):\n        print(f\"{self.name} attacks!\")\n        return self.damage\n    \n    def take_damage(self, amount):\n        self.health -= amount\n        if self.health < 0:\n            self.health = 0\n    \n    def is_alive(self):\n        return self.health > 0\n    \n    def __str__(self):\n        return f\"{self.name} ({self.health} HP)\"\n\n# TODO: Create polymorphic battle_round function\ndef battle_round(player, enemy):\n    \"\"\"\n    Execute one round of combat between player and ANY enemy type\n    This function is polymorphic - works with Goblin, Orc, Dragon!\n    \"\"\"\n    # TODO: Player attacks enemy\n    # TODO: Print enemy HP\n    # TODO: If enemy alive, enemy attacks player\n    # TODO: Print player HP\n    pass\n\n# TODO: Create polymorphic simulate_battle function\ndef simulate_battle(player, enemies):\n    \"\"\"\n    Fight a list of different enemy types\n    Polymorphism lets us treat all enemies the same!\n    \"\"\"\n    # TODO: Loop through enemies\n    # TODO: For each enemy, fight until someone dies\n    # TODO: If player dies, break\n    # TODO: Print battle results\n    pass\n\n# Test polymorphism\nprint(\"=== Polymorphic Enemy System ===\")\nprint()\n\n# Create player\nhero = Player(\"Hero\", 200, 30)\n\n# Create different enemy types\nenemies = [\n    Goblin(),\n    Orc(),\n    Dragon()\n]\n\nprint(\"--- Enemies (Polymorphic List) ---\")\nfor enemy in enemies:\n    print(enemy)\nprint()\n\nprint(\"--- Polymorphic Attack Test ---\")\nfor enemy in enemies:\n    damage = enemy.attack()  # Same method call, different behavior!\n    print(f\"  Damage: {damage}\")\nprint()\n\nprint(\"--- Battle Simulation ---\")\nsimulate_battle(hero, enemies)\n\nprint()\nprint(\"Polymorphism complete!\")",
+  "solutionCode": "# Polymorphic Enemy System - Solution\n\nclass Enemy:\n    def __init__(self, name, health, damage):\n        self.name = name\n        self.health = health\n        self.damage = damage\n    \n    def attack(self):\n        print(f\"{self.name} attacks!\")\n        return self.damage\n    \n    def take_damage(self, amount):\n        self.health -= amount\n        if self.health < 0:\n            self.health = 0\n    \n    def is_alive(self):\n        return self.health > 0\n    \n    def __str__(self):\n        return f\"{self.name} ({self.health} HP, {self.damage} DMG)\"\n\nclass Goblin(Enemy):\n    def __init__(self):\n        super().__init__(\"Goblin\", 30, 10)\n    \n    def attack(self):\n        print(f\"{self.name} swings a rusty dagger!\")\n        return self.damage\n\nclass Orc(Enemy):\n    def __init__(self):\n        super().__init__(\"Orc\", 60, 25)\n    \n    def attack(self):\n        print(f\"{self.name} smashes with a club!\")\n        return self.damage\n\nclass Dragon(Enemy):\n    def __init__(self):\n        super().__init__(\"Dragon\", 150, 50)\n    \n    def attack(self):\n        print(f\"{self.name} breathes fire!\")\n        return self.damage\n\nclass Player:\n    def __init__(self, name, health, damage):\n        self.name = name\n        self.health = health\n        self.damage = damage\n    \n    def attack(self):\n        print(f\"{self.name} attacks!\")\n        return self.damage\n    \n    def take_damage(self, amount):\n        self.health -= amount\n        if self.health < 0:\n            self.health = 0\n    \n    def is_alive(self):\n        return self.health > 0\n    \n    def __str__(self):\n        return f\"{self.name} ({self.health} HP)\"\n\ndef battle_round(player, enemy):\n    # Player attacks\n    damage = player.attack()\n    enemy.take_damage(damage)\n    print(f\"  {enemy.name} HP: {enemy.health}\")\n    \n    # Enemy counter-attacks if alive\n    if enemy.is_alive():\n        damage = enemy.attack()\n        player.take_damage(damage)\n        print(f\"  {player.name} HP: {player.health}\")\n    print()\n\ndef simulate_battle(player, enemies):\n    print(f\"{player.name} faces {len(enemies)} enemies!\")\n    print()\n    \n    for enemy in enemies:\n        print(f\"--- Fighting {enemy.name} ---\")\n        print(f\"Enemy: {enemy}\")\n        print()\n        \n        round_num = 1\n        while player.is_alive() and enemy.is_alive():\n            print(f\"Round {round_num}:\")\n            battle_round(player, enemy)\n            round_num += 1\n        \n        if enemy.is_alive():\n            print(f\"{player.name} was defeated!\")\n            break\n        else:\n            print(f\"{enemy.name} defeated!\")\n            print()\n    \n    if player.is_alive():\n        print(f\"🎉 {player.name} victorious!\")\n        print(f\"Final HP: {player.health}\")\n    else:\n        print(f\"💀 {player.name} has fallen...\")\n\nprint(\"=== Polymorphic Enemy System ===\")\nprint()\n\nhero = Player(\"Hero\", 200, 30)\n\nenemies = [\n    Goblin(),\n    Orc(),\n    Dragon()\n]\n\nprint(\"--- Enemies (Polymorphic List) ---\")\nfor enemy in enemies:\n    print(enemy)\nprint()\n\nprint(\"--- Polymorphic Attack Test ---\")\nfor enemy in enemies:\n    damage = enemy.attack()\n    print(f\"  Damage: {damage}\")\nprint()\n\nprint(\"--- Battle Simulation ---\")\nsimulate_battle(hero, enemies)\n\nprint()\nprint(\"Polymorphism complete!\")",
+  "hints": [
+    "All enemy classes should inherit from Enemy and have the same methods (attack, take_damage, is_alive).",
+    "In child class __init__, call super().__init__() with the specific values for that enemy type.",
+    "The battle_round function should work with ANY enemy because they all have the same methods!",
+    "In simulate_battle, loop through the enemies list and call battle_round for each one.",
+    "Complete Goblin example:\n```python\nclass Goblin(Enemy):\n    def __init__(self):\n        super().__init__(\"Goblin\", 30, 10)\n    \n    def attack(self):\n        print(\"Goblin swings a rusty dagger!\")\n        return self.damage\n```"
+  ],
+  "validationTests": [
+    {
+      "type": "code_contains",
+      "value": "class Goblin(Enemy):",
+      "description": "Must create Goblin class inheriting from Enemy"
+    },
+    {
+      "type": "code_contains",
+      "value": "class Orc(Enemy):",
+      "description": "Must create Orc class inheriting from Enemy"
+    },
+    {
+      "type": "code_contains",
+      "value": "class Dragon(Enemy):",
+      "description": "Must create Dragon class inheriting from Enemy"
+    },
+    {
+      "type": "code_contains",
+      "value": "def battle_round(player, enemy):",
+      "description": "Must create polymorphic battle_round function"
+    },
+    {
+      "type": "code_contains",
+      "value": "def simulate_battle(player, enemies):",
+      "description": "Must create polymorphic simulate_battle function"
+    },
+    {
+      "type": "output_contains",
+      "value": "Goblin",
+      "description": "Should create and display Goblin enemy"
+    },
+    {
+      "type": "output_contains",
+      "value": "Dragon",
+      "description": "Should create and display Dragon enemy"
+    },
+    {
+      "type": "output_contains",
+      "value": "Fighting",
+      "description": "Should simulate battles with different enemy types"
+    }
+  ],
+  "learningObjectives": [
+    "Understand polymorphism concept",
+    "Write functions that work with multiple class types",
+    "Use inheritance to enable polymorphism",
+    "Treat different objects uniformly through shared interfaces",
+    "Recognize polymorphism in real code"
+  ],
+  "nextLessonId": 44,
+  "previousLessonId": 42,
+  "tags": ["intermediate", "oop", "polymorphism", "inheritance", "design-patterns"],
+  "commonMistakes": [
+    {
+      "mistake": "Not using consistent method names across classes",
+      "explanation": "For polymorphism to work, all classes need methods with the SAME NAMES. If Goblin has attack() but Orc has strike(), polymorphism breaks!"
+    },
+    {
+      "mistake": "Type-checking instead of using polymorphism",
+      "explanation": "Don't use if isinstance(enemy, Goblin): - just call enemy.attack()! That's the point of polymorphism."
+    },
+    {
+      "mistake": "Not inheriting from base class",
+      "explanation": "While duck typing works in Python, inheriting from a common base class makes the relationship clearer and enables isinstance checks if needed."
+    }
+  ]
+}

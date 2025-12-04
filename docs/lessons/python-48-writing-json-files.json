@@ -1,0 +1,36 @@
+{
+  "id": 48,
+  "trackId": 7,
+  "language": "python",
+  "title": "The Save Scroll",
+  "subtitle": "Writing JSON Files",
+  "difficulty": 4,
+  "estimatedTime": "20-25 minutes",
+  "xpReward": 150,
+  "description": "# Writing JSON Files: Persisting Game Data\n\n💾 Save your game state to JSON files!\n\n## Writing JSON to Files\n\n**json.dump()** writes Python data to a file as JSON:\n\n```python\nimport json\n\ndata = {\"name\": \"Hero\", \"level\": 10}\n\nwith open('save.json', 'w') as file:\n    json.dump(data, file, indent=2)  # indent for pretty printing\n```\n\n## Pretty Printing\n\n```python\n# Without indent - compact but hard to read\njson.dump(data, file)\n# {\"name\":\"Hero\",\"level\":10}\n\n# With indent - readable\njson.dump(data, file, indent=2)\n# {\n#   \"name\": \"Hero\",\n#   \"level\": 10\n# }\n```\n\n## Your Quest\n\nCreate a party save system!\n\n⚔️ Save your party roster!",
+  "starterCode": "import json\n\n# Party data\nparty = [\n    {\"name\": \"Warrior\", \"level\": 10, \"hp\": 150},\n    {\"name\": \"Mage\", \"level\": 12, \"hp\": 70},\n    {\"name\": \"Rogue\", \"level\": 11, \"hp\": 100}\n]\n\nprint(\"=== Party Save System ===\")\nprint()\n\n# TODO: Write party to 'party.json' with json.dump\n# Use indent=2 for pretty printing\n\nprint(\"Party saved!\")",
+  "solutionCode": "import json\n\nparty = [\n    {\"name\": \"Warrior\", \"level\": 10, \"hp\": 150},\n    {\"name\": \"Mage\", \"level\": 12, \"hp\": 70},\n    {\"name\": \"Rogue\", \"level\": 11, \"hp\": 100}\n]\n\nprint(\"=== Party Save System ===\")\nprint()\n\n# Note: In browser environment, we'll use json.dumps instead\nparty_json = json.dumps(party, indent=2)\nprint(\"Party data:\")\nprint(party_json)\n\nprint(\"\\nParty saved!\")",
+  "hints": [
+    "Use json.dumps() with indent=2 for pretty output",
+    "Pattern: json_string = json.dumps(data, indent=2)"
+  ],
+  "validationTests": [
+    {
+      "type": "code_contains",
+      "value": "json.dumps",
+      "description": "Must use json.dumps"
+    },
+    {
+      "type": "code_contains",
+      "value": "indent=2",
+      "description": "Must use indent for pretty printing"
+    }
+  ],
+  "learningObjectives": [
+    "Write Python data to JSON format",
+    "Use pretty printing with indent parameter"
+  ],
+  "nextLessonId": 49,
+  "previousLessonId": 47,
+  "tags": ["intermediate", "json", "file-writing"]
+}

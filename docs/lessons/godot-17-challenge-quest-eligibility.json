@@ -1,0 +1,23 @@
+{
+  "id": 117,
+  "trackId": 2,
+  "language": "gdscript",
+  "title": "⚔️ CHALLENGE: Quest Eligibility",
+  "subtitle": "Complex Logic Challenge",
+  "difficulty": 3,
+  "estimatedTime": "30-40 minutes",
+  "xpReward": 400,
+  "description": "# Challenge: Advanced Quest System\n\nCreate a complex quest eligibility system with multiple requirements!\n\n## Quest Requirements\n\n**Bronze Quest:**\n- Level >= 5\n- Has completed tutorial\n\n**Silver Quest:**\n- Level >= 10\n- Gold >= 50 OR has rare item\n- Previous quest completed\n\n**Gold Quest:**\n- Level >= 20\n- Health > 80\n- Has magic sword AND has shield\n- All previous quests done\n\n## Your Mission\n\nCheck player against all three quests and display which ones are available.",
+  "starterCode": "# Quest Eligibility Challenge\n\n# Player stats\nvar level = 12\nvar has_tutorial = true\nvar gold = 75\nvar has_rare_item = false\nvar health = 90\nvar has_magic_sword = true\nvar has_shield = false\nvar bronze_done = true\nvar silver_done = false\n\n# Check each quest and print results\n\n",
+  "solutionCode": "# Quest Eligibility Challenge\n\n# Player stats\nvar level = 12\nvar has_tutorial = true\nvar gold = 75\nvar has_rare_item = false\nvar health = 90\nvar has_magic_sword = true\nvar has_shield = false\nvar bronze_done = true\nvar silver_done = false\n\nprint(\"=== QUEST BOARD ===\")\n\n# Bronze Quest\nif level >= 5 and has_tutorial:\n    if bronze_done:\n        print(\"[COMPLETED] Bronze Quest\")\n    else:\n        print(\"[AVAILABLE] Bronze Quest\")\nelse:\n    print(\"[LOCKED] Bronze Quest\")\n\n# Silver Quest\nif level >= 10 and (gold >= 50 or has_rare_item) and bronze_done:\n    if silver_done:\n        print(\"[COMPLETED] Silver Quest\")\n    else:\n        print(\"[AVAILABLE] Silver Quest\")\nelse:\n    print(\"[LOCKED] Silver Quest\")\n\n# Gold Quest\nif level >= 20 and health > 80 and has_magic_sword and has_shield and bronze_done and silver_done:\n    print(\"[AVAILABLE] Gold Quest\")\nelse:\n    print(\"[LOCKED] Gold Quest - Requirements:\")\n    if level < 20:\n        print(\"  - Need level 20\")\n    if not (has_magic_sword and has_shield):\n        print(\"  - Need magic sword AND shield\")\n    if not (bronze_done and silver_done):\n        print(\"  - Complete previous quests\")",
+  "hints": ["Break down each quest's requirements", "Use parentheses for complex conditions", "Check completion status", "Display helpful feedback"],
+  "validationTests": [
+    {"type": "code_contains", "value": "and ", "description": "Should use 'and'"},
+    {"type": "code_contains", "value": "or ", "description": "Should use 'or'"},
+    {"type": "output_contains", "value": "QUEST", "description": "Should show quest status"}
+  ],
+  "learningObjectives": ["Combine all conditional concepts", "Handle complex requirements", "Provide user feedback", "Build game systems"],
+  "previousLessonId": 116,
+  "nextLessonId": 118,
+  "tags": ["beginner", "challenge", "logic", "conditionals", "game-systems", "godot"]
+}

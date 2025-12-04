@@ -1,0 +1,71 @@
+{
+  "id": 90,
+  "trackId": 8,
+  "language": "python",
+  "title": "🏆 FINAL PROJECT: Production MMO Backend",
+  "subtitle": "Build Your Masterpiece",
+  "difficulty": 6,
+  "estimatedTime": "8-15 hours",
+  "xpReward": 2500,
+  "description": "# The Ultimate Final Project!\n\n🏆 **Build a complete, production-ready MMO game backend** demonstrating ALL advanced concepts!\n\n## Core Requirements\n\n### 1. Architecture\n- Multi-file project structure\n- Config management (dev/prod)\n- Logging system\n- Error tracking\n\n### 2. Database Layer\n- SQLite with full schema:\n  - Players, Characters, Inventory, Equipment\n  - Guilds, Guild Members\n  - Quests, Quest Progress\n  - Combat Logs, Achievements\n  - Market/Trading, Transactions\n- Repository pattern\n- Migration system\n- Connection pooling\n\n### 3. Business Logic\n- Character system (multiple classes)\n- Combat system (PvE and PvP)\n- Inventory and equipment\n- Guild system\n- Quest system\n- Market/trading\n- Level progression\n- Event system (observer pattern)\n\n### 4. API Layer (Flask)\n- RESTful API (30+ endpoints)\n- Authentication & authorization\n- Rate limiting\n- Request validation\n- Error handling\n- API versioning (/api/v1/)\n- Swagger documentation\n\n### 5. Async Operations\n- Async database operations\n- Background tasks\n- Async combat resolution\n- Event broadcasting\n\n### 6. Testing\n- Unit tests (80%+ coverage)\n- Integration tests\n- Database tests\n- Performance tests\n- Fixtures and factories\n\n### 7. Design Patterns\n- Singleton (GameManager, ConfigManager)\n- Factory (CharacterFactory, EnemyFactory)\n- Repository (data access)\n- Observer (event system)\n- Strategy (combat abilities)\n- Decorator (abilities, validation)\n\n### 8. Advanced Features\n- Caching (stats, leaderboards)\n- Performance monitoring\n- Admin dashboard API\n- Statistics and analytics\n- Backup/restore system\n\n### 9. DevOps Basics\n- Environment configuration\n- requirements.txt\n- README with setup\n- Docker support (bonus)\n- CI/CD ready structure\n\n### 10. Documentation\n- API documentation\n- Code documentation\n- Architecture docs\n- Database schema docs\n- User guide\n\n## Technical Specifications\n\n- Minimum 2000 lines of production code\n- Minimum 500 lines of test code\n- Handle 50+ concurrent users\n- Response time < 200ms (cached)\n- < 1 second for complex operations\n- Zero SQL injection vulnerabilities\n- Proper error handling throughout\n- Graceful degradation\n\n## Deliverables\n\n1. Complete source code\n2. Comprehensive test suite\n3. Database schema and migrations\n4. API documentation\n5. README with setup\n6. Postman collection\n7. Performance benchmarks\n8. Live demo (local server)\n\n## Success Criteria\n\n✅ All features implemented\n✅ Tests pass with good coverage\n✅ API is RESTful and documented\n✅ Code is clean and organized\n✅ Database properly normalized\n✅ No security vulnerabilities\n✅ Performance meets requirements\n✅ Proper error handling\n✅ Design patterns used appropriately\n✅ Professional-quality code\n\n## Bonus Features (+500 XP)\n\n- Docker containerization (+200 XP)\n- CI/CD pipeline (+150 XP)\n- >90% test coverage (+100 XP)\n- Admin web interface (+100 XP)\n- WebSocket real-time features (+150 XP)\n- Deployed to production (+200 XP)\n\n*This is your portfolio project. Make it shine!*",
+  "starterCode": "# 🏆 FINAL PROJECT: Production MMO Backend\n# Build your masterpiece from scratch!\n\n# Project Structure:\n# /\n# ├── src/\n# │   ├── models/          # Data models\n# │   ├── repositories/    # Database access\n# │   ├── services/        # Business logic\n# │   ├── api/            # Flask routes\n# │   ├── utils/          # Utilities\n# │   └── config.py       # Configuration\n# ├── tests/\n# │   ├── unit/\n# │   └── integration/\n# ├── migrations/\n# ├── docs/\n# ├── requirements.txt\n# ├── README.md\n# └── main.py\n\nprint(\"Build your MMO backend!\")\nprint(\"This is your capstone project.\")\nprint(\"Demonstrate everything you've learned.\")\nprint(\"Good luck, developer!\")",
+  "solutionCode": "# This is YOUR project!\n# No solution code provided - build it yourself!\n# Use everything you've learned:\n# - Properties, magic methods, decorators\n# - Design patterns (Singleton, Factory, Observer, Repository)\n# - Testing (pytest, fixtures, mocking, TDD)\n# - Database (SQLite, SQL, migrations)\n# - Async (asyncio, concurrent operations)\n# - Flask (REST API, authentication, validation)\n# - Optimization (caching, profiling)\n\n# Starter template:\n\n# config.py\nclass Config:\n    DATABASE_URL = 'game.db'\n    SECRET_KEY = 'your-secret-key'\n    DEBUG = True\n\n# main.py\nfrom flask import Flask\napp = Flask(__name__)\n\n@app.route('/')\ndef index():\n    return {'message': 'MMO Backend API v1'}\n\nif __name__ == '__main__':\n    print(\"Start building your MMO backend!\")\n    app.run(debug=True)",
+  "hints": [
+    "Start with architecture planning (Lesson 89). Don't code yet - design first!",
+    "Build incrementally: Database → Models → Repositories → Services → API",
+    "Write tests as you go. TDD for critical features.",
+    "Use design patterns appropriately. Don't over-engineer simple features.",
+    "Commit frequently to git. Small, focused commits.",
+    "Document as you build. Future you will thank present you.",
+    "Test with real data. Create seed scripts for development.",
+    "Profile and optimize bottlenecks. Don't premature optimize.",
+    "Security matters: parameterized queries, auth checks, input validation.",
+    "Have fun! This is your masterpiece. Be proud of it."
+  ],
+  "validationTests": [
+    {
+      "type": "code_contains",
+      "value": "import",
+      "description": "Project should have imports"
+    },
+    {
+      "type": "code_contains",
+      "value": "class",
+      "description": "Should have classes"
+    }
+  ],
+  "learningObjectives": [
+    "Build production-ready application from scratch",
+    "Apply all advanced Python concepts",
+    "Design and implement complex systems",
+    "Write professional, maintainable code",
+    "Create comprehensive documentation",
+    "Demonstrate mastery of Python development",
+    "Build portfolio-worthy project"
+  ],
+  "nextLessonId": null,
+  "previousLessonId": 89,
+  "tags": ["advanced", "final-project", "capstone", "production", "portfolio", "professional"],
+  "commonMistakes": [
+    {
+      "mistake": "Starting to code without planning",
+      "explanation": "PLAN FIRST! Design your architecture, database schema, API endpoints. Then code."
+    },
+    {
+      "mistake": "Trying to build everything at once",
+      "explanation": "Build incrementally. Get one feature working completely before moving to next."
+    },
+    {
+      "mistake": "Skipping tests to save time",
+      "explanation": "Tests SAVE time! They catch bugs early and enable refactoring with confidence."
+    },
+    {
+      "mistake": "Over-engineering simple features",
+      "explanation": "Keep it simple. Add complexity only when needed. YAGNI (You Aren't Gonna Need It)."
+    },
+    {
+      "mistake": "No error handling",
+      "explanation": "Production code handles errors gracefully. Try/except, validation, logging."
+    }
+  ]
+}

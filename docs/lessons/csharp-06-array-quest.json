@@ -1,0 +1,57 @@
+{
+  "id": 206,
+  "trackId": 3,
+  "language": "csharp",
+  "title": "The Array Quest",
+  "subtitle": "Storing Multiple Treasures",
+  "difficulty": 3,
+  "estimatedTime": "10-15 minutes",
+  "xpReward": 150,
+  "description": "# The Treasure Collection\n\nYou've been collecting treasures on your adventure, but carrying them one at a time is inefficient! It's time to learn about **arrays** - containers that can hold multiple items of the same type.\n\n## What is an Array?\n\nAn array in C# is a collection of items of the same type stored in a specific order. Think of it like a backpack that can hold many treasures!\n\n```csharp\nstring[] treasures = { \"gold coin\", \"ruby\", \"magic scroll\" };\n```\n\n**Key concepts:**\n- Arrays are created with type followed by `[]`\n- Items are enclosed in curly braces `{ }`\n- Items are separated by commas `,`\n- All items must be the same type\n- Items maintain their order\n- Statements end with semicolons `;`\n\n## Accessing Array Items\n\nEach item in an array has an **index** (position number), starting from 0:\n\n```csharp\nstring[] treasures = { \"gold coin\", \"ruby\", \"magic scroll\" };\nConsole.WriteLine(treasures[0]);  // Prints: gold coin\nConsole.WriteLine(treasures[1]);  // Prints: ruby\nConsole.WriteLine(treasures[2]);  // Prints: magic scroll\n```\n\n## Your Quest\n\n1. Create an array called `inventory` with these items: `\"sword\"`, `\"shield\"`, `\"potion\"`\n2. Print the **first item** in the array (the sword)\n3. Print the **third item** in the array (the potion)\n4. Print the **entire array** using a loop or string.Join",
+  "starterCode": "using System;\n\nclass Program\n{\n    static void Main()\n    {\n        // Create your inventory array here\n        // string[] inventory = { ... };\n        \n        // Print the first item (sword)\n        \n        \n        // Print the third item (potion)\n        \n        \n        // Print the entire array\n        \n    }\n}\n",
+  "solutionCode": "using System;\n\nclass Program\n{\n    static void Main()\n    {\n        // Create your inventory array here\n        string[] inventory = { \"sword\", \"shield\", \"potion\" };\n        \n        // Print the first item (sword)\n        Console.WriteLine(inventory[0]);\n        \n        // Print the third item (potion)\n        Console.WriteLine(inventory[2]);\n        \n        // Print the entire array\n        Console.WriteLine(string.Join(\", \", inventory));\n    }\n}\n",
+  "hints": [
+    "Arrays use curly braces { } and items are separated by commas",
+    "Remember: array indices start at 0, not 1! So the first item is inventory[0]",
+    "The third item is at index 2 (0, 1, 2)",
+    "You can print the whole array with string.Join(\", \", inventory)",
+    "Make sure to use quotation marks around the string items and semicolons at the end of statements"
+  ],
+  "validationTests": [
+    {
+      "type": "code_contains",
+      "value": "inventory",
+      "description": "Code should define a variable named 'inventory'"
+    },
+    {
+      "type": "code_contains",
+      "value": "{",
+      "description": "Code should use curly braces to create an array"
+    },
+    {
+      "type": "output_contains",
+      "value": "sword",
+      "description": "Output should contain 'sword'"
+    },
+    {
+      "type": "output_contains",
+      "value": "potion",
+      "description": "Output should contain 'potion'"
+    },
+    {
+      "type": "output_line_count",
+      "min": 3,
+      "description": "Should print at least 3 lines"
+    }
+  ],
+  "learningObjectives": [
+    "Understand what arrays are and why they're useful",
+    "Create an array with multiple items",
+    "Access array items using index numbers",
+    "Remember that array indices start at 0",
+    "Use proper C# syntax with semicolons"
+  ],
+  "previousLessonId": 205,
+  "nextLessonId": 207,
+  "tags": ["arrays", "indexing", "data-structures", "collections"]
+}

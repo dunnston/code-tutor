@@ -1,0 +1,52 @@
+{
+  "id": 106,
+  "trackId": 2,
+  "language": "gdscript",
+  "title": "The Array Quest",
+  "subtitle": "Managing Collections",
+  "difficulty": 2,
+  "estimatedTime": "15-20 minutes",
+  "xpReward": 200,
+  "description": "# Arrays: Managing Collections\n\nWelcome, game developer! Today you'll learn about **Arrays** - Godot's way of storing multiple values in one place.\n\n## What is an Array?\n\nAn Array is like a backpack that holds multiple items in order:\n\n```gdscript\nvar inventory = [\"sword\", \"shield\", \"potion\"]\n```\n\nEach item has a position (index) starting at 0:\n- Position 0: \"sword\"\n- Position 1: \"shield\"\n- Position 2: \"potion\"\n\n## Creating Arrays\n\n```gdscript\nvar weapons = [\"sword\", \"bow\", \"staff\"]\nvar levels = [1, 2, 3, 4, 5]\nvar mixed = [\"player\", 100, true]  # Can mix types!\n```\n\n## Accessing Array Items\n\nUse square brackets with the index:\n\n```gdscript\nvar items = [\"sword\", \"potion\", \"key\"]\nprint(items[0])  # sword\nprint(items[1])  # potion\nprint(items[2])  # key\n```\n\n## Array Methods\n\n**Add items:**\n```gdscript\nvar items = [\"sword\"]\nitems.append(\"shield\")  # Add to end\nprint(items)  # [\"sword\", \"shield\"]\n```\n\n**Get array size:**\n```gdscript\nvar count = items.size()\nprint(count)  # 2\n```\n\n**Remove items:**\n```gdscript\nitems.remove_at(0)  # Remove first item\n```\n\n## Your Quest\n\n1. Create an array called `party` with three hero names\n2. Print the first hero (index 0)\n3. Add a new hero using append()\n4. Print the total number of heroes using size()\n5. Print all heroes using a for loop",
+  "starterCode": "# Create your party array\n\n# Print the first hero\n\n# Add a new hero\n\n# Print party size\n\n# Loop through and print all heroes\n\n",
+  "solutionCode": "# Create your party array\nvar party = [\"Knight\", \"Wizard\", \"Archer\"]\n\n# Print the first hero\nprint(\"First hero: \", party[0])\n\n# Add a new hero\nparty.append(\"Healer\")\n\n# Print party size\nprint(\"Party size: \", party.size())\n\n# Loop through and print all heroes\nfor hero in party:\n    print(hero)",
+  "hints": [
+    "Create an array with square brackets: [\"item1\", \"item2\"]",
+    "Access first item with [0]: party[0]",
+    "Add items with .append(\"new item\")",
+    "Get size with .size() method",
+    "Loop with: for hero in party:"
+  ],
+  "validationTests": [
+    {
+      "type": "code_contains",
+      "value": "var party",
+      "description": "Should create party array"
+    },
+    {
+      "type": "code_contains",
+      "value": ".append(",
+      "description": "Should use append() method"
+    },
+    {
+      "type": "code_contains",
+      "value": ".size()",
+      "description": "Should use size() method"
+    },
+    {
+      "type": "code_contains",
+      "value": "for ",
+      "description": "Should use for loop"
+    }
+  ],
+  "learningObjectives": [
+    "Create and initialize Arrays",
+    "Access Array elements by index",
+    "Use Array methods (append, size)",
+    "Loop through Arrays",
+    "Manage game collections with Arrays"
+  ],
+  "previousLessonId": 105,
+  "nextLessonId": 107,
+  "tags": ["beginner", "arrays", "collections", "godot"]
+}

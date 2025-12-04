@@ -1,9 +1,11 @@
 import type { Course, UserCourseProgress } from '@/types/course'
 import { useAppStore } from '@/lib/store'
-import { isCourseActivated, activateCourse } from '@/lib/profiles'
+import { isCourseActivated, activateCourse, getActivatedCourses } from '@/lib/profiles'
+import { getCourseById } from '@/lib/courses'
 import { getRuntimeName, getLockedCourseMessage } from '@/lib/runtimeDetection'
 import type { SupportedLanguage } from '@/types/language'
 import { useState } from 'react'
+import { AlertModal } from '@/components/ui/AlertModal'
 
 interface CourseCardProps {
   course: Course
@@ -17,6 +19,7 @@ export function CourseCard({ course, progress, isLocked = false, runtimeAvailabl
   const setCurrentView = useAppStore((state) => state.setCurrentView)
   const toggleSettings = useAppStore((state) => state.toggleSettings)
   const [isActivated, setIsActivated] = useState(isCourseActivated(course.id))
+  const [alertModal, setAlertModal] = useState<{ activeCourseName: string } | null>(null)
 
   // Course is locked if either isLocked OR runtime is not available
   const effectivelyLocked = isLocked || !runtimeAvailable
@@ -25,8 +28,22 @@ export function CourseCard({ course, progress, isLocked = false, runtimeAvailabl
     e.stopPropagation()
     if (effectivelyLocked) return
 
-    activateCourse(course.id)
-    setIsActivated(true)
+    try {
+      activateCourse(course.id)
+      setIsActivated(true)
+    } catch (error) {
+      if (error instanceof Error && error.message === 'COURSE_ALREADY_ACTIVE') {
+        // Get the currently active course name
+        const activeCourseIds = getActivatedCourses()
+        const activeCourse = activeCourseIds.length > 0 ? getCourseById(activeCourseIds[0]!) : null
+        const activeCourseName = activeCourse ? activeCourse.name : 'another course'
+
+        setAlertModal({ activeCourseName })
+      } else {
+        // Re-throw other errors
+        throw error
+      }
+    }
   }
 
   const handleStartCourse = (e: React.MouseEvent) => {
@@ -65,13 +82,23 @@ export function CourseCard({ course, progress, isLocked = false, runtimeAvailabl
   const isNew = !progress || progress.lessonsCompleted === 0
 
   return (
-    <div
-      className={`bg-navy-800 rounded-xl p-6 border transition-all ${
-        effectivelyLocked
-          ? 'border-navy-700 opacity-60'
-          : 'border-navy-700 hover:border-accent-500 hover:shadow-lg'
-      }`}
-    >
+    <>
+      <AlertModal
+        isOpen={alertModal !== null}
+        title="Course Already Active"
+        message={`You already have "${alertModal?.activeCourseName}" activated! You can only have one active course at a time. Please complete or deactivate your current course before activating a new one.`}
+        variant="warning"
+        confirmText="OK"
+        onConfirm={() => setAlertModal(null)}
+      />
+
+      <div
+        className={`bg-navy-800 rounded-xl p-6 border transition-all ${
+          effectivelyLocked
+            ? 'border-navy-700 opacity-60'
+            : 'border-navy-700 hover:border-accent-500 hover:shadow-lg'
+        }`}
+      >
       {/* Header */}
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-center gap-3">
@@ -234,5 +261,6 @@ export function CourseCard({ course, progress, isLocked = false, runtimeAvailabl
         )}
       </div>
     </div>
+    </>
   )
 }

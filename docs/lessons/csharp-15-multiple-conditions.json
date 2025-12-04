@@ -1,0 +1,52 @@
+{
+  "id": 215,
+  "trackId": 3,
+  "language": "csharp",
+  "title": "The Path of Many Choices",
+  "subtitle": "Else If Statements",
+  "difficulty": 3,
+  "estimatedTime": "15-20 minutes",
+  "xpReward": 125,
+  "description": "# Multiple Conditions with Else If\n\nSometimes you need to check multiple conditions, not just two! That's where **else if** comes in.\n\n## Else If Structure\n\nCheck multiple conditions in sequence:\n\n```csharp\nint level = 15;\n\nif (level >= 20)\n{\n    Console.WriteLine(\"You are a Master!\");\n}\nelse if (level >= 10)\n{\n    Console.WriteLine(\"You are an Expert!\");\n}\nelse if (level >= 5)\n{\n    Console.WriteLine(\"You are an Apprentice!\");\n}\nelse\n{\n    Console.WriteLine(\"You are a Beginner!\");\n}\n```\n\n**How it works:**\n- C# checks each condition in order from top to bottom\n- The FIRST true condition runs its block\n- All remaining conditions are skipped\n- If no conditions are true, the else block runs (if present)\n\n## Your Quest\n\nCreate a character class system based on stats:\n1. Get the player's strength and intelligence values\n2. Use else if to determine their class:\n   - If strength >= 15 AND intelligence >= 15: \"Paladin\"\n   - Else if strength >= 15: \"Warrior\"\n   - Else if intelligence >= 15: \"Mage\"\n   - Else: \"Villager\"\n3. Print their class with a description\n4. Calculate and display their total stat points",
+  "starterCode": "using System;\n\nclass Program\n{\n    static void Main()\n    {\n        Console.WriteLine(\"=== CHARACTER CLASS SELECTOR ===\");\n        \n        // Get player stats\n        Console.Write(\"Enter your Strength (0-20): \");\n        int strength = int.Parse(Console.ReadLine());\n        \n        Console.Write(\"Enter your Intelligence (0-20): \");\n        int intelligence = int.Parse(Console.ReadLine());\n        \n        // Calculate total stats\n        int totalStats = strength + intelligence;\n        \n        // Determine class based on stats\n        string characterClass;\n        string description;\n        \n        if (/* strength >= 15 AND intelligence >= 15 */)\n        {\n            characterClass = \"Paladin\";\n            description = \"A holy warrior with balanced combat and magic skills\";\n        }\n        else if (/* strength >= 15 */)\n        {\n            characterClass = \"Warrior\";\n            description = \"A powerful melee fighter\";\n        }\n        else if (/* intelligence >= 15 */)\n        {\n            characterClass = \"Mage\";\n            description = \"A master of arcane magic\";\n        }\n        else\n        {\n            characterClass = \"Villager\";\n            description = \"A humble commoner with potential to grow\";\n        }\n        \n        // Display results\n        Console.WriteLine($\"\\nYour class: {characterClass}\");\n        Console.WriteLine($\"Description: {description}\");\n        Console.WriteLine($\"Total stat points: {totalStats}\");\n    }\n}\n",
+  "solutionCode": "using System;\n\nclass Program\n{\n    static void Main()\n    {\n        Console.WriteLine(\"=== CHARACTER CLASS SELECTOR ===\");\n        \n        // Get player stats\n        Console.Write(\"Enter your Strength (0-20): \");\n        int strength = int.Parse(Console.ReadLine());\n        \n        Console.Write(\"Enter your Intelligence (0-20): \");\n        int intelligence = int.Parse(Console.ReadLine());\n        \n        // Calculate total stats\n        int totalStats = strength + intelligence;\n        \n        // Determine class based on stats\n        string characterClass;\n        string description;\n        \n        if (strength >= 15 && intelligence >= 15)\n        {\n            characterClass = \"Paladin\";\n            description = \"A holy warrior with balanced combat and magic skills\";\n        }\n        else if (strength >= 15)\n        {\n            characterClass = \"Warrior\";\n            description = \"A powerful melee fighter\";\n        }\n        else if (intelligence >= 15)\n        {\n            characterClass = \"Mage\";\n            description = \"A master of arcane magic\";\n        }\n        else\n        {\n            characterClass = \"Villager\";\n            description = \"A humble commoner with potential to grow\";\n        }\n        \n        // Display results\n        Console.WriteLine($\"\\nYour class: {characterClass}\");\n        Console.WriteLine($\"Description: {description}\");\n        Console.WriteLine($\"Total stat points: {totalStats}\");\n    }\n}\n",
+  "hints": [
+    "In C#, use && for AND (not 'and' like Python)",
+    "Use || for OR in C# (not 'or' like Python)",
+    "The first condition needs BOTH strength >= 15 AND intelligence >= 15",
+    "Order matters! The most specific conditions should come first",
+    "Remember: conditions in ( ), code in { }, statements end with ;"
+  ],
+  "validationTests": [
+    {
+      "type": "code_contains",
+      "value": "if",
+      "description": "Must use if statement"
+    },
+    {
+      "type": "code_contains",
+      "value": "else if",
+      "description": "Must use else if statements"
+    },
+    {
+      "type": "code_contains",
+      "value": "&&",
+      "description": "Should use && (AND operator)"
+    },
+    {
+      "type": "code_contains",
+      "value": "Console.ReadLine",
+      "description": "Should get user input"
+    }
+  ],
+  "learningObjectives": [
+    "Use else if for multiple condition checking",
+    "Understand condition evaluation order",
+    "Combine multiple conditions with logical operators",
+    "Make decisions based on complex criteria",
+    "Use proper C# logical operators (&& and ||)"
+  ],
+  "previousLessonId": 214,
+  "nextLessonId": 216,
+  "tags": ["intermediate", "else-if", "multiple-conditions", "logic", "operators"]
+}

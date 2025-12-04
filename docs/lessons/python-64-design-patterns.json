@@ -1,0 +1,121 @@
+{
+  "id": 64,
+  "trackId": 8,
+  "language": "python",
+  "title": "The Ancient Architectures",
+  "subtitle": "Design Patterns - Singleton, Factory, Observer",
+  "difficulty": 5,
+  "estimatedTime": "45-60 minutes",
+  "xpReward": 300,
+  "description": "# Master Design Patterns!\n\n🏛️ **Design patterns** are proven solutions to common programming problems. They're the vocabulary of professional developers.\n\n## The Three Patterns\n\n### 1. Singleton Pattern\nEnsures only ONE instance of a class exists:\n\n```python\nclass GameManager:\n    _instance = None\n    \n    def __new__(cls):\n        if cls._instance is None:\n            cls._instance = super().__new__(cls)\n        return cls._instance\n    \n    def __init__(self):\n        if not hasattr(self, 'initialized'):\n            self.game_state = \"menu\"\n            self.initialized = True\n\n# Always returns the same instance\ngm1 = GameManager()\ngm2 = GameManager()\nprint(gm1 is gm2)  # True - same object!\n```\n\n### 2. Factory Pattern\nCreates objects without specifying exact class:\n\n```python\nclass EnemyFactory:\n    @staticmethod\n    def create_enemy(enemy_type):\n        if enemy_type == \"goblin\":\n            return Goblin()\n        elif enemy_type == \"dragon\":\n            return Dragon()\n        elif enemy_type == \"zombie\":\n            return Zombie()\n        else:\n            raise ValueError(f\"Unknown enemy: {enemy_type}\")\n\n# Client code doesn't need to know about Goblin class\nenemy = EnemyFactory.create_enemy(\"goblin\")\n```\n\n### 3. Observer Pattern\nObjects subscribe to events and get notified of changes:\n\n```python\nclass EventSystem:\n    def __init__(self):\n        self.observers = {}  # event_name: [observer_funcs]\n    \n    def subscribe(self, event_name, callback):\n        if event_name not in self.observers:\n            self.observers[event_name] = []\n        self.observers[event_name].append(callback)\n    \n    def notify(self, event_name, data=None):\n        if event_name in self.observers:\n            for callback in self.observers[event_name]:\n                callback(data)\n\n# Usage\nevents = EventSystem()\nevents.subscribe(\"player_died\", lambda data: print(f\"{data['name']} died!\"))\nevents.notify(\"player_died\", {\"name\": \"Hero\"})\n```\n\n## Your Mission\n\nImplement three design patterns for an MMO game:\n\n1. **GameManager (Singleton)** - Only one game manager exists\n2. **EnemyFactory (Factory)** - Creates enemies by type string\n3. **EventSystem (Observer)** - Subscribe to and notify game events\n\n⚔️ Build a professional architecture!\n\n*Hint: These patterns are used in every major game engine and framework.*",
+  "starterCode": "# MMO Architecture - Implement Design Patterns\n\n# PATTERN 1: Singleton - GameManager\n# TODO: Implement GameManager as a singleton\n# - Should have attributes: players (list), enemies (list), game_state (string)\n# - Only ONE instance should ever exist\n# - Use __new__ method to control instance creation\n\nclass GameManager:\n    pass\n\n\n# PATTERN 2: Factory - EnemyFactory\n# TODO: Create enemy classes first\n\nclass Enemy:\n    \"\"\"Base enemy class\"\"\"\n    def __init__(self, name, health, damage):\n        self.name = name\n        self.health = health\n        self.damage = damage\n    \n    def __repr__(self):\n        return f\"{self.__class__.__name__}('{self.name}', HP:{self.health}, DMG:{self.damage})\"\n\nclass Goblin(Enemy):\n    # TODO: Initialize with name=\"Goblin\", health=50, damage=10\n    pass\n\nclass Dragon(Enemy):\n    # TODO: Initialize with name=\"Dragon\", health=500, damage=100\n    pass\n\nclass Zombie(Enemy):\n    # TODO: Initialize with name=\"Zombie\", health=80, damage=15\n    pass\n\nclass Skeleton(Enemy):\n    # TODO: Initialize with name=\"Skeleton\", health=40, damage=12\n    pass\n\nclass EnemyFactory:\n    # TODO: Implement @staticmethod create_enemy(enemy_type)\n    # Should return appropriate enemy based on string:\n    # \"goblin\" -> Goblin(), \"dragon\" -> Dragon(), etc.\n    # Raise ValueError for unknown types\n    pass\n\n\n# PATTERN 3: Observer - EventSystem\n# TODO: Implement EventSystem with observer pattern\n# Methods needed:\n# - subscribe(event_name, callback): Add observer to event\n# - unsubscribe(event_name, callback): Remove observer\n# - notify(event_name, data): Notify all observers of event\n\nclass EventSystem:\n    pass\n\n\n# ==================== TESTS ====================\n\nprint(\"=== Test 1: Singleton Pattern ===\")\ngm1 = GameManager()\ngm1.game_state = \"playing\"\ngm1.players = [\"Alice\", \"Bob\"]\n\ngm2 = GameManager()\nprint(f\"gm1 is gm2: {gm1 is gm2}\")  # Should be True\nprint(f\"gm2.game_state: {gm2.game_state}\")  # Should be 'playing'\nprint(f\"gm2.players: {gm2.players}\")  # Should be ['Alice', 'Bob']\n\ngm3 = GameManager()\nprint(f\"gm3 is gm1: {gm3 is gm1}\")  # Should be True\n\nprint(\"\\n=== Test 2: Factory Pattern ===\")\nenemy1 = EnemyFactory.create_enemy(\"goblin\")\nprint(f\"Created: {enemy1}\")\n\nenemy2 = EnemyFactory.create_enemy(\"dragon\")\nprint(f\"Created: {enemy2}\")\n\nenemy3 = EnemyFactory.create_enemy(\"zombie\")\nprint(f\"Created: {enemy3}\")\n\nenemy4 = EnemyFactory.create_enemy(\"skeleton\")\nprint(f\"Created: {enemy4}\")\n\n# Test invalid type\ntry:\n    invalid = EnemyFactory.create_enemy(\"unicorn\")\nexcept ValueError as e:\n    print(f\"Error (expected): {e}\")\n\nprint(\"\\n=== Test 3: Observer Pattern ===\")\nevents = EventSystem()\n\n# Create observer functions\ndef on_player_died(data):\n    print(f\"[DEATH LOG] {data['player']} was killed by {data['killer']}\")\n\ndef on_level_up(data):\n    print(f\"[LEVEL UP] {data['player']} reached level {data['level']}!\")\n\ndef on_item_found(data):\n    print(f\"[LOOT] {data['player']} found {data['item']}\")\n\ndef achievement_tracker(data):\n    print(f\"[ACHIEVEMENT] New achievement for {data['player']}!\")\n\n# Subscribe observers to events\nevents.subscribe(\"player_died\", on_player_died)\nevents.subscribe(\"level_up\", on_level_up)\nevents.subscribe(\"level_up\", achievement_tracker)  # Multiple observers!\nevents.subscribe(\"item_found\", on_item_found)\n\n# Trigger events\nprint(\"\\nTriggering events:\")\nevents.notify(\"player_died\", {\"player\": \"Hero\", \"killer\": \"Dragon\"})\nevents.notify(\"level_up\", {\"player\": \"Hero\", \"level\": 10})\nevents.notify(\"item_found\", {\"player\": \"Hero\", \"item\": \"Legendary Sword\"})\n\n# Test unsubscribe\nevents.unsubscribe(\"level_up\", achievement_tracker)\nprint(\"\\nAfter unsubscribing achievement_tracker:\")\nevents.notify(\"level_up\", {\"player\": \"Hero\", \"level\": 11})\n\nprint(\"\\n=== Test 4: Integration ===\")\n# Use all patterns together\ngm = GameManager()\ngm.game_state = \"combat\"\n\nenemy = EnemyFactory.create_enemy(\"goblin\")\ngm.enemies = [enemy]\nprint(f\"GameManager enemies: {gm.enemies}\")\n\nevents.notify(\"combat_start\", {\"enemy\": enemy.name})",
+  "solutionCode": "# MMO Architecture - Design Patterns Implementation\n\n# PATTERN 1: Singleton - GameManager\nclass GameManager:\n    _instance = None\n    \n    def __new__(cls):\n        if cls._instance is None:\n            cls._instance = super().__new__(cls)\n        return cls._instance\n    \n    def __init__(self):\n        if not hasattr(self, 'initialized'):\n            self.players = []\n            self.enemies = []\n            self.game_state = \"menu\"\n            self.initialized = True\n\n\n# PATTERN 2: Factory - EnemyFactory\nclass Enemy:\n    \"\"\"Base enemy class\"\"\"\n    def __init__(self, name, health, damage):\n        self.name = name\n        self.health = health\n        self.damage = damage\n    \n    def __repr__(self):\n        return f\"{self.__class__.__name__}('{self.name}', HP:{self.health}, DMG:{self.damage})\"\n\nclass Goblin(Enemy):\n    def __init__(self):\n        super().__init__(\"Goblin\", 50, 10)\n\nclass Dragon(Enemy):\n    def __init__(self):\n        super().__init__(\"Dragon\", 500, 100)\n\nclass Zombie(Enemy):\n    def __init__(self):\n        super().__init__(\"Zombie\", 80, 15)\n\nclass Skeleton(Enemy):\n    def __init__(self):\n        super().__init__(\"Skeleton\", 40, 12)\n\nclass EnemyFactory:\n    @staticmethod\n    def create_enemy(enemy_type):\n        enemy_map = {\n            \"goblin\": Goblin,\n            \"dragon\": Dragon,\n            \"zombie\": Zombie,\n            \"skeleton\": Skeleton\n        }\n        \n        if enemy_type.lower() in enemy_map:\n            return enemy_map[enemy_type.lower()]()\n        else:\n            raise ValueError(f\"Unknown enemy type: {enemy_type}\")\n\n\n# PATTERN 3: Observer - EventSystem\nclass EventSystem:\n    def __init__(self):\n        self.observers = {}  # event_name: [callbacks]\n    \n    def subscribe(self, event_name, callback):\n        if event_name not in self.observers:\n            self.observers[event_name] = []\n        self.observers[event_name].append(callback)\n    \n    def unsubscribe(self, event_name, callback):\n        if event_name in self.observers:\n            self.observers[event_name].remove(callback)\n    \n    def notify(self, event_name, data=None):\n        if event_name in self.observers:\n            for callback in self.observers[event_name]:\n                callback(data)\n\n\n# ==================== TESTS ====================\n\nprint(\"=== Test 1: Singleton Pattern ===\")\ngm1 = GameManager()\ngm1.game_state = \"playing\"\ngm1.players = [\"Alice\", \"Bob\"]\n\ngm2 = GameManager()\nprint(f\"gm1 is gm2: {gm1 is gm2}\")\nprint(f\"gm2.game_state: {gm2.game_state}\")\nprint(f\"gm2.players: {gm2.players}\")\n\ngm3 = GameManager()\nprint(f\"gm3 is gm1: {gm3 is gm1}\")\n\nprint(\"\\n=== Test 2: Factory Pattern ===\")\nenemy1 = EnemyFactory.create_enemy(\"goblin\")\nprint(f\"Created: {enemy1}\")\n\nenemy2 = EnemyFactory.create_enemy(\"dragon\")\nprint(f\"Created: {enemy2}\")\n\nenemy3 = EnemyFactory.create_enemy(\"zombie\")\nprint(f\"Created: {enemy3}\")\n\nenemy4 = EnemyFactory.create_enemy(\"skeleton\")\nprint(f\"Created: {enemy4}\")\n\ntry:\n    invalid = EnemyFactory.create_enemy(\"unicorn\")\nexcept ValueError as e:\n    print(f\"Error (expected): {e}\")\n\nprint(\"\\n=== Test 3: Observer Pattern ===\")\nevents = EventSystem()\n\ndef on_player_died(data):\n    print(f\"[DEATH LOG] {data['player']} was killed by {data['killer']}\")\n\ndef on_level_up(data):\n    print(f\"[LEVEL UP] {data['player']} reached level {data['level']}!\")\n\ndef on_item_found(data):\n    print(f\"[LOOT] {data['player']} found {data['item']}\")\n\ndef achievement_tracker(data):\n    print(f\"[ACHIEVEMENT] New achievement for {data['player']}!\")\n\nevents.subscribe(\"player_died\", on_player_died)\nevents.subscribe(\"level_up\", on_level_up)\nevents.subscribe(\"level_up\", achievement_tracker)\nevents.subscribe(\"item_found\", on_item_found)\n\nprint(\"\\nTriggering events:\")\nevents.notify(\"player_died\", {\"player\": \"Hero\", \"killer\": \"Dragon\"})\nevents.notify(\"level_up\", {\"player\": \"Hero\", \"level\": 10})\nevents.notify(\"item_found\", {\"player\": \"Hero\", \"item\": \"Legendary Sword\"})\n\nevents.unsubscribe(\"level_up\", achievement_tracker)\nprint(\"\\nAfter unsubscribing achievement_tracker:\")\nevents.notify(\"level_up\", {\"player\": \"Hero\", \"level\": 11})\n\nprint(\"\\n=== Test 4: Integration ===\")\ngm = GameManager()\ngm.game_state = \"combat\"\n\nenemy = EnemyFactory.create_enemy(\"goblin\")\ngm.enemies = [enemy]\nprint(f\"GameManager enemies: {gm.enemies}\")\n\nevents.notify(\"combat_start\", {\"enemy\": enemy.name})",
+  "hints": [
+    "For Singleton: Implement __new__ method. Store the instance in a class variable (_instance). If _instance is None, create it; otherwise return existing instance.",
+    "For Singleton __init__: Use hasattr(self, 'initialized') to prevent re-initialization. Set self.initialized = True after first init.",
+    "For Factory: Create a dictionary mapping strings to class references (not instances!). Return enemy_map[enemy_type]() to create instance.",
+    "For Observer subscribe: Check if event_name exists in self.observers dict. If not, create empty list. Then append callback to the list.",
+    "For Observer notify: Check if event_name exists. If yes, loop through all callbacks and call each one with callback(data)."
+  ],
+  "validationTests": [
+    {
+      "type": "output_contains",
+      "value": "gm1 is gm2: True",
+      "description": "Singleton should return same instance"
+    },
+    {
+      "type": "output_contains",
+      "value": "gm2.game_state: playing",
+      "description": "Singleton should share state"
+    },
+    {
+      "type": "output_contains",
+      "value": "gm3 is gm1: True",
+      "description": "All GameManager instances should be identical"
+    },
+    {
+      "type": "output_contains",
+      "value": "Goblin('Goblin', HP:50, DMG:10)",
+      "description": "Factory should create Goblin correctly"
+    },
+    {
+      "type": "output_contains",
+      "value": "Dragon('Dragon', HP:500, DMG:100)",
+      "description": "Factory should create Dragon correctly"
+    },
+    {
+      "type": "output_contains",
+      "value": "Unknown enemy type: unicorn",
+      "description": "Factory should raise ValueError for invalid types"
+    },
+    {
+      "type": "output_contains",
+      "value": "[DEATH LOG] Hero was killed by Dragon",
+      "description": "Observer should notify death events"
+    },
+    {
+      "type": "output_contains",
+      "value": "[LEVEL UP] Hero reached level 10!",
+      "description": "Observer should notify level up events"
+    },
+    {
+      "type": "output_contains",
+      "value": "[ACHIEVEMENT] New achievement for Hero!",
+      "description": "Observer should support multiple subscribers"
+    },
+    {
+      "type": "code_contains",
+      "value": "def __new__",
+      "description": "Singleton must implement __new__ method"
+    },
+    {
+      "type": "code_contains",
+      "value": "_instance",
+      "description": "Singleton must use class variable for instance"
+    },
+    {
+      "type": "code_contains",
+      "value": "@staticmethod",
+      "description": "Factory should use @staticmethod"
+    },
+    {
+      "type": "code_contains",
+      "value": "def subscribe",
+      "description": "EventSystem must implement subscribe"
+    },
+    {
+      "type": "code_contains",
+      "value": "def notify",
+      "description": "EventSystem must implement notify"
+    }
+  ],
+  "learningObjectives": [
+    "Implement the Singleton pattern using __new__",
+    "Create Factory pattern for object creation",
+    "Build Observer pattern for event-driven programming",
+    "Understand when to use each design pattern",
+    "Combine multiple patterns in a system",
+    "Write professional, maintainable architectures"
+  ],
+  "nextLessonId": 65,
+  "previousLessonId": 63,
+  "tags": ["advanced", "design-patterns", "singleton", "factory", "observer", "architecture"],
+  "commonMistakes": [
+    {
+      "mistake": "Re-initializing singleton attributes on every __init__ call",
+      "explanation": "Use hasattr(self, 'initialized') to prevent re-initialization. The __new__ method ensures same instance, but __init__ is called each time."
+    },
+    {
+      "mistake": "Returning class instead of instance from factory",
+      "explanation": "Factory should return Goblin() not Goblin. You need to instantiate the class with parentheses."
+    },
+    {
+      "mistake": "Not checking if event exists before notifying",
+      "explanation": "Always check 'if event_name in self.observers' before trying to notify. Otherwise you'll get KeyError for unsubscribed events."
+    },
+    {
+      "mistake": "Forgetting super().__new__(cls) in Singleton",
+      "explanation": "You must call super().__new__(cls) to actually create the object instance. Then store and return it."
+    }
+  ]
+}

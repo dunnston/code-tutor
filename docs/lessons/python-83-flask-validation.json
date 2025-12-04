@@ -1,0 +1,20 @@
+{
+  "id": 83,
+  "trackId": 8,
+  "language": "python",
+  "title": "The Validation Ward",
+  "subtitle": "Request Validation & Error Handling",
+  "difficulty": 4,
+  "estimatedTime": "35-45 minutes",
+  "xpReward": 200,
+  "description": "# Master API Validation!\n\nValidate requests and handle errors gracefully.\n\n## Validation\n```python\nfrom flask import request, jsonify\n\ndef validate_character(data):\n    if 'name' not in data:\n        return {'error': 'Name required'}, 400\n    if not isinstance(data.get('level'), int):\n        return {'error': 'Level must be integer'}, 400\n    return None\n\n@app.route('/api/characters', methods=['POST'])\ndef create_character():\n    error = validate_character(request.json)\n    if error:\n        return jsonify(error[0]), error[1]\n    # Create character\n```\n\n*Hint: Validate early, fail fast.*",
+  "starterCode": "from flask import Flask, request, jsonify\napp = Flask(__name__)\n\n# TODO: Implement validation\n@app.route('/api/characters', methods=['POST'])\ndef create():\n    return jsonify({'message': 'Created'}), 201\n\nif __name__ == '__main__':\n    app.run()",
+  "solutionCode": "from flask import Flask, request, jsonify\napp = Flask(__name__)\n\ndef validate_character(data):\n    if not data or 'name' not in data:\n        return {'error': 'Name required'}, 400\n    return None\n\n@app.route('/api/characters', methods=['POST'])\ndef create():\n    error = validate_character(request.json)\n    if error:\n        return jsonify(error[0]), error[1]\n    return jsonify({'message': 'Created'}), 201\n\nif __name__ == '__main__':\n    app.run()",
+  "hints": ["Check required fields", "Return 400 for validation errors"],
+  "validationTests": [{"type": "code_contains", "value": "validate", "description": "Must have validation"}],
+  "learningObjectives": ["Validate API requests", "Handle errors properly"],
+  "nextLessonId": 84,
+  "previousLessonId": 82,
+  "tags": ["advanced", "flask", "validation"],
+  "commonMistakes": [{"mistake": "Not validating input", "explanation": "Always validate!"}]
+}

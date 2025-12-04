@@ -1,0 +1,20 @@
+{
+  "id": 84,
+  "trackId": 8,
+  "language": "python",
+  "title": "The API Nexus",
+  "subtitle": "Flask + Database Integration",
+  "difficulty": 5,
+  "estimatedTime": "45-55 minutes",
+  "xpReward": 250,
+  "description": "# Integrate Database with Flask!\n\nConnect Flask API to database layer.\n\n```python\nfrom flask import Flask, jsonify\nfrom repositories import CharacterRepository\n\napp = Flask(__name__)\nchar_repo = CharacterRepository()\n\n@app.route('/api/characters/<int:id>')\ndef get_char(id):\n    char = char_repo.get_by_id(id)\n    if char:\n        return jsonify(char.to_dict())\n    return jsonify({'error': 'Not found'}), 404\n```\n\n*Hint: API layer calls repositories.*",
+  "starterCode": "from flask import Flask\napp = Flask(__name__)\n\n# TODO: Add database repository\n# TODO: Create API endpoints\n\nif __name__ == '__main__':\n    app.run()",
+  "solutionCode": "from flask import Flask, jsonify\napp = Flask(__name__)\n\ncharacters = {}\n\n@app.route('/api/characters/<int:id>')\ndef get(id):\n    if id in characters:\n        return jsonify(characters[id])\n    return jsonify({'error': 'Not found'}), 404\n\nif __name__ == '__main__':\n    app.run()",
+  "hints": ["Use repository pattern", "Separate concerns"],
+  "validationTests": [{"type": "code_contains", "value": "Flask", "description": "Must use Flask"}],
+  "learningObjectives": ["Integrate database with API", "Use repository pattern in Flask"],
+  "nextLessonId": 85,
+  "previousLessonId": 83,
+  "tags": ["advanced", "flask", "database"],
+  "commonMistakes": [{"mistake": "Writing SQL in routes", "explanation": "Use repositories!"}]
+}

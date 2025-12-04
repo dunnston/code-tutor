@@ -1,0 +1,22 @@
+{
+  "id": 55,
+  "trackId": 7,
+  "language": "python",
+  "title": "⭐ The Data Pipeline Challenge",
+  "subtitle": "Complete CSV Processing System",
+  "difficulty": 6,
+  "estimatedTime": "60 minutes",
+  "xpReward": 300,
+  "description": "# ⭐ CHALLENGE: CSV Data Pipeline\n\n🏆 Build a complete data processing system!\n\n## Requirements\n\n1. Read inventory CSV\n2. Filter low stock items\n3. Calculate total value\n4. Export filtered results\n5. Generate summary report\n\n⚔️ Master CSV processing!",
+  "starterCode": "import csv\nimport io\n\nINVENTORY_CSV = '''item,quantity,price,category\nSword,5,100,weapon\nPotion,50,10,consumable\nShield,2,80,armor\nScroll,30,15,consumable'''\n\n# TODO: Implement complete pipeline\nreader = csv.DictReader(io.StringIO(INVENTORY_CSV))\n\n# Filter low stock (quantity < 10)\nlow_stock = [row for row in reader if int(row['quantity']) < 10]\n\nprint(f'Low stock items: {len(low_stock)}')\nfor item in low_stock:\n    print(f\"  {item['item']}: {item['quantity']} units\")\n\n# Calculate total inventory value\nreader2 = csv.DictReader(io.StringIO(INVENTORY_CSV))\ntotal_value = sum(int(row['quantity']) * int(row['price']) for row in reader2)\nprint(f'\\nTotal inventory value: {total_value} gold')",
+  "solutionCode": "import csv\nimport io\n\nINVENTORY_CSV = '''item,quantity,price,category\nSword,5,100,weapon\nPotion,50,10,consumable\nShield,2,80,armor\nScroll,30,15,consumable'''\n\nreader = csv.DictReader(io.StringIO(INVENTORY_CSV))\nlow_stock = [row for row in reader if int(row['quantity']) < 10]\n\nprint(f'Low stock items: {len(low_stock)}')\nfor item in low_stock:\n    print(f\"  {item['item']}: {item['quantity']} units\")\n\nreader2 = csv.DictReader(io.StringIO(INVENTORY_CSV))\ntotal_value = sum(int(row['quantity']) * int(row['price']) for row in reader2)\nprint(f'\\nTotal inventory value: {total_value} gold')",
+  "hints": ["Filter with list comprehension", "Calculate value: quantity * price", "Use sum() for totals"],
+  "validationTests": [
+    {"type": "output_contains", "value": "Low stock items: 2", "description": "Should find 2 low stock items"},
+    {"type": "output_contains", "value": "1270", "description": "Should calculate correct total value"}
+  ],
+  "learningObjectives": ["Build data pipelines", "Filter and transform CSV", "Generate reports"],
+  "nextLessonId": 56,
+  "previousLessonId": 54,
+  "tags": ["intermediate", "challenge", "csv", "data-pipeline"]
+}

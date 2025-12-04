@@ -1,0 +1,86 @@
+{
+  "id": 41,
+  "trackId": 7,
+  "language": "python",
+  "title": "The Bloodline of Classes",
+  "subtitle": "Introduction to Inheritance",
+  "difficulty": 5,
+  "estimatedTime": "25-30 minutes",
+  "xpReward": 150,
+  "description": "# Inheritance: Creating Class Hierarchies\n\n👑 Classes can inherit from other classes, creating family trees of code!\n\n## What is Inheritance?\n\n**Inheritance** lets you create new classes based on existing ones:\n\n```python\n# Parent class (base class)\nclass Character:\n    def __init__(self, name, health):\n        self.name = name\n        self.health = health\n    \n    def take_damage(self, amount):\n        self.health -= amount\n\n# Child class (derived class)\nclass Warrior(Character):  # Warrior inherits from Character\n    def __init__(self, name, health, armor):\n        super().__init__(name, health)  # Call parent's __init__\n        self.armor = armor\n    \n    def block_attack(self):\n        print(f\"{self.name} blocks with armor!\")\n\n# Warrior has ALL Character methods plus its own!\nwarrior = Warrior(\"Ragnar\", 150, 50)\nwarrior.take_damage(20)  # Inherited from Character\nwarrior.block_attack()   # Defined in Warrior\n```\n\n## Why Use Inheritance?\n\n- **Code reuse** - Don't repeat common functionality\n- **Logical organization** - Model real-world relationships\n- **Extensibility** - Add specialized behavior to base classes\n- **Polymorphism** - Treat different types uniformly\n\n## Inheritance Terminology\n\n| Term | Meaning | Example |\n|------|---------|----------|\n| **Parent/Base/Super class** | Class being inherited from | Character |\n| **Child/Derived/Sub class** | Class that inherits | Warrior |\n| **super()** | Reference to parent class | super().__init__() |\n\n## The super() Function\n\n**super()** calls methods from the parent class:\n\n```python\nclass Mage(Character):\n    def __init__(self, name, health, mana):\n        super().__init__(name, health)  # Call Character's __init__\n        self.mana = mana  # Add Mage-specific attribute\n```\n\n**Why use super()?**\n- Avoids repeating parent initialization code\n- Maintains proper initialization order\n- Required for multiple inheritance (advanced topic)\n\n## Inheritance Syntax\n\n```python\nclass ParentClass:\n    pass\n\nclass ChildClass(ParentClass):  # Put parent in parentheses\n    pass\n```\n\n## Your Quest\n\nCreate a character class hierarchy:\n\n**Base Class:** `Character`\n- Attributes: name, health, level\n- Method: `take_damage(amount)`, `level_up()`\n\n**Child Classes:**\n- `Warrior(Character)` - adds armor attribute and `block()` method\n- `Mage(Character)` - adds mana attribute and `cast_spell()` method\n- `Rogue(Character)` - adds stealth attribute and `sneak_attack()` method\n\n⚔️ Build a class family tree!",
+  "starterCode": "# Character Inheritance System\n\n# TODO: Create base Character class\nclass Character:\n    def __init__(self, name, health, level):\n        # TODO: Initialize attributes\n        pass\n    \n    def take_damage(self, amount):\n        # TODO: Reduce health, print message\n        pass\n    \n    def level_up(self):\n        # TODO: Increase level, boost health by 10\n        pass\n    \n    def __str__(self):\n        # TODO: Return character info string\n        pass\n\n# TODO: Create Warrior class (inherits from Character)\nclass Warrior:\n    def __init__(self, name, health, level, armor):\n        # TODO: Call parent __init__ with super()\n        # TODO: Add armor attribute\n        pass\n    \n    def block(self):\n        # TODO: Print block message using armor value\n        pass\n    \n    def __str__(self):\n        # TODO: Call parent __str__ and add armor info\n        pass\n\n# TODO: Create Mage class (inherits from Character)\nclass Mage:\n    def __init__(self, name, health, level, mana):\n        # TODO: Call parent __init__ with super()\n        # TODO: Add mana attribute\n        pass\n    \n    def cast_spell(self, spell_name, mana_cost):\n        # TODO: Check if enough mana, cast spell, reduce mana\n        pass\n    \n    def __str__(self):\n        # TODO: Call parent __str__ and add mana info\n        pass\n\n# TODO: Create Rogue class (inherits from Character)\nclass Rogue:\n    def __init__(self, name, health, level, stealth):\n        # TODO: Call parent __init__ with super()\n        # TODO: Add stealth attribute\n        pass\n    \n    def sneak_attack(self):\n        # TODO: Print sneak attack message\n        # TODO: Return damage based on stealth (stealth * 2)\n        pass\n    \n    def __str__(self):\n        # TODO: Call parent __str__ and add stealth info\n        pass\n\n# Test the inheritance\nprint(\"=== Character Inheritance Test ===\")\nprint()\n\nwarrior = Warrior(\"Ragnar\", 150, 5, 50)\nmage = Mage(\"Gandalf\", 70, 7, 200)\nrogue = Rogue(\"Shadow\", 100, 6, 75)\n\nprint(\"--- Characters ---\")\nprint(warrior)\nprint(mage)\nprint(rogue)\nprint()\n\nprint(\"--- Inherited Methods ---\")\nwarrior.take_damage(30)\nmage.take_damage(20)\nrogue.level_up()\nprint()\n\nprint(\"--- Specialized Methods ---\")\nwarrior.block()\nmage.cast_spell(\"Fireball\", 50)\ndamage = rogue.sneak_attack()\nprint(f\"Sneak attack damage: {damage}\")\nprint()\n\nprint(\"Inheritance implemented successfully!\")",
+  "solutionCode": "# Character Inheritance System - Solution\n\nclass Character:\n    def __init__(self, name, health, level):\n        self.name = name\n        self.health = health\n        self.level = level\n    \n    def take_damage(self, amount):\n        self.health -= amount\n        print(f\"{self.name} takes {amount} damage! ({self.health} HP remaining)\")\n    \n    def level_up(self):\n        self.level += 1\n        self.health += 10\n        print(f\"{self.name} leveled up to {self.level}!\")\n    \n    def __str__(self):\n        return f\"{self.name} (Lv {self.level}) - {self.health} HP\"\n\nclass Warrior(Character):\n    def __init__(self, name, health, level, armor):\n        super().__init__(name, health, level)\n        self.armor = armor\n    \n    def block(self):\n        print(f\"{self.name} blocks with {self.armor} armor!\")\n    \n    def __str__(self):\n        return super().__str__() + f\", {self.armor} Armor\"\n\nclass Mage(Character):\n    def __init__(self, name, health, level, mana):\n        super().__init__(name, health, level)\n        self.mana = mana\n    \n    def cast_spell(self, spell_name, mana_cost):\n        if self.mana >= mana_cost:\n            self.mana -= mana_cost\n            print(f\"{self.name} casts {spell_name}! ({self.mana} MP remaining)\")\n        else:\n            print(f\"{self.name} doesn't have enough mana!\")\n    \n    def __str__(self):\n        return super().__str__() + f\", {self.mana} MP\"\n\nclass Rogue(Character):\n    def __init__(self, name, health, level, stealth):\n        super().__init__(name, health, level)\n        self.stealth = stealth\n    \n    def sneak_attack(self):\n        damage = self.stealth * 2\n        print(f\"{self.name} performs a sneak attack!\")\n        return damage\n    \n    def __str__(self):\n        return super().__str__() + f\", {self.stealth} Stealth\"\n\nprint(\"=== Character Inheritance Test ===\")\nprint()\n\nwarrior = Warrior(\"Ragnar\", 150, 5, 50)\nmage = Mage(\"Gandalf\", 70, 7, 200)\nrogue = Rogue(\"Shadow\", 100, 6, 75)\n\nprint(\"--- Characters ---\")\nprint(warrior)\nprint(mage)\nprint(rogue)\nprint()\n\nprint(\"--- Inherited Methods ---\")\nwarrior.take_damage(30)\nmage.take_damage(20)\nrogue.level_up()\nprint()\n\nprint(\"--- Specialized Methods ---\")\nwarrior.block()\nmage.cast_spell(\"Fireball\", 50)\ndamage = rogue.sneak_attack()\nprint(f\"Sneak attack damage: {damage}\")\nprint()\n\nprint(\"Inheritance implemented successfully!\")",
+  "hints": [
+    "To make a class inherit, put the parent class name in parentheses: class Warrior(Character):",
+    "In child __init__, ALWAYS call super().__init__() first with the parent's required parameters.",
+    "super().__init__(name, health, level) calls Character's __init__ to set up inherited attributes.",
+    "Child classes automatically get ALL parent methods. You don't need to redefine take_damage() in Warrior!",
+    "Complete inheritance pattern:\n```python\nclass Warrior(Character):\n    def __init__(self, name, health, level, armor):\n        super().__init__(name, health, level)\n        self.armor = armor\n```"
+  ],
+  "validationTests": [
+    {
+      "type": "code_contains",
+      "value": "class Warrior(Character):",
+      "description": "Warrior must inherit from Character"
+    },
+    {
+      "type": "code_contains",
+      "value": "class Mage(Character):",
+      "description": "Mage must inherit from Character"
+    },
+    {
+      "type": "code_contains",
+      "value": "class Rogue(Character):",
+      "description": "Rogue must inherit from Character"
+    },
+    {
+      "type": "code_contains",
+      "value": "super().__init__",
+      "description": "Must use super() to call parent __init__"
+    },
+    {
+      "type": "output_contains",
+      "value": "Ragnar takes 30 damage",
+      "description": "Warrior should inherit take_damage method"
+    },
+    {
+      "type": "output_contains",
+      "value": "blocks with",
+      "description": "Warrior should have specialized block method"
+    },
+    {
+      "type": "output_contains",
+      "value": "casts Fireball",
+      "description": "Mage should have cast_spell method"
+    },
+    {
+      "type": "output_contains",
+      "value": "sneak attack",
+      "description": "Rogue should have sneak_attack method"
+    }
+  ],
+  "learningObjectives": [
+    "Understand what inheritance is and why it's useful",
+    "Create child classes that inherit from parent classes",
+    "Use super() to call parent class methods",
+    "Add specialized attributes and methods to child classes",
+    "Override parent methods in child classes"
+  ],
+  "nextLessonId": 42,
+  "previousLessonId": 40,
+  "tags": ["intermediate", "oop", "inheritance", "super", "polymorphism"],
+  "commonMistakes": [
+    {
+      "mistake": "Forgetting to put parent class in parentheses",
+      "explanation": "Syntax is: class Child(Parent): not class Child:. The parent goes in parentheses!"
+    },
+    {
+      "mistake": "Not calling super().__init__()",
+      "explanation": "Child classes must call super().__init__() to properly initialize inherited attributes from the parent."
+    },
+    {
+      "mistake": "Passing wrong arguments to super().__init__()",
+      "explanation": "Pass the parent's required parameters to super().__init__(), not ALL parameters including child-specific ones."
+    }
+  ]
+}

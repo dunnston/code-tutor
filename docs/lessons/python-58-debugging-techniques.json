@@ -1,0 +1,21 @@
+{
+  "id": 58,
+  "trackId": 7,
+  "language": "python",
+  "title": "The Bug Hunter",
+  "subtitle": "Debugging Techniques",
+  "difficulty": 5,
+  "estimatedTime": "25 minutes",
+  "xpReward": 200,
+  "description": "# Debugging: Find and Fix Bugs\n\n🐛 Master debugging strategies!\n\n## Techniques\n\n1. **Print debugging** - Add print statements\n2. **Rubber duck** - Explain code out loud\n3. **Divide and conquer** - Test parts separately\n4. **Check assumptions** - Verify what you think is true\n\n⚔️ Hunt down bugs!",
+  "starterCode": "# Debugging Practice\n\ndef calculate_damage(base, multiplier, armor):\n    # BUG: This should reduce damage by armor percentage\n    damage = base * multiplier\n    reduced = damage * (1 - armor)  # armor should be armor/100\n    return reduced\n\n# Test\nresult = calculate_damage(100, 1.5, 20)  # Expected: 120, Got: -1800\nprint(f'Damage: {result}')\n\n# FIX: Change armor to armor/100\ndef calculate_damage_fixed(base, multiplier, armor):\n    damage = base * multiplier\n    reduced = damage * (1 - armor/100)\n    return reduced\n\nresult = calculate_damage_fixed(100, 1.5, 20)\nprint(f'Fixed damage: {result}')  # 120",
+  "solutionCode": "def calculate_damage_fixed(base, multiplier, armor):\n    damage = base * multiplier\n    reduced = damage * (1 - armor/100)\n    return reduced\n\nresult = calculate_damage_fixed(100, 1.5, 20)\nprint(f'Fixed damage: {result}')",
+  "hints": ["Add print statements", "Test with simple inputs", "Check math carefully"],
+  "validationTests": [
+    {"type": "output_contains", "value": "120", "description": "Should calculate correct damage"}
+  ],
+  "learningObjectives": ["Debug code systematically", "Use print debugging", "Fix logic errors"],
+  "nextLessonId": 59,
+  "previousLessonId": 57,
+  "tags": ["intermediate", "debugging", "problem-solving"]
+}

@@ -1,0 +1,52 @@
+{
+  "id": 223,
+  "trackId": 3,
+  "language": "csharp",
+  "title": "The Return Scroll",
+  "subtitle": "Methods with Return Values",
+  "difficulty": 3,
+  "estimatedTime": "20-25 minutes",
+  "xpReward": 175,
+  "description": "# Mastering Return Values\n\nMethods can calculate values and send them back to the caller using **return statements**. This makes your code modular and reusable!\n\n## Basic Return Values\n\n```csharp\nstatic int CalculateHealth(int baseHealth, int level)\n{\n    int totalHealth = baseHealth + (level * 10);\n    return totalHealth;  // Send value back\n}\n\nint health = CalculateHealth(100, 5);  // Receives 150\nConsole.WriteLine($\"Health: {health}\");\n```\n\n## Different Return Types\n\n```csharp\nstatic string GetRank(int level)\n{\n    if (level >= 20) return \"Master\";\n    else if (level >= 10) return \"Expert\";\n    else return \"Novice\";\n}\n\nstatic bool CanAfford(int gold, int cost)\n{\n    return gold >= cost;  // Returns true or false\n}\n\nstatic double CalculateCritical(int damage, double critMultiplier)\n{\n    return damage * critMultiplier;\n}\n```\n\n## Returning Early\n\nYou can return from a method at any point:\n\n```csharp\nstatic int Divide(int a, int b)\n{\n    if (b == 0)\n    {\n        Console.WriteLine(\"Cannot divide by zero!\");\n        return 0;  // Early return\n    }\n    return a / b;\n}\n```\n\n## Using Return Values\n\n```csharp\n// Store in variable\nint result = CalculateHealth(100, 5);\n\n// Use directly\nConsole.WriteLine($\"Health: {CalculateHealth(100, 5)}\");\n\n// Use in expressions\nint total = CalculateHealth(100, 5) + CalculateHealth(50, 3);\n\n// Use in conditions\nif (CanAfford(gold, itemCost))\n{\n    // Purchase item\n}\n```\n\n## Your Quest\n\nCreate a battle calculation system:\n1. Method that calculates damage (base * multiplier - armor) and returns int\n2. Method that checks if attack is critical (random chance) and returns bool\n3. Method that calculates experience gained and returns int\n4. Method that determines loot rarity and returns string\n5. Use all methods together in a battle simulation",
+  "starterCode": "using System;\n\nclass Program\n{\n    // Calculate damage: (base * multiplier) - armor\n    static int CalculateDamage(int baseDamage, double multiplier, int armor)\n    {\n        // Fill in calculation\n        return 0;  // Fix this\n    }\n    \n    // Check if attack is critical (20% chance)\n    static bool IsCritical()\n    {\n        Random random = new Random();\n        int roll = random.Next(1, 101);  // 1-100\n        return /* return true if roll <= 20 */;\n    }\n    \n    // Calculate experience gained (enemyLevel * 50)\n    static int CalculateExperience(int enemyLevel)\n    {\n        return /* Fill in */;\n    }\n    \n    // Determine loot rarity based on roll\n    static string GetLootRarity(int roll)\n    {\n        if (roll >= 90) return \"Legendary\";\n        else if (roll >= 70) return \"Rare\";\n        else if (roll >= 40) return \"Uncommon\";\n        else return \"Common\";\n    }\n    \n    static void Main()\n    {\n        Console.WriteLine(\"=== BATTLE SIMULATION ===\");\n        \n        // Setup\n        int baseDamage = 30;\n        double normalMultiplier = 1.0;\n        double critMultiplier = 2.0;\n        int enemyArmor = 10;\n        int enemyLevel = 5;\n        \n        // Check for critical hit\n        bool critical = IsCritical();\n        Console.WriteLine($\"Critical Hit: {critical}\");\n        \n        // Calculate damage\n        double multiplier = critical ? critMultiplier : normalMultiplier;\n        int damage = CalculateDamage(baseDamage, multiplier, enemyArmor);\n        Console.WriteLine($\"Damage Dealt: {damage}\");\n        \n        // Calculate experience\n        int xp = CalculateExperience(enemyLevel);\n        Console.WriteLine($\"Experience Gained: {xp} XP\");\n        \n        // Determine loot\n        Random random = new Random();\n        int lootRoll = random.Next(1, 101);\n        string rarity = GetLootRarity(lootRoll);\n        Console.WriteLine($\"Loot Rarity: {rarity} (rolled {lootRoll})\");\n        \n        // Summary\n        Console.WriteLine(\"\\n=== BATTLE COMPLETE ===\");\n        int totalReward = xp + (damage * 2);\n        Console.WriteLine($\"Total Reward Value: {totalReward}\");\n    }\n}\n",
+  "solutionCode": "using System;\n\nclass Program\n{\n    // Calculate damage: (base * multiplier) - armor\n    static int CalculateDamage(int baseDamage, double multiplier, int armor)\n    {\n        int damage = (int)(baseDamage * multiplier) - armor;\n        return damage;\n    }\n    \n    // Check if attack is critical (20% chance)\n    static bool IsCritical()\n    {\n        Random random = new Random();\n        int roll = random.Next(1, 101);\n        return roll <= 20;\n    }\n    \n    // Calculate experience gained (enemyLevel * 50)\n    static int CalculateExperience(int enemyLevel)\n    {\n        return enemyLevel * 50;\n    }\n    \n    // Determine loot rarity based on roll\n    static string GetLootRarity(int roll)\n    {\n        if (roll >= 90) return \"Legendary\";\n        else if (roll >= 70) return \"Rare\";\n        else if (roll >= 40) return \"Uncommon\";\n        else return \"Common\";\n    }\n    \n    static void Main()\n    {\n        Console.WriteLine(\"=== BATTLE SIMULATION ===\");\n        \n        // Setup\n        int baseDamage = 30;\n        double normalMultiplier = 1.0;\n        double critMultiplier = 2.0;\n        int enemyArmor = 10;\n        int enemyLevel = 5;\n        \n        // Check for critical hit\n        bool critical = IsCritical();\n        Console.WriteLine($\"Critical Hit: {critical}\");\n        \n        // Calculate damage\n        double multiplier = critical ? critMultiplier : normalMultiplier;\n        int damage = CalculateDamage(baseDamage, multiplier, enemyArmor);\n        Console.WriteLine($\"Damage Dealt: {damage}\");\n        \n        // Calculate experience\n        int xp = CalculateExperience(enemyLevel);\n        Console.WriteLine($\"Experience Gained: {xp} XP\");\n        \n        // Determine loot\n        Random random = new Random();\n        int lootRoll = random.Next(1, 101);\n        string rarity = GetLootRarity(lootRoll);\n        Console.WriteLine($\"Loot Rarity: {rarity} (rolled {lootRoll})\");\n        \n        // Summary\n        Console.WriteLine(\"\\n=== BATTLE COMPLETE ===\");\n        int totalReward = xp + (damage * 2);\n        Console.WriteLine($\"Total Reward Value: {totalReward}\");\n    }\n}\n",
+  "hints": [
+    "Methods that return values must specify the return type: static int MethodName()",
+    "Use return statement to send value back: return calculatedValue;",
+    "Cast to int when working with doubles: (int)(baseDamage * multiplier)",
+    "Boolean methods can return comparison results directly: return roll <= 20;",
+    "You can use the ternary operator: condition ? valueIfTrue : valueIfFalse"
+  ],
+  "validationTests": [
+    {
+      "type": "code_contains",
+      "value": "return",
+      "description": "Must use return statements"
+    },
+    {
+      "type": "code_contains",
+      "value": "static int",
+      "description": "Must have methods returning int"
+    },
+    {
+      "type": "code_contains",
+      "value": "static bool",
+      "description": "Must have method returning bool"
+    },
+    {
+      "type": "code_contains",
+      "value": "static string",
+      "description": "Must have method returning string"
+    }
+  ],
+  "learningObjectives": [
+    "Define methods with return types",
+    "Use return statements to send values back",
+    "Work with different return types (int, bool, string, double)",
+    "Use return values in expressions and conditions",
+    "Build modular, reusable calculation methods"
+  ],
+  "previousLessonId": 222,
+  "nextLessonId": 224,
+  "tags": ["advanced", "methods", "return-values", "functions", "modularity"]
+}

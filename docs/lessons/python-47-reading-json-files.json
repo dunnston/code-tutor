@@ -1,0 +1,77 @@
+{
+  "id": 47,
+  "trackId": 7,
+  "language": "python",
+  "title": "The Quest Database",
+  "subtitle": "Reading JSON Files",
+  "difficulty": 4,
+  "estimatedTime": "25-30 minutes",
+  "xpReward": 150,
+  "description": "# Reading JSON Files: Loading Persistent Data\n\n📖 Learn to load complex data from JSON files!\n\n## Reading JSON from Files\n\n**json.load()** reads JSON directly from a file:\n\n```python\nimport json\n\n# Read JSON file\nwith open('data.json', 'r') as file:\n    data = json.load(file)  # Returns Python dict/list\n\nprint(data['name'])\n```\n\n## File Reading Pattern\n\n```python\nimport json\n\ntry:\n    with open('quests.json', 'r') as f:\n        quests = json.load(f)\n        # Now 'quests' is a Python data structure\nexcept FileNotFoundError:\n    print(\"File not found!\")\nexcept json.JSONDecodeError:\n    print(\"Invalid JSON format!\")\n```\n\n## Working with JSON Data\n\nOnce loaded, JSON becomes normal Python:\n\n```python\n# quests.json contains:\n# {\n#   \"quests\": [\n#     {\"id\": 1, \"name\": \"Slay Dragon\", \"reward\": 1000},\n#     {\"id\": 2, \"name\": \"Find Sword\", \"reward\": 500}\n#   ]\n# }\n\nwith open('quests.json', 'r') as f:\n    data = json.load(f)\n\n# Access like normal Python\nfor quest in data['quests']:\n    print(f\"{quest['name']}: {quest['reward']} gold\")\n```\n\n## Your Quest\n\nLoad and query a quest database:\n1. Read quests from JSON file\n2. Search for quest by name\n3. Filter quests by difficulty\n4. Calculate total rewards\n5. Find incomplete quests\n\n⚔️ Master JSON file reading!",
+  "starterCode": "# Reading JSON Files - Quest Database\n\nimport json\n\n# Quest database JSON (imagine this is in a file)\nQUESTS_JSON = '''\n{\n  \"quests\": [\n    {\"id\": 1, \"name\": \"Slay the Dragon\", \"difficulty\": \"hard\", \"reward\": 1000, \"completed\": false},\n    {\"id\": 2, \"name\": \"Find the Lost Sword\", \"difficulty\": \"medium\", \"reward\": 500, \"completed\": true},\n    {\"id\": 3, \"name\": \"Deliver Package\", \"difficulty\": \"easy\", \"reward\": 100, \"completed\": false},\n    {\"id\": 4, \"name\": \"Defeat Goblin Camp\", \"difficulty\": \"medium\", \"reward\": 300, \"completed\": false},\n    {\"id\": 5, \"name\": \"Escort Merchant\", \"difficulty\": \"easy\", \"reward\": 150, \"completed\": true}\n  ]\n}\n'''\n\nprint(\"=== Quest Database System ===\")\nprint()\n\n# Task 1: Load JSON data\nprint(\"--- Task 1: Load Quest Data ---\")\n\n# TODO: Use json.loads() to parse QUESTS_JSON string\nquest_data = None  # json.loads(QUESTS_JSON)\n\n# TODO: Extract the quests list from the data\nquests = None  # quest_data['quests']\n\nprint(f\"Loaded {len(quests)} quests\")\nprint()\n\n# Task 2: Display all quests\nprint(\"--- Task 2: Display All Quests ---\")\n\n# TODO: Loop through quests and print: \"[ID] Name (Difficulty) - Reward gold\"\nfor quest in quests:\n    # TODO: Print quest info\n    pass\nprint()\n\n# Task 3: Search for quest by name\nprint(\"--- Task 3: Search Quest ---\")\n\ndef find_quest_by_name(quests, quest_name):\n    \"\"\"\n    Search for a quest by name (case-insensitive)\n    Returns the quest dict or None\n    \"\"\"\n    # TODO: Loop through quests, compare names (case-insensitive)\n    # TODO: Return quest if found, None otherwise\n    pass\n\nfound = find_quest_by_name(quests, \"slay the dragon\")\nif found:\n    print(f\"Found: {found['name']} - {found['reward']} gold\")\nelse:\n    print(\"Quest not found\")\nprint()\n\n# Task 4: Filter quests by difficulty\nprint(\"--- Task 4: Filter by Difficulty ---\")\n\ndef filter_by_difficulty(quests, difficulty):\n    \"\"\"\n    Return list of quests matching difficulty level\n    \"\"\"\n    # TODO: Use list comprehension to filter\n    pass\n\nmedium_quests = filter_by_difficulty(quests, \"medium\")\nprint(f\"Medium quests ({len(medium_quests)}):\")\nfor quest in medium_quests:\n    print(f\"  - {quest['name']}\")\nprint()\n\n# Task 5: Calculate total available rewards\nprint(\"--- Task 5: Total Rewards ---\")\n\ndef calculate_total_rewards(quests, only_incomplete=False):\n    \"\"\"\n    Calculate total gold from all quests\n    If only_incomplete=True, only count incomplete quests\n    \"\"\"\n    # TODO: Sum up rewards, optionally filter by completed status\n    pass\n\ntotal = calculate_total_rewards(quests)\nincomplete_total = calculate_total_rewards(quests, only_incomplete=True)\n\nprint(f\"Total rewards (all quests): {total} gold\")\nprint(f\"Available rewards (incomplete): {incomplete_total} gold\")\nprint()\n\n# Task 6: Get incomplete quests\nprint(\"--- Task 6: Incomplete Quests ---\")\n\n# TODO: Use list comprehension to filter incomplete quests\nincomplete = None  # [quest for quest in quests if ...]\n\nprint(f\"Incomplete quests ({len(incomplete)}):\")\nfor quest in incomplete:\n    print(f\"  [{quest['difficulty']}] {quest['name']} - {quest['reward']} gold\")\nprint()\n\nprint(\"Quest database complete!\")",
+  "solutionCode": "# Reading JSON Files - Solution\n\nimport json\n\nQUESTS_JSON = '''\n{\n  \"quests\": [\n    {\"id\": 1, \"name\": \"Slay the Dragon\", \"difficulty\": \"hard\", \"reward\": 1000, \"completed\": false},\n    {\"id\": 2, \"name\": \"Find the Lost Sword\", \"difficulty\": \"medium\", \"reward\": 500, \"completed\": true},\n    {\"id\": 3, \"name\": \"Deliver Package\", \"difficulty\": \"easy\", \"reward\": 100, \"completed\": false},\n    {\"id\": 4, \"name\": \"Defeat Goblin Camp\", \"difficulty\": \"medium\", \"reward\": 300, \"completed\": false},\n    {\"id\": 5, \"name\": \"Escort Merchant\", \"difficulty\": \"easy\", \"reward\": 150, \"completed\": true}\n  ]\n}\n'''\n\nprint(\"=== Quest Database System ===\")\nprint()\n\nprint(\"--- Task 1: Load Quest Data ---\")\nquest_data = json.loads(QUESTS_JSON)\nquests = quest_data['quests']\nprint(f\"Loaded {len(quests)} quests\")\nprint()\n\nprint(\"--- Task 2: Display All Quests ---\")\nfor quest in quests:\n    status = \"✓\" if quest['completed'] else \" \"\n    print(f\"[{status}] {quest['name']} ({quest['difficulty']}) - {quest['reward']} gold\")\nprint()\n\nprint(\"--- Task 3: Search Quest ---\")\n\ndef find_quest_by_name(quests, quest_name):\n    for quest in quests:\n        if quest['name'].lower() == quest_name.lower():\n            return quest\n    return None\n\nfound = find_quest_by_name(quests, \"slay the dragon\")\nif found:\n    print(f\"Found: {found['name']} - {found['reward']} gold\")\nelse:\n    print(\"Quest not found\")\nprint()\n\nprint(\"--- Task 4: Filter by Difficulty ---\")\n\ndef filter_by_difficulty(quests, difficulty):\n    return [quest for quest in quests if quest['difficulty'] == difficulty]\n\nmedium_quests = filter_by_difficulty(quests, \"medium\")\nprint(f\"Medium quests ({len(medium_quests)}):\")\nfor quest in medium_quests:\n    print(f\"  - {quest['name']}\")\nprint()\n\nprint(\"--- Task 5: Total Rewards ---\")\n\ndef calculate_total_rewards(quests, only_incomplete=False):\n    total = 0\n    for quest in quests:\n        if only_incomplete and quest['completed']:\n            continue\n        total += quest['reward']\n    return total\n\ntotal = calculate_total_rewards(quests)\nincomplete_total = calculate_total_rewards(quests, only_incomplete=True)\n\nprint(f\"Total rewards (all quests): {total} gold\")\nprint(f\"Available rewards (incomplete): {incomplete_total} gold\")\nprint()\n\nprint(\"--- Task 6: Incomplete Quests ---\")\nincomplete = [quest for quest in quests if not quest['completed']]\n\nprint(f\"Incomplete quests ({len(incomplete)}):\")\nfor quest in incomplete:\n    print(f\"  [{quest['difficulty']}] {quest['name']} - {quest['reward']} gold\")\nprint()\n\nprint(\"Quest database complete!\")",
+  "hints": [
+    "Use json.loads() with the QUESTS_JSON string to parse it into Python",
+    "After loading, access the quests array: quests = data['quests']",
+    "For case-insensitive search: quest['name'].lower() == search_name.lower()",
+    "List comprehension for filtering: [q for q in quests if q['difficulty'] == 'medium']",
+    "To check incomplete: not quest['completed']",
+    "Complete solution pattern:\n```python\nquest_data = json.loads(QUESTS_JSON)\nquests = quest_data['quests']\nfor quest in quests:\n    print(quest['name'])\n```"
+  ],
+  "validationTests": [
+    {
+      "type": "code_contains",
+      "value": "json.loads",
+      "description": "Must use json.loads to parse JSON"
+    },
+    {
+      "type": "code_contains",
+      "value": "quest_data['quests']",
+      "description": "Must extract quests array from data"
+    },
+    {
+      "type": "output_contains",
+      "value": "Loaded 5 quests",
+      "description": "Should load all 5 quests"
+    },
+    {
+      "type": "output_contains",
+      "value": "Slay the Dragon",
+      "description": "Should display quest names"
+    },
+    {
+      "type": "output_contains",
+      "value": "Medium quests",
+      "description": "Should filter quests by difficulty"
+    },
+    {
+      "type": "output_contains",
+      "value": "1400",
+      "description": "Should calculate total available rewards correctly"
+    }
+  ],
+  "learningObjectives": [
+    "Read and parse JSON data with json.loads()",
+    "Extract data from JSON structures",
+    "Search through JSON data",
+    "Filter JSON arrays with conditions",
+    "Process and aggregate JSON data"
+  ],
+  "nextLessonId": 48,
+  "previousLessonId": 46,
+  "tags": ["intermediate", "json", "file-reading", "data-processing"],
+  "commonMistakes": [
+    {
+      "mistake": "Forgetting to extract nested data",
+      "explanation": "After json.loads(), remember to access nested keys! If JSON is {\"quests\": [...]}, you need data['quests'] to get the array."
+    },
+    {
+      "mistake": "Not handling case sensitivity in searches",
+      "explanation": "Use .lower() on both sides for case-insensitive comparison: quest['name'].lower() == search.lower()"
+    },
+    {
+      "mistake": "Comparing boolean as string",
+      "explanation": "JSON 'false' becomes Python False. Use 'not quest['completed']', not quest['completed'] == 'false'!"
+    }
+  ]
+}

@@ -1,0 +1,63 @@
+{
+  "id": 70,
+  "trackId": 8,
+  "language": "python",
+  "title": "⭐ CHALLENGE: The Quest Architect",
+  "subtitle": "Build Quest System with TDD",
+  "difficulty": 6,
+  "estimatedTime": "90-120 minutes",
+  "xpReward": 550,
+  "description": "# TDD Quest System Challenge!\n\n⚔️ Build a complete quest system using **Test-Driven Development**!\n\n## Requirements\n\n### Quest Class\n- name, description, objectives (list), rewards (dict)\n- Methods: is_complete(), complete_objective(index)\n\n### QuestLog Class\n- Methods: add_quest(), complete_quest(), get_active_quests()\n\n### QuestReward System\n- Give gold, items, XP\n\n### Quest Chaining\n- Prerequisites system\n\n### Daily Quests\n- Reset mechanism\n\n## TDD Process\n\n1. Write 15+ tests FIRST\n2. Implement code to pass tests\n3. Use fixtures for test data\n4. Mock file I/O\n5. Achieve 100% coverage\n\n*Hint: Write ALL tests before any implementation!*",
+  "starterCode": "import pytest\nfrom datetime import datetime\n\n# ===== WRITE TESTS FIRST (15+ tests) =====\n\n# TODO: Test Quest creation\ndef test_quest_creation():\n    pass\n\n# TODO: Test Quest objectives\ndef test_quest_objectives():\n    pass\n\n# TODO: Test Quest completion\ndef test_quest_is_complete():\n    pass\n\n# TODO: Test QuestLog add_quest\ndef test_questlog_add_quest():\n    pass\n\n# TODO: Test QuestLog complete_quest\ndef test_questlog_complete_quest():\n    pass\n\n# TODO: Test quest rewards\ndef test_quest_rewards():\n    pass\n\n# TODO: Test quest prerequisites\ndef test_quest_prerequisites():\n    pass\n\n# TODO: Test daily quest reset\ndef test_daily_quest_reset():\n    pass\n\n# TODO: More tests...\n\n# ===== NOW IMPLEMENT (after all tests) =====\n\nclass Quest:\n    pass\n\nclass QuestLog:\n    pass\n\nclass QuestReward:\n    pass\n\nif __name__ == \"__main__\":\n    print(\"Running quest system TDD tests...\")\n    print(\"All TDD tests passed!\")",
+  "solutionCode": "import pytest\nfrom datetime import datetime\n\nclass Quest:\n    def __init__(self, name, description, objectives, rewards=None, prerequisites=None):\n        self.name = name\n        self.description = description\n        self.objectives = objectives\n        self.objectives_complete = [False] * len(objectives)\n        self.rewards = rewards or {}\n        self.prerequisites = prerequisites or []\n        self.completed = False\n    \n    def is_complete(self):\n        return all(self.objectives_complete)\n    \n    def complete_objective(self, index):\n        if 0 <= index < len(self.objectives):\n            self.objectives_complete[index] = True\n            return True\n        return False\n    \n    def mark_complete(self):\n        self.completed = True\n\nclass QuestLog:\n    def __init__(self):\n        self.quests = []\n        self.completed_quests = []\n    \n    def add_quest(self, quest):\n        self.quests.append(quest)\n    \n    def complete_quest(self, quest_name):\n        for quest in self.quests:\n            if quest.name == quest_name and quest.is_complete():\n                quest.mark_complete()\n                self.quests.remove(quest)\n                self.completed_quests.append(quest)\n                return True\n        return False\n    \n    def get_active_quests(self):\n        return [q for q in self.quests if not q.completed]\n    \n    def can_start_quest(self, quest):\n        for prereq in quest.prerequisites:\n            if not any(q.name == prereq for q in self.completed_quests):\n                return False\n        return True\n\nclass QuestReward:\n    @staticmethod\n    def give_rewards(quest, player):\n        if 'gold' in quest.rewards:\n            player['gold'] += quest.rewards['gold']\n        if 'xp' in quest.rewards:\n            player['xp'] += quest.rewards['xp']\n        if 'items' in quest.rewards:\n            player.setdefault('items', []).extend(quest.rewards['items'])\n\n# ===== TESTS =====\n\ndef test_quest_creation():\n    quest = Quest(\"Kill Goblins\", \"Defeat 5 goblins\", [\"Kill goblin 1\", \"Kill goblin 2\"])\n    assert quest.name == \"Kill Goblins\"\n    assert len(quest.objectives) == 2\n\ndef test_quest_objectives():\n    quest = Quest(\"Test\", \"Desc\", [\"Obj1\", \"Obj2\"])\n    assert quest.complete_objective(0)\n    assert quest.objectives_complete[0]\n    assert not quest.objectives_complete[1]\n\ndef test_quest_is_complete():\n    quest = Quest(\"Test\", \"Desc\", [\"Obj1\"])\n    assert not quest.is_complete()\n    quest.complete_objective(0)\n    assert quest.is_complete()\n\ndef test_questlog_add_quest():\n    log = QuestLog()\n    quest = Quest(\"Test\", \"Desc\", [\"Obj1\"])\n    log.add_quest(quest)\n    assert len(log.quests) == 1\n\ndef test_questlog_complete_quest():\n    log = QuestLog()\n    quest = Quest(\"Test\", \"Desc\", [\"Obj1\"])\n    log.add_quest(quest)\n    quest.complete_objective(0)\n    assert log.complete_quest(\"Test\")\n    assert len(log.completed_quests) == 1\n\ndef test_quest_rewards():\n    quest = Quest(\"Test\", \"Desc\", [\"Obj1\"], rewards={\"gold\": 100, \"xp\": 50})\n    player = {\"gold\": 0, \"xp\": 0}\n    QuestReward.give_rewards(quest, player)\n    assert player[\"gold\"] == 100\n    assert player[\"xp\"] == 50\n\ndef test_quest_prerequisites():\n    log = QuestLog()\n    q1 = Quest(\"Quest 1\", \"First quest\", [\"Obj\"])\n    q2 = Quest(\"Quest 2\", \"Needs quest 1\", [\"Obj\"], prerequisites=[\"Quest 1\"])\n    \n    assert not log.can_start_quest(q2)\n    log.add_quest(q1)\n    q1.complete_objective(0)\n    log.complete_quest(\"Quest 1\")\n    assert log.can_start_quest(q2)\n\ndef test_get_active_quests():\n    log = QuestLog()\n    q1 = Quest(\"Active\", \"Desc\", [\"Obj\"])\n    log.add_quest(q1)\n    assert len(log.get_active_quests()) == 1\n\nif __name__ == \"__main__\":\n    print(\"Running quest system TDD tests...\")\n    test_quest_creation()\n    test_quest_objectives()\n    test_quest_is_complete()\n    test_questlog_add_quest()\n    test_questlog_complete_quest()\n    test_quest_rewards()\n    test_quest_prerequisites()\n    test_get_active_quests()\n    print(\"All TDD tests passed!\")",
+  "hints": [
+    "Write ALL tests before implementing Quest/QuestLog classes.",
+    "Start with simplest test: quest creation with name and objectives.",
+    "Use fixtures for common test data (sample quests).",
+    "For prerequisites, track completed quest names.",
+    "Daily quests need timestamp tracking for reset logic."
+  ],
+  "validationTests": [
+    {
+      "type": "code_contains",
+      "value": "def test_quest_creation",
+      "description": "Must have quest creation test"
+    },
+    {
+      "type": "code_contains",
+      "value": "class Quest",
+      "description": "Must implement Quest class"
+    },
+    {
+      "type": "code_contains",
+      "value": "class QuestLog",
+      "description": "Must implement QuestLog class"
+    },
+    {
+      "type": "code_contains",
+      "value": "def is_complete",
+      "description": "Quest must have is_complete method"
+    },
+    {
+      "type": "output_contains",
+      "value": "All TDD tests passed",
+      "description": "Tests should pass"
+    }
+  ],
+  "learningObjectives": [
+    "Build complete system with TDD",
+    "Write comprehensive test suites",
+    "Use fixtures and mocking",
+    "Achieve high test coverage",
+    "Design through testing"
+  ],
+  "nextLessonId": 71,
+  "previousLessonId": 69,
+  "tags": ["advanced", "challenge", "tdd", "testing", "quest-system"],
+  "commonMistakes": [
+    {
+      "mistake": "Implementing before writing tests",
+      "explanation": "TDD means TEST-DRIVEN! Write ALL tests first."
+    }
+  ]
+}

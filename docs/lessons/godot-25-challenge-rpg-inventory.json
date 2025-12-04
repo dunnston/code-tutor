@@ -1,0 +1,24 @@
+{
+  "id": 125,
+  "trackId": 2,
+  "language": "gdscript",
+  "title": "⚔️ CHALLENGE: RPG Inventory",
+  "subtitle": "Build Complete Inventory System",
+  "difficulty": 4,
+  "estimatedTime": "45-60 minutes",
+  "xpReward": 600,
+  "description": "# Challenge: Complete Inventory System\n\nBuild a full-featured RPG inventory with arrays and dictionaries!\n\n## Requirements\n\n**Inventory Operations:**\n1. Add items (name, type, value, quantity)\n2. Remove items by name\n3. Display all items sorted by value\n4. Calculate total inventory worth\n5. Find items by type (weapon/armor/potion)\n6. Stack items (combine duplicates)\n\n**Item Structure:**\n```gdscript\n{\n    \"name\": \"Health Potion\",\n    \"type\": \"potion\",\n    \"value\": 50,\n    \"quantity\": 1\n}\n```\n\n## Success Criteria\n✅ Add/remove functions work\n✅ Sorting implemented\n✅ Type filtering works\n✅ Total value calculated\n✅ Clean, formatted output",
+  "starterCode": "# RPG Inventory Challenge\n\nvar inventory = []\n\nfunc add_item(name: String, item_type: String, value: int, quantity: int = 1):\n    pass\n\nfunc remove_item(name: String):\n    pass\n\nfunc display_inventory():\n    pass\n\nfunc calculate_total_value() -> int:\n    pass\n\nfunc find_by_type(item_type: String) -> Array:\n    pass\n\n# Test your system\nadd_item(\"Iron Sword\", \"weapon\", 100, 1)\nadd_item(\"Health Potion\", \"potion\", 50, 3)\nadd_item(\"Leather Armor\", \"armor\", 75, 1)\nadd_item(\"Mana Potion\", \"potion\", 60, 2)\n\ndisplay_inventory()\nprint(\"\\nTotal value: \", calculate_total_value())\n\nvar potions = find_by_type(\"potion\")\nprint(\"\\nPotions found: \", potions.size())\n",
+  "solutionCode": "# RPG Inventory Challenge\n\nvar inventory = []\n\nfunc add_item(name: String, item_type: String, value: int, quantity: int = 1):\n    # Check if item already exists\n    for item in inventory:\n        if item[\"name\"] == name:\n            item[\"quantity\"] += quantity\n            print(\"Stacked \", name, \" x\", quantity)\n            return\n    \n    # Add new item\n    inventory.append({\n        \"name\": name,\n        \"type\": item_type,\n        \"value\": value,\n        \"quantity\": quantity\n    })\n    print(\"Added \", name, \" x\", quantity)\n\nfunc remove_item(name: String):\n    for i in range(inventory.size()):\n        if inventory[i][\"name\"] == name:\n            print(\"Removed \", name)\n            inventory.remove_at(i)\n            return\n    print(\"Item not found: \", name)\n\nfunc display_inventory():\n    print(\"\\n=== INVENTORY ===\")\n    if inventory.size() == 0:\n        print(\"Empty\")\n        return\n    \n    for item in inventory:\n        var total_value = item[\"value\"] * item[\"quantity\"]\n        print(item[\"name\"], \" (\", item[\"type\"], \") x\", item[\"quantity\"], \" - \", total_value, \"g\")\n\nfunc calculate_total_value() -> int:\n    var total = 0\n    for item in inventory:\n        total += item[\"value\"] * item[\"quantity\"]\n    return total\n\nfunc find_by_type(item_type: String) -> Array:\n    var found = []\n    for item in inventory:\n        if item[\"type\"] == item_type:\n            found.append(item)\n    return found\n\n# Test your system\nadd_item(\"Iron Sword\", \"weapon\", 100, 1)\nadd_item(\"Health Potion\", \"potion\", 50, 3)\nadd_item(\"Leather Armor\", \"armor\", 75, 1)\nadd_item(\"Mana Potion\", \"potion\", 60, 2)\nadd_item(\"Health Potion\", \"potion\", 50, 2)  # Test stacking\n\ndisplay_inventory()\nprint(\"\\nTotal value: \", calculate_total_value(), \"g\")\n\nvar potions = find_by_type(\"potion\")\nprint(\"\\nPotions in inventory: \", potions.size())\nfor potion in potions:\n    print(\"  \", potion[\"name\"], \" x\", potion[\"quantity\"])",
+  "hints": ["Use array of dictionaries for items", "Loop to find existing items", "Check quantity for stacking", "Calculate value * quantity for totals", "Filter by checking type field"],
+  "validationTests": [
+    {"type": "code_contains", "value": "func add_item", "description": "Should have add_item function"},
+    {"type": "code_contains", "value": "func remove_item", "description": "Should have remove_item function"},
+    {"type": "output_contains", "value": "INVENTORY", "description": "Should display inventory"},
+    {"type": "output_contains", "value": "Total value", "description": "Should calculate total"}
+  ],
+  "learningObjectives": ["Build complex data structures", "Implement CRUD operations", "Work with nested data", "Create game systems"],
+  "previousLessonId": 124,
+  "nextLessonId": 126,
+  "tags": ["beginner", "challenge", "arrays", "dictionaries", "inventory", "godot"]
+}

@@ -1,0 +1,24 @@
+{
+  "id": 122,
+  "trackId": 2,
+  "language": "gdscript",
+  "title": "Function Parameters Mastery",
+  "subtitle": "Default Values & Type Hints",
+  "difficulty": 3,
+  "estimatedTime": "25-30 minutes",
+  "xpReward": 250,
+  "description": "# Advanced Function Parameters\n\n## Default Parameter Values\n\n```gdscript\nfunc heal_player(amount = 20):\n    print(\"Healed \", amount, \" HP\")\n\nheal_player()      # Uses default: 20\nheal_player(50)    # Uses custom: 50\n```\n\n## Type Hints\n\nSpecify parameter types for clarity and safety:\n\n```gdscript\nfunc deal_damage(target: String, damage: int) -> void:\n    print(target, \" takes \", damage, \" damage!\")\n\nfunc calculate_power(strength: int, bonus: int = 0) -> int:\n    return strength * 2 + bonus\n```\n\n**Type hints syntax:**\n- `param: Type` - parameter type\n- `-> Type` - return type\n- `-> void` - no return value\n\n## Multiple Return Values\n\nGDScript can return arrays:\n\n```gdscript\nfunc get_stats() -> Array:\n    return [100, 50, 25]  # health, mana, stamina\n\nvar stats = get_stats()\nprint(\"Health: \", stats[0])\n```\n\n## Your Quest\n\nCreate advanced functions with defaults and type hints.",
+  "starterCode": "# Advanced Functions\n\n# 1. Create attack function with default damage\nfunc attack(target: String, damage: int = 10) -> void:\n    pass\n\n# 2. Create stat calculator with type hints\nfunc calculate_total_stats(str: int, int_stat: int, bonus: int = 0) -> int:\n    pass\n\n# 3. Create function that returns multiple values\nfunc get_player_info() -> Array:\n    pass\n\n# Test your functions\n\n",
+  "solutionCode": "# Advanced Functions\n\n# 1. Create attack function with default damage\nfunc attack(target: String, damage: int = 10) -> void:\n    print(\"Attacking \", target, \" for \", damage, \" damage!\")\n\n# 2. Create stat calculator with type hints\nfunc calculate_total_stats(str_stat: int, int_stat: int, bonus: int = 0) -> int:\n    var total = str_stat * 2 + int_stat + bonus\n    return total\n\n# 3. Create function that returns multiple values\nfunc get_player_info() -> Array:\n    var name = \"Hero\"\n    var level = 10\n    var gold = 500\n    return [name, level, gold]\n\n# Test your functions\nattack(\"Goblin\")  # Uses default damage\nattack(\"Dragon\", 50)  # Custom damage\n\nvar power = calculate_total_stats(15, 10, 5)\nprint(\"Total power: \", power)\n\nvar info = get_player_info()\nprint(\"Name: \", info[0], \", Level: \", info[1], \", Gold: \", info[2])",
+  "hints": ["Use = for default values", "Add : Type after parameters", "Use -> Type for return type", "Return arrays for multiple values", "Test with and without optional parameters"],
+  "validationTests": [
+    {"type": "code_contains", "value": "= ", "description": "Should use default parameters"},
+    {"type": "code_contains", "value": ": String", "description": "Should use type hints"},
+    {"type": "code_contains", "value": "-> ", "description": "Should specify return types"},
+    {"type": "output_contains", "value": "Attacking", "description": "Should call attack function"}
+  ],
+  "learningObjectives": ["Use default parameters", "Add type hints", "Specify return types", "Return multiple values", "Write robust functions"],
+  "previousLessonId": 121,
+  "nextLessonId": 123,
+  "tags": ["beginner", "functions", "parameters", "type-hints", "godot"]
+}

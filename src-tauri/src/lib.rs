@@ -204,6 +204,8 @@ pub fn run() {
       mcq_commands::duplicate_mcq_question,
       mcq_commands::get_random_mcq_question,
       mcq_commands::import_dungeon_challenges_to_mcq,
+      mcq_commands::bulk_import_mcq_questions,
+      mcq_commands::import_markdown_mcq_questions,
       // Item commands
       item_commands::list_equipment_items,
       item_commands::list_consumable_items,

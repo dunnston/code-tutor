@@ -1,0 +1,58 @@
+{
+  "id": 202,
+  "trackId": 3,
+  "language": "csharp",
+  "title": "Variables of Power",
+  "subtitle": "Storing Magic in Typed Containers",
+  "difficulty": 1,
+  "estimatedTime": "10-15 minutes",
+  "xpReward": 150,
+  "description": "# Variables: Typed Containers for Data\n\nGreat work, warrior! Now you'll learn about **variables** - containers that store values with specific types.\n\nC# is a **strongly-typed language**, meaning you must declare what type of data each variable holds.\n\n## Creating Variables in C#\n\nTo create a variable in C#, declare its type first:\n\n```csharp\nstring playerName = \"Knight\";\nint health = 100;\nint level = 1;\n```\n\n**The pattern:**\n- **Type** - what kind of data (string, int, bool, etc.)\n- **Variable name** - what you call it (use camelCase)\n- `=` - the equals sign means \"store this value\"\n- **Value** - what to store\n- `;` - semicolon to end the statement\n\n## Common C# Data Types\n\n- `string` - text (\"Hello\")\n- `int` - whole numbers (42, -10, 0)\n- `double` - decimal numbers (3.14, -0.5)\n- `bool` - true or false\n- `char` - single character ('A', 'z')\n\n## Using Variables\n\nOnce you create a variable, you can use it:\n\n```csharp\nConsole.WriteLine(playerName);  // Displays: Knight\nConsole.WriteLine(health);       // Displays: 100\n```\n\n## Variable Naming Conventions\n\n✅ **Good names (camelCase):**\n- `playerName`\n- `maxHealth`\n- `goldAmount`\n\n❌ **Bad names:**\n- `player name` (no spaces!)\n- `123gold` (can't start with numbers)\n- `max-health` (use camelCase, not dashes)\n\n## Your Quest\n\nCreate a character for your adventure:\n\n1. Create a `string` variable called `heroName` with YOUR name (in quotes)\n2. Create an `int` variable called `startingGold` with the value `50`\n3. Create a `bool` variable called `questActive` with the value `true`\n4. Print all three variables on separate lines\n\n**Tip:** In C#, use `true` and `false` (lowercase)!",
+  "starterCode": "// Create your character's variables here\n\n// Print your variables below\n\n",
+  "solutionCode": "// Create your character's variables here\nstring heroName = \"Hero\";\nint startingGold = 50;\nbool questActive = true;\n\n// Print your variables below\nConsole.WriteLine(heroName);\nConsole.WriteLine(startingGold);\nConsole.WriteLine(questActive);",
+  "hints": [
+    "Declare type before variable name: string heroName = ...",
+    "Text (strings) needs double quotes: \"like this\"",
+    "Numbers DON'T need quotes: 50",
+    "Boolean values are 'true' and 'false' (lowercase in C#)",
+    "End each statement with a semicolon (;)",
+    "Use Console.WriteLine() to display each variable"
+  ],
+  "validationTests": [
+    {
+      "type": "code_contains",
+      "value": "string heroName",
+      "description": "Variable 'heroName' should be declared as string"
+    },
+    {
+      "type": "code_contains",
+      "value": "int startingGold",
+      "description": "Variable 'startingGold' should be declared as int"
+    },
+    {
+      "type": "code_contains",
+      "value": "bool questActive",
+      "description": "Variable 'questActive' should be declared as bool"
+    },
+    {
+      "type": "code_contains",
+      "value": "= 50",
+      "description": "startingGold should be assigned 50"
+    },
+    {
+      "type": "output_line_count",
+      "min": 3,
+      "description": "Should print at least 3 lines"
+    }
+  ],
+  "learningObjectives": [
+    "Understand what variables are and why they're useful",
+    "Learn C#'s type system (string, int, bool)",
+    "Declare and initialize variables",
+    "Follow C# naming conventions (camelCase)",
+    "Print variable values to see what's stored"
+  ],
+  "previousLessonId": 201,
+  "nextLessonId": 203,
+  "tags": ["beginner", "variables", "types", "data-types", "csharp"]
+}

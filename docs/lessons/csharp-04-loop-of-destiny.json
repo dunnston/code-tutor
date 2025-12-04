@@ -1,0 +1,80 @@
+{
+  "id": 204,
+  "trackId": 3,
+  "language": "csharp",
+  "title": "The Loop of Destiny",
+  "subtitle": "Repeating Actions with For Loops",
+  "difficulty": 2,
+  "estimatedTime": "15-20 minutes",
+  "xpReward": 250,
+  "description": "# The Loop of Destiny\n\nGreetings, warrior! Today you'll learn one of the most powerful tools: **the for loop**.\n\nImagine you need to:\n- Count from 1 to 10\n- Check each item in your inventory\n- Attack 5 enemies in a row\n\nYou *could* write the same code over and over, but there's a better way: **loops**!\n\n## The For Loop in C#\n\nA for loop repeats code a specific number of times:\n\n```csharp\nfor (int i = 0; i < 5; i++)\n{\n    Console.WriteLine(\"Attack \" + (i + 1));\n}\n```\n\n**Output:**\n```\nAttack 1\nAttack 2\nAttack 3\nAttack 4\nAttack 5\n```\n\n## How It Works\n\n**The anatomy of a for loop:**\n\n```csharp\nfor (int i = 0; i < 5; i++)\n{\n    Console.WriteLine(i);\n}\n```\n\n- `int i = 0` - **initialization**: starts at 0\n- `i < 5` - **condition**: keeps going while true\n- `i++` - **increment**: adds 1 after each loop\n- `{ }` - code block that runs each time\n\n## Understanding i++\n\n`i++` is shorthand for `i = i + 1`. It increments i by 1.\n- `i++` means \"add 1 to i\"\n- You'll see this everywhere in C#!\n\n## Looping Through Arrays\n\nYou can loop through items in an array:\n\n```csharp\nstring[] weapons = { \"sword\", \"bow\", \"staff\" };\n\nfor (int i = 0; i < weapons.Length; i++)\n{\n    Console.WriteLine(\"Equipped: \" + weapons[i]);\n}\n```\n\n**Or use foreach (simpler):**\n\n```csharp\nforeach (string weapon in weapons)\n{\n    Console.WriteLine(\"Equipped: \" + weapon);\n}\n```\n\n## Your Quest\n\nYou're preparing for battle and need to craft 5 arrows.\n\n**Part 1:** Use a for loop to print:\n```\nCrafting arrow 1\nCrafting arrow 2\nCrafting arrow 3\nCrafting arrow 4\nCrafting arrow 5\n```\n\n**Hint:** The loop goes 0-4, but you want 1-5. Add 1!\n\n**Part 2:** Create an array called `weapons` with: `{ \"sword\", \"bow\", \"staff\" }`\n\nUse a foreach loop to print:\n```\nEquipping sword\nEquipping bow\nEquipping staff\n```",
+  "starterCode": "// Part 1: Craft 5 arrows\nfor (int i = 0; i < 5; i++)\n{\n    // Your code here\n}\n\n// Part 2: Create weapons array and equip each one\nstring[] weapons = { \"sword\", \"bow\", \"staff\" };\n// Your loop here\n\n",
+  "solutionCode": "// Part 1: Craft 5 arrows\nfor (int i = 0; i < 5; i++)\n{\n    Console.WriteLine(\"Crafting arrow \" + (i + 1));\n}\n\n// Part 2: Create weapons array and equip each one\nstring[] weapons = { \"sword\", \"bow\", \"staff\" };\nforeach (string weapon in weapons)\n{\n    Console.WriteLine(\"Equipping \" + weapon);\n}",
+  "hints": [
+    "For Part 1: i goes from 0-4. Use (i + 1) to get 1-5",
+    "Use + to combine strings and numbers",
+    "For Part 2: use foreach (string weapon in weapons)",
+    "Don't forget curly braces { } around loop code",
+    "Remember semicolons after each statement!"
+  ],
+  "validationTests": [
+    {
+      "type": "code_contains",
+      "value": "for ",
+      "description": "Code should contain a for loop"
+    },
+    {
+      "type": "code_contains",
+      "value": "foreach",
+      "description": "Should use foreach loop"
+    },
+    {
+      "type": "output_contains",
+      "value": "Crafting arrow 1",
+      "description": "Should print 'Crafting arrow 1'"
+    },
+    {
+      "type": "output_contains",
+      "value": "Crafting arrow 5",
+      "description": "Should print 'Crafting arrow 5'"
+    },
+    {
+      "type": "output_contains",
+      "value": "Equipping sword",
+      "description": "Should print 'Equipping sword'"
+    },
+    {
+      "type": "output_contains",
+      "value": "Equipping staff",
+      "description": "Should print 'Equipping staff'"
+    }
+  ],
+  "bonus": {
+    "description": "Advanced: Use string interpolation instead of +: $\"Crafting arrow {i + 1}\"",
+    "xpReward": 75
+  },
+  "learningObjectives": [
+    "Understand how for loops repeat code",
+    "Use for loop syntax (initialization, condition, increment)",
+    "Loop through arrays with foreach",
+    "Combine loop variables with text",
+    "Recognize when loops make code more efficient"
+  ],
+  "commonMistakes": [
+    {
+      "mistake": "Forgetting curly braces",
+      "explanation": "Code inside a loop must be in { } braces."
+    },
+    {
+      "mistake": "Off-by-one errors",
+      "explanation": "for (int i = 0; i < 5; i++) gives 0-4, not 1-5. Add 1 or start i at 1."
+    },
+    {
+      "mistake": "Using wrong loop type",
+      "explanation": "Use foreach when you just need each item. Use for when you need the index."
+    }
+  ],
+  "previousLessonId": 203,
+  "nextLessonId": 205,
+  "tags": ["beginner", "loops", "for-loop", "foreach", "iteration", "arrays", "csharp"]
+}

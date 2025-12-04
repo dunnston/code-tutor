@@ -1,0 +1,82 @@
+{
+  "id": 110,
+  "trackId": 2,
+  "language": "gdscript",
+  "title": "The Class Blueprint",
+  "subtitle": "Creating Custom Types",
+  "difficulty": 4,
+  "estimatedTime": "25-30 minutes",
+  "xpReward": 300,
+  "description": "# The Master Craftsman: Creating Classes\n\nYou've reached a pivotal moment! It's time to learn **classes** - blueprints for creating your own custom objects.\n\n## What is a Class?\n\nA **class** is a template for creating objects. In Godot, every script IS a class!\n\n```gdscript\n# This whole script is a class\nextends Node\n\n# Class variables (properties)\nvar weapon_name = \"Sword\"\nvar damage = 10\n\n# Class functions (methods)\nfunc attack():\n    print(weapon_name, \" deals \", damage, \" damage!\")\n```\n\n## Inner Classes\n\nYou can define classes INSIDE a script:\n\n```gdscript\nclass_name Weapon\n\nvar weapon_name: String\nvar damage: int\n\nfunc _init(name: String, dmg: int):\n    weapon_name = name\n    damage = dmg\n\nfunc attack():\n    print(weapon_name, \" strikes for \", damage, \" damage!\")\n```\n\n## Using Inner Classes\n\n```gdscript\n# Create instances\nvar sword = Weapon.new(\"Excalibur\", 50)\nvar axe = Weapon.new(\"Stormbreaker\", 75)\n\n# Use them\nsword.attack()  # Excalibur strikes for 50 damage!\naxe.attack()    # Stormbreaker strikes for 75 damage!\n```\n\n## The _init() Function\n\nGDScript's constructor - runs when you create a new instance:\n\n```gdscript\nclass_name Player\n\nvar player_name: String\nvar health: int\n\nfunc _init(name: String, hp: int):\n    player_name = name\n    health = hp\n```\n\n## Your Quest\n\nDefine a Weapon class and create instances:\n\n1. Create a class called `Weapon` with:\n   - Properties: `weapon_name` and `damage`\n   - An `_init()` function that sets these properties\n   - An `attack()` function that prints the attack message\n\n2. Create two weapons:\n   - A sword with 50 damage\n   - An axe with 75 damage\n\n3. Call attack() on both",
+  "starterCode": "# Define the Weapon class\nclass Weapon:\n    var weapon_name: String\n    var damage: int\n    \n    func _init(name: String, dmg: int):\n        # Initialize properties\n        pass\n    \n    func attack():\n        # Print attack message\n        pass\n\n# Create weapon instances\n\n# Call attack on both weapons\n\n",
+  "solutionCode": "# Define the Weapon class\nclass Weapon:\n    var weapon_name: String\n    var damage: int\n    \n    func _init(name: String, dmg: int):\n        weapon_name = name\n        damage = dmg\n    \n    func attack():\n        print(weapon_name, \" strikes for \", damage, \" damage!\")\n\n# Create weapon instances\nvar sword = Weapon.new(\"Excalibur\", 50)\nvar axe = Weapon.new(\"Stormbreaker\", 75)\n\n# Call attack on both weapons\nsword.attack()\naxe.attack()",
+  "hints": [
+    "Define inner class with: class ClassName:",
+    "The _init function is like a constructor",
+    "Set properties with: weapon_name = name",
+    "Create instances with: Weapon.new(args)",
+    "GDScript uses type hints with colon: var name: String"
+  ],
+  "validationTests": [
+    {
+      "type": "code_contains",
+      "value": "class Weapon",
+      "description": "Should define Weapon class"
+    },
+    {
+      "type": "code_contains",
+      "value": "func _init",
+      "description": "Should have _init function"
+    },
+    {
+      "type": "code_contains",
+      "value": "func attack",
+      "description": "Should have attack function"
+    },
+    {
+      "type": "code_contains",
+      "value": ".new(",
+      "description": "Should create instances with .new()"
+    },
+    {
+      "type": "output_contains",
+      "value": "Excalibur",
+      "description": "Should mention Excalibur"
+    },
+    {
+      "type": "output_contains",
+      "value": "50 damage",
+      "description": "Should show 50 damage for sword"
+    },
+    {
+      "type": "output_contains",
+      "value": "Stormbreaker",
+      "description": "Should mention Stormbreaker"
+    },
+    {
+      "type": "output_contains",
+      "value": "75 damage",
+      "description": "Should show 75 damage for axe"
+    }
+  ],
+  "learningObjectives": [
+    "Understand classes as object blueprints",
+    "Define inner classes in GDScript",
+    "Use _init() as a constructor",
+    "Create class instances with .new()",
+    "Work with class properties and methods"
+  ],
+  "commonMistakes": [
+    {
+      "mistake": "Forgetting .new()",
+      "explanation": "To create an instance, you must call ClassName.new(arguments)"
+    },
+    {
+      "mistake": "Not initializing in _init",
+      "explanation": "The _init function should set all the initial property values"
+    }
+  ],
+  "previousLessonId": 109,
+  "nextLessonId": 111,
+  "tags": ["beginner", "oop", "classes", "objects", "godot"]
+}

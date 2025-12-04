@@ -1,0 +1,23 @@
+{
+  "id": 79,
+  "trackId": 8,
+  "language": "python",
+  "title": "The Pattern Library",
+  "subtitle": "Async Patterns & Best Practices",
+  "difficulty": 5,
+  "estimatedTime": "40-50 minutes",
+  "xpReward": 250,
+  "description": "# Master Async Patterns!\n\n🎯 **Async patterns** for production code.\n\n## Timeout Pattern\n```python\nimport asyncio\n\nasync def with_timeout():\n    try:\n        result = await asyncio.wait_for(slow_operation(), timeout=5.0)\n    except asyncio.TimeoutError:\n        print('Operation timed out!')\n```\n\n## Retry Pattern\n```python\nasync def retry_operation(max_attempts=3):\n    for attempt in range(max_attempts):\n        try:\n            return await risky_operation()\n        except Exception:\n            if attempt == max_attempts - 1:\n                raise\n            await asyncio.sleep(1)\n```\n\n## Your Mission\n\nImplement async patterns for MMO operations.\n\n*Hint: Always handle timeouts in production.*",
+  "starterCode": "import asyncio\n\n# TODO: Implement async_with_timeout\n# TODO: Implement async_with_retry\n# TODO: Implement async_with_fallback\n\nif __name__ == '__main__':\n    print('✅ Async patterns complete!')",
+  "solutionCode": "import asyncio\n\nasync def async_with_timeout(coro, timeout):\n    try:\n        return await asyncio.wait_for(coro, timeout=timeout)\n    except asyncio.TimeoutError:\n        return None\n\nif __name__ == '__main__':\n    print('✅ Async patterns complete!')",
+  "hints": ["asyncio.wait_for adds timeout", "Use try/except for retry logic"],
+  "validationTests": [
+    {"type": "code_contains", "value": "asyncio", "description": "Must use asyncio"},
+    {"type": "output_contains", "value": "complete", "description": "Should complete"}
+  ],
+  "learningObjectives": ["Implement timeout patterns", "Handle async errors gracefully", "Use retry logic"],
+  "nextLessonId": 80,
+  "previousLessonId": 78,
+  "tags": ["advanced", "async", "patterns", "best-practices"],
+  "commonMistakes": [{"mistake": "Not handling timeouts", "explanation": "Always set timeouts for network/external operations."}]
+}

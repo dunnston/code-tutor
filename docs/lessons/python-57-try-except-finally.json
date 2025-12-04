@@ -1,0 +1,22 @@
+{
+  "id": 57,
+  "trackId": 7,
+  "language": "python",
+  "title": "The Cleanup Crew",
+  "subtitle": "Try/Except/Finally",
+  "difficulty": 5,
+  "estimatedTime": "25 minutes",
+  "xpReward": 150,
+  "description": "# Try/Except/Finally: Complete Error Handling\n\n🧹 Always cleanup, even after errors!\n\n```python\ntry:\n    risky_operation()\nexcept Exception as e:\n    print(f'Error: {e}')\nfinally:\n    cleanup()  # Always runs!\n```\n\n⚔️ Handle errors properly!",
+  "starterCode": "# Try/Except/Finally Demo\n\ndef load_character(char_id):\n    print(f'Loading character {char_id}...')\n    try:\n        if char_id < 0:\n            raise ValueError('Invalid character ID')\n        # Simulate loading\n        return {'id': char_id, 'name': 'Hero'}\n    except ValueError as e:\n        print(f'Error: {e}')\n        return None\n    finally:\n        print('Cleanup complete')\n\nresult = load_character(1)\nprint(f'Result: {result}\\n')\n\nresult = load_character(-1)\nprint(f'Result: {result}')",
+  "solutionCode": "def load_character(char_id):\n    print(f'Loading character {char_id}...')\n    try:\n        if char_id < 0:\n            raise ValueError('Invalid character ID')\n        return {'id': char_id, 'name': 'Hero'}\n    except ValueError as e:\n        print(f'Error: {e}')\n        return None\n    finally:\n        print('Cleanup complete')\n\nresult = load_character(1)\nprint(f'Result: {result}\\n')\n\nresult = load_character(-1)\nprint(f'Result: {result}')",
+  "hints": ["finally always runs", "Use for cleanup code", "Handle specific exceptions"],
+  "validationTests": [
+    {"type": "code_contains", "value": "finally:", "description": "Must use finally block"},
+    {"type": "output_contains", "value": "Cleanup complete", "description": "Should run cleanup"}
+  ],
+  "learningObjectives": ["Use finally blocks", "Ensure cleanup code runs", "Handle multiple exception types"],
+  "nextLessonId": 58,
+  "previousLessonId": 56,
+  "tags": ["intermediate", "exceptions", "finally"]
+}

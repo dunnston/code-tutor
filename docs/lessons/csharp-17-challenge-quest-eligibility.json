@@ -1,0 +1,53 @@
+{
+  "id": 217,
+  "trackId": 3,
+  "language": "csharp",
+  "title": "⭐ CHALLENGE: The Quest Board",
+  "subtitle": "Advanced Quest Eligibility System",
+  "difficulty": 3,
+  "estimatedTime": "25-35 minutes",
+  "xpReward": 250,
+  "description": "# Module 2 Challenge!\n\nYou've mastered conditionals, else if, and logical operators. Now build a complete quest recommendation system!\n\n## The Quest\n\nCreate a **Quest Recommendation System** that analyzes player stats and recommends appropriate quests.\n\n### Requirements:\n\n1. **Get Player Stats:**\n   - Level (int)\n   - Gold (int)\n   - Class name (string: Warrior, Mage, or Rogue)\n   - Has completed tutorial (yes/no)\n\n2. **Quest Categories:**\n   - **Tutorial Quest**: Level < 5 AND has NOT completed tutorial\n   - **Warrior Quest**: Class is \"Warrior\" AND Level >= 10\n   - **Mage Quest**: Class is \"Mage\" AND Level >= 10\n   - **Rogue Quest**: Class is \"Rogue\" AND Level >= 10\n   - **Rich Merchant Quest**: Gold >= 500 (any class)\n   - **Epic Raid**: Level >= 20 AND Gold >= 1000 AND completed tutorial\n   - **Beginner Friendly**: Level < 10 AND completed tutorial\n\n3. **Display:**\n   - Player summary\n   - All eligible quests\n   - Count of eligible quests\n   -励 recommendation for best quest\n\n### Example Output:\n```\n=== PLAYER STATS ===\nName: Aria\nLevel: 12\nGold: 600\nClass: Mage\nTutorial Complete: Yes\n\n=== ELIGIBLE QUESTS ===\n✓ Mage Quest: The Arcane Tower\n✓ Rich Merchant Quest: Golden Opportunity\n\nTotal Eligible: 2 quests\nRecommended: Mage Quest (matches your class!)\n```\n\n## Success Criteria:\n- ✅ Uses if/else if/else statements\n- ✅ Uses logical operators (&&, ||, !)\n- ✅ Gets user input and converts types\n- ✅ Tracks count of eligible quests\n- ✅ Displays formatted output\n- ✅ Provides personalized recommendation",
+  "starterCode": "using System;\n\nclass Program\n{\n    static void Main()\n    {\n        // CHALLENGE: Quest Recommendation System\n        //\n        // Requirements:\n        // - Get player stats (level, gold, class, tutorial complete)\n        // - Check eligibility for 7 different quest types\n        // - Display all eligible quests\n        // - Count and recommend best quest\n        //\n        // Start coding below:\n        \n    }\n}\n",
+  "solutionCode": "using System;\n\nclass Program\n{\n    static void Main()\n    {\n        // CHALLENGE: Quest Recommendation System\n        \n        Console.WriteLine(\"=== QUEST RECOMMENDATION SYSTEM ===\");\n        \n        // Get player stats\n        Console.Write(\"Enter your name: \");\n        string playerName = Console.ReadLine();\n        \n        Console.Write(\"Enter your level: \");\n        int level = int.Parse(Console.ReadLine());\n        \n        Console.Write(\"Enter your gold: \");\n        int gold = int.Parse(Console.ReadLine());\n        \n        Console.Write(\"Enter your class (Warrior/Mage/Rogue): \");\n        string playerClass = Console.ReadLine();\n        \n        Console.Write(\"Have you completed the tutorial? (yes/no): \");\n        bool tutorialComplete = Console.ReadLine().ToLower() == \"yes\";\n        \n        // Display player stats\n        Console.WriteLine(\"\\n=== PLAYER STATS ===\");\n        Console.WriteLine($\"Name: {playerName}\");\n        Console.WriteLine($\"Level: {level}\");\n        Console.WriteLine($\"Gold: {gold}\");\n        Console.WriteLine($\"Class: {playerClass}\");\n        Console.WriteLine($\"Tutorial Complete: {(tutorialComplete ? \"Yes\" : \"No\")}\");\n        \n        // Check quest eligibility\n        Console.WriteLine(\"\\n=== ELIGIBLE QUESTS ===\");\n        int questCount = 0;\n        string recommendedQuest = \"None\";\n        \n        // Tutorial Quest\n        if (level < 5 && !tutorialComplete)\n        {\n            Console.WriteLine(\"✓ Tutorial Quest: First Steps\");\n            questCount++;\n            recommendedQuest = \"Tutorial Quest (complete this first!)\";\n        }\n        \n        // Warrior Quest\n        if (playerClass == \"Warrior\" && level >= 10)\n        {\n            Console.WriteLine(\"✓ Warrior Quest: Blade of Honor\");\n            questCount++;\n            recommendedQuest = \"Warrior Quest (matches your class!)\";\n        }\n        \n        // Mage Quest\n        if (playerClass == \"Mage\" && level >= 10)\n        {\n            Console.WriteLine(\"✓ Mage Quest: The Arcane Tower\");\n            questCount++;\n            recommendedQuest = \"Mage Quest (matches your class!)\";\n        }\n        \n        // Rogue Quest\n        if (playerClass == \"Rogue\" && level >= 10)\n        {\n            Console.WriteLine(\"✓ Rogue Quest: Shadows and Secrets\");\n            questCount++;\n            recommendedQuest = \"Rogue Quest (matches your class!)\";\n        }\n        \n        // Rich Merchant Quest\n        if (gold >= 500)\n        {\n            Console.WriteLine(\"✓ Rich Merchant Quest: Golden Opportunity\");\n            questCount++;\n        }\n        \n        // Epic Raid\n        if (level >= 20 && gold >= 1000 && tutorialComplete)\n        {\n            Console.WriteLine(\"✓ Epic Raid: Dragon's Lair\");\n            questCount++;\n            recommendedQuest = \"Epic Raid (ultimate challenge!)\";\n        }\n        \n        // Beginner Friendly\n        if (level < 10 && tutorialComplete)\n        {\n            Console.WriteLine(\"✓ Beginner Friendly: Village Defense\");\n            questCount++;\n            if (recommendedQuest == \"None\")\n            {\n                recommendedQuest = \"Beginner Friendly (great for your level!)\";\n            }\n        }\n        \n        // Summary\n        Console.WriteLine($\"\\nTotal Eligible: {questCount} quests\");\n        Console.WriteLine($\"Recommended: {recommendedQuest}\");\n    }\n}\n",
+  "hints": [
+    "Start by getting all player inputs. Remember to convert strings to appropriate types (int.Parse, bool comparison)",
+    "Create a questCount variable starting at 0. Increment it (questCount++) each time a quest is eligible",
+    "For tutorial complete, use: bool tutorialComplete = Console.ReadLine().ToLower() == \"yes\"",
+    "Use && for conditions that need multiple requirements: (level >= 20 && gold >= 1000 && tutorialComplete)",
+    "For NOT completed tutorial, use: !tutorialComplete",
+    "Track the recommended quest by updating a string variable when you find a matching quest"
+  ],
+  "validationTests": [
+    {
+      "type": "code_contains",
+      "value": "Console.ReadLine",
+      "description": "Must get user input"
+    },
+    {
+      "type": "code_contains",
+      "value": "&&",
+      "description": "Must use && (AND operator)"
+    },
+    {
+      "type": "code_contains",
+      "value": "if",
+      "description": "Must use if statements"
+    },
+    {
+      "type": "code_contains",
+      "value": "int.Parse",
+      "description": "Must parse strings to integers"
+    }
+  ],
+  "learningObjectives": [
+    "Synthesize conditionals, logical operators, and user input",
+    "Build complex decision-making logic",
+    "Track state across multiple conditions",
+    "Create personalized recommendations based on data",
+    "Format professional user output"
+  ],
+  "previousLessonId": 216,
+  "nextLessonId": 218,
+  "tags": ["challenge", "intermediate", "conditionals", "logical-operators", "input", "integration"]
+}

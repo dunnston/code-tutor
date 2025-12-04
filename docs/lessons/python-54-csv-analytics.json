@@ -1,0 +1,22 @@
+{
+  "id": 54,
+  "trackId": 7,
+  "language": "python",
+  "title": "The Statistics Master",
+  "subtitle": "CSV Analytics",
+  "difficulty": 5,
+  "estimatedTime": "30 minutes",
+  "xpReward": 200,
+  "description": "# CSV Analytics\n\nCalculate statistics from CSV data!\n\n⚔️ Analyze player performance!",
+  "starterCode": "import csv\nimport io\n\nPLAYER_STATS = '''player,kills,deaths,assists\nWarrior,25,5,10\nMage,30,8,15\nRogue,20,3,12'''\n\nreader = csv.DictReader(io.StringIO(PLAYER_STATS))\nstats = list(reader)\n\n# TODO: Calculate average kills\ntotal_kills = sum(int(row['kills']) for row in stats)\navg_kills = total_kills / len(stats)\n\nprint(f'Average kills: {avg_kills:.1f}')\n\n# TODO: Find player with most kills\nreader2 = csv.DictReader(io.StringIO(PLAYER_STATS))\nbest_player = max(reader2, key=lambda r: int(r['kills']))\nprint(f'Top player: {best_player[\"player\"]} ({best_player[\"kills\"]} kills)')",
+  "solutionCode": "import csv\nimport io\n\nPLAYER_STATS = '''player,kills,deaths,assists\nWarrior,25,5,10\nMage,30,8,15\nRogue,20,3,12'''\n\nreader = csv.DictReader(io.StringIO(PLAYER_STATS))\nstats = list(reader)\n\ntotal_kills = sum(int(row['kills']) for row in stats)\navg_kills = total_kills / len(stats)\n\nprint(f'Average kills: {avg_kills:.1f}')\n\nreader2 = csv.DictReader(io.StringIO(PLAYER_STATS))\nbest_player = max(reader2, key=lambda r: int(r['kills']))\nprint(f'Top player: {best_player[\"player\"]} ({best_player[\"kills\"]} kills)')",
+  "hints": ["Use sum() with generator", "Use max() with key parameter"],
+  "validationTests": [
+    {"type": "output_contains", "value": "25.0", "description": "Should calculate average"},
+    {"type": "output_contains", "value": "Mage", "description": "Should find top player"}
+  ],
+  "learningObjectives": ["Calculate statistics", "Use max/min with key", "Aggregate CSV data"],
+  "nextLessonId": 55,
+  "previousLessonId": 53,
+  "tags": ["intermediate", "csv", "analytics"]
+}

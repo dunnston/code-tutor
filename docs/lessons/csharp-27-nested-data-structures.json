@@ -1,0 +1,52 @@
+{
+  "id": 227,
+  "trackId": 3,
+  "language": "csharp",
+  "title": "The Data Architect",
+  "subtitle": "Lists of Objects & Nested Structures",
+  "difficulty": 4,
+  "estimatedTime": "30-35 minutes",
+  "xpReward": 250,
+  "description": "# Complex Data Structures\n\nReal applications use complex nested data. Learn to work with lists of objects and multi-level structures in C#!\n\n## Lists of Objects\n\nStore multiple related items using classes:\n\n```csharp\npublic class PartyMember\n{\n    public string Name { get; set; }\n    public string Class { get; set; }\n    public int Level { get; set; }\n}\n\nList<PartyMember> party = new List<PartyMember>\n{\n    new PartyMember { Name = \"Aria\", Class = \"Mage\", Level = 5 },\n    new PartyMember { Name = \"Thorin\", Class = \"Warrior\", Level = 7 }\n};\n\n// Access items\nvar firstMember = party[0];\nConsole.WriteLine(firstMember.Name);  // \"Aria\"\n\n// Loop through\nforeach (var member in party)\n{\n    Console.WriteLine($\"{member.Name} - Level {member.Level}\");\n}\n```\n\n## Nested Objects\n\n```csharp\npublic class Guild\n{\n    public string Name { get; set; }\n    public PartyMember Leader { get; set; }\n    public List<PartyMember> Members { get; set; }\n}\n\nGuild guild = new Guild\n{\n    Name = \"Dragon Slayers\",\n    Leader = new PartyMember { Name = \"Aria\", Level = 10 },\n    Members = new List<PartyMember> { ... }\n};\n\nConsole.WriteLine(guild.Leader.Name);  // \"Aria\"\n```\n\n## Filtering and Searching with LINQ\n\n```csharp\n// Find high-level members\nvar highLevel = party.Where(m => m.Level >= 6).ToList();\n\n// Calculate average level\ndouble average = party.Average(m => m.Level);\n```\n\n## Your Quest\n\nCreate a party management system:\n1. Store party members as list of objects\n2. Add new members\n3. Find members by class using LINQ\n4. Calculate party statistics",
+  "starterCode": "using System;\nusing System.Collections.Generic;\nusing System.Linq;\n\nclass Program\n{\n    public class PartyMember\n    {\n        public string Name { get; set; }\n        public string Class { get; set; }\n        public int Level { get; set; }\n        public int Health { get; set; }\n    }\n    \n    static void Main()\n    {\n        List<PartyMember> party = new List<PartyMember>\n        {\n            new PartyMember { Name = \"Aria\", Class = \"Mage\", Level = 8, Health = 100 },\n            new PartyMember { Name = \"Thorin\", Class = \"Warrior\", Level = 10, Health = 150 },\n            new PartyMember { Name = \"Luna\", Class = \"Rogue\", Level = 7, Health = 90 }\n        };\n        \n        Console.WriteLine(\"=== PARTY ROSTER ===\");\n        foreach (var member in /* Fill in */)\n        {\n            Console.WriteLine($\"{member.Name} - {member.Class} Level {member.Level}\");\n        }\n        \n        Console.WriteLine(\"\\n=== ADDING NEW MEMBER ===\");\n        PartyMember newMember = new PartyMember\n        {\n            /* Fill in: Shadow, Assassin, level 9, health 80 */\n        };\n        party.Add(/* Fill in */);\n        Console.WriteLine($\"Added {newMember.Name} to the party!\");\n        \n        Console.WriteLine(\"\\n=== FIND ALL WARRIORS ===\");\n        List<PartyMember> warriors = party.Where(/* Filter by Class == \"Warrior\" */).ToList();\n        Console.WriteLine($\"Warriors in party: {warriors.Count}\");\n        foreach (var warrior in warriors)\n        {\n            Console.WriteLine($\"  - {warrior.Name} (Level {warrior.Level})\");\n        }\n        \n        Console.WriteLine(\"\\n=== PARTY STATISTICS ===\");\n        // Calculate average level using LINQ\n        double averageLevel = party.Average(/* Select Level */);\n        Console.WriteLine($\"Average party level: {averageLevel:F1}\");\n        \n        // Calculate total health using LINQ\n        int totalHealth = party.Sum(/* Select Health */);\n        Console.WriteLine($\"Total party health: {totalHealth}\");\n        \n        Console.WriteLine(\"\\n=== HIGH LEVEL MEMBERS (Level 8+) ===\");\n        var highLevel = party.Where(/* Level >= 8 */);\n        foreach (var member in highLevel)\n        {\n            Console.WriteLine($\"  - {member.Name}: Level {member.Level}\");\n        }\n    }\n}\n",
+  "solutionCode": "using System;\nusing System.Collections.Generic;\nusing System.Linq;\n\nclass Program\n{\n    public class PartyMember\n    {\n        public string Name { get; set; }\n        public string Class { get; set; }\n        public int Level { get; set; }\n        public int Health { get; set; }\n    }\n    \n    static void Main()\n    {\n        List<PartyMember> party = new List<PartyMember>\n        {\n            new PartyMember { Name = \"Aria\", Class = \"Mage\", Level = 8, Health = 100 },\n            new PartyMember { Name = \"Thorin\", Class = \"Warrior\", Level = 10, Health = 150 },\n            new PartyMember { Name = \"Luna\", Class = \"Rogue\", Level = 7, Health = 90 }\n        };\n        \n        Console.WriteLine(\"=== PARTY ROSTER ===\");\n        foreach (var member in party)\n        {\n            Console.WriteLine($\"{member.Name} - {member.Class} Level {member.Level}\");\n        }\n        \n        Console.WriteLine(\"\\n=== ADDING NEW MEMBER ===\");\n        PartyMember newMember = new PartyMember\n        {\n            Name = \"Shadow\",\n            Class = \"Assassin\",\n            Level = 9,\n            Health = 80\n        };\n        party.Add(newMember);\n        Console.WriteLine($\"Added {newMember.Name} to the party!\");\n        \n        Console.WriteLine(\"\\n=== FIND ALL WARRIORS ===\");\n        List<PartyMember> warriors = party.Where(m => m.Class == \"Warrior\").ToList();\n        Console.WriteLine($\"Warriors in party: {warriors.Count}\");\n        foreach (var warrior in warriors)\n        {\n            Console.WriteLine($\"  - {warrior.Name} (Level {warrior.Level})\");\n        }\n        \n        Console.WriteLine(\"\\n=== PARTY STATISTICS ===\");\n        // Calculate average level\n        double averageLevel = party.Average(m => m.Level);\n        Console.WriteLine($\"Average party level: {averageLevel:F1}\");\n        \n        // Calculate total health\n        int totalHealth = party.Sum(m => m.Health);\n        Console.WriteLine($\"Total party health: {totalHealth}\");\n        \n        Console.WriteLine(\"\\n=== HIGH LEVEL MEMBERS (Level 8+) ===\");\n        var highLevel = party.Where(m => m.Level >= 8);\n        foreach (var member in highLevel)\n        {\n            Console.WriteLine($\"  - {member.Name}: Level {member.Level}\");\n        }\n    }\n}\n",
+  "hints": [
+    "Create new member: new PartyMember { Name = \"Shadow\", Class = \"Assassin\", Level = 9, Health = 80 }",
+    "Filter with LINQ: party.Where(m => m.Class == \"Warrior\").ToList()",
+    "Average with LINQ: party.Average(m => m.Level)",
+    "Sum with LINQ: party.Sum(m => m.Health)",
+    "Lambda syntax: m => m.Property means 'for each member m, use m.Property'"
+  ],
+  "validationTests": [
+    {
+      "type": "code_contains",
+      "value": "class PartyMember",
+      "description": "Must define PartyMember class"
+    },
+    {
+      "type": "code_contains",
+      "value": "Where",
+      "description": "Must use LINQ Where for filtering"
+    },
+    {
+      "type": "code_contains",
+      "value": "Average",
+      "description": "Must use LINQ Average"
+    },
+    {
+      "type": "output_contains",
+      "value": "Average",
+      "description": "Should display average"
+    }
+  ],
+  "learningObjectives": [
+    "Work with lists of objects",
+    "Create and use custom classes",
+    "Filter data with LINQ Where()",
+    "Calculate statistics with LINQ Average() and Sum()",
+    "Build practical data management systems"
+  ],
+  "previousLessonId": 226,
+  "nextLessonId": 228,
+  "tags": ["advanced", "lists", "objects", "nested-data", "linq", "filtering"]
+}

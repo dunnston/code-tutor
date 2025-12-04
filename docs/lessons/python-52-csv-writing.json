@@ -1,0 +1,23 @@
+{
+  "id": 52,
+  "trackId": 7,
+  "language": "python",
+  "title": "The Record Keeper",
+  "subtitle": "Writing CSV Files",
+  "difficulty": 4,
+  "estimatedTime": "20 minutes",
+  "xpReward": 150,
+  "description": "# Writing CSV Files\n\n📝 Save data in CSV format!\n\n```python\nimport csv\n\ndata = [{'name': 'Hero', 'level': 10}]\n\nwith open('data.csv', 'w', newline='') as f:\n    writer = csv.DictWriter(f, fieldnames=['name', 'level'])\n    writer.writeheader()\n    writer.writerows(data)\n```\n\n⚔️ Write party data to CSV!",
+  "starterCode": "import csv\nimport io\n\nparty = [\n    {'name': 'Warrior', 'level': 10, 'hp': 150},\n    {'name': 'Mage', 'level': 12, 'hp': 70}\n]\n\n# TODO: Write to CSV format\noutput = io.StringIO()\nwriter = csv.DictWriter(output, fieldnames=['name', 'level', 'hp'])\nwriter.writeheader()\nwriter.writerows(party)\n\nprint(output.getvalue())",
+  "solutionCode": "import csv\nimport io\n\nparty = [\n    {'name': 'Warrior', 'level': 10, 'hp': 150},\n    {'name': 'Mage', 'level': 12, 'hp': 70}\n]\n\noutput = io.StringIO()\nwriter = csv.DictWriter(output, fieldnames=['name', 'level', 'hp'])\nwriter.writeheader()\nwriter.writerows(party)\n\nprint(output.getvalue())",
+  "hints": ["Use csv.DictWriter", "Call writeheader() first", "Use writerows() for multiple rows"],
+  "validationTests": [
+    {"type": "code_contains", "value": "csv.DictWriter", "description": "Must use DictWriter"},
+    {"type": "code_contains", "value": "writeheader", "description": "Must write header row"},
+    {"type": "output_contains", "value": "name,level,hp", "description": "Should have CSV header"}
+  ],
+  "learningObjectives": ["Write CSV files", "Use DictWriter", "Format tabular data"],
+  "nextLessonId": 53,
+  "previousLessonId": 51,
+  "tags": ["intermediate", "csv", "file-writing"]
+}

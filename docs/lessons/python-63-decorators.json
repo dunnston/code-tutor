@@ -1,0 +1,100 @@
+{
+  "id": 63,
+  "trackId": 8,
+  "language": "python",
+  "title": "The Enchantment Forge",
+  "subtitle": "Mastering Decorators",
+  "difficulty": 5,
+  "estimatedTime": "40-50 minutes",
+  "xpReward": 300,
+  "description": "# Master the Art of Decorators!\n\n✨ **Decorators** are functions that modify other functions. They're one of Python's most powerful features!\n\n## What Are Decorators?\n\nDecorators wrap functions to add behavior without modifying the original code:\n\n```python\ndef log_calls(func):\n    def wrapper(*args, **kwargs):\n        print(f\"Calling {func.__name__}\")\n        result = func(*args, **kwargs)\n        print(f\"{func.__name__} returned {result}\")\n        return result\n    return wrapper\n\n@log_calls\ndef add(a, b):\n    return a + b\n\nadd(5, 3)\n# Output:\n# Calling add\n# add returned 8\n```\n\n## Decorator Pattern\n\n```python\ndef my_decorator(func):\n    def wrapper(*args, **kwargs):\n        # Code before function call\n        result = func(*args, **kwargs)\n        # Code after function call\n        return result\n    return wrapper\n\n@my_decorator\ndef my_function():\n    pass\n```\n\nThe `@my_decorator` syntax is equivalent to:\n```python\nmy_function = my_decorator(my_function)\n```\n\n## Decorators with Arguments\n\n```python\ndef repeat(times):\n    def decorator(func):\n        def wrapper(*args, **kwargs):\n            for _ in range(times):\n                result = func(*args, **kwargs)\n            return result\n        return wrapper\n    return decorator\n\n@repeat(3)\ndef greet():\n    print(\"Hello!\")\n```\n\n## Using functools.wraps\n\n```python\nfrom functools import wraps\n\ndef my_decorator(func):\n    @wraps(func)  # Preserves original function metadata\n    def wrapper(*args, **kwargs):\n        return func(*args, **kwargs)\n    return wrapper\n```\n\n## Your Mission\n\nCreate four decorators for an RPG ability system:\n\n1. **@log_action** - Logs function calls to a file\n2. **@requires_level(min_level)** - Prevents action if player level too low\n3. **@cooldown(seconds)** - Prevents ability spam\n4. **@retry(times)** - Retries failed operations\n\n⚔️ Build a professional decorator system!\n\n*Hint: Decorators with arguments need an extra function layer.*",
+  "starterCode": "from functools import wraps\nimport time\n\n# Global state for testing\nlast_call_time = {}  # Track cooldowns\nlog_file_content = []  # Simulated log file\n\n# TODO: Implement @log_action decorator\n# Should append to log_file_content: \"[TIMESTAMP] Called FUNCTION_NAME with args ARGS\"\ndef log_action(func):\n    pass\n\n# TODO: Implement @requires_level(min_level) decorator\n# Should check if character level >= min_level\n# Return \"Level too low!\" if check fails\ndef requires_level(min_level):\n    pass\n\n# TODO: Implement @cooldown(seconds) decorator\n# Should prevent calling function again within 'seconds' time\n# Return \"Ability on cooldown!\" if called too soon\n# Use last_call_time dict to track: last_call_time[func.__name__] = time.time()\ndef cooldown(seconds):\n    pass\n\n# TODO: Implement @retry(times) decorator\n# Should retry function up to 'times' if it raises an exception\n# Return result if successful, raise exception if all attempts fail\ndef retry(times):\n    pass\n\n\n# Mock character for testing\nclass Character:\n    def __init__(self, name, level):\n        self.name = name\n        self.level = level\n\n# Test abilities\n@log_action\n@requires_level(5)\ndef fireball(character, target):\n    \"\"\"Cast a powerful fireball\"\"\"\n    return f\"{character.name} casts Fireball at {target}!\"\n\n@log_action\n@cooldown(2)\ndef heal(character):\n    \"\"\"Heal the character\"\"\"\n    return f\"{character.name} heals for 50 HP!\"\n\n@retry(3)\ndef unstable_portal(character):\n    \"\"\"Attempt to open an unstable portal\"\"\"\n    import random\n    if random.random() < 0.7:  # 70% fail rate\n        raise Exception(\"Portal collapsed!\")\n    return \"Portal opened successfully!\"\n\n@log_action\n@requires_level(10)\n@cooldown(5)\ndef ultimate_attack(character, target):\n    \"\"\"Ultimate ability with multiple decorators\"\"\"\n    return f\"{character.name} unleashes ULTIMATE ATTACK on {target}!\"\n\n\n# Test the decorators\nprint(\"=== Testing Decorators ===\")\n\n# Test 1: Level requirement\nprint(\"\\n--- Test 1: Level Requirement ---\")\nlow_level = Character(\"Newbie\", 3)\nhigh_level = Character(\"Veteran\", 10)\n\nresult = fireball(low_level, \"Goblin\")\nprint(f\"Low level fireball: {result}\")  # Should fail\n\nresult = fireball(high_level, \"Dragon\")\nprint(f\"High level fireball: {result}\")  # Should succeed\n\n# Test 2: Cooldown\nprint(\"\\n--- Test 2: Cooldown ---\")\nresult1 = heal(high_level)\nprint(f\"First heal: {result1}\")  # Should work\n\nresult2 = heal(high_level)\nprint(f\"Second heal (immediate): {result2}\")  # Should fail (on cooldown)\n\ntime.sleep(2.1)  # Wait for cooldown\nresult3 = heal(high_level)\nprint(f\"Third heal (after cooldown): {result3}\")  # Should work\n\n# Test 3: Retry\nprint(\"\\n--- Test 3: Retry ---\")\ntry:\n    result = unstable_portal(high_level)\n    print(f\"Portal: {result}\")\nexcept Exception as e:\n    print(f\"Portal failed after retries: {e}\")\n\n# Test 4: Multiple decorators\nprint(\"\\n--- Test 4: Multiple Decorators ---\")\nresult = ultimate_attack(high_level, \"Boss\")\nprint(f\"Ultimate: {result}\")  # Should work (level 10, first call)\n\nresult = ultimate_attack(high_level, \"Boss\")\nprint(f\"Ultimate again: {result}\")  # Should fail (on cooldown)\n\n# Test 5: Log file\nprint(\"\\n--- Test 5: Action Log ---\")\nprint(f\"Actions logged: {len(log_file_content)}\")\nif log_file_content:\n    print(\"Last log entry:\", log_file_content[-1])",
+  "solutionCode": "from functools import wraps\nimport time\n\n# Global state for testing\nlast_call_time = {}  # Track cooldowns\nlog_file_content = []  # Simulated log file\n\ndef log_action(func):\n    \"\"\"Log function calls to log_file_content\"\"\"\n    @wraps(func)\n    def wrapper(*args, **kwargs):\n        log_entry = f\"[{time.time()}] Called {func.__name__} with args {args}\"\n        log_file_content.append(log_entry)\n        result = func(*args, **kwargs)\n        return result\n    return wrapper\n\ndef requires_level(min_level):\n    \"\"\"Check if character has minimum level\"\"\"\n    def decorator(func):\n        @wraps(func)\n        def wrapper(character, *args, **kwargs):\n            if character.level < min_level:\n                return f\"Level too low! Need level {min_level}\"\n            return func(character, *args, **kwargs)\n        return wrapper\n    return decorator\n\ndef cooldown(seconds):\n    \"\"\"Prevent ability spam with cooldown\"\"\"\n    def decorator(func):\n        @wraps(func)\n        def wrapper(*args, **kwargs):\n            current_time = time.time()\n            func_name = func.__name__\n            \n            if func_name in last_call_time:\n                time_since_last = current_time - last_call_time[func_name]\n                if time_since_last < seconds:\n                    return f\"Ability on cooldown! Wait {seconds - time_since_last:.1f}s\"\n            \n            last_call_time[func_name] = current_time\n            return func(*args, **kwargs)\n        return wrapper\n    return decorator\n\ndef retry(times):\n    \"\"\"Retry function on failure\"\"\"\n    def decorator(func):\n        @wraps(func)\n        def wrapper(*args, **kwargs):\n            last_exception = None\n            for attempt in range(times):\n                try:\n                    return func(*args, **kwargs)\n                except Exception as e:\n                    last_exception = e\n            # All attempts failed\n            raise last_exception\n        return wrapper\n    return decorator\n\n\n# Mock character for testing\nclass Character:\n    def __init__(self, name, level):\n        self.name = name\n        self.level = level\n\n# Test abilities\n@log_action\n@requires_level(5)\ndef fireball(character, target):\n    \"\"\"Cast a powerful fireball\"\"\"\n    return f\"{character.name} casts Fireball at {target}!\"\n\n@log_action\n@cooldown(2)\ndef heal(character):\n    \"\"\"Heal the character\"\"\"\n    return f\"{character.name} heals for 50 HP!\"\n\n@retry(3)\ndef unstable_portal(character):\n    \"\"\"Attempt to open an unstable portal\"\"\"\n    import random\n    if random.random() < 0.7:\n        raise Exception(\"Portal collapsed!\")\n    return \"Portal opened successfully!\"\n\n@log_action\n@requires_level(10)\n@cooldown(5)\ndef ultimate_attack(character, target):\n    \"\"\"Ultimate ability with multiple decorators\"\"\"\n    return f\"{character.name} unleashes ULTIMATE ATTACK on {target}!\"\n\n\n# Test the decorators\nprint(\"=== Testing Decorators ===\")\n\n# Test 1: Level requirement\nprint(\"\\n--- Test 1: Level Requirement ---\")\nlow_level = Character(\"Newbie\", 3)\nhigh_level = Character(\"Veteran\", 10)\n\nresult = fireball(low_level, \"Goblin\")\nprint(f\"Low level fireball: {result}\")\n\nresult = fireball(high_level, \"Dragon\")\nprint(f\"High level fireball: {result}\")\n\n# Test 2: Cooldown\nprint(\"\\n--- Test 2: Cooldown ---\")\nresult1 = heal(high_level)\nprint(f\"First heal: {result1}\")\n\nresult2 = heal(high_level)\nprint(f\"Second heal (immediate): {result2}\")\n\ntime.sleep(2.1)\nresult3 = heal(high_level)\nprint(f\"Third heal (after cooldown): {result3}\")\n\n# Test 3: Retry\nprint(\"\\n--- Test 3: Retry ---\")\ntry:\n    result = unstable_portal(high_level)\n    print(f\"Portal: {result}\")\nexcept Exception as e:\n    print(f\"Portal failed after retries: {e}\")\n\n# Test 4: Multiple decorators\nprint(\"\\n--- Test 4: Multiple Decorators ---\")\nresult = ultimate_attack(high_level, \"Boss\")\nprint(f\"Ultimate: {result}\")\n\nresult = ultimate_attack(high_level, \"Boss\")\nprint(f\"Ultimate again: {result}\")\n\n# Test 5: Log file\nprint(\"\\n--- Test 5: Action Log ---\")\nprint(f\"Actions logged: {len(log_file_content)}\")\nif log_file_content:\n    print(\"Last log entry:\", log_file_content[-1])",
+  "hints": [
+    "A simple decorator has three parts: outer function (takes func), inner wrapper function (takes *args, **kwargs), and wrapper returns result of calling func.",
+    "Decorators with arguments need THREE levels: outer function (takes argument), decorator function (takes func), wrapper function (takes *args, **kwargs).",
+    "For @requires_level, check character.level (first arg) against min_level. Return error string if too low, otherwise call func normally.",
+    "For @cooldown, store last call time in a dictionary using func.__name__ as key. Compare current time with last time using time.time().",
+    "For @retry, use a for loop to attempt the function 'times' times. Catch exceptions and retry. Only raise if all attempts fail. Use try/except inside the loop."
+  ],
+  "validationTests": [
+    {
+      "type": "output_contains",
+      "value": "Level too low",
+      "description": "requires_level should block low-level characters"
+    },
+    {
+      "type": "output_contains",
+      "value": "Veteran casts Fireball at Dragon",
+      "description": "requires_level should allow high-level characters"
+    },
+    {
+      "type": "output_contains",
+      "value": "Ability on cooldown",
+      "description": "cooldown should prevent immediate re-use"
+    },
+    {
+      "type": "output_contains",
+      "value": "Third heal (after cooldown): Veteran heals",
+      "description": "cooldown should allow use after waiting"
+    },
+    {
+      "type": "code_contains",
+      "value": "def log_action(func):",
+      "description": "Must implement log_action decorator"
+    },
+    {
+      "type": "code_contains",
+      "value": "def requires_level(min_level):",
+      "description": "Must implement requires_level with argument"
+    },
+    {
+      "type": "code_contains",
+      "value": "def cooldown(seconds):",
+      "description": "Must implement cooldown with argument"
+    },
+    {
+      "type": "code_contains",
+      "value": "@wraps(func)",
+      "description": "Should use @wraps to preserve function metadata"
+    },
+    {
+      "type": "code_contains",
+      "value": "last_call_time[",
+      "description": "cooldown should use last_call_time dictionary"
+    }
+  ],
+  "learningObjectives": [
+    "Create simple decorators with wrapper functions",
+    "Implement decorators that accept arguments",
+    "Use functools.wraps to preserve function metadata",
+    "Stack multiple decorators on one function",
+    "Understand decorator execution order",
+    "Build practical decorators for real-world use cases"
+  ],
+  "nextLessonId": 64,
+  "previousLessonId": 62,
+  "tags": ["advanced", "decorators", "functions", "metaprogramming", "wraps"],
+  "commonMistakes": [
+    {
+      "mistake": "Forgetting to return the wrapper function",
+      "explanation": "The decorator must RETURN the wrapper function, not call it. Use 'return wrapper' not 'return wrapper()'."
+    },
+    {
+      "mistake": "Not using *args, **kwargs in wrapper",
+      "explanation": "The wrapper needs to accept any arguments and pass them to the original function using *args, **kwargs."
+    },
+    {
+      "mistake": "Wrong nesting level for decorators with arguments",
+      "explanation": "Decorators with arguments need THREE functions: outer(arg) returns decorator(func) returns wrapper(*args)."
+    },
+    {
+      "mistake": "Not returning the result of func(*args, **kwargs)",
+      "explanation": "The wrapper must return whatever the original function returns. Always: result = func(*args, **kwargs); return result"
+    },
+    {
+      "mistake": "Calling func instead of calling func(*args, **kwargs)",
+      "explanation": "You must pass the arguments through: func(*args, **kwargs), not just func()."
+    }
+  ]
+}

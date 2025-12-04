@@ -1,0 +1,46 @@
+{
+  "id": 201,
+  "trackId": 3,
+  "language": "csharp",
+  "title": "The Scroll of Console",
+  "subtitle": "Your First C# Command",
+  "difficulty": 1,
+  "estimatedTime": "5-10 minutes",
+  "xpReward": 100,
+  "description": "# Welcome to C# Quest!\n\nYou've discovered an ancient scroll that contains the most fundamental spell in all of C# programming: **the Console.WriteLine spell**.\n\nThis spell allows you to display messages to the console - a window where your code communicates with you.\n\n## The Console.WriteLine Spell\n\nIn C#, the print spell looks like this:\n\n```csharp\nConsole.WriteLine(\"Hello, warrior!\");\n```\n\n**How it works:**\n- `Console.WriteLine` is the spell name\n- The parentheses `()` hold the message you want to display\n- The quotation marks `\"\"` tell C# this is text (called a **string**)\n- **The semicolon `;` ends the statement** (required in C#!)\n\n## Important C# Rules\n\n⚠️ **Always end statements with a semicolon (;)**\n⚠️ **C# is case-sensitive**: `Console` must have capital C\n⚠️ **Use double quotes** for strings: `\"text\"`\n\n## Your Quest\n\nCast the Console.WriteLine spell to display the message:\n\n**Welcome to C# Quest!**\n\nThen, on a new line, cast another spell to display:\n\n**I am ready to learn C#!**",
+  "starterCode": "// Cast your Console.WriteLine spells here\n// Remember: Console.WriteLine(\"your message\");\n\n",
+  "solutionCode": "// Cast your Console.WriteLine spells here\nConsole.WriteLine(\"Welcome to C# Quest!\");\nConsole.WriteLine(\"I am ready to learn C#!\");",
+  "hints": [
+    "Use Console.WriteLine() twice - once for each message",
+    "Don't forget the double quotes around your text",
+    "IMPORTANT: End each statement with a semicolon (;)",
+    "Check your capitalization - 'Console' has a capital C",
+    "Copy the exact messages: 'Welcome to C# Quest!' and 'I am ready to learn C#!'"
+  ],
+  "validationTests": [
+    {
+      "type": "output_contains",
+      "value": "Welcome to C# Quest!",
+      "description": "Output should contain 'Welcome to C# Quest!'"
+    },
+    {
+      "type": "output_contains",
+      "value": "I am ready to learn C#!",
+      "description": "Output should contain 'I am ready to learn C#!'"
+    },
+    {
+      "type": "output_line_count",
+      "min": 2,
+      "description": "Should print at least 2 lines"
+    }
+  ],
+  "learningObjectives": [
+    "Understand what Console.WriteLine() does",
+    "Learn to use quotation marks for strings",
+    "Remember to end statements with semicolons",
+    "See immediate output from your code",
+    "Write your first working C# program"
+  ],
+  "nextLessonId": 202,
+  "tags": ["beginner", "console", "strings", "hello-world", "csharp"]
+}

@@ -1,0 +1,57 @@
+{
+  "id": 209,
+  "trackId": 3,
+  "language": "csharp",
+  "title": "The Class Keeper",
+  "subtitle": "Understanding C# Objects",
+  "difficulty": 4,
+  "estimatedTime": "15-20 minutes",
+  "xpReward": 175,
+  "description": "# The Scroll of Classes\n\nYou've been using dictionaries to store character data, but C# has something even more powerful: **classes**! Classes let you create custom types with properties and methods.\n\n## What is a Class?\n\nA class is a blueprint for creating objects. Think of it like a character sheet template that defines what properties a character has.\n\n```csharp\npublic class Hero\n{\n    public string Name { get; set; }\n    public int Health { get; set; }\n    public int Level { get; set; }\n}\n```\n\n## Creating Objects from Classes\n\nOnce you have a class, you can create instances (objects) from it:\n\n```csharp\nHero hero1 = new Hero\n{\n    Name = \"Aria\",\n    Health = 100,\n    Level = 5\n};\n\nConsole.WriteLine(hero1.Name);    // Prints: Aria\nConsole.WriteLine(hero1.Health);  // Prints: 100\n```\n\n## Properties vs Fields\n\nC# uses **properties** (with `{ get; set; }`) instead of simple fields:\n\n```csharp\npublic class Item\n{\n    public string Name { get; set; }     // Property\n    public int Value { get; set; }       // Property\n}\n```\n\n## Your Quest\n\n1. A `Weapon` class has been created with properties for Name, Damage, and Type\n2. Create a new Weapon object called `excalibur` with:\n   - Name: `\"Excalibur\"`\n   - Damage: `50`\n   - Type: `\"Sword\"`\n3. Print all three properties\n4. Change the damage to `75`\n5. Print the updated damage",
+  "starterCode": "using System;\n\nclass Program\n{\n    public class Weapon\n    {\n        public string Name { get; set; }\n        public int Damage { get; set; }\n        public string Type { get; set; }\n    }\n    \n    static void Main()\n    {\n        // Create a new Weapon object called excalibur\n        // Weapon excalibur = new Weapon\n        // {\n        //     ...\n        // };\n        \n        // Print the weapon's name\n        \n        \n        // Print the weapon's damage\n        \n        \n        // Print the weapon's type\n        \n        \n        // Update damage to 75\n        \n        \n        // Print the updated damage\n        \n    }\n}\n",
+  "solutionCode": "using System;\n\nclass Program\n{\n    public class Weapon\n    {\n        public string Name { get; set; }\n        public int Damage { get; set; }\n        public string Type { get; set; }\n    }\n    \n    static void Main()\n    {\n        // Create a new Weapon object called excalibur\n        Weapon excalibur = new Weapon\n        {\n            Name = \"Excalibur\",\n            Damage = 50,\n            Type = \"Sword\"\n        };\n        \n        // Print the weapon's name\n        Console.WriteLine(excalibur.Name);\n        \n        // Print the weapon's damage\n        Console.WriteLine(excalibur.Damage);\n        \n        // Print the weapon's type\n        Console.WriteLine(excalibur.Type);\n        \n        // Update damage to 75\n        excalibur.Damage = 75;\n        \n        // Print the updated damage\n        Console.WriteLine(excalibur.Damage);\n    }\n}\n",
+  "hints": [
+    "Create objects with: ClassName objectName = new ClassName { Property = value };",
+    "Access properties with dot notation: objectName.PropertyName",
+    "Update properties the same way: objectName.PropertyName = newValue;",
+    "Use PascalCase for class and property names in C#",
+    "Don't forget semicolons after each statement!"
+  ],
+  "validationTests": [
+    {
+      "type": "code_contains",
+      "value": "excalibur",
+      "description": "Code should create a variable named 'excalibur'"
+    },
+    {
+      "type": "code_contains",
+      "value": "new Weapon",
+      "description": "Code should create a new Weapon object"
+    },
+    {
+      "type": "output_contains",
+      "value": "Excalibur",
+      "description": "Output should contain 'Excalibur'"
+    },
+    {
+      "type": "output_contains",
+      "value": "50",
+      "description": "Output should contain the initial damage 50"
+    },
+    {
+      "type": "output_contains",
+      "value": "75",
+      "description": "Output should contain the updated damage 75"
+    }
+  ],
+  "learningObjectives": [
+    "Understand what classes are and how they differ from dictionaries",
+    "Create objects from classes using object initializer syntax",
+    "Access and modify object properties",
+    "Use proper C# naming conventions (PascalCase)",
+    "Work with properties that have { get; set; }"
+  ],
+  "previousLessonId": 208,
+  "nextLessonId": 210,
+  "tags": ["classes", "objects", "properties", "oop-intro", "object-oriented"]
+}

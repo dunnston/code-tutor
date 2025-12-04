@@ -1,0 +1,46 @@
+{
+  "id": 113,
+  "trackId": 2,
+  "language": "gdscript",
+  "title": "⚔️ CHALLENGE: Profile Creator",
+  "subtitle": "Build a Character Profile System",
+  "difficulty": 2,
+  "estimatedTime": "30-35 minutes",
+  "xpReward": 350,
+  "description": "# Challenge: Character Profile Creator\n\nTime to put your skills to the test! Create a complete character profile system.\n\n## Your Mission\n\nCreate variables and calculations for a game character:\n\n1. **Basic Info:**\n   - Character name\n   - Class (warrior/mage/archer)\n   - Level\n\n2. **Stats:**\n   - Health (calculate: level * 20 + 50)\n   - Strength\n   - Intelligence\n\n3. **Calculated Values:**\n   - Power score (strength * 2 + intelligence)\n   - Total XP (level * 100)\n\n4. **Display:**\n   - Print a formatted character card with all info\n   - Use string formatting\n   - Make it look professional!\n\n## Success Criteria\n\n✅ All variables created\n✅ Calculations correct\n✅ Formatted output\n✅ Code is clean and readable",
+  "starterCode": "# CHALLENGE: Character Profile Creator\n# Create a complete character profile with stats and calculations\n\n# Step 1: Create basic info variables\n\n# Step 2: Create stat variables\n\n# Step 3: Calculate derived values\n\n# Step 4: Display the character card\n\n",
+  "solutionCode": "# CHALLENGE: Character Profile Creator\n\n# Step 1: Create basic info variables\nvar char_name = \"Shadowblade\"\nvar char_class = \"Archer\"\nvar level = 10\n\n# Step 2: Create stat variables\nvar health = level * 20 + 50  # 250\nvar strength = 15\nvar intelligence = 12\n\n# Step 3: Calculate derived values\nvar power_score = strength * 2 + intelligence  # 42\nvar total_xp = level * 100  # 1000\n\n# Step 4: Display the character card\nprint(\"=\"*30)\nprint(\"    CHARACTER PROFILE\")\nprint(\"=\"*30)\nprint(\"Name: \", char_name)\nprint(\"Class: \", char_class)\nprint(\"Level: \", level)\nprint(\"\\n--- Stats ---\")\nprint(\"Health: \", health)\nprint(\"Strength: \", strength)\nprint(\"Intelligence: \", intelligence)\nprint(\"\\n--- Calculated ---\")\nprint(\"Power Score: \", power_score)\nprint(\"Total XP: \", total_xp)\nprint(\"=\"*30)",
+  "hints": [
+    "Calculate health: level * 20 + 50",
+    "Calculate power: strength * 2 + intelligence",
+    "Use multiple print statements for formatting",
+    "Use \\n for blank lines",
+    "Use \"=\"*30 to create separator lines"
+  ],
+  "validationTests": [
+    {
+      "type": "code_contains",
+      "value": "var ",
+      "description": "Should create variables"
+    },
+    {
+      "type": "code_contains",
+      "value": "*",
+      "description": "Should use multiplication for calculations"
+    },
+    {
+      "type": "output_contains",
+      "value": "CHARACTER",
+      "description": "Should display a character card"
+    }
+  ],
+  "learningObjectives": [
+    "Combine variables, math, and strings",
+    "Create calculated values",
+    "Format professional output",
+    "Build a complete mini-program"
+  ],
+  "previousLessonId": 112,
+  "nextLessonId": 114,
+  "tags": ["beginner", "challenge", "variables", "math", "strings", "godot"]
+}

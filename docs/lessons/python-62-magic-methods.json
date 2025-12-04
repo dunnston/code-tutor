@@ -1,0 +1,121 @@
+{
+  "id": 62,
+  "trackId": 8,
+  "language": "python",
+  "title": "The Magic Grimoire",
+  "subtitle": "Dunder Methods - Making Objects Pythonic",
+  "difficulty": 4,
+  "estimatedTime": "35-45 minutes",
+  "xpReward": 250,
+  "description": "# Master the Magic Methods!\n\n🔮 **Magic methods** (dunder methods) make your custom objects behave like built-in Python types.\n\n## What Are Magic Methods?\n\nMethods with double underscores (`__method__`) that Python calls automatically:\n\n```python\nclass Item:\n    def __init__(self, name, value):\n        self.name = name\n        self.value = value\n    \n    def __repr__(self):\n        return f\"Item('{self.name}', {self.value})\"\n    \n    def __eq__(self, other):\n        return self.value == other.value\n    \n    def __lt__(self, other):\n        return self.value < other.value\n    \n    def __add__(self, other):\n        return Item(f\"{self.name}+{other.name}\", self.value + other.value)\n\nsword = Item(\"Sword\", 100)\nshield = Item(\"Shield\", 80)\n\nprint(sword)  # __repr__ called\nprint(sword == shield)  # __eq__ called\nprint(sword < shield)  # __lt__ called  \ncombo = sword + shield  # __add__ called\n```\n\n## Common Magic Methods\n\n**Representation:**\n- `__repr__` - Official string representation (for debugging)\n- `__str__` - Human-readable string (for display)\n\n**Comparison:**\n- `__eq__(self, other)` - Equality (==)\n- `__lt__(self, other)` - Less than (<)\n- `__le__(self, other)` - Less than or equal (<=)\n- `__gt__(self, other)` - Greater than (>)\n- `__ge__(self, other)` - Greater than or equal (>=)\n\n**Container Methods:**\n- `__len__(self)` - Length (len())\n- `__getitem__(self, key)` - Indexing (obj[key])\n- `__setitem__(self, key, value)` - Assignment (obj[key] = value)\n- `__contains__(self, item)` - Membership (in)\n\n**Arithmetic:**\n- `__add__(self, other)` - Addition (+)\n- `__sub__(self, other)` - Subtraction (-)\n- `__mul__(self, other)` - Multiplication (*)\n\n## The Challenge\n\nThe MMO's game objects lack proper behavior! Implement magic methods for:\n\n1. **Character class** - Comparison by level, string representation\n2. **Inventory class** - Length, indexing, contains check\n3. **Equipment class** - Addition for combining stat bonuses\n4. **GoldPouch class** - Arithmetic operations\n\n⚔️ Make these classes behave like native Python objects!\n\n*Hint: Magic methods make your code more intuitive and Pythonic.*",
+  "starterCode": "# MMO Game Objects - Add Magic Methods!\n\nclass Character:\n    def __init__(self, name, level, char_class):\n        self.name = name\n        self.level = level\n        self.char_class = char_class\n        self.health = 100\n    \n    # TODO: Implement __repr__ for debugging\n    # Format: \"Character('Aragorn', 10, 'Warrior')\"\n    \n    # TODO: Implement __str__ for display\n    # Format: \"Aragorn (Level 10 Warrior)\"\n    \n    # TODO: Implement __eq__ - characters equal if same name and level\n    \n    # TODO: Implement __lt__ - compare by level (for sorting)\n    \n    # TODO: Implement __gt__ - compare by level\n\n\nclass Inventory:\n    def __init__(self):\n        self.items = []\n    \n    def add_item(self, item):\n        self.items.append(item)\n    \n    # TODO: Implement __len__ - return number of items\n    \n    # TODO: Implement __getitem__ - enable indexing (inventory[0])\n    \n    # TODO: Implement __setitem__ - enable assignment (inventory[0] = item)\n    \n    # TODO: Implement __contains__ - enable 'in' operator\n    \n    # TODO: Implement __repr__ - show items list\n\n\nclass Equipment:\n    def __init__(self, name, attack=0, defense=0, magic=0):\n        self.name = name\n        self.attack = attack\n        self.defense = defense\n        self.magic = magic\n    \n    # TODO: Implement __repr__\n    # Format: \"Equipment('Sword', attack=10, defense=0, magic=0)\"\n    \n    # TODO: Implement __add__ - combine two equipment bonuses\n    # Return new Equipment with summed stats\n    \n    # TODO: Implement __eq__ - equal if all stats match\n\n\nclass GoldPouch:\n    def __init__(self, amount=0):\n        self.amount = amount\n    \n    # TODO: Implement __repr__\n    # Format: \"GoldPouch(100)\"\n    \n    # TODO: Implement __str__\n    # Format: \"100 gold\"\n    \n    # TODO: Implement __add__ - add gold amounts\n    # Return new GoldPouch\n    \n    # TODO: Implement __sub__ - subtract gold amounts\n    # Return new GoldPouch (minimum 0)\n    \n    # TODO: Implement __mul__ - multiply gold (for interest)\n    # Return new GoldPouch\n    \n    # TODO: Implement __lt__, __gt__, __eq__ for comparisons\n\n\n# Test Magic Methods\nprint(\"=== Testing Character ===\")\nhero = Character(\"Aragorn\", 10, \"Warrior\")\nprint(repr(hero))  # Should show Character('Aragorn', 10, 'Warrior')\nprint(str(hero))   # Should show Aragorn (Level 10 Warrior)\n\nvillain = Character(\"Sauron\", 50, \"Dark Lord\")\nprint(f\"Hero < Villain: {hero < villain}\")  # Should be True (10 < 50)\nprint(f\"Hero == Villain: {hero == villain}\")  # Should be False\n\nprint(\"\\n=== Testing Inventory ===\")\ninv = Inventory()\ninv.add_item(\"Sword\")\ninv.add_item(\"Shield\")\ninv.add_item(\"Potion\")\n\nprint(f\"Inventory length: {len(inv)}\")  # Should be 3\nprint(f\"First item: {inv[0]}\")  # Should be 'Sword'\nprint(f\"'Potion' in inventory: {'Potion' in inv}\")  # Should be True\nprint(f\"'Helmet' in inventory: {'Helmet' in inv}\")  # Should be False\ninv[0] = \"Great Sword\"\nprint(f\"First item after change: {inv[0]}\")  # Should be 'Great Sword'\n\nprint(\"\\n=== Testing Equipment ===\")\nsword = Equipment(\"Sword\", attack=10, defense=2)\nshield = Equipment(\"Shield\", attack=0, defense=15)\nprint(repr(sword))\n\ncombo = sword + shield  # Combine stats\nprint(f\"Combined equipment: {combo.name}\")\nprint(f\"Combined attack: {combo.attack}\")  # Should be 10\nprint(f\"Combined defense: {combo.defense}\")  # Should be 17\n\nprint(\"\\n=== Testing GoldPouch ===\")\npouch1 = GoldPouch(100)\npouch2 = GoldPouch(50)\nprint(str(pouch1))  # Should be \"100 gold\"\n\ncombined = pouch1 + pouch2\nprint(f\"Combined gold: {combined.amount}\")  # Should be 150\n\nspent = pouch1 - GoldPouch(30)\nprint(f\"After spending: {spent.amount}\")  # Should be 70\n\ninterest = pouch1 * 1.1  # 10% interest\nprint(f\"After interest: {interest.amount}\")  # Should be 110.0\n\nprint(f\"pouch1 > pouch2: {pouch1 > pouch2}\")  # Should be True",
+  "solutionCode": "# MMO Game Objects - With Magic Methods!\n\nclass Character:\n    def __init__(self, name, level, char_class):\n        self.name = name\n        self.level = level\n        self.char_class = char_class\n        self.health = 100\n    \n    def __repr__(self):\n        return f\"Character('{self.name}', {self.level}, '{self.char_class}')\"\n    \n    def __str__(self):\n        return f\"{self.name} (Level {self.level} {self.char_class})\"\n    \n    def __eq__(self, other):\n        return self.name == other.name and self.level == other.level\n    \n    def __lt__(self, other):\n        return self.level < other.level\n    \n    def __gt__(self, other):\n        return self.level > other.level\n\n\nclass Inventory:\n    def __init__(self):\n        self.items = []\n    \n    def add_item(self, item):\n        self.items.append(item)\n    \n    def __len__(self):\n        return len(self.items)\n    \n    def __getitem__(self, index):\n        return self.items[index]\n    \n    def __setitem__(self, index, value):\n        self.items[index] = value\n    \n    def __contains__(self, item):\n        return item in self.items\n    \n    def __repr__(self):\n        return f\"Inventory({self.items})\"\n\n\nclass Equipment:\n    def __init__(self, name, attack=0, defense=0, magic=0):\n        self.name = name\n        self.attack = attack\n        self.defense = defense\n        self.magic = magic\n    \n    def __repr__(self):\n        return f\"Equipment('{self.name}', attack={self.attack}, defense={self.defense}, magic={self.magic})\"\n    \n    def __add__(self, other):\n        return Equipment(\n            f\"{self.name}+{other.name}\",\n            attack=self.attack + other.attack,\n            defense=self.defense + other.defense,\n            magic=self.magic + other.magic\n        )\n    \n    def __eq__(self, other):\n        return (self.attack == other.attack and \n                self.defense == other.defense and \n                self.magic == other.magic)\n\n\nclass GoldPouch:\n    def __init__(self, amount=0):\n        self.amount = amount\n    \n    def __repr__(self):\n        return f\"GoldPouch({self.amount})\"\n    \n    def __str__(self):\n        return f\"{self.amount} gold\"\n    \n    def __add__(self, other):\n        return GoldPouch(self.amount + other.amount)\n    \n    def __sub__(self, other):\n        return GoldPouch(max(0, self.amount - other.amount))\n    \n    def __mul__(self, multiplier):\n        return GoldPouch(self.amount * multiplier)\n    \n    def __lt__(self, other):\n        return self.amount < other.amount\n    \n    def __gt__(self, other):\n        return self.amount > other.amount\n    \n    def __eq__(self, other):\n        return self.amount == other.amount\n\n\n# Test Magic Methods\nprint(\"=== Testing Character ===\")\nhero = Character(\"Aragorn\", 10, \"Warrior\")\nprint(repr(hero))\nprint(str(hero))\n\nvillain = Character(\"Sauron\", 50, \"Dark Lord\")\nprint(f\"Hero < Villain: {hero < villain}\")\nprint(f\"Hero == Villain: {hero == villain}\")\n\nprint(\"\\n=== Testing Inventory ===\")\ninv = Inventory()\ninv.add_item(\"Sword\")\ninv.add_item(\"Shield\")\ninv.add_item(\"Potion\")\n\nprint(f\"Inventory length: {len(inv)}\")\nprint(f\"First item: {inv[0]}\")\nprint(f\"'Potion' in inventory: {'Potion' in inv}\")\nprint(f\"'Helmet' in inventory: {'Helmet' in inv}\")\ninv[0] = \"Great Sword\"\nprint(f\"First item after change: {inv[0]}\")\n\nprint(\"\\n=== Testing Equipment ===\")\nsword = Equipment(\"Sword\", attack=10, defense=2)\nshield = Equipment(\"Shield\", attack=0, defense=15)\nprint(repr(sword))\n\ncombo = sword + shield\nprint(f\"Combined equipment: {combo.name}\")\nprint(f\"Combined attack: {combo.attack}\")\nprint(f\"Combined defense: {combo.defense}\")\n\nprint(\"\\n=== Testing GoldPouch ===\")\npouch1 = GoldPouch(100)\npouch2 = GoldPouch(50)\nprint(str(pouch1))\n\ncombined = pouch1 + pouch2\nprint(f\"Combined gold: {combined.amount}\")\n\nspent = pouch1 - GoldPouch(30)\nprint(f\"After spending: {spent.amount}\")\n\ninterest = pouch1 * 1.1\nprint(f\"After interest: {interest.amount}\")\n\nprint(f\"pouch1 > pouch2: {pouch1 > pouch2}\")",
+  "hints": [
+    "__repr__ should return a string that looks like valid Python code to recreate the object. Use f-strings with quotes around string values.",
+    "__str__ is for human-readable output. Make it friendly and informative, like 'Aragorn (Level 10 Warrior)'.",
+    "For comparison methods (__lt__, __gt__, __eq__), compare the relevant attribute (level for Character, amount for GoldPouch).",
+    "Container methods (__len__, __getitem__, __contains__) should delegate to the internal list (self.items). Just return the result of calling the same operation on self.items.",
+    "For __add__ in Equipment, create and return a NEW Equipment object with combined stats. Don't modify self or other!"
+  ],
+  "validationTests": [
+    {
+      "type": "output_contains",
+      "value": "Character('Aragorn', 10, 'Warrior')",
+      "description": "__repr__ must show proper representation"
+    },
+    {
+      "type": "output_contains",
+      "value": "Aragorn (Level 10 Warrior)",
+      "description": "__str__ must show readable format"
+    },
+    {
+      "type": "output_contains",
+      "value": "Hero < Villain: True",
+      "description": "__lt__ must compare levels correctly"
+    },
+    {
+      "type": "output_contains",
+      "value": "Inventory length: 3",
+      "description": "__len__ must return correct count"
+    },
+    {
+      "type": "output_contains",
+      "value": "First item: Sword",
+      "description": "__getitem__ must enable indexing"
+    },
+    {
+      "type": "output_contains",
+      "value": "'Potion' in inventory: True",
+      "description": "__contains__ must work with 'in' operator"
+    },
+    {
+      "type": "output_contains",
+      "value": "First item after change: Great Sword",
+      "description": "__setitem__ must enable assignment"
+    },
+    {
+      "type": "output_contains",
+      "value": "Combined attack: 10",
+      "description": "__add__ must combine equipment stats"
+    },
+    {
+      "type": "output_contains",
+      "value": "Combined defense: 17",
+      "description": "__add__ must sum defense correctly"
+    },
+    {
+      "type": "output_contains",
+      "value": "Combined gold: 150",
+      "description": "GoldPouch __add__ must work"
+    },
+    {
+      "type": "output_contains",
+      "value": "After spending: 70",
+      "description": "GoldPouch __sub__ must work"
+    },
+    {
+      "type": "code_contains",
+      "value": "def __repr__",
+      "description": "Must implement __repr__ method"
+    },
+    {
+      "type": "code_contains",
+      "value": "def __len__",
+      "description": "Must implement __len__ method"
+    },
+    {
+      "type": "code_contains",
+      "value": "def __add__",
+      "description": "Must implement __add__ method"
+    }
+  ],
+  "learningObjectives": [
+    "Implement __repr__ and __str__ for object representation",
+    "Use comparison magic methods (__eq__, __lt__, __gt__)",
+    "Implement container magic methods (__len__, __getitem__, __contains__)",
+    "Use arithmetic magic methods (__add__, __sub__, __mul__)",
+    "Make custom classes behave like built-in Python types",
+    "Understand when to use each magic method"
+  ],
+  "nextLessonId": 63,
+  "previousLessonId": 61,
+  "tags": ["advanced", "oop", "magic-methods", "dunder", "pythonic"],
+  "commonMistakes": [
+    {
+      "mistake": "Modifying self or other in __add__ instead of returning new object",
+      "explanation": "Arithmetic operators should return NEW objects, not modify existing ones. Use: return Equipment(...) not self.attack += other.attack"
+    },
+    {
+      "mistake": "Forgetting to return self in __setitem__",
+      "explanation": "Actually, __setitem__ should NOT return anything (returns None). It modifies in place. Only __getitem__ returns a value."
+    },
+    {
+      "mistake": "Using __str__ format in __repr__",
+      "explanation": "__repr__ should look like code: Equipment('Sword', attack=10). __str__ is for human-readable output."
+    },
+    {
+      "mistake": "Not handling type checking in magic methods",
+      "explanation": "In production code, check if 'other' is the right type in __eq__, __add__, etc. For this lesson, assume correct types."
+    }
+  ]
+}

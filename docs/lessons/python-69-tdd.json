@@ -1,0 +1,67 @@
+{
+  "id": 69,
+  "trackId": 8,
+  "language": "python",
+  "title": "The Test-First Dojo",
+  "subtitle": "Test-Driven Development",
+  "difficulty": 5,
+  "estimatedTime": "45-60 minutes",
+  "xpReward": 300,
+  "description": "# Master TDD!\n\n🔴➡️🟢➡️🔵 **Test-Driven Development** - Write tests BEFORE code!\n\n## The TDD Cycle\n\n1. **RED**: Write a failing test\n2. **GREEN**: Write minimum code to pass\n3. **REFACTOR**: Improve code quality\n4. **REPEAT**: Next feature\n\n## Example TDD Session\n\n```python\n# RED - Write failing test\ndef test_inventory_max_weight():\n    inv = Inventory(max_weight=100)\n    assert inv.can_add_item(Item(\"Sword\", weight=50))\n    assert not inv.can_add_item(Item(\"Armor\", weight=60))\n\n# GREEN - Make it pass (minimal code)\nclass Inventory:\n    def __init__(self, max_weight):\n        self.max_weight = max_weight\n        self.current_weight = 0\n    \n    def can_add_item(self, item):\n        return self.current_weight + item.weight <= self.max_weight\n\n# REFACTOR - Improve design\n```\n\n## Your Mission\n\nBuild an inventory weight system using TDD:\n1. Write test for max_weight\n2. Implement can_add_item()\n3. Write test for add_item()\n4. Implement add_item() with weight tracking\n5. Write test for remove_item()\n6. Implement remove_item()\n\n*Hint: Tests are your spec. Code follows tests.*",
+  "starterCode": "import pytest\n\n# TODO: Define Item class\nclass Item:\n    pass\n\n# TODO: Define Inventory class with TDD approach\nclass Inventory:\n    pass\n\n# ===== TDD TESTS (Write these FIRST) =====\n\n# TEST 1: Can check if item fits\ndef test_can_add_item_within_limit():\n    # TODO: Write test\n    pass\n\ndef test_can_add_item_exceeds_limit():\n    # TODO: Write test\n    pass\n\n# TEST 2: Can add items\ndef test_add_item_success():\n    # TODO: Write test\n    pass\n\ndef test_add_item_exceeds_weight():\n    # TODO: Write test (should return False)\n    pass\n\n# TEST 3: Can remove items\ndef test_remove_item():\n    # TODO: Write test\n    pass\n\n# TEST 4: Current weight tracking\ndef test_current_weight():\n    # TODO: Write test\n    pass\n\nif __name__ == \"__main__\":\n    print(\"Running TDD tests...\")\n    test_can_add_item_within_limit()\n    test_can_add_item_exceeds_limit()\n    test_add_item_success()\n    test_add_item_exceeds_weight()\n    test_remove_item()\n    test_current_weight()\n    print(\"All TDD tests passed!\")",
+  "solutionCode": "import pytest\n\nclass Item:\n    def __init__(self, name, weight):\n        self.name = name\n        self.weight = weight\n\nclass Inventory:\n    def __init__(self, max_weight):\n        self.max_weight = max_weight\n        self.items = []\n        self.current_weight = 0\n    \n    def can_add_item(self, item):\n        return self.current_weight + item.weight <= self.max_weight\n    \n    def add_item(self, item):\n        if self.can_add_item(item):\n            self.items.append(item)\n            self.current_weight += item.weight\n            return True\n        return False\n    \n    def remove_item(self, item_name):\n        for item in self.items:\n            if item.name == item_name:\n                self.items.remove(item)\n                self.current_weight -= item.weight\n                return True\n        return False\n\n# ===== TDD TESTS =====\n\ndef test_can_add_item_within_limit():\n    inv = Inventory(max_weight=100)\n    item = Item(\"Sword\", weight=50)\n    assert inv.can_add_item(item)\n\ndef test_can_add_item_exceeds_limit():\n    inv = Inventory(max_weight=100)\n    inv.add_item(Item(\"Armor\", weight=60))\n    assert not inv.can_add_item(Item(\"Sword\", weight=50))\n\ndef test_add_item_success():\n    inv = Inventory(max_weight=100)\n    item = Item(\"Sword\", weight=50)\n    assert inv.add_item(item)\n    assert len(inv.items) == 1\n\ndef test_add_item_exceeds_weight():\n    inv = Inventory(max_weight=100)\n    inv.add_item(Item(\"Armor\", weight=60))\n    assert not inv.add_item(Item(\"Sword\", weight=50))\n\ndef test_remove_item():\n    inv = Inventory(max_weight=100)\n    inv.add_item(Item(\"Sword\", weight=50))\n    assert inv.remove_item(\"Sword\")\n    assert len(inv.items) == 0\n\ndef test_current_weight():\n    inv = Inventory(max_weight=100)\n    inv.add_item(Item(\"Sword\", weight=30))\n    inv.add_item(Item(\"Shield\", weight=20))\n    assert inv.current_weight == 50\n\nif __name__ == \"__main__\":\n    print(\"Running TDD tests...\")\n    test_can_add_item_within_limit()\n    test_can_add_item_exceeds_limit()\n    test_add_item_success()\n    test_add_item_exceeds_weight()\n    test_remove_item()\n    test_current_weight()\n    print(\"All TDD tests passed!\")",
+  "hints": [
+    "In TDD, write the test FIRST, see it fail (RED), then write code to make it pass (GREEN).",
+    "Start simple: Item just needs __init__ with name and weight.",
+    "Inventory tracks items list, current_weight, and max_weight.",
+    "can_add_item checks: current_weight + item.weight <= max_weight",
+    "add_item calls can_add_item first, then appends and updates weight if True."
+  ],
+  "validationTests": [
+    {
+      "type": "code_contains",
+      "value": "class Item",
+      "description": "Must define Item class"
+    },
+    {
+      "type": "code_contains",
+      "value": "class Inventory",
+      "description": "Must define Inventory class"
+    },
+    {
+      "type": "code_contains",
+      "value": "def can_add_item",
+      "description": "Must implement can_add_item method"
+    },
+    {
+      "type": "code_contains",
+      "value": "def add_item",
+      "description": "Must implement add_item method"
+    },
+    {
+      "type": "output_contains",
+      "value": "All TDD tests passed",
+      "description": "All tests should pass"
+    }
+  ],
+  "learningObjectives": [
+    "Practice test-driven development workflow",
+    "Write tests before implementation code",
+    "Follow RED-GREEN-REFACTOR cycle",
+    "Design through tests",
+    "Build confidence through testing"
+  ],
+  "nextLessonId": 70,
+  "previousLessonId": 68,
+  "tags": ["advanced", "testing", "tdd", "test-first", "design"],
+  "commonMistakes": [
+    {
+      "mistake": "Writing code before tests",
+      "explanation": "In TDD, ALWAYS write the test first! See it fail, then make it pass."
+    },
+    {
+      "mistake": "Writing too much code at once",
+      "explanation": "Write minimum code to pass the current test. Don't implement future features yet."
+    }
+  ]
+}

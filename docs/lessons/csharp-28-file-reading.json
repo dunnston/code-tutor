@@ -1,0 +1,52 @@
+{
+  "id": 228,
+  "trackId": 3,
+  "language": "csharp",
+  "title": "The Scroll Reader",
+  "subtitle": "Reading Data from Files",
+  "difficulty": 4,
+  "estimatedTime": "25-30 minutes",
+  "xpReward": 200,
+  "description": "# Reading Data from Text\n\nIn real applications, data comes from files! Learn to read and parse text data in C#.\n\n## Reading All Text\n\n```csharp\nusing System.IO;\n\n// Read entire file as string\nstring content = File.ReadAllText(\"quest_log.txt\");\nConsole.WriteLine(content);\n\n// Read all lines as array\nstring[] lines = File.ReadAllLines(\"items.txt\");\nforeach (string line in lines)\n{\n    Console.WriteLine(line);\n}\n```\n\n## Parsing CSV-Style Data\n\n```csharp\n// If file contains: \"Sword,100,weapon\"\nstring[] lines = File.ReadAllLines(\"inventory.txt\");\nforeach (string line in lines)\n{\n    string[] parts = line.Split(',');\n    string name = parts[0];\n    int value = int.Parse(parts[1]);\n    string type = parts[2];\n    \n    Console.WriteLine($\"{name} is worth {value} gold\");\n}\n```\n\n## String Parsing\n\n```csharp\nstring data = \"Name:Aria,Level:10,Gold:500\";\nstring[] parts = data.Split(',');\n\nforeach (string part in parts)\n{\n    string[] keyValue = part.Split(':');\n    string key = keyValue[0];\n    string value = keyValue[1];\n    Console.WriteLine($\"{key} = {value}\");\n}\n```\n\n## Your Quest\n\nCreate a quest log parser:\n1. Parse quest data (format: \"Quest Name,Status,Reward\")\n2. Display completed quests\n3. Calculate total rewards\n4. Generate statistics\n\n**Note:** We'll simulate file reading using a multi-line string for this lesson.",
+  "starterCode": "using System;\nusing System.Linq;\n\nclass Program\n{\n    static void Main()\n    {\n        // Simulated file content (in real apps, use File.ReadAllLines)\n        string questData = @\"Defeat the Goblin King,Completed,500\nFind the Lost Artifact,In Progress,1000\nRescue the Village,Completed,300\nExplore the Dark Cave,Not Started,750\nDefeat the Dragon,Completed,2000\";\n        \n        // Split into lines\n        string[] lines = questData.Split('\\n');\n        \n        Console.WriteLine(\"=== ALL QUESTS ===\");\n        foreach (string line in /* Fill in */)\n        {\n            // Parse the line (split by comma)\n            string[] parts = line.Split(/* Fill in */);\n            string questName = parts[/* index 0 */];\n            string status = parts[/* index 1 */];\n            int reward = int.Parse(parts[/* index 2 */]);\n            \n            Console.WriteLine($\"{questName}: {status} - {reward}g\");\n        }\n        \n        Console.WriteLine(\"\\n=== COMPLETED QUESTS ===\");\n        int totalRewards = 0;\n        \n        foreach (string line in lines)\n        {\n            string[] parts = line.Split(',');\n            string questName = parts[0];\n            string status = parts[1];\n            int reward = int.Parse(parts[2]);\n            \n            if (status == /* \"Completed\" */)\n            {\n                Console.WriteLine($\"✓ {questName} - Earned {reward}g\");\n                totalRewards += /* Add reward */;\n            }\n        }\n        \n        Console.WriteLine($\"\\nTotal rewards earned: {totalRewards}g\");\n        \n        Console.WriteLine(\"\\n=== QUEST STATISTICS ===\");\n        int totalQuests = /* Number of lines */;\n        int completedCount = 0;\n        \n        foreach (string line in lines)\n        {\n            string[] parts = line.Split(',');\n            if (parts[1] == \"Completed\")\n            {\n                completedCount++;\n            }\n        }\n        \n        double completionRate = (double)completedCount / totalQuests * 100;\n        Console.WriteLine($\"Quests completed: {completedCount}/{totalQuests}\");\n        Console.WriteLine($\"Completion rate: {completionRate:F1}%\");\n    }\n}\n",
+  "solutionCode": "using System;\nusing System.Linq;\n\nclass Program\n{\n    static void Main()\n    {\n        // Simulated file content\n        string questData = @\"Defeat the Goblin King,Completed,500\nFind the Lost Artifact,In Progress,1000\nRescue the Village,Completed,300\nExplore the Dark Cave,Not Started,750\nDefeat the Dragon,Completed,2000\";\n        \n        // Split into lines\n        string[] lines = questData.Split('\\n');\n        \n        Console.WriteLine(\"=== ALL QUESTS ===\");\n        foreach (string line in lines)\n        {\n            string[] parts = line.Split(',');\n            string questName = parts[0];\n            string status = parts[1];\n            int reward = int.Parse(parts[2]);\n            \n            Console.WriteLine($\"{questName}: {status} - {reward}g\");\n        }\n        \n        Console.WriteLine(\"\\n=== COMPLETED QUESTS ===\");\n        int totalRewards = 0;\n        \n        foreach (string line in lines)\n        {\n            string[] parts = line.Split(',');\n            string questName = parts[0];\n            string status = parts[1];\n            int reward = int.Parse(parts[2]);\n            \n            if (status == \"Completed\")\n            {\n                Console.WriteLine($\"✓ {questName} - Earned {reward}g\");\n                totalRewards += reward;\n            }\n        }\n        \n        Console.WriteLine($\"\\nTotal rewards earned: {totalRewards}g\");\n        \n        Console.WriteLine(\"\\n=== QUEST STATISTICS ===\");\n        int totalQuests = lines.Length;\n        int completedCount = 0;\n        \n        foreach (string line in lines)\n        {\n            string[] parts = line.Split(',');\n            if (parts[1] == \"Completed\")\n            {\n                completedCount++;\n            }\n        }\n        \n        double completionRate = (double)completedCount / totalQuests * 100;\n        Console.WriteLine($\"Quests completed: {completedCount}/{totalQuests}\");\n        Console.WriteLine($\"Completion rate: {completionRate:F1}%\");\n    }\n}\n",
+  "hints": [
+    "Use line.Split(',') to split by commas",
+    "Access array elements: parts[0] (name), parts[1] (status), parts[2] (reward)",
+    "Convert to int: int.Parse(parts[2])",
+    "Check completion: if (status == \"Completed\")",
+    "Get array length: lines.Length"
+  ],
+  "validationTests": [
+    {
+      "type": "code_contains",
+      "value": "Split",
+      "description": "Must use Split() to parse data"
+    },
+    {
+      "type": "code_contains",
+      "value": "int.Parse",
+      "description": "Must convert reward to integer"
+    },
+    {
+      "type": "output_contains",
+      "value": "Completed",
+      "description": "Should display completed quests"
+    },
+    {
+      "type": "output_contains",
+      "value": "Total rewards",
+      "description": "Should calculate total rewards"
+    }
+  ],
+  "learningObjectives": [
+    "Parse CSV-style data with Split()",
+    "Convert string data to appropriate types",
+    "Filter and process text data",
+    "Calculate statistics from parsed content",
+    "Work with multi-line strings"
+  ],
+  "previousLessonId": 227,
+  "nextLessonId": 229,
+  "tags": ["advanced", "files", "parsing", "strings", "data-processing"]
+}

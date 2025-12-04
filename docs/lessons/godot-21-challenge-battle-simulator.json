@@ -1,0 +1,24 @@
+{
+  "id": 121,
+  "trackId": 2,
+  "language": "gdscript",
+  "title": "⚔️ CHALLENGE: Battle Simulator",
+  "subtitle": "Build a Turn-Based Combat System",
+  "difficulty": 4,
+  "estimatedTime": "40-50 minutes",
+  "xpReward": 500,
+  "description": "# Challenge: Turn-Based Battle System\n\nCreate a complete turn-based battle system!\n\n## Requirements\n\n**Player Stats:**\n- Health: 100\n- Attack: 15-25 (random)\n- Healing: 20\n\n**Enemy Stats:**\n- Health: 80\n- Attack: 10-20 (random)\n\n**Battle Flow:**\n1. Player attacks first\n2. Check if enemy defeated\n3. Enemy attacks\n4. Check if player defeated\n5. Every 3 turns, player can heal\n6. Continue until someone wins\n\n## Success Criteria\n\n✅ Use while loop for battle\n✅ Random damage ranges\n✅ Turn counter\n✅ Victory/defeat messages\n✅ Healing system",
+  "starterCode": "# Battle Simulator Challenge\n\n# Import random for damage variation\n# (In real GDScript, use randi_range())\n\nvar player_health = 100\nvar enemy_health = 80\nvar turn = 1\n\nprint(\"=== BATTLE START ===\")\n\n# Your battle loop here\n\n",
+  "solutionCode": "# Battle Simulator Challenge\n\nvar player_health = 100\nvar enemy_health = 80\nvar turn = 1\n\nprint(\"=== BATTLE START ===\")\nprint(\"Player HP: \", player_health)\nprint(\"Enemy HP: \", enemy_health)\nprint()\n\nwhile player_health > 0 and enemy_health > 0:\n    print(\"--- Turn \", turn, \" ---\")\n    \n    # Player attack (simulate random 15-25)\n    var player_damage = 15 + (turn % 11)  # Simulates variation\n    enemy_health -= player_damage\n    print(\"You deal \", player_damage, \" damage!\")\n    print(\"Enemy HP: \", max(0, enemy_health))\n    \n    if enemy_health <= 0:\n        print(\"\\n🎉 VICTORY! Enemy defeated!\")\n        break\n    \n    # Enemy attack (simulate random 10-20)\n    var enemy_damage = 10 + (turn % 11)\n    player_health -= enemy_damage\n    print(\"Enemy deals \", enemy_damage, \" damage!\")\n    print(\"Player HP: \", max(0, player_health))\n    \n    if player_health <= 0:\n        print(\"\\n💀 DEFEAT! You were defeated!\")\n        break\n    \n    # Healing every 3 turns\n    if turn % 3 == 0:\n        player_health += 20\n        print(\"💚 Healed 20 HP! Health: \", player_health)\n    \n    print()\n    turn += 1\n\nprint(\"\\nBattle ended after \", turn, \" turns\")",
+  "hints": ["Use while both have health > 0", "Use modulo (%) for turn-based effects", "Check health after each attack", "Use break when battle ends", "max(0, health) prevents negative display"],
+  "validationTests": [
+    {"type": "code_contains", "value": "while ", "description": "Should use while loop"},
+    {"type": "code_contains", "value": "break", "description": "Should use break"},
+    {"type": "output_contains", "value": "Turn", "description": "Should show turn numbers"},
+    {"type": "output_contains", "value": "damage", "description": "Should show damage dealt"}
+  ],
+  "learningObjectives": ["Combine loops and conditionals", "Create game systems", "Manage turn-based logic", "Handle win/lose conditions"],
+  "previousLessonId": 120,
+  "nextLessonId": 122,
+  "tags": ["beginner", "challenge", "loops", "battle-system", "game-logic", "godot"]
+}

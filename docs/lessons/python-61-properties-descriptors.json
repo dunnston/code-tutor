@@ -1,0 +1,106 @@
+{
+  "id": 61,
+  "trackId": 8,
+  "language": "python",
+  "title": "The Sacred Properties",
+  "subtitle": "Advanced OOP - Properties & Descriptors",
+  "difficulty": 4,
+  "estimatedTime": "30-40 minutes",
+  "xpReward": 200,
+  "description": "# Welcome to Python Mastery!\n\n🔥 You've completed Python Applications. Now you'll learn professional Python development!\n\nIn this quest, you'll master **properties and descriptors** - the foundation of advanced OOP.\n\n## Why Properties Matter\n\nProperties let you control how attributes are accessed and modified. They're essential for:\n- **Data validation** (prevent invalid values)\n- **Computed attributes** (calculate values on-the-fly)\n- **Encapsulation** (hide implementation details)\n- **Backward compatibility** (change internals without breaking APIs)\n\n## The @property Decorator\n\n```python\nclass Character:\n    def __init__(self):\n        self._health = 100\n        self._max_health = 100\n    \n    @property\n    def health(self):\n        \"\"\"Getter: return current health\"\"\"\n        return self._health\n    \n    @health.setter\n    def health(self, value):\n        \"\"\"Setter: validate and set health\"\"\"\n        if value < 0:\n            self._health = 0\n        elif value > self._max_health:\n            self._health = self._max_health\n        else:\n            self._health = value\n\n# Usage looks like a normal attribute:\nhero = Character()\nhero.health = 150  # Setter called, capped at 100\nprint(hero.health)  # Getter called, prints 100\n```\n\n## The Problem\n\nThe Hero Academy's Character class is broken! Students can set health to negative values, mana exceeds max mana, and level changes don't update stats.\n\n**Your mission:** Refactor the Character class using properties to:\n1. **Health validation** - Can't be negative or exceed max_health\n2. **Mana with regeneration** - Mana can't exceed max_mana, add mana_percentage property\n3. **Level with stat updates** - Setting level automatically recalculates stats\n4. **Read-only attributes** - Some properties should only have getters\n\n## Key Concepts\n\n**Getter Only (Read-Only):**\n```python\n@property\ndef is_alive(self):\n    return self._health > 0\n# No setter = read-only!\n```\n\n**Computed Properties:**\n```python\n@property\ndef health_percentage(self):\n    return (self._health / self._max_health) * 100\n```\n\n**Validation in Setter:**\n```python\n@level.setter\ndef level(self, value):\n    if value < 1:\n        raise ValueError(\"Level must be at least 1\")\n    self._level = value\n    self._recalculate_stats()  # Trigger side effects\n```\n\n⚔️ Transform the broken Character class into a professional, validated system!\n\n*Hint: Private attributes use underscore prefix (_health), properties provide controlled access.*",
+  "starterCode": "# Hero Academy - Character System (BROKEN!)\n# Refactor using properties for validation and computed attributes\n\nclass Character:\n    def __init__(self, name, char_class, level=1):\n        self.name = name\n        self.char_class = char_class\n        # TODO: Convert these to private attributes with properties\n        self.level = level\n        self.health = 100\n        self.max_health = 100\n        self.mana = 50\n        self.max_mana = 50\n        self.strength = 10\n        self.intelligence = 10\n    \n    # TODO: Add @property for health with validation\n    # Should prevent negative values and values exceeding max_health\n    \n    # TODO: Add @property for mana with validation\n    # Should prevent negative values and values exceeding max_mana\n    \n    # TODO: Add computed property: health_percentage\n    # Should return health as a percentage of max_health\n    \n    # TODO: Add computed property: mana_percentage\n    # Should return mana as a percentage of max_mana\n    \n    # TODO: Add @property for level with stat recalculation\n    # When level is set, recalculate max_health, max_mana, and stats\n    \n    # TODO: Add read-only property: is_alive\n    # Should return True if health > 0, False otherwise\n    \n    def _recalculate_stats(self):\n        \"\"\"Recalculate stats based on level (called when level changes)\"\"\"\n        # TODO: Update max_health, max_mana, strength, intelligence based on level\n        # Formula: max_health = 100 + (level - 1) * 20\n        # Formula: max_mana = 50 + (level - 1) * 10\n        # Formula: strength = 10 + (level - 1) * 2\n        # Formula: intelligence = 10 + (level - 1) * 2\n        pass\n    \n    def take_damage(self, amount):\n        \"\"\"Reduce health by amount\"\"\"\n        self.health -= amount\n    \n    def heal(self, amount):\n        \"\"\"Restore health by amount\"\"\"\n        self.health += amount\n    \n    def cast_spell(self, mana_cost):\n        \"\"\"Cast spell if enough mana\"\"\"\n        if self.mana >= mana_cost:\n            self.mana -= mana_cost\n            return True\n        return False\n    \n    def rest(self):\n        \"\"\"Restore mana to full\"\"\"\n        self.mana = self.max_mana\n\n\n# Test the Character class\nhero = Character(\"Aragorn\", \"Warrior\", 1)\n\n# Test 1: Health validation\nprint(f\"Initial health: {hero.health}\")\nhero.take_damage(120)  # Overkill damage\nprint(f\"After 120 damage: {hero.health}\")  # Should be 0, not negative\nprint(f\"Is alive: {hero.is_alive}\")  # Should be False\n\n# Test 2: Healing validation\nhero.health = 50\nhero.heal(100)  # Try to overheal\nprint(f\"After healing: {hero.health}\")  # Should be 100 (max), not 150\nprint(f\"Health percentage: {hero.health_percentage:.1f}%\")  # Should be 100.0%\n\n# Test 3: Level up and stat recalculation\nhero.level = 5\nprint(f\"Level 5 max health: {hero.max_health}\")  # Should be 180\nprint(f\"Level 5 max mana: {hero.max_mana}\")  # Should be 90\nprint(f\"Level 5 strength: {hero.strength}\")  # Should be 18\n\n# Test 4: Mana validation\nhero.rest()  # Restore to full mana\nprint(f\"Mana after rest: {hero.mana}\")  # Should be 90\nprint(f\"Mana percentage: {hero.mana_percentage:.1f}%\")  # Should be 100.0%\nhero.cast_spell(30)\nprint(f\"Mana after spell: {hero.mana}\")  # Should be 60\nprint(f\"Mana percentage: {hero.mana_percentage:.1f}%\")  # Should be 66.7%",
+  "solutionCode": "# Hero Academy - Character System (FIXED with Properties!)\n\nclass Character:\n    def __init__(self, name, char_class, level=1):\n        self.name = name\n        self.char_class = char_class\n        # Use private attributes\n        self._level = level\n        self._health = 100\n        self._max_health = 100\n        self._mana = 50\n        self._max_mana = 50\n        self._strength = 10\n        self._intelligence = 10\n        # Initialize stats for starting level\n        self._recalculate_stats()\n    \n    @property\n    def health(self):\n        \"\"\"Get current health\"\"\"\n        return self._health\n    \n    @health.setter\n    def health(self, value):\n        \"\"\"Set health with validation\"\"\"\n        if value < 0:\n            self._health = 0\n        elif value > self._max_health:\n            self._health = self._max_health\n        else:\n            self._health = value\n    \n    @property\n    def max_health(self):\n        return self._max_health\n    \n    @property\n    def mana(self):\n        \"\"\"Get current mana\"\"\"\n        return self._mana\n    \n    @mana.setter\n    def mana(self, value):\n        \"\"\"Set mana with validation\"\"\"\n        if value < 0:\n            self._mana = 0\n        elif value > self._max_mana:\n            self._mana = self._max_mana\n        else:\n            self._mana = value\n    \n    @property\n    def max_mana(self):\n        return self._max_mana\n    \n    @property\n    def health_percentage(self):\n        \"\"\"Computed property: health as percentage\"\"\"\n        return (self._health / self._max_health) * 100\n    \n    @property\n    def mana_percentage(self):\n        \"\"\"Computed property: mana as percentage\"\"\"\n        return (self._mana / self._max_mana) * 100\n    \n    @property\n    def level(self):\n        \"\"\"Get current level\"\"\"\n        return self._level\n    \n    @level.setter\n    def level(self, value):\n        \"\"\"Set level and recalculate stats\"\"\"\n        if value < 1:\n            raise ValueError(\"Level must be at least 1\")\n        self._level = value\n        self._recalculate_stats()\n    \n    @property\n    def strength(self):\n        return self._strength\n    \n    @property\n    def intelligence(self):\n        return self._intelligence\n    \n    @property\n    def is_alive(self):\n        \"\"\"Read-only property: is character alive?\"\"\"\n        return self._health > 0\n    \n    def _recalculate_stats(self):\n        \"\"\"Recalculate stats based on level\"\"\"\n        self._max_health = 100 + (self._level - 1) * 20\n        self._max_mana = 50 + (self._level - 1) * 10\n        self._strength = 10 + (self._level - 1) * 2\n        self._intelligence = 10 + (self._level - 1) * 2\n        # Ensure current health/mana don't exceed new maximums\n        if self._health > self._max_health:\n            self._health = self._max_health\n        if self._mana > self._max_mana:\n            self._mana = self._max_mana\n    \n    def take_damage(self, amount):\n        \"\"\"Reduce health by amount\"\"\"\n        self.health -= amount\n    \n    def heal(self, amount):\n        \"\"\"Restore health by amount\"\"\"\n        self.health += amount\n    \n    def cast_spell(self, mana_cost):\n        \"\"\"Cast spell if enough mana\"\"\"\n        if self.mana >= mana_cost:\n            self.mana -= mana_cost\n            return True\n        return False\n    \n    def rest(self):\n        \"\"\"Restore mana to full\"\"\"\n        self.mana = self.max_mana\n\n\n# Test the Character class\nhero = Character(\"Aragorn\", \"Warrior\", 1)\n\n# Test 1: Health validation\nprint(f\"Initial health: {hero.health}\")\nhero.take_damage(120)\nprint(f\"After 120 damage: {hero.health}\")\nprint(f\"Is alive: {hero.is_alive}\")\n\n# Test 2: Healing validation\nhero.health = 50\nhero.heal(100)\nprint(f\"After healing: {hero.health}\")\nprint(f\"Health percentage: {hero.health_percentage:.1f}%\")\n\n# Test 3: Level up and stat recalculation\nhero.level = 5\nprint(f\"Level 5 max health: {hero.max_health}\")\nprint(f\"Level 5 max mana: {hero.max_mana}\")\nprint(f\"Level 5 strength: {hero.strength}\")\n\n# Test 4: Mana validation\nhero.rest()\nprint(f\"Mana after rest: {hero.mana}\")\nprint(f\"Mana percentage: {hero.mana_percentage:.1f}%\")\nhero.cast_spell(30)\nprint(f\"Mana after spell: {hero.mana}\")\nprint(f\"Mana percentage: {hero.mana_percentage:.1f}%\")",
+  "hints": [
+    "Start by converting public attributes to private (underscore prefix): `self._health`, `self._max_health`, etc. Then create @property methods to provide controlled access.",
+    "For the health property, you need both a getter (@property) and a setter (@health.setter). The setter should check if value < 0 (set to 0) or value > max_health (cap at max).",
+    "Computed properties like `health_percentage` only need a @property decorator, no setter! They calculate and return a value based on other attributes.",
+    "In the level setter, after setting `self._level = value`, call `self._recalculate_stats()` to update all stats. Make sure the formulas match the requirements!",
+    "The `is_alive` property is read-only - it only has @property, no setter. It returns `self._health > 0`. Anyone trying to set it will get an error (which is what we want!)."
+  ],
+  "validationTests": [
+    {
+      "type": "output_contains",
+      "value": "After 120 damage: 0",
+      "description": "Health should be capped at 0 (not negative)"
+    },
+    {
+      "type": "output_contains",
+      "value": "Is alive: False",
+      "description": "is_alive should return False when health is 0"
+    },
+    {
+      "type": "output_contains",
+      "value": "After healing: 100",
+      "description": "Health should be capped at max_health (100)"
+    },
+    {
+      "type": "output_contains",
+      "value": "Health percentage: 100.0%",
+      "description": "health_percentage should compute correctly"
+    },
+    {
+      "type": "output_contains",
+      "value": "Level 5 max health: 180",
+      "description": "Level 5 should have max_health of 180"
+    },
+    {
+      "type": "output_contains",
+      "value": "Level 5 max mana: 90",
+      "description": "Level 5 should have max_mana of 90"
+    },
+    {
+      "type": "output_contains",
+      "value": "Level 5 strength: 18",
+      "description": "Level 5 should have strength of 18"
+    },
+    {
+      "type": "output_contains",
+      "value": "Mana percentage: 66.7%",
+      "description": "mana_percentage should compute correctly"
+    },
+    {
+      "type": "code_contains",
+      "value": "@property",
+      "description": "Must use @property decorator"
+    },
+    {
+      "type": "code_contains",
+      "value": "@health.setter",
+      "description": "Must implement property setter for health"
+    },
+    {
+      "type": "code_contains",
+      "value": "def health_percentage",
+      "description": "Must implement health_percentage computed property"
+    }
+  ],
+  "learningObjectives": [
+    "Use @property decorator to create managed attributes",
+    "Implement property setters with validation logic",
+    "Create computed properties that calculate values on-the-fly",
+    "Design read-only properties (getter without setter)",
+    "Trigger side effects when properties change (stat recalculation)",
+    "Understand encapsulation with private attributes"
+  ],
+  "nextLessonId": 62,
+  "previousLessonId": 60,
+  "tags": ["advanced", "oop", "properties", "descriptors", "validation", "encapsulation"],
+  "commonMistakes": [
+    {
+      "mistake": "Forgetting to use private attributes (_health) with properties",
+      "explanation": "Properties are meant to control access to private attributes. If you use public attributes, you create infinite recursion when the property tries to set itself."
+    },
+    {
+      "mistake": "Creating a setter for computed properties",
+      "explanation": "Properties like health_percentage are calculated from other values. They shouldn't have setters - they're read-only derived values."
+    },
+    {
+      "mistake": "Not validating in setter before assignment",
+      "explanation": "The whole point of properties is to validate! Always check constraints (min/max values, types) before setting the private attribute."
+    },
+    {
+      "mistake": "Forgetting to trigger side effects in setters",
+      "explanation": "When level changes, stats need to be recalculated. Properties let you hide this complexity - always call helper methods when needed."
+    }
+  ]
+}

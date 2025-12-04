@@ -110,21 +110,6 @@ export const QuestionManager: React.FC<QuestionManagerProps> = ({ onClose, onSel
     }
   };
 
-  const handleImportFromDungeon = async () => {
-    if (!confirm('Import questions from the dungeon crawler? This will add any questions that haven\'t been imported yet.')) {
-      return;
-    }
-
-    try {
-      const count: number = await invoke('import_dungeon_challenges_to_mcq');
-      loadQuestions();
-      alert(`✅ Successfully imported ${count} question${count !== 1 ? 's' : ''} from the dungeon crawler!`);
-    } catch (error) {
-      console.error('Failed to import questions:', error);
-      alert('❌ Failed to import questions: ' + error);
-    }
-  };
-
   if (showEditor) {
     return (
       <QuestionEditor
@@ -148,15 +133,6 @@ export const QuestionManager: React.FC<QuestionManagerProps> = ({ onClose, onSel
             Question Manager
           </h2>
           <div className="flex items-center gap-2">
-            <button
-              onClick={handleImportFromDungeon}
-              className="px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white rounded-lg
-                       transition-colors text-sm font-medium flex items-center gap-2"
-              title="Import existing questions from dungeon crawler"
-            >
-              <span>📥</span>
-              Import from Dungeon
-            </button>
             <button
               onClick={handleCreateNew}
               className="px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded-lg

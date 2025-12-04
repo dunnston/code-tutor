@@ -1,0 +1,91 @@
+{
+  "id": 36,
+  "trackId": 7,
+  "language": "python",
+  "title": "The Character Blueprint",
+  "subtitle": "Expanding Class Fundamentals",
+  "difficulty": 4,
+  "estimatedTime": "20-25 minutes",
+  "xpReward": 100,
+  "description": "# Object-Oriented Programming: Classes Deep Dive\n\n🎭 Welcome to the world of **Object-Oriented Programming (OOP)**!\n\n## What are Classes?\n\nClasses are **blueprints for creating objects**. Think of them as templates:\n\n```python\n# Class = Blueprint\nclass Character:\n    pass\n\n# Objects = Instances created from blueprint\nhero = Character()\nvillain = Character()\n```\n\n## Class Anatomy\n\n```python\nclass Character:\n    # Constructor - runs when creating new instance\n    def __init__(self, name, health):\n        self.name = name      # Instance attribute\n        self.health = health  # Instance attribute\n    \n# Create instances\nwarrior = Character(\"Ragnar\", 100)\nmage = Character(\"Gandalf\", 70)\n\nprint(warrior.name)    # \"Ragnar\"\nprint(mage.health)     # 70\n```\n\n## The `__init__` Method\n\n- **Constructor** - special method that runs automatically\n- **First parameter is always `self`** - refers to the instance\n- Sets up initial attribute values\n- Called when you create a new object\n\n## The `self` Parameter\n\n`self` refers to the instance being created/used:\n\n```python\nclass Dog:\n    def __init__(self, name):\n        self.name = name  # self.name is instance attribute\n\ndog1 = Dog(\"Rex\")\ndog2 = Dog(\"Buddy\")\n\nprint(dog1.name)  # \"Rex\" - dog1's name\nprint(dog2.name)  # \"Buddy\" - dog2's name\n```\n\n## Multiple Attributes\n\nClasses can have many attributes:\n\n```python\nclass Character:\n    def __init__(self, name, health, mana, level, experience):\n        self.name = name\n        self.health = health\n        self.mana = mana\n        self.level = level\n        self.experience = experience\n\nhero = Character(\"Hero\", 100, 50, 1, 0)\n```\n\n## Your Quest\n\nThe Academy has a basic `Character` class, but it's missing crucial attributes!\n\nExpand the class to include:\n- Name\n- Health (HP)\n- Mana (MP)\n- Level\n- Experience (XP)\n- Character class (warrior/mage/rogue)\n\nThen create three different characters with different attributes!\n\n⚔️ Build the foundation for an RPG character system!",
+  "starterCode": "# Character System - Class Expansion\n\n# Minimal Character class - needs expansion!\nclass Character:\n    def __init__(self, name):\n        self.name = name\n        # TODO: Add more attributes:\n        # - health (HP)\n        # - mana (MP)\n        # - level\n        # - experience (XP)\n        # - char_class (warrior/mage/rogue)\n\nprint(\"=== Character Creation ===\")\nprint()\n\n# TODO: Create a warrior character\n# Name: \"Ragnar\", HP: 120, MP: 30, Level: 5, XP: 450, Class: \"warrior\"\nwarrior = None\n\n# TODO: Create a mage character\n# Name: \"Gandalf\", HP: 70, MP: 150, Level: 7, XP: 890, Class: \"mage\"\nmage = None\n\n# TODO: Create a rogue character\n# Name: \"Shadow\", HP: 90, MP: 60, Level: 6, XP: 620, Class: \"rogue\"\nrogue = None\n\n# Display characters (will work once you implement __init__)\nif warrior:\n    print(f\"Warrior: {warrior.name}\")\n    print(f\"  HP: {warrior.health} | MP: {warrior.mana}\")\n    print(f\"  Level: {warrior.level} | XP: {warrior.experience}\")\n    print(f\"  Class: {warrior.char_class}\")\n    print()\n\nif mage:\n    print(f\"Mage: {mage.name}\")\n    print(f\"  HP: {mage.health} | MP: {mage.mana}\")\n    print(f\"  Level: {mage.level} | XP: {mage.experience}\")\n    print(f\"  Class: {mage.char_class}\")\n    print()\n\nif rogue:\n    print(f\"Rogue: {rogue.name}\")\n    print(f\"  HP: {rogue.health} | MP: {rogue.mana}\")\n    print(f\"  Level: {rogue.level} | XP: {rogue.experience}\")\n    print(f\"  Class: {rogue.char_class}\")\n    print()\n\nprint(\"Characters created successfully!\")",
+  "solutionCode": "# Character System - Class Expansion Solution\n\nclass Character:\n    def __init__(self, name, health, mana, level, experience, char_class):\n        self.name = name\n        self.health = health\n        self.mana = mana\n        self.level = level\n        self.experience = experience\n        self.char_class = char_class\n\nprint(\"=== Character Creation ===\")\nprint()\n\nwarrior = Character(\"Ragnar\", 120, 30, 5, 450, \"warrior\")\nmage = Character(\"Gandalf\", 70, 150, 7, 890, \"mage\")\nrogue = Character(\"Shadow\", 90, 60, 6, 620, \"rogue\")\n\nprint(f\"Warrior: {warrior.name}\")\nprint(f\"  HP: {warrior.health} | MP: {warrior.mana}\")\nprint(f\"  Level: {warrior.level} | XP: {warrior.experience}\")\nprint(f\"  Class: {warrior.char_class}\")\nprint()\n\nprint(f\"Mage: {mage.name}\")\nprint(f\"  HP: {mage.health} | MP: {mage.mana}\")\nprint(f\"  Level: {mage.level} | XP: {mage.experience}\")\nprint(f\"  Class: {mage.char_class}\")\nprint()\n\nprint(f\"Rogue: {rogue.name}\")\nprint(f\"  HP: {rogue.health} | MP: {rogue.mana}\")\nprint(f\"  Level: {rogue.level} | XP: {rogue.experience}\")\nprint(f\"  Class: {rogue.char_class}\")\nprint()\n\nprint(\"Characters created successfully!\")",
+  "hints": [
+    "The __init__ method needs parameters for all attributes: def __init__(self, name, health, mana, level, experience, char_class)",
+    "Inside __init__, assign each parameter to self: self.health = health, self.mana = mana, etc.",
+    "Remember: the first parameter is ALWAYS self, then your custom parameters come after.",
+    "Create instances by passing all required values: Character(\"Name\", 100, 50, 1, 0, \"warrior\")",
+    "Complete __init__ structure:\n```python\ndef __init__(self, name, health, mana, level, experience, char_class):\n    self.name = name\n    self.health = health\n    self.mana = mana\n    self.level = level\n    self.experience = experience\n    self.char_class = char_class\n```"
+  ],
+  "validationTests": [
+    {
+      "type": "code_contains",
+      "value": "def __init__",
+      "description": "Must define __init__ method"
+    },
+    {
+      "type": "code_contains",
+      "value": "self.health",
+      "description": "Must create health attribute"
+    },
+    {
+      "type": "code_contains",
+      "value": "self.mana",
+      "description": "Must create mana attribute"
+    },
+    {
+      "type": "code_contains",
+      "value": "self.level",
+      "description": "Must create level attribute"
+    },
+    {
+      "type": "code_contains",
+      "value": "self.experience",
+      "description": "Must create experience attribute"
+    },
+    {
+      "type": "code_contains",
+      "value": "self.char_class",
+      "description": "Must create char_class attribute"
+    },
+    {
+      "type": "output_contains",
+      "value": "Ragnar",
+      "description": "Should create warrior character named Ragnar"
+    },
+    {
+      "type": "output_contains",
+      "value": "HP: 120",
+      "description": "Warrior should have 120 HP"
+    },
+    {
+      "type": "output_contains",
+      "value": "Gandalf",
+      "description": "Should create mage character named Gandalf"
+    }
+  ],
+  "learningObjectives": [
+    "Understand what classes are and why they're useful",
+    "Write __init__ constructors with multiple parameters",
+    "Use self to create instance attributes",
+    "Create multiple instances from the same class",
+    "Access instance attributes using dot notation"
+  ],
+  "nextLessonId": 37,
+  "previousLessonId": 35,
+  "tags": ["intermediate", "oop", "classes", "init", "objects"],
+  "commonMistakes": [
+    {
+      "mistake": "Forgetting self as first parameter",
+      "explanation": "Every method in a class must have 'self' as the first parameter, even __init__!"
+    },
+    {
+      "mistake": "Not using self when setting attributes",
+      "explanation": "Use self.attribute_name to create instance attributes. Just 'name = name' creates a local variable, not an attribute."
+    },
+    {
+      "mistake": "Forgetting to pass all arguments when creating instance",
+      "explanation": "If __init__ requires 6 parameters (plus self), you must pass 6 arguments when creating the object."
+    }
+  ]
+}

@@ -1,0 +1,57 @@
+{
+  "id": 218,
+  "trackId": 3,
+  "language": "csharp",
+  "title": "The Counter's Mastery",
+  "subtitle": "For Loops and Iteration",
+  "difficulty": 2,
+  "estimatedTime": "20-25 minutes",
+  "xpReward": 150,
+  "description": "# Counting with For Loops\n\nYou've learned to loop through collections, but what if you just want to count? That's where the **for loop** shines!\n\n## The For Loop\n\nA for loop has three parts: initialization, condition, and increment:\n\n```csharp\n// Count from 0 to 4\nfor (int i = 0; i < 5; i++)\n{\n    Console.WriteLine(i);  // Prints: 0, 1, 2, 3, 4\n}\n```\n\n**Structure:**\n- `int i = 0` - Initialize counter\n- `i < 5` - Continue while this is true\n- `i++` - Increment counter after each iteration\n\n## Different For Loop Patterns\n\n```csharp\n// Count from 1 to 5\nfor (int i = 1; i <= 5; i++)\n{\n    Console.WriteLine(i);  // Prints: 1, 2, 3, 4, 5\n}\n\n// Count by 2s\nfor (int i = 0; i <= 10; i += 2)\n{\n    Console.WriteLine(i);  // Prints: 0, 2, 4, 6, 8, 10\n}\n\n// Count backwards\nfor (int i = 10; i >= 1; i--)\n{\n    Console.WriteLine(i);  // Prints: 10, 9, 8, 7, 6, 5, 4, 3, 2, 1\n}\n```\n\n## Looping Through Arrays\n\n```csharp\nstring[] items = { \"sword\", \"shield\", \"potion\" };\n\nfor (int i = 0; i < items.Length; i++)\n{\n    Console.WriteLine($\"{i}: {items[i]}\");\n}\n```\n\n## Your Quest\n\nCreate a power-up leveling system:\n1. Use for loop to print levels 1-10\n2. Calculate damage for each level (level * 5)\n3. Use for loop to create a countdown timer from 5 to 1\n4. Calculate total XP from levels 1-10 (each level gives level * 100 XP)",
+  "starterCode": "using System;\n\nclass Program\n{\n    static void Main()\n    {\n        // Power-Up Leveling System\n        \n        Console.WriteLine(\"=== LEVEL UP SEQUENCE ===\");\n        // Loop through levels 1 to 10\n        for (/* Fix this loop */)  \n        {\n            int damage = /* Calculate damage (level * 5) */;\n            Console.WriteLine($\"Level {0}: {damage} damage\");  // Fix the 0\n        }\n        \n        Console.WriteLine(\"\\n=== COUNTDOWN TIMER ===\");\n        // Create countdown from 5 to 1\n        for (/* Fix this loop */)  \n        {\n            Console.WriteLine($\"{0}...\");  // Fix the 0\n        }\n        Console.WriteLine(\"Blast off!\");\n        \n        Console.WriteLine(\"\\n=== TOTAL XP CALCULATION ===\");\n        int totalXp = 0;\n        // Calculate total XP from levels 1-10\n        for (/* Fix this loop */)  \n        {\n            int xp = /* Each level gives level * 100 XP */;\n            totalXp = /* Add to total */;\n        }\n        \n        Console.WriteLine($\"Total XP earned from levels 1-10: {totalXp}\");\n    }\n}\n",
+  "solutionCode": "using System;\n\nclass Program\n{\n    static void Main()\n    {\n        // Power-Up Leveling System\n        \n        Console.WriteLine(\"=== LEVEL UP SEQUENCE ===\");\n        // Loop through levels 1 to 10\n        for (int level = 1; level <= 10; level++)\n        {\n            int damage = level * 5;\n            Console.WriteLine($\"Level {level}: {damage} damage\");\n        }\n        \n        Console.WriteLine(\"\\n=== COUNTDOWN TIMER ===\");\n        // Create countdown from 5 to 1\n        for (int count = 5; count >= 1; count--)\n        {\n            Console.WriteLine($\"{count}...\");\n        }\n        Console.WriteLine(\"Blast off!\");\n        \n        Console.WriteLine(\"\\n=== TOTAL XP CALCULATION ===\");\n        int totalXp = 0;\n        // Calculate total XP from levels 1-10\n        for (int level = 1; level <= 10; level++)\n        {\n            int xp = level * 100;\n            totalXp += xp;\n        }\n        \n        Console.WriteLine($\"Total XP earned from levels 1-10: {totalXp}\");\n    }\n}\n",
+  "hints": [
+    "To count from 1 to 10, use: for (int level = 1; level <= 10; level++)",
+    "For a countdown from 5 to 1, use: for (int count = 5; count >= 1; count--)",
+    "Calculate damage as: int damage = level * 5",
+    "Calculate XP as: int xp = level * 100, then use totalXp += xp",
+    "Remember: initialization; condition; increment all go in the for ( ) parentheses"
+  ],
+  "validationTests": [
+    {
+      "type": "code_contains",
+      "value": "for",
+      "description": "Must use for loops"
+    },
+    {
+      "type": "code_contains",
+      "value": "++",
+      "description": "Should use increment operator ++"
+    },
+    {
+      "type": "code_contains",
+      "value": "--",
+      "description": "Should use decrement operator --"
+    },
+    {
+      "type": "output_contains",
+      "value": "Level",
+      "description": "Should print level information"
+    },
+    {
+      "type": "output_line_count",
+      "min": 15,
+      "description": "Should print multiple lines"
+    }
+  ],
+  "learningObjectives": [
+    "Use for loops to iterate a specific number of times",
+    "Understand for loop syntax: initialization; condition; increment",
+    "Count forwards and backwards with for loops",
+    "Perform calculations within loops",
+    "Accumulate values in a total variable"
+  ],
+  "previousLessonId": 217,
+  "nextLessonId": 219,
+  "tags": ["intermediate", "for-loop", "iteration", "counting", "accumulation"]
+}

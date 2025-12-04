@@ -1,0 +1,90 @@
+{
+  "id": 34,
+  "trackId": 7,
+  "language": "python",
+  "title": "The Functional Triumvirate",
+  "subtitle": "Map, Filter, and Reduce",
+  "difficulty": 5,
+  "estimatedTime": "30-35 minutes",
+  "xpReward": 200,
+  "description": "# Functional Programming: Map, Filter, Reduce\n\n🎯 Master the three pillars of functional list processing!\n\n## The Three Functions\n\nPython provides three powerful built-in functions for working with lists:\n\n### 1. map() - Transform Every Item\n\nApplies a function to every item in an iterable:\n\n```python\nnumbers = [1, 2, 3, 4, 5]\n\n# Double each number\ndoubled = list(map(lambda x: x * 2, numbers))\n# Result: [2, 4, 6, 8, 10]\n\n# Convert to strings\nstrings = list(map(str, numbers))\n# Result: ['1', '2', '3', '4', '5']\n```\n\n### 2. filter() - Keep Only Matching Items\n\nFilters items based on a condition:\n\n```python\nnumbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]\n\n# Keep only even numbers\nevens = list(filter(lambda x: x % 2 == 0, numbers))\n# Result: [2, 4, 6, 8, 10]\n\n# Keep only numbers > 5\ngreater_than_five = list(filter(lambda x: x > 5, numbers))\n# Result: [6, 7, 8, 9, 10]\n```\n\n### 3. reduce() - Combine All Items\n\nReduces a list to a single value:\n\n```python\nfrom functools import reduce\n\nnumbers = [1, 2, 3, 4, 5]\n\n# Sum all numbers\ntotal = reduce(lambda acc, x: acc + x, numbers)\n# Result: 15\n\n# Find maximum\nmaximum = reduce(lambda acc, x: x if x > acc else acc, numbers)\n# Result: 5\n```\n\n## When to Use Each\n\n| Function | Purpose | Example Use Case |\n|----------|---------|------------------|\n| **map** | Transform each item | Level up all characters |\n| **filter** | Select items | Find wounded party members |\n| **reduce** | Combine to single value | Calculate total gold |\n\n## Map/Filter vs Comprehensions\n\nThese are equivalent:\n\n```python\n# Using map\ndoubled = list(map(lambda x: x * 2, numbers))\n\n# Using list comprehension\ndoubled = [x * 2 for x in numbers]\n\n# Using filter\nevens = list(filter(lambda x: x % 2 == 0, numbers))\n\n# Using list comprehension\nevens = [x for x in numbers if x % 2 == 0]\n```\n\n**Note:** List comprehensions are often more readable, but map/filter are useful when you already have functions defined!\n\n## Your Quest\n\nThe Adventurer's Guild needs to process party statistics:\n- **Map:** Level up all party members\n- **Filter:** Find wounded members (HP < 50%)\n- **Reduce:** Calculate total party gold\n\nUse functional programming techniques to process the party data!\n\n⚔️ Master map, filter, and reduce to become a functional programming wizard!",
+  "starterCode": "# Adventurer's Guild - Party Statistics Processor\n# Use map, filter, and reduce to process party data\n\nfrom functools import reduce\n\n# Party data\nparty = [\n    {'name': 'Warrior', 'level': 10, 'hp': 80, 'max_hp': 100, 'gold': 150},\n    {'name': 'Mage', 'level': 12, 'hp': 30, 'max_hp': 70, 'gold': 200},\n    {'name': 'Rogue', 'level': 11, 'hp': 55, 'max_hp': 80, 'gold': 175},\n    {'name': 'Cleric', 'level': 10, 'hp': 20, 'max_hp': 90, 'gold': 125},\n    {'name': 'Paladin', 'level': 13, 'hp': 95, 'max_hp': 120, 'gold': 300},\n]\n\nprint(\"=== Party Statistics Processor ===\")\nprint()\n\n# Task 1: Level up all party members by 1\n# Use map() to increase each member's level\nprint(\"--- Task 1: Level Up Party ---\")\n\n# TODO: Use map with lambda to add 1 to each member's level\n# Hint: map(lambda member: {...member, 'level': member['level'] + 1}, party)\n# Note: Since dicts aren't easily copied, create new dict or modify copy\n\ndef level_up(member):\n    # Return new dict with level increased\n    return {**member, 'level': member['level'] + 1}\n\n# TODO: Use map() with level_up function\nleveled_up_party = []  # Replace with: list(map(...))\n\nfor member in leveled_up_party:\n    print(f\"{member['name']}: Level {member['level']}\")\nprint()\n\n# Task 2: Find all wounded party members (HP < 50% of max)\n# Use filter() to find members who need healing\nprint(\"--- Task 2: Find Wounded Members ---\")\n\n# TODO: Use filter with lambda to find wounded members\n# Hint: member['hp'] < member['max_hp'] * 0.5\n\nwounded = []  # Replace with: list(filter(...))\n\nif wounded:\n    print(\"Wounded party members:\")\n    for member in wounded:\n        hp_percent = (member['hp'] / member['max_hp']) * 100\n        print(f\"  {member['name']}: {member['hp']}/{member['max_hp']} HP ({hp_percent:.0f}%)\")\nelse:\n    print(\"No wounded party members!\")\nprint()\n\n# Task 3: Calculate total party gold\n# Use reduce() to sum all gold\nprint(\"--- Task 3: Total Party Gold ---\")\n\n# TODO: Use reduce with lambda to sum all gold\n# Hint: reduce(lambda total, member: total + member['gold'], party, 0)\n\ntotal_gold = 0  # Replace with: reduce(...)\n\nprint(f\"Total party gold: {total_gold}\")\nprint()\n\n# Task 4: Find party member with highest level\n# Use reduce() to find max level member\nprint(\"--- Task 4: Highest Level Member ---\")\n\n# TODO: Use reduce to find member with highest level\n# Hint: reduce(lambda acc, member: member if member['level'] > acc['level'] else acc, party)\n\nhighest_level = None  # Replace with: reduce(...)\n\nprint(f\"Highest level: {highest_level['name']} (Level {highest_level['level']})\")\nprint()\n\n# Task 5: Get names of all healthy members (HP >= 60%)\n# Combine filter and map\nprint(\"--- Task 5: Healthy Members ---\")\n\n# TODO: First filter for HP >= 60%, then map to get just names\n# Hint: list(map(lambda m: m['name'], filter(lambda m: ..., party)))\n\nhealthy_names = []  # Replace with: list(map(filter(...)))\n\nprint(f\"Healthy members: {', '.join(healthy_names)}\")\nprint()\n\nprint(\"Party statistics processed!\")",
+  "solutionCode": "# Adventurer's Guild - Party Statistics Processor\n\nfrom functools import reduce\n\nparty = [\n    {'name': 'Warrior', 'level': 10, 'hp': 80, 'max_hp': 100, 'gold': 150},\n    {'name': 'Mage', 'level': 12, 'hp': 30, 'max_hp': 70, 'gold': 200},\n    {'name': 'Rogue', 'level': 11, 'hp': 55, 'max_hp': 80, 'gold': 175},\n    {'name': 'Cleric', 'level': 10, 'hp': 20, 'max_hp': 90, 'gold': 125},\n    {'name': 'Paladin', 'level': 13, 'hp': 95, 'max_hp': 120, 'gold': 300},\n]\n\nprint(\"=== Party Statistics Processor ===\")\nprint()\n\n# Task 1: Level up all party members\nprint(\"--- Task 1: Level Up Party ---\")\n\ndef level_up(member):\n    return {**member, 'level': member['level'] + 1}\n\nleveled_up_party = list(map(level_up, party))\n\nfor member in leveled_up_party:\n    print(f\"{member['name']}: Level {member['level']}\")\nprint()\n\n# Task 2: Find wounded members\nprint(\"--- Task 2: Find Wounded Members ---\")\n\nwounded = list(filter(lambda member: member['hp'] < member['max_hp'] * 0.5, party))\n\nif wounded:\n    print(\"Wounded party members:\")\n    for member in wounded:\n        hp_percent = (member['hp'] / member['max_hp']) * 100\n        print(f\"  {member['name']}: {member['hp']}/{member['max_hp']} HP ({hp_percent:.0f}%)\")\nelse:\n    print(\"No wounded party members!\")\nprint()\n\n# Task 3: Calculate total gold\nprint(\"--- Task 3: Total Party Gold ---\")\n\ntotal_gold = reduce(lambda total, member: total + member['gold'], party, 0)\n\nprint(f\"Total party gold: {total_gold}\")\nprint()\n\n# Task 4: Find highest level member\nprint(\"--- Task 4: Highest Level Member ---\")\n\nhighest_level = reduce(lambda acc, member: member if member['level'] > acc['level'] else acc, party)\n\nprint(f\"Highest level: {highest_level['name']} (Level {highest_level['level']})\")\nprint()\n\n# Task 5: Get healthy member names\nprint(\"--- Task 5: Healthy Members ---\")\n\nhealthy_names = list(map(lambda m: m['name'], filter(lambda m: m['hp'] >= m['max_hp'] * 0.6, party)))\n\nprint(f\"Healthy members: {', '.join(healthy_names)}\")\nprint()\n\nprint(\"Party statistics processed!\")",
+  "hints": [
+    "Remember to convert map() and filter() results to lists: `list(map(...))` and `list(filter(...))`",
+    "For map(), you need to create new dictionaries with updated values. The spread operator `{**member, 'level': member['level'] + 1}` creates a copy with one field changed.",
+    "For filter(), the lambda should return True/False. Example: `lambda member: member['hp'] < member['max_hp'] * 0.5`",
+    "For reduce(), the lambda takes two arguments: the accumulator and current item. Example: `lambda total, member: total + member['gold']`",
+    "Complete solutions:\n- Map: `list(map(level_up, party))`\n- Filter: `list(filter(lambda m: m['hp'] < m['max_hp'] * 0.5, party))`\n- Reduce: `reduce(lambda total, m: total + m['gold'], party, 0)`"
+  ],
+  "validationTests": [
+    {
+      "type": "code_contains",
+      "value": "map(",
+      "description": "Must use map() function"
+    },
+    {
+      "type": "code_contains",
+      "value": "filter(",
+      "description": "Must use filter() function"
+    },
+    {
+      "type": "code_contains",
+      "value": "reduce(",
+      "description": "Must use reduce() function"
+    },
+    {
+      "type": "output_contains",
+      "value": "Warrior: Level 11",
+      "description": "Should level up warrior from 10 to 11"
+    },
+    {
+      "type": "output_contains",
+      "value": "Mage:",
+      "description": "Should identify Mage as wounded (30/70 HP)"
+    },
+    {
+      "type": "output_contains",
+      "value": "Cleric:",
+      "description": "Should identify Cleric as wounded (20/90 HP)"
+    },
+    {
+      "type": "output_contains",
+      "value": "Total party gold: 950",
+      "description": "Should correctly sum all party gold"
+    },
+    {
+      "type": "output_contains",
+      "value": "Paladin (Level 13)",
+      "description": "Should identify Paladin as highest level"
+    }
+  ],
+  "learningObjectives": [
+    "Use map() to transform list items",
+    "Use filter() to select items by condition",
+    "Use reduce() to combine items into single value",
+    "Understand when to use functional approaches vs comprehensions",
+    "Chain map and filter operations together"
+  ],
+  "nextLessonId": 35,
+  "previousLessonId": 33,
+  "tags": ["intermediate", "map", "filter", "reduce", "functional-programming"],
+  "commonMistakes": [
+    {
+      "mistake": "Forgetting to convert map/filter to list",
+      "explanation": "map() and filter() return iterators, not lists. Use list() to convert: `list(map(...))`"
+    },
+    {
+      "mistake": "Not importing reduce from functools",
+      "explanation": "Unlike map and filter, reduce is not a built-in. You must import it: `from functools import reduce`"
+    },
+    {
+      "mistake": "Wrong number of arguments to reduce lambda",
+      "explanation": "reduce() lambdas take TWO arguments: accumulator and current item. Example: `lambda acc, x: acc + x`"
+    },
+    {
+      "mistake": "Modifying dictionaries directly in map",
+      "explanation": "Don't modify original dictionaries! Create new ones using dict spreading: `{**member, 'level': member['level'] + 1}`"
+    }
+  ]
+}

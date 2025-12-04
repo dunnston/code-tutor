@@ -358,3 +358,294 @@ pub fn import_dungeon_challenges_to_mcq(app: AppHandle) -> Result<usize, String>
 
     Ok(imported_count)
 }
+
+// Bulk import questions (useful for importing large batches)
+#[tauri::command]
+pub fn bulk_import_mcq_questions(
+    app: AppHandle,
+    questions: Vec<McqQuestion>,
+) -> Result<usize, String> {
+    let conn = db::get_connection(&app)?;
+    let mut imported_count = 0;
+    let mut skipped_count = 0;
+
+    for question in questions {
+        // Check if question already exists
+        let exists: bool = conn
+            .query_row(
+                "SELECT COUNT(*) FROM mcq_questions WHERE id = ?1",
+                params![question.id],
+                |row| row.get::<_, i32>(0),
+            )
+            .map(|count| count > 0)
+            .unwrap_or(false);
+
+        if !exists {
+            // Insert new question
+            conn.execute(
+                "INSERT INTO mcq_questions
+                 (id, question_text, explanation, options, correct_answer_index, difficulty,
+                  topic, language, tags, created_at, updated_at)
+                 VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, datetime('now'), datetime('now'))",
+                params![
+                    question.id,
+                    question.question_text,
+                    question.explanation,
+                    question.options,
+                    question.correct_answer_index,
+                    question.difficulty,
+                    question.topic,
+                    question.language,
+                    question.tags,
+                ],
+            )
+            .map_err(|e| format!("Failed to insert question {}: {}", question.id, e))?;
+
+            imported_count += 1;
+        } else {
+            skipped_count += 1;
+        }
+    }
+
+    println!("Bulk import complete: {} imported, {} skipped (already exist)", imported_count, skipped_count);
+
+    Ok(imported_count)
+}
+
+// Import questions from markdown file (docs/multiple-choice.md)
+#[tauri::command]
+pub fn import_markdown_mcq_questions(app: AppHandle) -> Result<usize, String> {
+    use std::fs;
+    use std::path::PathBuf;
+
+    // Try to find the markdown file in the project directory
+    let possible_paths = vec![
+        PathBuf::from("docs/multiple-choice.md"),
+        PathBuf::from("../docs/multiple-choice.md"),
+        PathBuf::from("../../docs/multiple-choice.md"),
+    ];
+
+    let mut markdown_content = None;
+    for path in possible_paths {
+        if path.exists() {
+            markdown_content = Some(fs::read_to_string(&path)
+                .map_err(|e| format!("Failed to read file {:?}: {}", path, e))?);
+            break;
+        }
+    }
+
+    let content = markdown_content
+        .ok_or_else(|| "Could not find docs/multiple-choice.md file".to_string())?;
+
+    // Parse the markdown file
+    let questions = parse_markdown_questions(&content)?;
+
+    // Use the existing bulk import function
+    bulk_import_mcq_questions(app, questions)
+}
+
+/// Parse markdown questions from the multiple-choice.md format
+fn parse_markdown_questions(content: &str) -> Result<Vec<McqQuestion>, String> {
+    let mut questions = Vec::new();
+
+    // Split by difficulty sections
+    let beginner_section = extract_section(content, "## BEGINNER QUESTIONS", "## INTERMEDIATE QUESTIONS");
+    let intermediate_section = extract_section(content, "## INTERMEDIATE QUESTIONS", "## ADVANCED QUESTIONS");
+    let advanced_section = extract_section(content, "## ADVANCED QUESTIONS", "THE_END_MARKER_THAT_DOESNT_EXIST");
+
+    // Parse each section
+    if let Some(section) = beginner_section {
+        questions.extend(parse_section(&section, "easy", "beg")?);
+    }
+    if let Some(section) = intermediate_section {
+        questions.extend(parse_section(&section, "medium", "int")?);
+    }
+    if let Some(section) = advanced_section {
+        questions.extend(parse_section(&section, "hard", "adv")?);
+    }
+
+    Ok(questions)
+}
+
+/// Extract a section between two markers
+fn extract_section(content: &str, start_marker: &str, end_marker: &str) -> Option<String> {
+    let start = content.find(start_marker)?;
+    let remaining = &content[start + start_marker.len()..];
+
+    if let Some(end) = remaining.find(end_marker) {
+        Some(remaining[..end].to_string())
+    } else {
+        // If no end marker, take until the end
+        Some(remaining.to_string())
+    }
+}
+
+/// Parse a single difficulty section
+fn parse_section(section: &str, difficulty: &str, id_prefix: &str) -> Result<Vec<McqQuestion>, String> {
+    let mut questions = Vec::new();
+
+    // Use regex to match question patterns
+    // Pattern: number. Question\n   a) option\n   b) option\n   c) option\n   d) option\n   **Answer: X**
+    let re = regex::Regex::new(
+        r"(?m)^(\d+)\.\s+(.+?)\n\s+a\)\s+(.+?)\n\s+b\)\s+(.+?)\n\s+c\)\s+(.+?)\n\s+d\)\s+(.+?)\n\s+\*\*Answer:\s+([a-d])\*\*"
+    ).map_err(|e| e.to_string())?;
+
+    for cap in re.captures_iter(section) {
+        let number: i32 = cap[1].parse().map_err(|e| format!("Failed to parse question number: {}", e))?;
+        let question_text = cap[2].trim();
+        let option_a = cap[3].trim();
+        let option_b = cap[4].trim();
+        let option_c = cap[5].trim();
+        let option_d = cap[6].trim();
+        let answer = &cap[7];
+
+        // Convert answer letter to index
+        let correct_answer_index = match answer {
+            "a" | "A" => 0,
+            "b" | "B" => 1,
+            "c" | "C" => 2,
+            "d" | "D" => 3,
+            _ => return Err(format!("Invalid answer: {}", answer)),
+        };
+
+        // Generate ID
+        let id = format!("python-{}-{:03}", id_prefix, number);
+
+        // Infer topic from question text
+        let topic = infer_topic(question_text);
+
+        // Create question
+        let options = vec![
+            option_a.to_string(),
+            option_b.to_string(),
+            option_c.to_string(),
+            option_d.to_string(),
+        ];
+        let options_json = serde_json::to_string(&options).map_err(|e| e.to_string())?;
+
+        let tags = vec![topic.to_string(), "imported".to_string(), "bulk-import".to_string()];
+        let tags_json = serde_json::to_string(&tags).map_err(|e| e.to_string())?;
+
+        let now = chrono::Utc::now().to_rfc3339();
+
+        questions.push(McqQuestion {
+            id,
+            question_text: question_text.to_string(),
+            explanation: None,
+            options: options_json,
+            correct_answer_index,
+            difficulty: difficulty.to_string(),
+            topic: Some(topic.to_string()),
+            language: "python".to_string(),
+            tags: Some(tags_json),
+            created_at: now.clone(),
+            updated_at: now,
+        });
+    }
+
+    Ok(questions)
+}
+
+/// Infer topic from question text using keyword matching
+fn infer_topic(text: &str) -> &'static str {
+    let lower = text.to_lowercase();
+
+    // Variables
+    if lower.contains("variable") || lower.contains("assignment") {
+        return "variables";
+    }
+
+    // Data types
+    if lower.contains("data type") || lower.contains("int") || lower.contains("float") || lower.contains("bool") {
+        return "data-types";
+    }
+    if lower.contains("string") || lower.contains("concatenate") {
+        return "strings";
+    }
+    if lower.contains("list") || lower.contains("array") {
+        return "lists";
+    }
+    if lower.contains("dictionary") || lower.contains("dict") {
+        return "dictionaries";
+    }
+    if lower.contains("tuple") {
+        return "tuples";
+    }
+    if lower.contains("set") {
+        return "sets";
+    }
+
+    // Control flow
+    if lower.contains("if ") || lower.contains("else") || lower.contains("elif") || lower.contains("conditional") {
+        return "conditionals";
+    }
+    if lower.contains("loop") || lower.contains("for ") || lower.contains("while") || lower.contains("range") {
+        return "loops";
+    }
+    if lower.contains("break") || lower.contains("continue") {
+        return "loop-control";
+    }
+
+    // Functions
+    if lower.contains("function") || lower.contains("def ") || lower.contains("return") {
+        return "functions";
+    }
+    if lower.contains("lambda") {
+        return "lambda";
+    }
+    if lower.contains("decorator") {
+        return "decorators";
+    }
+    if lower.contains("generator") || lower.contains("yield") {
+        return "generators";
+    }
+
+    // OOP
+    if lower.contains("class") || lower.contains("object") || lower.contains("__init__") {
+        return "classes";
+    }
+    if lower.contains("inheritance") || lower.contains("subclass") {
+        return "inheritance";
+    }
+    if lower.contains("self") || lower.contains("method") {
+        return "methods";
+    }
+    if lower.contains("property") || lower.contains("@property") {
+        return "properties";
+    }
+
+    // Advanced
+    if lower.contains("exception") || lower.contains("try") || lower.contains("except") {
+        return "exceptions";
+    }
+    if lower.contains("file") || lower.contains("read") || lower.contains("write") {
+        return "file-io";
+    }
+    if lower.contains("module") || lower.contains("import") {
+        return "modules";
+    }
+    if lower.contains("async") || lower.contains("await") {
+        return "async";
+    }
+
+    // Operators
+    if lower.contains("operator") || lower.contains("==") || lower.contains("+") {
+        return "operators";
+    }
+    if lower.contains(" and ") || lower.contains(" or ") || lower.contains(" not ") {
+        return "logic";
+    }
+
+    // Built-in functions
+    if lower.contains("len") || lower.contains("max") || lower.contains("min") || lower.contains("sum") {
+        return "built-in-functions";
+    }
+    if lower.contains("map") || lower.contains("filter") || lower.contains("reduce") {
+        return "functional-programming";
+    }
+    if lower.contains("enumerate") || lower.contains("zip") {
+        return "iterables";
+    }
+
+    "general"
+}

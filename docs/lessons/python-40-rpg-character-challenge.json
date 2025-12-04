@@ -1,0 +1,106 @@
+{
+  "id": 40,
+  "trackId": 7,
+  "language": "python",
+  "title": "⭐ The Character System Challenge",
+  "subtitle": "Build Complete RPG Characters",
+  "difficulty": 6,
+  "estimatedTime": "60-90 minutes",
+  "xpReward": 350,
+  "description": "# ⭐ CHALLENGE: OOP Fundamentals Mastery\n\n🏆 **Design and build a complete character system!**\n\nThis challenge tests your OOP skills:\n- ✅ Creating classes with proper __init__\n- ✅ Writing instance methods\n- ✅ Using __str__ for readability\n- ✅ Composition (classes containing other classes)\n- ✅ Property methods\n\n## The Mission\n\nBuild a **complete RPG character management system** with multiple cooperating classes.\n\n## Requirements\n\n### Class 1: Skill\n\nRepresents character abilities/spells:\n- Attributes: `name`, `mana_cost`, `cooldown`, `current_cooldown`\n- Methods:\n  - `can_use()` - returns True if cooldown is 0\n  - `use()` - decreases current_cooldown if usable\n  - `tick_cooldown()` - reduces cooldown by 1 (min 0)\n  - `__str__()` - returns \"Skill Name (Cooldown: X)\"\n\n### Class 2: Inventory\n\nManages items with slot limits:\n- Attributes: `max_slots`, `items` (list)\n- Methods:\n  - `add_item(item)` - adds if space available\n  - `remove_item(item)` - removes item from inventory\n  - `is_full()` - returns True if slots full\n  - `count()` - returns number of items\n  - `__str__()` - returns \"Inventory (X/Y slots)\"\n\n### Class 3: Character\n\nMain character class with composition:\n- Attributes:\n  - `name`, `char_class` (warrior/mage/rogue)\n  - `health`, `max_health`\n  - `mana`, `max_mana`\n  - `level`, `experience`\n  - `inventory` (Inventory object)\n  - `skills` (list of Skill objects)\n- Methods:\n  - `add_skill(skill)` - adds skill to character\n  - `use_skill(skill_name)` - uses skill if available\n  - `add_item(item)` - adds to inventory\n  - `take_damage(amount)` - reduces health\n  - `restore_mana(amount)` - increases mana\n  - `gain_xp(amount)` - adds XP, levels up at 100\n  - `level_up()` - increases stats, resets XP\n  - `is_alive()` - returns health > 0\n  - `__str__()` - comprehensive character info\n\n### Different Character Classes\n\nWarrior, Mage, and Rogue should have different starting stats:\n- **Warrior:** High HP (150), Low Mana (30)\n- **Mage:** Low HP (70), High Mana (150)\n- **Rogue:** Medium HP (100), Medium Mana (60)\n\n## Demonstration Requirements\n\nCreate and demonstrate:\n1. **Three different characters** (one of each class)\n2. **Each character has:**\n   - Unique skills (2-3 skills each)\n   - Items in inventory (3-5 items)\n3. **Show functionality:**\n   - Using skills\n   - Taking damage\n   - Adding items\n   - Gaining experience and leveling up\n   - Print character status throughout\n\n## Success Criteria\n\n✅ All three classes implemented\n✅ Proper composition (Character contains Inventory and Skills)\n✅ All required methods working\n✅ Three characters created with different classes\n✅ Demonstration shows all features\n✅ Good __str__ methods for readability\n\n⚔️ **Design from scratch - show your OOP mastery!**",
+  "starterCode": "# RPG Character System Challenge\n# Build a complete character management system with OOP\n\n# TODO: Create Skill class\nclass Skill:\n    def __init__(self, name, mana_cost, cooldown):\n        # TODO: Initialize attributes\n        # current_cooldown should start at 0\n        pass\n    \n    def can_use(self):\n        # TODO: Return True if cooldown is 0\n        pass\n    \n    def use(self):\n        # TODO: Set current_cooldown to cooldown value\n        # Print: \"Using {name}!\"\n        pass\n    \n    def tick_cooldown(self):\n        # TODO: Reduce current_cooldown by 1 (minimum 0)\n        pass\n    \n    def __str__(self):\n        # TODO: Return string representation\n        pass\n\n# TODO: Create Inventory class\nclass Inventory:\n    def __init__(self, max_slots):\n        # TODO: Initialize max_slots and empty items list\n        pass\n    \n    def add_item(self, item):\n        # TODO: Add item if not full, return True/False\n        pass\n    \n    def remove_item(self, item):\n        # TODO: Remove item from list\n        pass\n    \n    def is_full(self):\n        # TODO: Return True if items length == max_slots\n        pass\n    \n    def count(self):\n        # TODO: Return number of items\n        pass\n    \n    def __str__(self):\n        # TODO: Return string representation\n        pass\n\n# TODO: Create Character class\nclass Character:\n    def __init__(self, name, char_class):\n        self.name = name\n        self.char_class = char_class\n        \n        # TODO: Set stats based on char_class\n        # Warrior: 150 HP, 30 MP\n        # Mage: 70 HP, 150 MP\n        # Rogue: 100 HP, 60 MP\n        self.health = 0\n        self.max_health = 0\n        self.mana = 0\n        self.max_mana = 0\n        \n        # TODO: Initialize other attributes\n        self.level = 1\n        self.experience = 0\n        self.inventory = None  # TODO: Create Inventory with 10 slots\n        self.skills = []  # List of Skill objects\n    \n    def add_skill(self, skill):\n        # TODO: Add skill to skills list\n        pass\n    \n    def use_skill(self, skill_name):\n        # TODO: Find skill by name\n        # Check if can use (cooldown and mana)\n        # Use skill and reduce mana\n        pass\n    \n    def add_item(self, item):\n        # TODO: Add item to inventory\n        pass\n    \n    def take_damage(self, amount):\n        # TODO: Reduce health (don't go below 0)\n        pass\n    \n    def restore_mana(self, amount):\n        # TODO: Increase mana (don't exceed max)\n        pass\n    \n    def gain_xp(self, amount):\n        # TODO: Add XP, level up if >= 100\n        pass\n    \n    def level_up(self):\n        # TODO: Increase level, reset XP, boost stats\n        pass\n    \n    def is_alive(self):\n        # TODO: Return health > 0\n        pass\n    \n    def __str__(self):\n        # TODO: Return comprehensive character info\n        pass\n\n# ===== DEMONSTRATION =====\n\nprint(\"=== RPG Character System ===\")\nprint()\n\n# TODO: Create three characters (warrior, mage, rogue)\n# TODO: Add skills to each character\n# TODO: Add items to inventories\n# TODO: Demonstrate all functionality\n\nprint(\"Character system complete!\")",
+  "solutionCode": "# RPG Character System - Complete Solution\n\nclass Skill:\n    def __init__(self, name, mana_cost, cooldown):\n        self.name = name\n        self.mana_cost = mana_cost\n        self.cooldown = cooldown\n        self.current_cooldown = 0\n    \n    def can_use(self):\n        return self.current_cooldown == 0\n    \n    def use(self):\n        self.current_cooldown = self.cooldown\n        print(f\"Using {self.name}!\")\n    \n    def tick_cooldown(self):\n        if self.current_cooldown > 0:\n            self.current_cooldown -= 1\n    \n    def __str__(self):\n        if self.current_cooldown > 0:\n            return f\"{self.name} (Cooldown: {self.current_cooldown})\"\n        return f\"{self.name} (Ready)\"\n\nclass Inventory:\n    def __init__(self, max_slots):\n        self.max_slots = max_slots\n        self.items = []\n    \n    def add_item(self, item):\n        if not self.is_full():\n            self.items.append(item)\n            print(f\"Added {item} to inventory\")\n            return True\n        print(\"Inventory full!\")\n        return False\n    \n    def remove_item(self, item):\n        if item in self.items:\n            self.items.remove(item)\n    \n    def is_full(self):\n        return len(self.items) >= self.max_slots\n    \n    def count(self):\n        return len(self.items)\n    \n    def __str__(self):\n        return f\"Inventory ({len(self.items)}/{self.max_slots} slots): {', '.join(self.items) if self.items else 'Empty'}\"\n\nclass Character:\n    def __init__(self, name, char_class):\n        self.name = name\n        self.char_class = char_class\n        \n        if char_class == \"warrior\":\n            self.max_health = 150\n            self.max_mana = 30\n        elif char_class == \"mage\":\n            self.max_health = 70\n            self.max_mana = 150\n        else:  # rogue\n            self.max_health = 100\n            self.max_mana = 60\n        \n        self.health = self.max_health\n        self.mana = self.max_mana\n        self.level = 1\n        self.experience = 0\n        self.inventory = Inventory(10)\n        self.skills = []\n    \n    def add_skill(self, skill):\n        self.skills.append(skill)\n        print(f\"{self.name} learned {skill.name}!\")\n    \n    def use_skill(self, skill_name):\n        for skill in self.skills:\n            if skill.name == skill_name:\n                if skill.can_use():\n                    if self.mana >= skill.mana_cost:\n                        skill.use()\n                        self.mana -= skill.mana_cost\n                        return True\n                    else:\n                        print(f\"Not enough mana! ({skill.mana_cost} required)\")\n                else:\n                    print(f\"{skill_name} on cooldown!\")\n                return False\n        print(f\"Skill {skill_name} not found!\")\n        return False\n    \n    def add_item(self, item):\n        return self.inventory.add_item(item)\n    \n    def take_damage(self, amount):\n        self.health -= amount\n        if self.health < 0:\n            self.health = 0\n        print(f\"{self.name} takes {amount} damage! ({self.health} HP remaining)\")\n    \n    def restore_mana(self, amount):\n        self.mana += amount\n        if self.mana > self.max_mana:\n            self.mana = self.max_mana\n        print(f\"{self.name} restores {amount} mana! ({self.mana} MP)\")\n    \n    def gain_xp(self, amount):\n        self.experience += amount\n        print(f\"{self.name} gains {amount} XP!\")\n        if self.experience >= 100:\n            self.level_up()\n    \n    def level_up(self):\n        self.level += 1\n        self.experience = 0\n        self.max_health += 10\n        self.max_mana += 5\n        self.health = self.max_health\n        self.mana = self.max_mana\n        print(f\"🎉 {self.name} leveled up to Level {self.level}!\")\n    \n    def is_alive(self):\n        return self.health > 0\n    \n    def __str__(self):\n        status = f\"{self.name} ({self.char_class.capitalize()}) - Level {self.level}\\n\"\n        status += f\"  HP: {self.health}/{self.max_health} | MP: {self.mana}/{self.max_mana} | XP: {self.experience}/100\\n\"\n        status += f\"  {self.inventory}\\n\"\n        status += f\"  Skills: {', '.join([str(s) for s in self.skills]) if self.skills else 'None'}\"\n        return status\n\n# ===== DEMONSTRATION =====\n\nprint(\"=== RPG Character System ===\")\nprint()\n\n# Create characters\nwarrior = Character(\"Ragnar\", \"warrior\")\nmage = Character(\"Gandalf\", \"mage\")\nrogue = Character(\"Shadow\", \"rogue\")\n\nprint(\"--- Creating Characters ---\")\nprint(warrior)\nprint()\nprint(mage)\nprint()\nprint(rogue)\nprint()\n\n# Add skills\nprint(\"--- Learning Skills ---\")\nwarrior.add_skill(Skill(\"Power Strike\", 10, 2))\nwarrior.add_skill(Skill(\"Shield Bash\", 15, 3))\n\nmage.add_skill(Skill(\"Fireball\", 30, 0))\nmage.add_skill(Skill(\"Ice Lance\", 40, 1))\nmage.add_skill(Skill(\"Teleport\", 50, 5))\n\nrogue.add_skill(Skill(\"Backstab\", 20, 1))\nrogue.add_skill(Skill(\"Vanish\", 25, 4))\nprint()\n\n# Add items\nprint(\"--- Collecting Items ---\")\nwarrior.add_item(\"Health Potion\")\nwarrior.add_item(\"Mana Potion\")\nwarrior.add_item(\"Iron Sword\")\n\nmage.add_item(\"Spell Tome\")\nmage.add_item(\"Magic Staff\")\nmage.add_item(\"Mana Crystal\")\n\nrogue.add_item(\"Lockpick Set\")\nrogue.add_item(\"Poison Vial\")\nrogue.add_item(\"Dagger\")\nprint()\n\n# Combat demonstration\nprint(\"--- Combat Demonstration ---\")\nprint(f\"\\n{warrior.name} uses skills:\")\nwarrior.use_skill(\"Power Strike\")\nwarrior.use_skill(\"Shield Bash\")\nprint()\n\nprint(f\"{mage.name} uses skills:\")\nmage.use_skill(\"Fireball\")\nmage.use_skill(\"Ice Lance\")\nmage.use_skill(\"Ice Lance\")  # Should be on cooldown\nprint()\n\n# Take damage\nprint(\"--- Taking Damage ---\")\nwarrior.take_damage(40)\nmage.take_damage(30)\nprint()\n\n# Gain XP and level up\nprint(\"--- Gaining Experience ---\")\nwarrior.gain_xp(60)\nwarrior.gain_xp(50)  # Should level up!\nprint()\n\n# Final status\nprint(\"=== Final Character Status ===\")\nprint(warrior)\nprint()\nprint(mage)\nprint()\nprint(rogue)\nprint()\n\nprint(\"Character system complete!\")",
+  "hints": [
+    "Start with the simplest class first (Skill), then Inventory, then Character which uses both.",
+    "For Character.__init__, use if/elif to set stats based on char_class: if char_class == 'warrior': self.max_health = 150",
+    "In use_skill(), you need to: 1) Find the skill, 2) Check cooldown, 3) Check mana cost, 4) Use skill and reduce mana",
+    "The Inventory class is a container - it just manages a list of items with a size limit.",
+    "Character composition: self.inventory = Inventory(10) creates an Inventory object that belongs to the character",
+    "For __str__ methods, use multi-line f-strings:\n```python\ndef __str__(self):\n    return f\"{self.name} - Level {self.level}\\n  HP: {self.health}/{self.max_health}\"\n```",
+    "Don't forget to create actual Skill objects when adding skills: warrior.add_skill(Skill(\"Power Strike\", 10, 2))"
+  ],
+  "validationTests": [
+    {
+      "type": "code_contains",
+      "value": "class Skill:",
+      "description": "Must create Skill class"
+    },
+    {
+      "type": "code_contains",
+      "value": "class Inventory:",
+      "description": "Must create Inventory class"
+    },
+    {
+      "type": "code_contains",
+      "value": "class Character:",
+      "description": "Must create Character class with composition"
+    },
+    {
+      "type": "code_contains",
+      "value": "self.inventory = Inventory",
+      "description": "Character must contain Inventory object"
+    },
+    {
+      "type": "code_contains",
+      "value": "self.skills",
+      "description": "Character must have skills list"
+    },
+    {
+      "type": "output_contains",
+      "value": "Ragnar",
+      "description": "Should create warrior character"
+    },
+    {
+      "type": "output_contains",
+      "value": "Gandalf",
+      "description": "Should create mage character"
+    },
+    {
+      "type": "output_contains",
+      "value": "Shadow",
+      "description": "Should create rogue character"
+    },
+    {
+      "type": "output_contains",
+      "value": "learned",
+      "description": "Should add skills to characters"
+    },
+    {
+      "type": "output_contains",
+      "value": "leveled up",
+      "description": "Should show leveling up when XP reaches 100"
+    }
+  ],
+  "learningObjectives": [
+    "Design a system with multiple cooperating classes",
+    "Use composition (classes containing other classes)",
+    "Implement complex class interactions",
+    "Create flexible class-based character stats",
+    "Build a complete, functional OOP system from scratch"
+  ],
+  "nextLessonId": 41,
+  "previousLessonId": 39,
+  "tags": ["intermediate", "challenge", "oop", "composition", "classes", "design"],
+  "commonMistakes": [
+    {
+      "mistake": "Not initializing inventory as an Inventory object",
+      "explanation": "Don't just set self.inventory = []. Create an actual Inventory object: self.inventory = Inventory(10)"
+    },
+    {
+      "mistake": "Forgetting to set different stats for each character class",
+      "explanation": "Use if/elif in __init__ to set different max_health and max_mana based on char_class parameter."
+    },
+    {
+      "mistake": "Not checking both cooldown AND mana in use_skill",
+      "explanation": "Skills need to check: 1) Is cooldown 0? 2) Does character have enough mana? Check both!"
+    },
+    {
+      "mistake": "Creating strings instead of Skill objects",
+      "explanation": "Skills should be objects: Skill(\"Fireball\", 30, 0), not just the string \"Fireball\"."
+    }
+  ],
+  "bonus": {
+    "description": "Add an Equipment class with attack/defense stats, and let characters equip items from inventory. Add method show_total_stats() that includes equipment bonuses!",
+    "xpReward": 150
+  }
+}

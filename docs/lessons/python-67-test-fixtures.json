@@ -1,0 +1,60 @@
+{
+  "id": 67,
+  "trackId": 8,
+  "language": "python",
+  "title": "The Fixture Forge",
+  "subtitle": "Fixtures & Parametrization",
+  "difficulty": 4,
+  "estimatedTime": "35-45 minutes",
+  "xpReward": 250,
+  "description": "# Master Test Fixtures!\n\n🔧 **Fixtures** reduce test duplication by providing reusable test data.\n\n## pytest Fixtures\n\n```python\nimport pytest\n\n@pytest.fixture\ndef sample_character():\n    return Character(\"Hero\", level=5)\n\ndef test_combat(sample_character):\n    # fixture automatically passed as argument\n    assert sample_character.level == 5\n```\n\n## Parametrize Tests\n\n```python\n@pytest.mark.parametrize(\"damage,expected\", [\n    (10, 90),\n    (50, 50),\n    (150, 0),  # overkill\n])\ndef test_damage(sample_character, damage, expected):\n    sample_character.take_damage(damage)\n    assert sample_character.health == expected\n```\n\n## Your Mission\n\nCreate fixtures for common test objects and parametrize damage calculation tests.\n\n*Hint: Fixtures eliminate repetitive setup code.*",
+  "starterCode": "import pytest\n\nclass Character:\n    def __init__(self, name, level=1):\n        self.name = name\n        self.level = level\n        self.health = 100\n        self.max_health = 100\n    \n    def take_damage(self, amount, armor=0):\n        reduced = max(0, amount - armor)\n        self.health = max(0, self.health - reduced)\n        return reduced\n\n# TODO: Create fixture for level 1 character\n@pytest.fixture\ndef basic_character():\n    pass\n\n# TODO: Create fixture for level 10 character with 200 health\n@pytest.fixture\ndef high_level_character():\n    pass\n\n# TODO: Parametrize test for damage with armor\n# Test cases: (damage=50, armor=10, expected_health=60)\n#             (damage=30, armor=30, expected_health=100)\n#             (damage=100, armor=20, expected_health=20)\n@pytest.mark.parametrize(\"damage,armor,expected_health\", [\n    # TODO: Add test cases\n])\ndef test_damage_with_armor(basic_character, damage, armor, expected_health):\n    pass\n\n# Test using fixtures\ndef test_basic_char_fixture(basic_character):\n    assert basic_character.name == \"Basic\"\n    assert basic_character.level == 1\n\ndef test_high_level_fixture(high_level_character):\n    assert high_level_character.level == 10\n    assert high_level_character.max_health == 200\n\nif __name__ == \"__main__\":\n    print(\"Testing fixtures...\")\n    basic = basic_character()\n    high = high_level_character()\n    print(f\"Basic: {basic.name}, Level {basic.level}\")\n    print(f\"High: {high.name}, Level {high.level}\")\n    test_basic_char_fixture(basic)\n    test_high_level_fixture(high)\n    print(\"Fixture tests passed!\")",
+  "solutionCode": "import pytest\n\nclass Character:\n    def __init__(self, name, level=1):\n        self.name = name\n        self.level = level\n        self.health = 100\n        self.max_health = 100\n    \n    def take_damage(self, amount, armor=0):\n        reduced = max(0, amount - armor)\n        self.health = max(0, self.health - reduced)\n        return reduced\n\n@pytest.fixture\ndef basic_character():\n    return Character(\"Basic\", level=1)\n\n@pytest.fixture\ndef high_level_character():\n    char = Character(\"Elite\", level=10)\n    char.max_health = 200\n    char.health = 200\n    return char\n\n@pytest.mark.parametrize(\"damage,armor,expected_health\", [\n    (50, 10, 60),\n    (30, 30, 100),\n    (100, 20, 20),\n])\ndef test_damage_with_armor(basic_character, damage, armor, expected_health):\n    basic_character.take_damage(damage, armor)\n    assert basic_character.health == expected_health\n\ndef test_basic_char_fixture(basic_character):\n    assert basic_character.name == \"Basic\"\n    assert basic_character.level == 1\n\ndef test_high_level_fixture(high_level_character):\n    assert high_level_character.level == 10\n    assert high_level_character.max_health == 200\n\nif __name__ == \"__main__\":\n    print(\"Testing fixtures...\")\n    basic = basic_character()\n    high = high_level_character()\n    print(f\"Basic: {basic.name}, Level {basic.level}\")\n    print(f\"High: {high.name}, Level {high.level}\")\n    test_basic_char_fixture(basic)\n    test_high_level_fixture(high)\n    print(\"Fixture tests passed!\")",
+  "hints": [
+    "Fixtures are functions decorated with @pytest.fixture that return test data.",
+    "Test functions receive fixtures as arguments by matching parameter names.",
+    "@pytest.mark.parametrize takes test case tuples and runs the test for each set.",
+    "For high_level_character, create a Character then modify its max_health and health."
+  ],
+  "validationTests": [
+    {
+      "type": "code_contains",
+      "value": "@pytest.fixture",
+      "description": "Must use pytest fixtures"
+    },
+    {
+      "type": "code_contains",
+      "value": "@pytest.mark.parametrize",
+      "description": "Must use parametrize decorator"
+    },
+    {
+      "type": "code_contains",
+      "value": "def basic_character",
+      "description": "Must define basic_character fixture"
+    },
+    {
+      "type": "output_contains",
+      "value": "Fixture tests passed",
+      "description": "Tests should pass"
+    }
+  ],
+  "learningObjectives": [
+    "Create pytest fixtures for reusable test data",
+    "Use parametrize to test multiple inputs",
+    "Reduce test code duplication",
+    "Understand fixture scope and lifecycle"
+  ],
+  "nextLessonId": 68,
+  "previousLessonId": 66,
+  "tags": ["advanced", "testing", "pytest", "fixtures", "parametrize"],
+  "commonMistakes": [
+    {
+      "mistake": "Not returning value from fixture",
+      "explanation": "Fixtures must RETURN the test object. Use: return Character(...)"
+    },
+    {
+      "mistake": "Wrong parameter names in test function",
+      "explanation": "The parameter name must match the fixture name exactly."
+    }
+  ]
+}

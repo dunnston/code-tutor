@@ -1,0 +1,23 @@
+{
+  "id": 56,
+  "trackId": 7,
+  "language": "python",
+  "title": "The Error Guardian",
+  "subtitle": "Exception Handling Basics",
+  "difficulty": 4,
+  "estimatedTime": "25 minutes",
+  "xpReward": 150,
+  "description": "# Exception Handling: Graceful Error Recovery\n\n🛡️ Handle errors without crashing!\n\n```python\ntry:\n    result = 10 / 0  # Error!\nexcept ZeroDivisionError:\n    print('Cannot divide by zero!')\n```\n\n⚔️ Protect your code from errors!",
+  "starterCode": "# Exception Handling Demo\n\ndef safe_divide(a, b):\n    try:\n        return a / b\n    except ZeroDivisionError:\n        print('Error: Cannot divide by zero!')\n        return None\n\nprint(safe_divide(10, 2))  # 5.0\nprint(safe_divide(10, 0))  # Error message, returns None\n\n# TODO: Handle ValueError\ndef safe_int_convert(value):\n    try:\n        return int(value)\n    except ValueError:\n        print(f'Error: \"{value}\" is not a valid number!')\n        return 0\n\nprint(safe_int_convert('123'))  # 123\nprint(safe_int_convert('abc'))  # Error, returns 0",
+  "solutionCode": "def safe_divide(a, b):\n    try:\n        return a / b\n    except ZeroDivisionError:\n        print('Error: Cannot divide by zero!')\n        return None\n\nprint(safe_divide(10, 2))\nprint(safe_divide(10, 0))\n\ndef safe_int_convert(value):\n    try:\n        return int(value)\n    except ValueError:\n        print(f'Error: \"{value}\" is not a valid number!')\n        return 0\n\nprint(safe_int_convert('123'))\nprint(safe_int_convert('abc'))",
+  "hints": ["Use try/except blocks", "Catch specific exceptions", "Return safe defaults"],
+  "validationTests": [
+    {"type": "code_contains", "value": "try:", "description": "Must use try block"},
+    {"type": "code_contains", "value": "except", "description": "Must use except block"},
+    {"type": "output_contains", "value": "Cannot divide by zero", "description": "Should handle division error"}
+  ],
+  "learningObjectives": ["Use try/except blocks", "Handle specific exceptions", "Return safe values"],
+  "nextLessonId": 57,
+  "previousLessonId": 55,
+  "tags": ["intermediate", "exceptions", "error-handling"]
+}

@@ -1,0 +1,59 @@
+{
+  "id": 225,
+  "trackId": 3,
+  "language": "csharp",
+  "title": "⭐ CHALLENGE: The Grand Inventory",
+  "subtitle": "Complete RPG Inventory System",
+  "difficulty": 5,
+  "estimatedTime": "35-45 minutes",
+  "xpReward": 350,
+  "description": "# Module 4-5 Challenge!\n\nYou've mastered methods, parameters, return values, and advanced LINQ. Build a complete RPG inventory system!\n\n## The Quest\n\nCreate a **Complete RPG Inventory System** with methods to manage items.\n\n### Requirements:\n\n1. **Item Class:**\n   - Properties: Name (string), Type (string), Value (int)\n   - Types: \"weapon\", \"armor\", \"potion\", \"misc\"\n\n2. **Required Methods:**\n   - `AddItem(inventory, name, type, value)` - Add new item\n   - `RemoveItem(inventory, name)` - Remove item by name, return success/failure\n   - `FindItem(inventory, name)` - Find and return item, or null\n   - `GetTotalValue(inventory)` - Calculate total inventory value\n   - `GetItemsByType(inventory, type)` - Return list of matching items\n   - `SortByValue(inventory)` - Sort inventory by value (high to low)\n\n3. **Main Program:**\n   - Start with 3-4 items\n   - Add 2 new items\n   - Remove 1 item\n   - Find specific item and print details\n   - Print total value\n   - Print all weapons\n   - Sort and display by value\n\n### Example Output:\n```\n=== STARTING INVENTORY ===\n1. Iron Sword (weapon) - 100g\n2. Leather Armor (armor) - 75g\n3. Health Potion (potion) - 25g\n\n=== ADDING ITEMS ===\nAdded Steel Sword\nAdded Magic Ring\n\n=== TOTAL VALUE ===\nTotal inventory value: 325g\n\n=== WEAPONS ===\n- Iron Sword (100g)\n- Steel Sword (150g)\n\n=== SORTED BY VALUE ===\n1. Steel Sword - 150g\n2. Magic Ring - 200g\n...\n```",
+  "starterCode": "using System;\nusing System.Collections.Generic;\nusing System.Linq;\n\nclass Program\n{\n    // CHALLENGE: Complete RPG Inventory System\n    //\n    // Requirements:\n    // - Create Item class with Name, Type, Value properties\n    // - Create methods for inventory management\n    // - Implement add, remove, find, calculate, filter, sort\n    // - Test all methods\n    //\n    // Start coding below:\n    \n    public class Item\n    {\n        // Define properties here\n    }\n    \n    // Add your methods here\n    \n    static void Main()\n    {\n        Console.WriteLine(\"=== RPG INVENTORY SYSTEM ===\");\n        \n        // Your code here\n    }\n}\n",
+  "solutionCode": "using System;\nusing System.Collections.Generic;\nusing System.Linq;\n\nclass Program\n{\n    public class Item\n    {\n        public string Name { get; set; }\n        public string Type { get; set; }\n        public int Value { get; set; }\n    }\n    \n    static void AddItem(List<Item> inventory, string name, string type, int value)\n    {\n        inventory.Add(new Item { Name = name, Type = type, Value = value });\n    }\n    \n    static bool RemoveItem(List<Item> inventory, string name)\n    {\n        Item item = inventory.FirstOrDefault(i => i.Name == name);\n        if (item != null)\n        {\n            inventory.Remove(item);\n            return true;\n        }\n        return false;\n    }\n    \n    static Item FindItem(List<Item> inventory, string name)\n    {\n        return inventory.FirstOrDefault(i => i.Name == name);\n    }\n    \n    static int GetTotalValue(List<Item> inventory)\n    {\n        return inventory.Sum(i => i.Value);\n    }\n    \n    static List<Item> GetItemsByType(List<Item> inventory, string type)\n    {\n        return inventory.Where(i => i.Type == type).ToList();\n    }\n    \n    static List<Item> SortByValue(List<Item> inventory)\n    {\n        return inventory.OrderByDescending(i => i.Value).ToList();\n    }\n    \n    static void Main()\n    {\n        List<Item> inventory = new List<Item>();\n        \n        Console.WriteLine(\"=== STARTING INVENTORY ===\");\n        AddItem(inventory, \"Iron Sword\", \"weapon\", 100);\n        AddItem(inventory, \"Leather Armor\", \"armor\", 75);\n        AddItem(inventory, \"Health Potion\", \"potion\", 25);\n        \n        for (int i = 0; i < inventory.Count; i++)\n        {\n            Item item = inventory[i];\n            Console.WriteLine($\"{i + 1}. {item.Name} ({item.Type}) - {item.Value}g\");\n        }\n        \n        Console.WriteLine(\"\\n=== ADDING ITEMS ===\");\n        AddItem(inventory, \"Steel Sword\", \"weapon\", 150);\n        AddItem(inventory, \"Magic Ring\", \"misc\", 200);\n        Console.WriteLine(\"Added Steel Sword\");\n        Console.WriteLine(\"Added Magic Ring\");\n        \n        Console.WriteLine(\"\\n=== REMOVING ITEM ===\");\n        if (RemoveItem(inventory, \"Health Potion\"))\n        {\n            Console.WriteLine(\"Removed Health Potion\");\n        }\n        \n        Console.WriteLine(\"\\n=== FINDING ITEM ===\");\n        Item found = FindItem(inventory, \"Iron Sword\");\n        if (found != null)\n        {\n            Console.WriteLine($\"Found: {found.Name} ({found.Type}) - {found.Value}g\");\n        }\n        \n        Console.WriteLine(\"\\n=== TOTAL VALUE ===\");\n        int total = GetTotalValue(inventory);\n        Console.WriteLine($\"Total inventory value: {total}g\");\n        \n        Console.WriteLine(\"\\n=== WEAPONS ===\");\n        List<Item> weapons = GetItemsByType(inventory, \"weapon\");\n        foreach (var weapon in weapons)\n        {\n            Console.WriteLine($\"- {weapon.Name} ({weapon.Value}g)\");\n        }\n        \n        Console.WriteLine(\"\\n=== SORTED BY VALUE ===\");\n        List<Item> sorted = SortByValue(inventory);\n        for (int i = 0; i < sorted.Count; i++)\n        {\n            Console.WriteLine($\"{i + 1}. {sorted[i].Name} - {sorted[i].Value}g\");\n        }\n    }\n}\n",
+  "hints": [
+    "Start by defining the Item class with three properties: Name, Type, and Value",
+    "Create all 6 methods first before writing Main(). Each method takes List<Item> as first parameter",
+    "In AddItem, create a new Item and add it to the list",
+    "In GetTotalValue, use LINQ Sum: inventory.Sum(i => i.Value)",
+    "In GetItemsByType, use LINQ Where: inventory.Where(i => i.Type == type).ToList()",
+    "In SortByValue, use LINQ OrderByDescending: inventory.OrderByDescending(i => i.Value).ToList()",
+    "Use FirstOrDefault() to find items: inventory.FirstOrDefault(i => i.Name == name)"
+  ],
+  "validationTests": [
+    {
+      "type": "code_contains",
+      "value": "class Item",
+      "description": "Must define an Item class"
+    },
+    {
+      "type": "code_contains",
+      "value": "static void AddItem",
+      "description": "Must have AddItem method"
+    },
+    {
+      "type": "code_contains",
+      "value": "static int GetTotalValue",
+      "description": "Must have GetTotalValue method"
+    },
+    {
+      "type": "code_contains",
+      "value": "using System.Linq",
+      "description": "Should use LINQ"
+    },
+    {
+      "type": "output_line_count",
+      "min": 15,
+      "description": "Should produce detailed output"
+    }
+  ],
+  "learningObjectives": [
+    "Design a complete system with multiple methods",
+    "Work with lists of objects",
+    "Implement CRUD operations (Create, Read, Update, Delete)",
+    "Use LINQ for data manipulation",
+    "Build practical, reusable code modules"
+  ],
+  "previousLessonId": 224,
+  "nextLessonId": 226,
+  "tags": ["challenge", "advanced", "methods", "lists", "linq", "objects", "system-design", "crud"]
+}

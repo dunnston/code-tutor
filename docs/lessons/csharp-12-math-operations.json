@@ -1,0 +1,57 @@
+{
+  "id": 212,
+  "trackId": 3,
+  "language": "csharp",
+  "title": "The Mathematician's Tome",
+  "subtitle": "Advanced Math Operations",
+  "difficulty": 3,
+  "estimatedTime": "15-20 minutes",
+  "xpReward": 150,
+  "description": "# The Power of Mathematics\n\nMath is essential for game logic! C# provides powerful math operations and the `Math` class for advanced calculations.\n\n## Basic Arithmetic\n\n```csharp\nint a = 10;\nint b = 3;\n\nint sum = a + b;        // 13 (addition)\nint diff = a - b;       // 7  (subtraction)\nint product = a * b;    // 30 (multiplication)\nint quotient = a / b;   // 3  (integer division)\nint remainder = a % b;  // 1  (modulo/remainder)\n```\n\n## The Math Class\n\nThe `Math` class provides advanced operations:\n\n```csharp\n// Power and roots\ndouble power = Math.Pow(2, 3);      // 8 (2 to the power of 3)\ndouble sqrt = Math.Sqrt(16);        // 4 (square root of 16)\n\n// Min and Max\nint min = Math.Min(5, 10);          // 5\nint max = Math.Max(5, 10);          // 10\n\n// Absolute value\nint abs = Math.Abs(-15);            // 15\n\n// Rounding\ndouble rounded = Math.Round(3.7);   // 4\ndouble ceiling = Math.Ceiling(3.2); // 4\ndouble floor = Math.Floor(3.8);     // 3\n```\n\n## Compound Assignment Operators\n\n```csharp\nint gold = 100;\ngold += 50;  // Same as: gold = gold + 50 (now 150)\ngold -= 25;  // Same as: gold = gold - 25 (now 125)\ngold *= 2;   // Same as: gold = gold * 2  (now 250)\ngold /= 5;   // Same as: gold = gold / 5  (now 50)\n```\n\n## Your Quest\n\nCreate a damage calculator:\n1. Set base damage = 25\n2. Set strength multiplier = 1.5\n3. Calculate total damage: base * multiplier (use Math.Round)\n4. Set player health = 200, enemy damage = 45\n5. Subtract damage from health\n6. Calculate how many hits until defeated (health / enemy damage, use Math.Ceiling)\n7. Use Math.Max to ensure damage never goes below 10",
+  "starterCode": "using System;\n\nclass Program\n{\n    static void Main()\n    {\n        Console.WriteLine(\"=== DAMAGE CALCULATOR ===\");\n        \n        // Set base damage and multiplier\n        int baseDamage = 25;\n        double strengthMultiplier = 1.5;\n        \n        // Calculate total damage (round the result)\n        \n        \n        // Set player health and enemy damage\n        int playerHealth = 200;\n        int enemyDamage = 45;\n        \n        // Calculate health after one hit\n        \n        \n        // Calculate hits until defeat (use ceiling)\n        \n        \n        // Demonstrate Math.Max with minimum damage\n        int weakDamage = 5;\n        // Ensure damage is at least 10\n        \n        \n        Console.WriteLine($\"Base Damage: {baseDamage}\");\n        Console.WriteLine($\"Total Damage: {0}\");  // Fill in\n        Console.WriteLine($\"Health After Hit: {0}\");  // Fill in\n        Console.WriteLine($\"Hits Until Defeat: {0}\");  // Fill in\n        Console.WriteLine($\"Minimum Damage Applied: {0}\");  // Fill in\n    }\n}\n",
+  "solutionCode": "using System;\n\nclass Program\n{\n    static void Main()\n    {\n        Console.WriteLine(\"=== DAMAGE CALCULATOR ===\");\n        \n        // Set base damage and multiplier\n        int baseDamage = 25;\n        double strengthMultiplier = 1.5;\n        \n        // Calculate total damage (round the result)\n        int totalDamage = (int)Math.Round(baseDamage * strengthMultiplier);\n        \n        // Set player health and enemy damage\n        int playerHealth = 200;\n        int enemyDamage = 45;\n        \n        // Calculate health after one hit\n        int healthAfterHit = playerHealth - enemyDamage;\n        \n        // Calculate hits until defeat (use ceiling)\n        int hitsUntilDefeat = (int)Math.Ceiling((double)playerHealth / enemyDamage);\n        \n        // Demonstrate Math.Max with minimum damage\n        int weakDamage = 5;\n        int guaranteedDamage = Math.Max(weakDamage, 10);\n        \n        Console.WriteLine($\"Base Damage: {baseDamage}\");\n        Console.WriteLine($\"Total Damage: {totalDamage}\");\n        Console.WriteLine($\"Health After Hit: {healthAfterHit}\");\n        Console.WriteLine($\"Hits Until Defeat: {hitsUntilDefeat}\");\n        Console.WriteLine($\"Minimum Damage Applied: {guaranteedDamage}\");\n    }\n}\n",
+  "hints": [
+    "Use Math.Round() to round a decimal number: (int)Math.Round(value)",
+    "Use Math.Ceiling() to round up: (int)Math.Ceiling(value)",
+    "Math.Max(a, b) returns the larger of two numbers",
+    "Cast to (int) when converting from double to int",
+    "Remember to cast to (double) when dividing integers for Math.Ceiling"
+  ],
+  "validationTests": [
+    {
+      "type": "code_contains",
+      "value": "Math.",
+      "description": "Must use Math class methods"
+    },
+    {
+      "type": "code_contains",
+      "value": "Math.Round",
+      "description": "Should use Math.Round()"
+    },
+    {
+      "type": "code_contains",
+      "value": "Math.Max",
+      "description": "Should use Math.Max()"
+    },
+    {
+      "type": "output_contains",
+      "value": "38",
+      "description": "Total damage should be 38 (25 * 1.5 rounded)"
+    },
+    {
+      "type": "output_contains",
+      "value": "155",
+      "description": "Health after hit should be 155"
+    }
+  ],
+  "learningObjectives": [
+    "Use basic arithmetic operators in C#",
+    "Use the Math class for advanced calculations",
+    "Apply Math.Round(), Math.Ceiling(), and Math.Floor()",
+    "Use Math.Max() and Math.Min() for comparisons",
+    "Cast between numeric types (int, double)"
+  ],
+  "previousLessonId": 211,
+  "nextLessonId": 213,
+  "tags": ["math", "arithmetic", "Math-class", "calculations", "casting"]
+}

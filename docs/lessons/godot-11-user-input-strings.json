@@ -1,0 +1,50 @@
+{
+  "id": 111,
+  "trackId": 2,
+  "language": "gdscript",
+  "title": "The Input Scroll",
+  "subtitle": "Getting User Input & Working with Strings",
+  "difficulty": 2,
+  "estimatedTime": "20-25 minutes",
+  "xpReward": 200,
+  "description": "# The Input Scroll: Interactive Programs\n\n**Note:** In real Godot games, user input comes from keyboard/mouse events. This lesson teaches the concept using simulated console input.\n\n## String Operations\n\nStrings are text values with powerful methods:\n\n**Concatenation (joining):**\n```gdscript\nvar greeting = \"Hello \" + \"World\"\nprint(greeting)  # Hello World\n```\n\n**String formatting:**\n```gdscript\nvar name = \"Knight\"\nvar level = 5\nvar message = \"Name: %s, Level: %d\" % [name, level]\nprint(message)  # Name: Knight, Level: 5\n```\n\n**String methods:**\n```gdscript\nvar text = \"GODOT\"\nprint(text.to_lower())  # godot\nprint(text.length())    # 5\nprint(text.substr(0, 3))  # GOD\n```\n\n## Your Quest\n\nWork with strings to create character profiles:\n\n1. Create variables for name, class, and level\n2. Combine them into a formatted message\n3. Use string methods to manipulate text\n4. Print a complete character card",
+  "starterCode": "# Create character variables\nvar hero_name = \"Warrior\"\nvar hero_class = \"KNIGHT\"\nvar hero_level = 10\n\n# Create a greeting message by combining strings\n\n# Convert hero_class to lowercase\n\n# Create a formatted character card\n\n# Print results\n\n",
+  "solutionCode": "# Create character variables\nvar hero_name = \"Warrior\"\nvar hero_class = \"KNIGHT\"\nvar hero_level = 10\n\n# Create a greeting message by combining strings\nvar greeting = \"Welcome, \" + hero_name + \"!\"\nprint(greeting)\n\n# Convert hero_class to lowercase\nvar class_lower = hero_class.to_lower()\nprint(\"Class: \", class_lower)\n\n# Create a formatted character card\nvar card = \"=== Character Card ===\\nName: %s\\nClass: %s\\nLevel: %d\" % [hero_name, class_lower, hero_level]\nprint(card)",
+  "hints": [
+    "Join strings with the + operator",
+    "Use .to_lower() to convert to lowercase",
+    "Use %s for strings and %d for numbers in formatting",
+    "\\n creates a new line in strings"
+  ],
+  "validationTests": [
+    {
+      "type": "code_contains",
+      "value": "+",
+      "description": "Should concatenate strings"
+    },
+    {
+      "type": "code_contains",
+      "value": ".to_lower()",
+      "description": "Should use to_lower() method"
+    },
+    {
+      "type": "output_contains",
+      "value": "Welcome",
+      "description": "Should print greeting"
+    },
+    {
+      "type": "output_contains",
+      "value": "knight",
+      "description": "Should show lowercase class"
+    }
+  ],
+  "learningObjectives": [
+    "Concatenate strings with +",
+    "Use string formatting with %",
+    "Apply string methods",
+    "Create formatted text output"
+  ],
+  "previousLessonId": 110,
+  "nextLessonId": 112,
+  "tags": ["beginner", "strings", "formatting", "methods", "godot"]
+}

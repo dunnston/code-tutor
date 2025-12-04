@@ -1,0 +1,24 @@
+{
+  "id": 77,
+  "trackId": 8,
+  "language": "python",
+  "title": "The Async Nexus",
+  "subtitle": "Async File I/O & Network Operations",
+  "difficulty": 5,
+  "estimatedTime": "40-50 minutes",
+  "xpReward": 250,
+  "description": "# Master Async I/O!\n\n📁 **Async I/O** prevents blocking on slow operations.\n\n## Async File Operations\n\n```python\nimport aiofiles\n\nasync def read_file_async(filename):\n    async with aiofiles.open(filename, 'r') as f:\n        content = await f.read()\n    return content\n\nasync def write_file_async(filename, data):\n    async with aiofiles.open(filename, 'w') as f:\n        await f.write(data)\n```\n\n## Async HTTP (aiohttp)\n\n```python\nimport aiohttp\n\nasync def fetch_url(url):\n    async with aiohttp.ClientSession() as session:\n        async with session.get(url) as response:\n            return await response.text()\n```\n\n## Your Mission\n\nBuild async save/load system for MMO.\n\n*Hint: async with handles cleanup automatically.*",
+  "starterCode": "import asyncio\nimport json\n\n# TODO: Implement async_save_character(filename, char_data)\n# TODO: Implement async_load_character(filename)\n# TODO: Implement async_save_multiple(characters)\n# TODO: Implement async_load_multiple(filenames)\n\nasync def async_save_character(filename, char_data):\n    # Simulate async file write\n    await asyncio.sleep(0.1)\n    with open(filename, 'w') as f:\n        json.dump(char_data, f)\n\nasync def async_load_character(filename):\n    await asyncio.sleep(0.1)\n    with open(filename, 'r') as f:\n        return json.load(f)\n\nasync def async_save_multiple(characters):\n    tasks = [async_save_character(f\"char_{c['id']}.json\", c) for c in characters]\n    await asyncio.gather(*tasks)\n\nasync def async_load_multiple(filenames):\n    tasks = [async_load_character(f) for f in filenames]\n    return await asyncio.gather(*tasks)\n\nif __name__ == '__main__':\n    char = {'id': 1, 'name': 'Hero', 'level': 10}\n    asyncio.run(async_save_character('test.json', char))\n    loaded = asyncio.run(async_load_character('test.json'))\n    print(f\"Loaded: {loaded}\")\n    print(\"✅ Async I/O complete!\")",
+  "solutionCode": "import asyncio\nimport json\n\nasync def async_save_character(filename, char_data):\n    await asyncio.sleep(0.1)\n    with open(filename, 'w') as f:\n        json.dump(char_data, f)\n\nasync def async_load_character(filename):\n    await asyncio.sleep(0.1)\n    with open(filename, 'r') as f:\n        return json.load(f)\n\nasync def async_save_multiple(characters):\n    tasks = [async_save_character(f\"char_{c['id']}.json\", c) for c in characters]\n    await asyncio.gather(*tasks)\n\nasync def async_load_multiple(filenames):\n    tasks = [async_load_character(f) for f in filenames]\n    return await asyncio.gather(*tasks)\n\nif __name__ == '__main__':\n    char = {'id': 1, 'name': 'Hero', 'level': 10}\n    asyncio.run(async_save_character('test.json', char))\n    loaded = asyncio.run(async_load_character('test.json'))\n    print(f\"Loaded: {loaded}\")\n    print(\"✅ Async I/O complete!\")",
+  "hints": ["Use asyncio.gather for concurrent file operations", "await asyncio.sleep simulates I/O delay", "async with ensures proper cleanup"],
+  "validationTests": [
+    {"type": "code_contains", "value": "async def", "description": "Must use async functions"},
+    {"type": "code_contains", "value": "await", "description": "Must use await"},
+    {"type": "output_contains", "value": "Async I/O complete", "description": "Should complete"}
+  ],
+  "learningObjectives": ["Use async file I/O", "Handle async context managers", "Batch async operations"],
+  "nextLessonId": 78,
+  "previousLessonId": 76,
+  "tags": ["advanced", "async", "io", "files"],
+  "commonMistakes": [{"mistake": "Using sync file operations in async code", "explanation": "Use aiofiles or at least run sync I/O in executor"}]
+}

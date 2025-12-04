@@ -1,0 +1,20 @@
+{
+  "id": 87,
+  "trackId": 8,
+  "language": "python",
+  "title": "The Cache Vault",
+  "subtitle": "Caching Strategies",
+  "difficulty": 4,
+  "estimatedTime": "35-45 minutes",
+  "xpReward": 200,
+  "description": "# Master Caching!\n\n💾 Caching speeds up repeated operations.\n\n## functools.lru_cache\n```python\nfrom functools import lru_cache\n\n@lru_cache(maxsize=128)\ndef expensive_calculation(n):\n    # Cached after first call\n    return n ** 2\n```\n\n## Custom Cache\n```python\nclass QueryCache:\n    def __init__(self):\n        self.cache = {}\n    \n    def get(self, key):\n        return self.cache.get(key)\n    \n    def set(self, key, value, ttl=60):\n        self.cache[key] = value\n```\n\n*Hint: Cache expensive, frequently-used data.*",
+  "starterCode": "from functools import lru_cache\n\n# TODO: Implement caching for character stats\n# TODO: Cache database queries\n# TODO: Implement TTL\n\nif __name__ == '__main__':\n    print('Caching complete!')",
+  "solutionCode": "from functools import lru_cache\n\n@lru_cache(maxsize=100)\ndef get_character_stats(char_id):\n    # Expensive calculation\n    return {'id': char_id, 'power': char_id * 100}\n\nif __name__ == '__main__':\n    stats = get_character_stats(1)\n    print(f'Stats: {stats}')\n    print('Caching complete!')",
+  "hints": ["Use lru_cache decorator", "Consider cache invalidation", "Set appropriate TTL"],
+  "validationTests": [{"type": "code_contains", "value": "lru_cache", "description": "Must use caching"}],
+  "learningObjectives": ["Implement caching", "Use lru_cache", "Understand cache strategies"],
+  "nextLessonId": 88,
+  "previousLessonId": 86,
+  "tags": ["advanced", "caching", "performance", "optimization"],
+  "commonMistakes": [{"mistake": "Caching everything", "explanation": "Cache selectively!"}]
+}

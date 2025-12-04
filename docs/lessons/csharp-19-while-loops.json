@@ -1,0 +1,57 @@
+{
+  "id": 219,
+  "trackId": 3,
+  "language": "csharp",
+  "title": "The Persistent Warrior",
+  "subtitle": "While Loops for Conditional Iteration",
+  "difficulty": 3,
+  "estimatedTime": "20-25 minutes",
+  "xpReward": 175,
+  "description": "# Looping with Conditions\n\nSometimes you don't know HOW MANY times to loop - you just know WHEN to stop. That's where **while loops** come in!\n\n## While Loop Basics\n\nA while loop repeats as long as a condition is true:\n\n```csharp\nint health = 100;\nint damage = 15;\n\nwhile (health > 0)\n{\n    Console.WriteLine($\"Health: {health}\");\n    health -= damage;\n}\nConsole.WriteLine(\"Defeated!\");\n```\n\n**Important:** Make sure your condition eventually becomes false, or you'll have an infinite loop!\n\n## While vs For\n\n**Use for loop when:** You know how many iterations you need\n```csharp\nfor (int i = 0; i < 10; i++)  // Exactly 10 times\n```\n\n**Use while loop when:** You loop until a condition changes\n```csharp\nwhile (playerHealth > 0)  // Until player dies\n```\n\n## Common Patterns\n\n```csharp\n// Countdown until threshold\nint gold = 100;\nwhile (gold >= 20)\n{\n    Console.WriteLine($\"Buying item for 20 gold. Gold: {gold}\");\n    gold -= 20;\n}\n\n// Level up until max\nint level = 1;\nwhile (level < 10)\n{\n    Console.WriteLine($\"Level {level}\");\n    level++;\n}\n```\n\n## Your Quest\n\n1. **Healing Simulation**: Start with 50 health, heal 10 each turn until health >= 100\n2. **Resource Gathering**: Gather gold (start at 0, gain 45 each round) until gold >= 200\n3. **Enemy Waves**: Fight 5 waves of enemies, display wave number\n4. **Level Grind**: Start at level 1, gain 1 level each iteration until level 15",
+  "starterCode": "using System;\n\nclass Program\n{\n    static void Main()\n    {\n        Console.WriteLine(\"=== HEALING SIMULATION ===\");\n        int health = 50;\n        int healAmount = 10;\n        int turn = 1;\n        \n        while (/* health < 100 */)\n        {\n            Console.WriteLine($\"Turn {turn}: Health = {health}\");\n            // Heal\n            // Increment turn\n        }\n        Console.WriteLine($\"Fully healed! Final health: {health}\\n\");\n        \n        Console.WriteLine(\"=== RESOURCE GATHERING ===\");\n        int gold = 0;\n        int round = 1;\n        \n        while (/* gold < 200 */)\n        {\n            gold += 45;\n            Console.WriteLine($\"Round {round}: Gathered gold. Total: {gold}\");\n            // Increment round\n        }\n        Console.WriteLine($\"Goal reached! Total gold: {gold}\\n\");\n        \n        Console.WriteLine(\"=== ENEMY WAVES ===\");\n        int wave = 1;\n        \n        while (/* wave <= 5 */)\n        {\n            Console.WriteLine($\"Fighting wave {wave}...\");\n            // Increment wave\n        }\n        Console.WriteLine(\"All waves defeated!\\n\");\n        \n        Console.WriteLine(\"=== LEVEL GRIND ===\");\n        int level = 1;\n        \n        while (/* level < 15 */)\n        {\n            Console.WriteLine($\"Current level: {level}\");\n            // Increment level\n        }\n        Console.WriteLine($\"Max level reached: {level}\");\n    }\n}\n",
+  "solutionCode": "using System;\n\nclass Program\n{\n    static void Main()\n    {\n        Console.WriteLine(\"=== HEALING SIMULATION ===\");\n        int health = 50;\n        int healAmount = 10;\n        int turn = 1;\n        \n        while (health < 100)\n        {\n            Console.WriteLine($\"Turn {turn}: Health = {health}\");\n            health += healAmount;\n            turn++;\n        }\n        Console.WriteLine($\"Fully healed! Final health: {health}\\n\");\n        \n        Console.WriteLine(\"=== RESOURCE GATHERING ===\");\n        int gold = 0;\n        int round = 1;\n        \n        while (gold < 200)\n        {\n            gold += 45;\n            Console.WriteLine($\"Round {round}: Gathered gold. Total: {gold}\");\n            round++;\n        }\n        Console.WriteLine($\"Goal reached! Total gold: {gold}\\n\");\n        \n        Console.WriteLine(\"=== ENEMY WAVES ===\");\n        int wave = 1;\n        \n        while (wave <= 5)\n        {\n            Console.WriteLine($\"Fighting wave {wave}...\");\n            wave++;\n        }\n        Console.WriteLine(\"All waves defeated!\\n\");\n        \n        Console.WriteLine(\"=== LEVEL GRIND ===\");\n        int level = 1;\n        \n        while (level < 15)\n        {\n            Console.WriteLine($\"Current level: {level}\");\n            level++;\n        }\n        Console.WriteLine($\"Max level reached: {level}\");\n    }\n}\n",
+  "hints": [
+    "While loop syntax: while (condition) { ... }",
+    "For healing: while (health < 100) then health += healAmount",
+    "For gathering: while (gold < 200) then gold += 45",
+    "For waves: while (wave <= 5) then wave++",
+    "Don't forget to increment your counters inside the loop or it will run forever!"
+  ],
+  "validationTests": [
+    {
+      "type": "code_contains",
+      "value": "while",
+      "description": "Must use while loops"
+    },
+    {
+      "type": "code_contains",
+      "value": "++",
+      "description": "Should increment variables with ++"
+    },
+    {
+      "type": "output_contains",
+      "value": "Health",
+      "description": "Should display health information"
+    },
+    {
+      "type": "output_contains",
+      "value": "gold",
+      "description": "Should display gold information"
+    },
+    {
+      "type": "output_line_count",
+      "min": 15,
+      "description": "Should print multiple lines"
+    }
+  ],
+  "learningObjectives": [
+    "Use while loops for condition-based iteration",
+    "Understand when to use while vs for loops",
+    "Avoid infinite loops by ensuring conditions change",
+    "Track iteration counts within while loops",
+    "Implement common while loop patterns"
+  ],
+  "previousLessonId": 218,
+  "nextLessonId": 220,
+  "tags": ["intermediate", "while-loop", "conditions", "iteration", "loops"]
+}

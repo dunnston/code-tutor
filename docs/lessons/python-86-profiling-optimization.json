@@ -1,0 +1,20 @@
+{
+  "id": 86,
+  "trackId": 8,
+  "language": "python",
+  "title": "The Performance Forge",
+  "subtitle": "Profiling & Optimization",
+  "difficulty": 5,
+  "estimatedTime": "40-50 minutes",
+  "xpReward": 250,
+  "description": "# Master Performance Optimization!\n\n⚡ Profile and optimize Python code.\n\n## Profiling\n```python\nimport cProfile\nimport pstats\n\ndef slow_function():\n    total = 0\n    for i in range(1000000):\n        total += i\n    return total\n\nprofiler = cProfile.Profile()\nprofiler.enable()\nslow_function()\nprofiler.disable()\n\nstats = pstats.Stats(profiler)\nstats.sort_stats('cumtime')\nstats.print_stats(10)\n```\n\n## Optimization\n- Use generators for large data\n- Cache expensive computations\n- Use built-in functions\n- Profile before optimizing\n\n*Hint: Measure first, optimize second.*",
+  "starterCode": "import cProfile\n\n# TODO: Profile combat simulation\n# TODO: Optimize bottlenecks\n# TODO: Measure improvements\n\nif __name__ == '__main__':\n    print('Optimization complete!')",
+  "solutionCode": "import cProfile\nimport pstats\n\ndef combat_simulation():\n    results = []\n    for i in range(10000):\n        damage = i * 2\n        results.append(damage)\n    return results\n\nprofiler = cProfile.Profile()\nprofiler.enable()\ncombat_simulation()\nprofiler.disable()\n\nstats = pstats.Stats(profiler)\nstats.print_stats(5)\n\nprint('Optimization complete!')",
+  "hints": ["Use cProfile", "Focus on hotspots", "Measure improvements"],
+  "validationTests": [{"type": "code_contains", "value": "cProfile", "description": "Must use profiling"}],
+  "learningObjectives": ["Profile Python code", "Identify bottlenecks", "Optimize performance"],
+  "nextLessonId": 87,
+  "previousLessonId": 85,
+  "tags": ["advanced", "performance", "optimization", "profiling"],
+  "commonMistakes": [{"mistake": "Premature optimization", "explanation": "Profile first!"}]
+}

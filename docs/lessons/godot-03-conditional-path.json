@@ -1,0 +1,65 @@
+{
+  "id": 103,
+  "trackId": 2,
+  "language": "gdscript",
+  "title": "The Conditional Path",
+  "subtitle": "Making Decisions with If/Else",
+  "difficulty": 2,
+  "estimatedTime": "15-20 minutes",
+  "xpReward": 200,
+  "description": "# The Conditional Path: Making Decisions\n\nWelcome back, game developer! Your journey continues to a fork in the road where you must make choices.\n\nIn game programming, we constantly need code to make decisions:\n- If the player has enough coins, allow the purchase\n- If health is below 20, show a danger warning\n- If the door is locked, require a key\n\n## The If Statement\n\nThe `if` statement checks a condition and runs code only if it's true:\n\n```gdscript\nvar health = 15\n\nif health < 20:\n    print(\"Warning: Low health!\")\n```\n\n**How it works:**\n- `if` starts the condition check\n- `health < 20` is the condition (is health less than 20?)\n- **No colon needed** (unlike Python!)\n- **The indented line** runs only if the condition is true\n\n## Comparison Operators\n\nUse these to compare values:\n- `<` less than\n- `>` greater than\n- `<=` less than or equal\n- `>=` greater than or equal\n- `==` equal to (two equals signs!)\n- `!=` not equal to\n\n## The Else Statement\n\nUse `else` to handle what happens when the condition is false:\n\n```gdscript\nvar gold = 100\n\nif gold >= 50:\n    print(\"You can afford the sword!\")\nelse:\n    print(\"Not enough gold yet.\")\n```\n\n## Indentation Matters!\n\n⚠️ **Important:** GDScript uses tabs or spaces to know which code belongs to the if/else.\n\nPress `Tab` to indent:\n\n```gdscript\nif age >= 18:\n    print(\"Adult\")      # This runs if true\n    print(\"Welcome!\")   # This also runs if true\nprint(\"Done\")           # This ALWAYS runs (not indented)\n```\n\n## Your Quest\n\nYou encounter a magical door that requires a password.\n\n1. Create a variable called `password` with the value `\"dragon\"`\n2. Create a variable called `user_input` with the value `\"dragon\"`\n3. Write an if statement:\n   - If `user_input == password`, print: `\"Access granted!\"`\n   - Otherwise (else), print: `\"Access denied!\"`\n\n**Test both paths:** Try changing `user_input` to something else to see the else branch!",
+  "starterCode": "# Create your variables\nvar password = \"dragon\"\nvar user_input = \"dragon\"\n\n# Write your if/else statement below\n\n",
+  "solutionCode": "# Create your variables\nvar password = \"dragon\"\nvar user_input = \"dragon\"\n\n# Write your if/else statement below\nif user_input == password:\n    print(\"Access granted!\")\nelse:\n    print(\"Access denied!\")",
+  "hints": [
+    "Use two equals signs to check equality: user_input == password",
+    "GDScript doesn't need a colon after if/else (unlike Python)",
+    "Indent the print statements (press Tab before the print)",
+    "The if and else should NOT be indented, but the prints inside them should be",
+    "Make sure you use == (comparison) not = (assignment)"
+  ],
+  "validationTests": [
+    {
+      "type": "code_contains",
+      "value": "if ",
+      "description": "Code should contain an if statement"
+    },
+    {
+      "type": "code_contains",
+      "value": "else",
+      "description": "Code should contain an else statement"
+    },
+    {
+      "type": "output_contains",
+      "value": "Access granted!",
+      "description": "Should print 'Access granted!' when passwords match"
+    }
+  ],
+  "bonus": {
+    "description": "After submitting, change `user_input` to `\"wizard\"` and run again to see the else branch!",
+    "xpReward": 50
+  },
+  "learningObjectives": [
+    "Understand how if statements make decisions",
+    "Use comparison operators (==, <, >, etc.)",
+    "Learn the importance of indentation in GDScript",
+    "Use else to handle alternative outcomes",
+    "Test different conditions to see branching behavior"
+  ],
+  "commonMistakes": [
+    {
+      "mistake": "Using = instead of ==",
+      "explanation": "One equals (=) assigns a value. Two equals (==) compares values."
+    },
+    {
+      "mistake": "Adding a colon after if",
+      "explanation": "GDScript doesn't use colons like Python does. Just write: if condition"
+    },
+    {
+      "mistake": "No indentation",
+      "explanation": "GDScript requires indentation (Tab or spaces) for code inside if/else blocks."
+    }
+  ],
+  "previousLessonId": 102,
+  "nextLessonId": 104,
+  "tags": ["beginner", "conditionals", "if-else", "comparison", "logic", "godot"]
+}

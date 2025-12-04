@@ -1,0 +1,21 @@
+{
+  "id": 85,
+  "trackId": 8,
+  "language": "python",
+  "title": "⭐ CHALLENGE: Complete REST API",
+  "subtitle": "Build Production MMO API",
+  "difficulty": 6,
+  "estimatedTime": "3-4 hours",
+  "xpReward": 600,
+  "description": "# Build Complete REST API!\n\n🏆 Build production-ready MMO REST API.\n\n## Requirements\n- Auth system (JWT)\n- Character CRUD\n- Guild endpoints\n- Quest system\n- Combat logging\n- Request validation\n- Error handling\n- Rate limiting\n- API documentation\n- Tests\n\n*Build your portfolio API!*",
+  "starterCode": "from flask import Flask\napp = Flask(__name__)\n\nprint('Build your MMO REST API!')\nprint('Requirements: Auth, CRUD, Validation, Tests')\nprint('Good luck!')",
+  "solutionCode": "# Build it yourself using lessons 81-84!",
+  "hints": ["Start with auth", "Add endpoints incrementally", "Test as you go"],
+  "validationTests": [{"type": "code_contains", "value": "Flask", "description": "Must use Flask"}],
+  "learningObjectives": ["Build production REST API", "Implement authentication", "Create comprehensive API"],
+  "nextLessonId": 86,
+  "previousLessonId": 84,
+  "tags": ["advanced", "challenge", "flask", "rest", "api"],
+  "commonMistakes": [{"mistake": "No error handling", "explanation": "Handle ALL errors!"}],
+  "bonus": {"description": "Add Swagger documentation and deployment", "xpReward": 200}
+}

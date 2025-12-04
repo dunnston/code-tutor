@@ -1,0 +1,23 @@
+{
+  "id": 118,
+  "trackId": 2,
+  "language": "gdscript",
+  "title": "The Loop Master",
+  "subtitle": "Advanced For Loops & Range",
+  "difficulty": 2,
+  "estimatedTime": "20-25 minutes",
+  "xpReward": 200,
+  "description": "# Mastering For Loops\n\n## Advanced Range Usage\n\n**Count backwards:**\n```gdscript\nfor i in range(5, 0, -1):\n    print(i)  # 5, 4, 3, 2, 1\n```\n\n**Skip numbers:**\n```gdscript\nfor i in range(0, 10, 2):\n    print(i)  # 0, 2, 4, 6, 8\n```\n\n## Looping with Index\n\n```gdscript\nvar items = [\"sword\", \"shield\", \"potion\"]\nfor i in range(items.size()):\n    print(i, \": \", items[i])\n```\n\n## Your Quest\n\nCreate various loop patterns for game systems.",
+  "starterCode": "# Loop Challenges\n\n# 1. Countdown from 10 to 1\n\n# 2. Print even numbers from 0 to 20\n\n# 3. Loop through array with indices\n\n",
+  "solutionCode": "# Loop Challenges\n\n# 1. Countdown from 10 to 1\nprint(\"Countdown:\")\nfor i in range(10, 0, -1):\n    print(i)\nprint(\"BLAST OFF!\")\n\n# 2. Print even numbers from 0 to 20\nprint(\"\\nEven numbers:\")\nfor i in range(0, 21, 2):\n    print(i)\n\n# 3. Loop through array with indices\nvar loot = [\"gold\", \"gem\", \"potion\", \"key\"]\nprint(\"\\nLoot found:\")\nfor i in range(loot.size()):\n    print(\"Item \", i + 1, \": \", loot[i])",
+  "hints": ["Use range(start, end, step)", "Negative step counts backwards", "range(array.size()) gets indices", "Combine with array access"],
+  "validationTests": [
+    {"type": "code_contains", "value": "range(", "description": "Should use range()"},
+    {"type": "output_contains", "value": "10", "description": "Should show countdown"},
+    {"type": "output_contains", "value": "BLAST OFF", "description": "Should show blast off message"}
+  ],
+  "learningObjectives": ["Master range() variations", "Count backwards", "Use custom step values", "Loop with indices"],
+  "previousLessonId": 117,
+  "nextLessonId": 119,
+  "tags": ["beginner", "for-loops", "range", "iteration", "godot"]
+}

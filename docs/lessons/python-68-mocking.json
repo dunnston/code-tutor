@@ -1,0 +1,61 @@
+{
+  "id": 68,
+  "trackId": 8,
+  "language": "python",
+  "title": "The Illusion Chamber",
+  "subtitle": "Mocking & Test Doubles",
+  "difficulty": 5,
+  "estimatedTime": "40-50 minutes",
+  "xpReward": 250,
+  "description": "# Master Mocking!\n\n🎭 **Mocking** lets you test code without real dependencies.\n\n## Why Mock?\n\n- Test without databases, file systems, APIs\n- Control test environment completely\n- Test error conditions easily\n- Speed up tests\n\n## unittest.mock\n\n```python\nfrom unittest.mock import Mock, patch\n\ndef save_character(char, filename):\n    with open(filename, 'w') as f:\n        f.write(char.to_json())\n\n# Mock file operations\ndef test_save(mocker):\n    char = Character(\"Hero\")\n    mock_open = mocker.patch('builtins.open')\n    save_character(char, 'test.json')\n    mock_open.assert_called_once()\n```\n\n## Your Mission\n\nMock file I/O and external dependencies for testing.\n\n*Hint: Mock external dependencies, test your logic.*",
+  "starterCode": "from unittest.mock import Mock, MagicMock, patch\nimport json\n\nclass Character:\n    def __init__(self, name, level=1):\n        self.name = name\n        self.level = level\n        self.health = 100\n    \n    def to_dict(self):\n        return {\"name\": self.name, \"level\": self.level, \"health\": self.health}\n    \n    def save_to_file(self, filename):\n        with open(filename, 'w') as f:\n            json.dump(self.to_dict(), f)\n    \n    @staticmethod\n    def load_from_file(filename):\n        with open(filename, 'r') as f:\n            data = json.load(f)\n        return Character(data['name'], data['level'])\n\n# TODO: Test save_to_file by mocking open()\ndef test_save_to_file():\n    char = Character(\"Hero\", 5)\n    # Mock open to avoid actual file I/O\n    with patch('builtins.open', create=True) as mock_open:\n        # TODO: Call save_to_file\n        # TODO: Assert open was called with correct filename\n        # TODO: Assert json.dump was called\n        pass\n\n# TODO: Test load_from_file by mocking file contents\ndef test_load_from_file():\n    # Mock file contents\n    mock_data = '{\"name\": \"Hero\", \"level\": 5, \"health\": 100}'\n    with patch('builtins.open', create=True) as mock_open:\n        mock_open.return_value.__enter__.return_value.read.return_value = mock_data\n        # TODO: Call load_from_file\n        # TODO: Assert character created correctly\n        pass\n\nif __name__ == \"__main__\":\n    test_save_to_file()\n    test_load_from_file()\n    print(\"Mock tests passed!\")",
+  "solutionCode": "from unittest.mock import Mock, MagicMock, patch\nimport json\n\nclass Character:\n    def __init__(self, name, level=1):\n        self.name = name\n        self.level = level\n        self.health = 100\n    \n    def to_dict(self):\n        return {\"name\": self.name, \"level\": self.level, \"health\": self.health}\n    \n    def save_to_file(self, filename):\n        with open(filename, 'w') as f:\n            json.dump(self.to_dict(), f)\n    \n    @staticmethod\n    def load_from_file(filename):\n        with open(filename, 'r') as f:\n            data = json.load(f)\n        return Character(data['name'], data['level'])\n\ndef test_save_to_file():\n    char = Character(\"Hero\", 5)\n    with patch('builtins.open', create=True) as mock_open:\n        char.save_to_file('test.json')\n        mock_open.assert_called_once_with('test.json', 'w')\n\ndef test_load_from_file():\n    mock_data = {\"name\": \"Hero\", \"level\": 5, \"health\": 100}\n    with patch('builtins.open', create=True) as mock_open:\n        mock_file = MagicMock()\n        mock_file.__enter__.return_value = mock_file\n        mock_file.read.return_value = json.dumps(mock_data)\n        mock_open.return_value = mock_file\n        \n        with patch('json.load', return_value=mock_data):\n            char = Character.load_from_file('test.json')\n            assert char.name == \"Hero\"\n            assert char.level == 5\n\nif __name__ == \"__main__\":\n    test_save_to_file()\n    test_load_from_file()\n    print(\"Mock tests passed!\")",
+  "hints": [
+    "Use 'with patch()' to temporarily replace functions during tests.",
+    "Mock objects track how they're called. Use .assert_called_once_with() to verify.",
+    "For mocking files, patch 'builtins.open' and control what the mock returns.",
+    "MagicMock supports context managers (__enter__, __exit__) automatically."
+  ],
+  "validationTests": [
+    {
+      "type": "code_contains",
+      "value": "from unittest.mock import",
+      "description": "Must import mock utilities"
+    },
+    {
+      "type": "code_contains",
+      "value": "patch",
+      "description": "Must use patch for mocking"
+    },
+    {
+      "type": "code_contains",
+      "value": "def test_save_to_file",
+      "description": "Must test save functionality"
+    },
+    {
+      "type": "output_contains",
+      "value": "Mock tests passed",
+      "description": "Tests should pass"
+    }
+  ],
+  "learningObjectives": [
+    "Use unittest.mock to create test doubles",
+    "Patch external dependencies in tests",
+    "Mock file I/O operations",
+    "Verify mock calls and behavior",
+    "Understand when to mock vs use real objects"
+  ],
+  "nextLessonId": 69,
+  "previousLessonId": 67,
+  "tags": ["advanced", "testing", "mocking", "unittest", "test-doubles"],
+  "commonMistakes": [
+    {
+      "mistake": "Not using context managers with patch",
+      "explanation": "Use 'with patch()' to ensure mocks are cleaned up after test."
+    },
+    {
+      "mistake": "Patching the wrong location",
+      "explanation": "Patch where the function is USED, not where it's defined. Patch 'mymodule.open', not 'builtins.open' if mymodule imports it."
+    }
+  ]
+}

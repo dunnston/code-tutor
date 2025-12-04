@@ -1,0 +1,23 @@
+{
+  "id": 126,
+  "trackId": 2,
+  "language": "gdscript",
+  "title": "Dictionary Mastery",
+  "subtitle": "Advanced Dictionary Operations",
+  "difficulty": 3,
+  "estimatedTime": "25-30 minutes",
+  "xpReward": 250,
+  "description": "# Dictionary Mastery\n\n## Advanced Dictionary Operations\n\n**Checking keys:**\n```gdscript\nvar player = {\"name\": \"Hero\", \"level\": 10}\n\nif \"health\" in player:\n    print(player[\"health\"])\nelse:\n    print(\"No health stat\")\n```\n\n**Getting all keys/values:**\n```gdscript\nfor key in player.keys():\n    print(key, \": \", player[key])\n\nfor value in player.values():\n    print(value)\n```\n\n**Merging dictionaries:**\n```gdscript\nvar base_stats = {\"health\": 100}\nvar bonus_stats = {\"mana\": 50}\nbase_stats.merge(bonus_stats)\nprint(base_stats)  # {\"health\": 100, \"mana\": 50}\n```\n\n**Duplicate:**\n```gdscript\nvar original = {\"name\": \"Sword\"}\nvar copy = original.duplicate()\ncopy[\"name\"] = \"Axe\"  # Doesn't change original\n```\n\n## Your Quest\n\nCreate a character stat system using advanced dictionary operations.",
+  "starterCode": "# Dictionary Mastery\n\n# Create base character\nvar character = {\n    \"name\": \"Warrior\",\n    \"class\": \"Fighter\",\n    \"level\": 1\n}\n\n# Add stats dynamically\n\n# Check for optional stats\n\n# Merge equipment bonuses\n\n# Display all stats\n\n",
+  "solutionCode": "# Dictionary Mastery\n\n# Create base character\nvar character = {\n    \"name\": \"Warrior\",\n    \"class\": \"Fighter\",\n    \"level\": 1\n}\n\nprint(\"=== Character Creation ===\")\nprint(\"Name: \", character[\"name\"])\n\n# Add stats dynamically\ncharacter[\"health\"] = 100\ncharacter[\"strength\"] = 15\ncharacter[\"defense\"] = 10\nprint(\"Stats added!\")\n\n# Check for optional stats\nif \"mana\" in character:\n    print(\"Mana: \", character[\"mana\"])\nelse:\n    print(\"No mana (not a spellcaster)\")\n\n# Merge equipment bonuses\nvar equipment_bonus = {\n    \"strength\": 5,  # Will add to existing\n    \"defense\": 3,\n    \"critical_chance\": 10  # New stat\n}\n\nprint(\"\\nEquipping gear...\")\nfor key in equipment_bonus.keys():\n    if key in character:\n        character[key] += equipment_bonus[key]\n        print(\"+\", equipment_bonus[key], \" to \", key)\n    else:\n        character[key] = equipment_bonus[key]\n        print(\"Gained new stat: \", key)\n\n# Display all stats\nprint(\"\\n=== Final Stats ===\")\nfor key in character.keys():\n    print(key, \": \", character[key])",
+  "hints": ["Use 'in' to check if key exists", "Use .keys() to get all keys", "Add to existing values with +=", "Merge by looping through keys", "Handle new vs existing keys differently"],
+  "validationTests": [
+    {"type": "code_contains", "value": "in character", "description": "Should check key existence"},
+    {"type": "code_contains", "value": ".keys()", "description": "Should use .keys() method"},
+    {"type": "output_contains", "value": "Stats", "description": "Should display stats"}
+  ],
+  "learningObjectives": ["Check dictionary keys", "Merge dictionaries", "Iterate over keys/values", "Handle optional data"],
+  "previousLessonId": 125,
+  "nextLessonId": 127,
+  "tags": ["beginner", "dictionaries", "advanced", "operations", "godot"]
+}

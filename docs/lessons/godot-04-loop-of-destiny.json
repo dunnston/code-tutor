@@ -1,0 +1,90 @@
+{
+  "id": 104,
+  "trackId": 2,
+  "language": "gdscript",
+  "title": "The Loop of Destiny",
+  "subtitle": "Repeating Actions with For Loops",
+  "difficulty": 2,
+  "estimatedTime": "15-20 minutes",
+  "xpReward": 250,
+  "description": "# The Loop of Destiny\n\nGreetings, game developer! Today you'll learn one of the most powerful spells: **the for loop**.\n\nImagine you need to:\n- Spawn 10 enemies\n- Check each item in your inventory\n- Deal damage 5 times in a combo attack\n\nYou *could* write the same code over and over:\n\n```gdscript\nprint(\"Attack 1\")\nprint(\"Attack 2\")\nprint(\"Attack 3\")\nprint(\"Attack 4\")\nprint(\"Attack 5\")\n```\n\nBut there's a better way: **loops**! Loops repeat code automatically.\n\n## The For Loop in GDScript\n\nA for loop repeats code a specific number of times:\n\n```gdscript\nfor i in range(5):\n    print(\"Attack \", i + 1)\n```\n\n**Output:**\n```\nAttack 1\nAttack 2\nAttack 3\nAttack 4\nAttack 5\n```\n\n## How It Works\n\n**The anatomy of a for loop:**\n\n```gdscript\nfor i in range(5):\n    print(i)\n```\n\n- `for` - starts the loop\n- `i` - a variable that changes each time (0, 1, 2, 3, 4)\n- `in range(5)` - \"repeat 5 times\"\n- **No colon needed** (GDScript difference from Python!)\n- **Indented code** - runs each time through the loop\n\n## Understanding range()\n\n`range()` creates a sequence of numbers:\n\n- `range(5)` → 0, 1, 2, 3, 4 (5 numbers, starting at 0)\n- `range(1, 6)` → 1, 2, 3, 4, 5 (start at 1, stop before 6)\n- `range(0, 10, 2)` → 0, 2, 4, 6, 8 (start, stop, step by 2)\n\n## Looping Through Arrays\n\nIn Godot, we use **Arrays** (similar to Python lists):\n\n```gdscript\nvar weapons = [\"sword\", \"bow\", \"staff\"]\n\nfor weapon in weapons:\n    print(\"Equipped: \", weapon)\n```\n\n**Output:**\n```\nEquipped: sword\nEquipped: bow\nEquipped: staff\n```\n\n## Your Quest\n\nYou're preparing for battle and need to craft 5 arrows.\n\n**Part 1:** Use a for loop with `range(5)` to print:\n```\nCrafting arrow 1\nCrafting arrow 2\nCrafting arrow 3\nCrafting arrow 4\nCrafting arrow 5\n```\n\n**Hint:** `range(5)` gives you 0-4, but you want 1-5. Add 1 to the loop variable!\n\n**Part 2:** Create an array called `weapons` with: `[\"sword\", \"bow\", \"staff\"]`\n\nThen use a for loop to print each weapon like:\n```\nEquipping sword\nEquipping bow\nEquipping staff\n```",
+  "starterCode": "# Part 1: Craft 5 arrows\nfor i in range(5):\n    # Your code here\n    pass\n\n# Part 2: Create weapons array and equip each one\nvar weapons = [\"sword\", \"bow\", \"staff\"]\n# Your loop here\n\n",
+  "solutionCode": "# Part 1: Craft 5 arrows\nfor i in range(5):\n    print(\"Crafting arrow \", i + 1)\n\n# Part 2: Create weapons array and equip each one\nvar weapons = [\"sword\", \"bow\", \"staff\"]\nfor weapon in weapons:\n    print(\"Equipping \", weapon)",
+  "hints": [
+    "For Part 1: range(5) gives 0, 1, 2, 3, 4. Add 1 to get 1, 2, 3, 4, 5",
+    "Use print(\"Crafting arrow \", i + 1) to combine text and numbers",
+    "For Part 2: loop through the weapons array with 'for weapon in weapons'",
+    "Don't forget to indent the code inside each loop!",
+    "GDScript doesn't need a colon after the for statement"
+  ],
+  "validationTests": [
+    {
+      "type": "code_contains",
+      "value": "for ",
+      "description": "Code should contain at least one for loop"
+    },
+    {
+      "type": "code_contains",
+      "value": "range(",
+      "description": "Should use range() for the arrow crafting loop"
+    },
+    {
+      "type": "output_contains",
+      "value": "Crafting arrow 1",
+      "description": "Should print 'Crafting arrow 1'"
+    },
+    {
+      "type": "output_contains",
+      "value": "Crafting arrow 5",
+      "description": "Should print 'Crafting arrow 5'"
+    },
+    {
+      "type": "output_contains",
+      "value": "Equipping sword",
+      "description": "Should print 'Equipping sword'"
+    },
+    {
+      "type": "output_contains",
+      "value": "Equipping bow",
+      "description": "Should print 'Equipping bow'"
+    },
+    {
+      "type": "output_contains",
+      "value": "Equipping staff",
+      "description": "Should print 'Equipping staff'"
+    },
+    {
+      "type": "output_line_count",
+      "min": 8,
+      "description": "Should print at least 8 lines total"
+    }
+  ],
+  "bonus": {
+    "description": "Advanced Challenge: Use range(1, 6) instead of range(5) and remove the + 1. Does it still work?",
+    "xpReward": 75
+  },
+  "learningObjectives": [
+    "Understand how for loops repeat code",
+    "Use range() to control loop iterations",
+    "Loop through Arrays of items",
+    "Combine loop variables with text in print statements",
+    "Recognize when loops make code more efficient"
+  ],
+  "commonMistakes": [
+    {
+      "mistake": "Forgetting to indent",
+      "explanation": "Code inside a loop must be indented (Tab or spaces). Otherwise, GDScript doesn't know what to repeat."
+    },
+    {
+      "mistake": "Off-by-one errors",
+      "explanation": "range(5) gives 0-4, not 1-5. Add 1 or use range(1, 6) to get 1-5."
+    },
+    {
+      "mistake": "Using 'i' in array loops",
+      "explanation": "When looping through items, use a descriptive name like 'weapon' or 'item', not 'i'."
+    }
+  ],
+  "previousLessonId": 103,
+  "nextLessonId": 105,
+  "tags": ["beginner", "loops", "for-loop", "range", "iteration", "arrays", "godot"]
+}

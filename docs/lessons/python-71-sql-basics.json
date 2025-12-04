@@ -1,0 +1,62 @@
+{
+  "id": 71,
+  "trackId": 8,
+  "language": "python",
+  "title": "The Data Vault",
+  "subtitle": "SQL Basics & sqlite3 Module",
+  "difficulty": 4,
+  "estimatedTime": "40-50 minutes",
+  "xpReward": 200,
+  "description": "# Master Database Fundamentals!\n\n💾 **Databases** provide persistent, structured data storage.\n\n## SQLite with Python\n\n```python\nimport sqlite3\n\n# Connect to database\nconn = sqlite3.connect('game.db')\ncursor = conn.cursor()\n\n# Create table\ncursor.execute('''CREATE TABLE players (\n    id INTEGER PRIMARY KEY,\n    name TEXT NOT NULL,\n    level INTEGER,\n    gold INTEGER\n)''')\n\n# Insert data\ncursor.execute(\"INSERT INTO players (name, level, gold) VALUES (?, ?, ?)\",\n               (\"Hero\", 10, 1000))\nconn.commit()\n\n# Query data\ncursor.execute(\"SELECT * FROM players WHERE level > ?\", (5,))\nresults = cursor.fetchall()\n\nconn.close()\n```\n\n## Your Mission\n\nCreate player database with CRUD operations.\n\n*Hint: Always use ? placeholders to prevent SQL injection!*",
+  "starterCode": "import sqlite3\n\n# TODO: Create database connection\n# TODO: Create players table\n# TODO: Implement insert_player(name, level, gold)\n# TODO: Implement get_player(player_id)\n# TODO: Implement update_player(player_id, level, gold)\n# TODO: Implement delete_player(player_id)\n# TODO: Implement get_all_players()\n\ndef create_database():\n    pass\n\ndef insert_player(name, level, gold):\n    pass\n\ndef get_player(player_id):\n    pass\n\ndef update_player(player_id, level, gold):\n    pass\n\ndef delete_player(player_id):\n    pass\n\ndef get_all_players():\n    pass\n\nif __name__ == \"__main__\":\n    create_database()\n    insert_player(\"Hero\", 1, 100)\n    print(get_all_players())\n    print(\"Database operations complete!\")",
+  "solutionCode": "import sqlite3\n\ndef get_connection():\n    return sqlite3.connect('game.db')\n\ndef create_database():\n    conn = get_connection()\n    cursor = conn.cursor()\n    cursor.execute('''CREATE TABLE IF NOT EXISTS players (\n        id INTEGER PRIMARY KEY AUTOINCREMENT,\n        name TEXT NOT NULL,\n        level INTEGER,\n        gold INTEGER\n    )''')\n    conn.commit()\n    conn.close()\n\ndef insert_player(name, level, gold):\n    conn = get_connection()\n    cursor = conn.cursor()\n    cursor.execute(\"INSERT INTO players (name, level, gold) VALUES (?, ?, ?)\",\n                   (name, level, gold))\n    conn.commit()\n    player_id = cursor.lastrowid\n    conn.close()\n    return player_id\n\ndef get_player(player_id):\n    conn = get_connection()\n    cursor = conn.cursor()\n    cursor.execute(\"SELECT * FROM players WHERE id = ?\", (player_id,))\n    result = cursor.fetchone()\n    conn.close()\n    return result\n\ndef update_player(player_id, level, gold):\n    conn = get_connection()\n    cursor = conn.cursor()\n    cursor.execute(\"UPDATE players SET level = ?, gold = ? WHERE id = ?\",\n                   (level, gold, player_id))\n    conn.commit()\n    conn.close()\n\ndef delete_player(player_id):\n    conn = get_connection()\n    cursor = conn.cursor()\n    cursor.execute(\"DELETE FROM players WHERE id = ?\", (player_id,))\n    conn.commit()\n    conn.close()\n\ndef get_all_players():\n    conn = get_connection()\n    cursor = conn.cursor()\n    cursor.execute(\"SELECT * FROM players\")\n    results = cursor.fetchall()\n    conn.close()\n    return results\n\nif __name__ == \"__main__\":\n    create_database()\n    player_id = insert_player(\"Hero\", 1, 100)\n    print(f\"Created player {player_id}\")\n    print(f\"All players: {get_all_players()}\")\n    update_player(player_id, 5, 500)\n    print(f\"Updated player: {get_player(player_id)}\")\n    print(\"Database operations complete!\")",
+  "hints": [
+    "Use sqlite3.connect() to create/open database file.",
+    "Always use ? placeholders in SQL queries, never string formatting!",
+    "Call conn.commit() after INSERT, UPDATE, DELETE.",
+    "Call conn.close() when done with connection.",
+    "Use cursor.fetchone() for single result, cursor.fetchall() for multiple."
+  ],
+  "validationTests": [
+    {
+      "type": "code_contains",
+      "value": "import sqlite3",
+      "description": "Must import sqlite3"
+    },
+    {
+      "type": "code_contains",
+      "value": "CREATE TABLE",
+      "description": "Must create table"
+    },
+    {
+      "type": "code_contains",
+      "value": "INSERT INTO",
+      "description": "Must implement insert"
+    },
+    {
+      "type": "output_contains",
+      "value": "Database operations complete",
+      "description": "Operations should complete"
+    }
+  ],
+  "learningObjectives": [
+    "Use sqlite3 module in Python",
+    "Create tables with SQL",
+    "Implement CRUD operations",
+    "Use parameterized queries safely",
+    "Manage database connections"
+  ],
+  "nextLessonId": 72,
+  "previousLessonId": 70,
+  "tags": ["advanced", "database", "sql", "sqlite", "crud"],
+  "commonMistakes": [
+    {
+      "mistake": "Using string formatting for SQL queries",
+      "explanation": "NEVER use f-strings or % formatting in SQL! Use ? placeholders to prevent SQL injection."
+    },
+    {
+      "mistake": "Forgetting to commit changes",
+      "explanation": "Changes won't be saved without conn.commit()!"
+    }
+  ]
+}

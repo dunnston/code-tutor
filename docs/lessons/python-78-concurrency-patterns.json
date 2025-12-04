@@ -1,0 +1,23 @@
+{
+  "id": 78,
+  "trackId": 8,
+  "language": "python",
+  "title": "The Parallel Forge",
+  "subtitle": "Threading & Multiprocessing",
+  "difficulty": 5,
+  "estimatedTime": "45-55 minutes",
+  "xpReward": 250,
+  "description": "# Master Concurrency!\n\n🔀 **Threads and processes** for CPU-bound and I/O-bound tasks.\n\n## Threading (I/O-bound)\n```python\nimport threading\n\ndef worker(name):\n    print(f'{name} working...')\n\nthreads = [threading.Thread(target=worker, args=(f'T{i}',)) for i in range(5)]\nfor t in threads:\n    t.start()\nfor t in threads:\n    t.join()\n```\n\n## Multiprocessing (CPU-bound)\n```python\nfrom multiprocessing import Pool\n\ndef compute(n):\n    return n * n\n\nwith Pool(4) as p:\n    results = p.map(compute, [1,2,3,4,5])\n```\n\n## Your Mission\n\nImplement concurrent damage calculations.\n\n*Hint: Use threads for I/O, processes for CPU work.*",
+  "starterCode": "import threading\nimport multiprocessing\nimport time\n\ndef calculate_damage(attacker_level, defender_level):\n    time.sleep(0.1)\n    return attacker_level * 2 - defender_level\n\n# TODO: Implement threaded_combat_simulator\n# TODO: Implement multiprocess_damage_calculator\n\nif __name__ == '__main__':\n    print('Combat simulation complete!')",
+  "solutionCode": "import threading\nimport multiprocessing\nimport time\n\ndef calculate_damage(attacker_level, defender_level):\n    time.sleep(0.1)\n    return attacker_level * 2 - defender_level\n\nresults = []\nlock = threading.Lock()\n\ndef worker(attacker, defender):\n    damage = calculate_damage(attacker, defender)\n    with lock:\n        results.append(damage)\n\nthreads = [threading.Thread(target=worker, args=(10, 5)) for _ in range(5)]\nfor t in threads:\n    t.start()\nfor t in threads:\n    t.join()\n\nif __name__ == '__main__':\n    print(f'Results: {results}')\n    print('Combat simulation complete!')",
+  "hints": ["Use threading.Lock() for shared data", "Use multiprocessing.Pool for parallel processing"],
+  "validationTests": [
+    {"type": "code_contains", "value": "threading", "description": "Must use threading"},
+    {"type": "output_contains", "value": "complete", "description": "Should complete"}
+  ],
+  "learningObjectives": ["Use threading for I/O-bound tasks", "Use multiprocessing for CPU-bound tasks", "Understand GIL limitations"],
+  "nextLessonId": 79,
+  "previousLessonId": 77,
+  "tags": ["advanced", "concurrency", "threading", "multiprocessing"],
+  "commonMistakes": [{"mistake": "Using threads for CPU-bound work", "explanation": "Python GIL prevents true parallel CPU work. Use multiprocessing."}]
+}

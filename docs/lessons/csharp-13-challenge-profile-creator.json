@@ -1,0 +1,52 @@
+{
+  "id": 213,
+  "trackId": 3,
+  "language": "csharp",
+  "title": "⭐ CHALLENGE: The Character Scroll",
+  "subtitle": "Profile Creator Challenge",
+  "difficulty": 2,
+  "estimatedTime": "20-30 minutes",
+  "xpReward": 200,
+  "description": "# Your First Challenge!\n\nYou've learned the basics: Console.WriteLine, variables, input, strings, and math. Now it's time to prove your skills by building something from scratch!\n\n## The Quest\n\nCreate a **Character Profile Generator** that:\n\n### Requirements:\n1. Ask the user for their character's name\n2. Ask for their character's age (as a number)\n3. Ask for their starting gold (as a number)\n4. Calculate gold remaining after buying a sword that costs 50 gold\n5. Print a complete character profile showing:\n   - Character name\n   - Age\n   - Starting gold\n   - Gold after purchase\n   - A welcome message\n\n### Example Output:\n```\nEnter your character's name: Aria\nEnter your character's age: 25\nEnter your starting gold: 150\n\n=== CHARACTER PROFILE ===\nName: Aria\nAge: 25 years old\nStarting Gold: 150\nGold after buying sword: 100\nWelcome to the adventure, Aria!\n```\n\n## Success Criteria:\n- ✅ Uses `Console.ReadLine()` to get name, age, and gold\n- ✅ Converts age and gold to numbers with `int.Parse()` or `Convert.ToInt32()`\n- ✅ Performs math operation (subtraction for sword cost)\n- ✅ Uses string interpolation for formatting\n- ✅ Prints all required information\n\n**This is a challenge - you'll get minimal starter code. Plan your approach first!**",
+  "starterCode": "using System;\n\nclass Program\n{\n    static void Main()\n    {\n        // CHALLENGE: Character Profile Creator\n        //\n        // Requirements:\n        // - Ask for: name, age, starting gold\n        // - Calculate: gold after buying sword (costs 50 gold)\n        // - Print: Complete character profile\n        //\n        // Start coding below:\n        \n    }\n}\n",
+  "solutionCode": "using System;\n\nclass Program\n{\n    static void Main()\n    {\n        // CHALLENGE: Character Profile Creator\n        \n        // Get user input\n        Console.Write(\"Enter your character's name: \");\n        string characterName = Console.ReadLine();\n        \n        Console.Write(\"Enter your character's age: \");\n        int age = int.Parse(Console.ReadLine());\n        \n        Console.Write(\"Enter your starting gold: \");\n        int startingGold = int.Parse(Console.ReadLine());\n        \n        // Calculate gold after purchase\n        int swordCost = 50;\n        int goldAfterPurchase = startingGold - swordCost;\n        \n        // Print character profile\n        Console.WriteLine();\n        Console.WriteLine(\"=== CHARACTER PROFILE ===\");\n        Console.WriteLine($\"Name: {characterName}\");\n        Console.WriteLine($\"Age: {age} years old\");\n        Console.WriteLine($\"Starting Gold: {startingGold}\");\n        Console.WriteLine($\"Gold after buying sword: {goldAfterPurchase}\");\n        Console.WriteLine($\"Welcome to the adventure, {characterName}!\");\n    }\n}\n",
+  "hints": [
+    "Think about what variables you need. You'll need to store name (string), age (int), and gold (int)",
+    "Start by getting all three inputs from the user. Remember to convert age and gold to integers using int.Parse()",
+    "Create a variable for swordCost = 50, then subtract it from startingGold to get the remaining gold",
+    "Use string interpolation with $\"\" to format your output nicely. Start with Console.WriteLine($\"Name: {characterName}\") and build from there",
+    "Complete solution structure:\n\nstring characterName = Console.ReadLine();\nint age = int.Parse(Console.ReadLine());\nint startingGold = int.Parse(Console.ReadLine());\n\nint swordCost = 50;\nint goldAfterPurchase = startingGold - swordCost;\n\nConsole.WriteLine($\"Name: {characterName}\");\nConsole.WriteLine($\"Age: {age} years old\");\n// etc..."
+  ],
+  "validationTests": [
+    {
+      "type": "code_contains",
+      "value": "Console.ReadLine",
+      "description": "Must use Console.ReadLine() to get user input"
+    },
+    {
+      "type": "code_contains",
+      "value": "Parse",
+      "description": "Must convert inputs to integers using Parse or Convert"
+    },
+    {
+      "type": "code_contains",
+      "value": "-",
+      "description": "Must perform subtraction for sword purchase"
+    },
+    {
+      "type": "output_contains",
+      "value": "CHARACTER PROFILE",
+      "description": "Output should include profile header"
+    }
+  ],
+  "learningObjectives": [
+    "Synthesize multiple concepts: input, variables, math, strings",
+    "Plan and structure a program independently",
+    "Create formatted output for better user experience",
+    "Build confidence by completing a full program from scratch",
+    "Work with type conversions in C#"
+  ],
+  "previousLessonId": 212,
+  "nextLessonId": 214,
+  "tags": ["challenge", "beginner", "input", "math", "strings", "integration"]
+}

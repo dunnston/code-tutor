@@ -1,0 +1,62 @@
+{
+  "id": 207,
+  "trackId": 3,
+  "language": "csharp",
+  "title": "The Array Magic",
+  "subtitle": "Manipulating Your Inventory",
+  "difficulty": 4,
+  "estimatedTime": "15-20 minutes",
+  "xpReward": 175,
+  "description": "# Mastering Array and List Operations\n\nYour inventory is growing! Arrays have fixed sizes, so C# provides **List<T>** for dynamic collections. Let's learn how to add, remove, and modify items!\n\n## Lists in C#\n\nLists are like arrays but can grow and shrink:\n\n```csharp\nusing System.Collections.Generic;\n\nList<string> items = new List<string> { \"sword\", \"shield\" };\nitems.Add(\"potion\");  // Adds potion to the end\nConsole.WriteLine(string.Join(\", \", items));  // sword, shield, potion\n```\n\n## Adding Items to Lists\n\n### Add() - Add to the end\n```csharp\nList<string> items = new List<string> { \"sword\", \"shield\" };\nitems.Add(\"potion\");\n```\n\n### Insert() - Add at a specific position\n```csharp\nList<string> items = new List<string> { \"sword\", \"shield\" };\nitems.Insert(1, \"helmet\");  // Inserts helmet at index 1\n```\n\n## Removing Items from Lists\n\n### Remove() - Remove by value\n```csharp\nList<string> items = new List<string> { \"sword\", \"shield\", \"potion\" };\nitems.Remove(\"shield\");  // Removes the shield\n```\n\n## Finding List Length\n\n```csharp\nList<string> items = new List<string> { \"sword\", \"shield\", \"potion\" };\nint count = items.Count;  // Returns 3\nConsole.WriteLine($\"You have {count} items\");\n```\n\n## Your Quest\n\n1. Create a List called `backpack` with: `\"map\"`, `\"compass\"`\n2. Use `Add()` to add `\"rope\"` to the backpack\n3. Use `Insert()` to add `\"lantern\"` at the **beginning** (index 0)\n4. Print the number of items using `Count`\n5. Remove `\"compass\"` from the backpack\n6. Print the final backpack",
+  "starterCode": "using System;\nusing System.Collections.Generic;\n\nclass Program\n{\n    static void Main()\n    {\n        // Create your backpack list\n        // List<string> backpack = new List<string> { ... };\n        \n        // Add rope to the end\n        \n        \n        // Insert lantern at the beginning (index 0)\n        \n        \n        // Print the number of items\n        \n        \n        // Remove compass\n        \n        \n        // Print the final backpack\n        \n    }\n}\n",
+  "solutionCode": "using System;\nusing System.Collections.Generic;\n\nclass Program\n{\n    static void Main()\n    {\n        // Create your backpack list\n        List<string> backpack = new List<string> { \"map\", \"compass\" };\n        \n        // Add rope to the end\n        backpack.Add(\"rope\");\n        \n        // Insert lantern at the beginning (index 0)\n        backpack.Insert(0, \"lantern\");\n        \n        // Print the number of items\n        Console.WriteLine(backpack.Count);\n        \n        // Remove compass\n        backpack.Remove(\"compass\");\n        \n        // Print the final backpack\n        Console.WriteLine(string.Join(\", \", backpack));\n    }\n}\n",
+  "hints": [
+    "Use backpack.Add(item) to add an item to the end of a list",
+    "Use backpack.Insert(0, item) to add an item at the beginning",
+    "The Count property returns the number of items in a list",
+    "Use backpack.Remove(item) to remove a specific item by its value",
+    "After all operations, the backpack should have: lantern, map, rope"
+  ],
+  "validationTests": [
+    {
+      "type": "code_contains",
+      "value": "Add",
+      "description": "Code should use the Add() method"
+    },
+    {
+      "type": "code_contains",
+      "value": "Insert",
+      "description": "Code should use the Insert() method"
+    },
+    {
+      "type": "code_contains",
+      "value": "Count",
+      "description": "Code should use the Count property"
+    },
+    {
+      "type": "code_contains",
+      "value": "Remove",
+      "description": "Code should use the Remove() method"
+    },
+    {
+      "type": "output_contains",
+      "value": "4",
+      "description": "Output should show 4 items after insertions"
+    },
+    {
+      "type": "output_contains",
+      "value": "lantern",
+      "description": "Final output should contain 'lantern'"
+    }
+  ],
+  "learningObjectives": [
+    "Add items to lists using Add() and Insert()",
+    "Remove items from lists using Remove()",
+    "Get the length of a list using Count",
+    "Understand how list operations modify the list in place",
+    "Work with List<T> generic collections"
+  ],
+  "previousLessonId": 206,
+  "nextLessonId": 208,
+  "tags": ["lists", "methods", "add", "remove", "insert", "generics"]
+}

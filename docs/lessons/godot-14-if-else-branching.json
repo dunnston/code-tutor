@@ -1,0 +1,45 @@
+{
+  "id": 114,
+  "trackId": 2,
+  "language": "gdscript",
+  "title": "The Branching Path",
+  "subtitle": "Deep Dive into Conditionals",
+  "difficulty": 2,
+  "estimatedTime": "20-25 minutes",
+  "xpReward": 200,
+  "description": "# Deep Dive: If/Else Branching\n\nLet's master conditional logic with more complex scenarios!\n\n## Nested If Statements\n\nYou can put if statements inside other if statements:\n\n```gdscript\nvar has_key = true\nvar door_locked = true\n\nif door_locked:\n    if has_key:\n        print(\"Unlocking door...\")\n    else:\n        print(\"Need a key!\")\nelse:\n    print(\"Door already open\")\n```\n\n## Multiple Conditions\n\nCheck several things:\n\n```gdscript\nvar health = 75\n\nif health > 80:\n    print(\"Healthy!\")\nelif health > 50:\n    print(\"Injured\")\nelif health > 20:\n    print(\"Critical!\")\nelse:\n    print(\"Near death!\")\n```\n\n## Your Quest\n\nCreate a combat system with branching logic:\n\n1. Check player health level\n2. Check if player has healing potion\n3. Make decisions based on both conditions\n4. Print appropriate messages",
+  "starterCode": "# Combat Decision System\n\nvar player_health = 30\nvar has_healing_potion = true\nvar enemy_nearby = true\n\n# Check health level and decide what to do\n# Use if/elif/else to handle different scenarios\n\n",
+  "solutionCode": "# Combat Decision System\n\nvar player_health = 30\nvar has_healing_potion = true\nvar enemy_nearby = true\n\n# Check health level and decide what to do\nif player_health < 20:\n    print(\"CRITICAL HEALTH!\")\n    if has_healing_potion:\n        print(\"Using healing potion!\")\n        player_health += 50\n        print(\"Health restored to: \", player_health)\n    else:\n        print(\"No potion! Retreat!\")\nelif player_health < 50:\n    print(\"Health is low\")\n    if enemy_nearby:\n        print(\"Be careful in combat!\")\n    else:\n        print(\"Safe to explore\")\nelse:\n    print(\"Health is good!\")\n    if enemy_nearby:\n        print(\"Ready for battle!\")\n    else:\n        print(\"Continue exploring\")",
+  "hints": [
+    "Use if health < 20 for critical check",
+    "Nest another if inside to check for potion",
+    "Use elif for health < 50",
+    "Use else for healthy state"
+  ],
+  "validationTests": [
+    {
+      "type": "code_contains",
+      "value": "if ",
+      "description": "Should use if statements"
+    },
+    {
+      "type": "code_contains",
+      "value": "elif",
+      "description": "Should use elif"
+    },
+    {
+      "type": "output_contains",
+      "value": "CRITICAL",
+      "description": "Should warn about critical health"
+    }
+  ],
+  "learningObjectives": [
+    "Use nested if statements",
+    "Create complex branching logic",
+    "Handle multiple conditions",
+    "Build decision trees"
+  ],
+  "previousLessonId": 113,
+  "nextLessonId": 115,
+  "tags": ["beginner", "conditionals", "if-elif-else", "nested-logic", "godot"]
+}

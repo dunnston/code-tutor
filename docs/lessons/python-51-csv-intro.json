@@ -1,0 +1,22 @@
+{
+  "id": 51,
+  "trackId": 7,
+  "language": "python",
+  "title": "The Data Tables",
+  "subtitle": "Introduction to CSV Files",
+  "difficulty": 4,
+  "estimatedTime": "20 minutes",
+  "xpReward": 100,
+  "description": "# CSV Files: Spreadsheet Data in Python\n\n📊 **CSV** (Comma-Separated Values) is the universal spreadsheet format!\n\n## What is CSV?\n\n```csv\nname,level,health,class\nWarrior,10,150,warrior\nMage,12,70,mage\nRogue,11,100,rogue\n```\n\n## Python's csv Module\n\n```python\nimport csv\n\n# Read CSV\nwith open('data.csv', 'r') as f:\n    reader = csv.DictReader(f)\n    for row in reader:\n        print(row['name'], row['level'])\n```\n\n⚔️ Master CSV reading!",
+  "starterCode": "import csv\nimport io\n\n# Sample CSV data\nCSV_DATA = '''name,level,health,class\nWarrior,10,150,warrior\nMage,12,70,mage\nRogue,11,100,rogue'''\n\nprint(\"=== CSV Reader ===\")\nprint()\n\n# TODO: Parse CSV with csv.DictReader\nreader = csv.DictReader(io.StringIO(CSV_DATA))\n\n# TODO: Loop and print each character\nfor row in reader:\n    print(f\"{row['name']} (Lv {row['level']}) - {row['health']} HP\")\n\nprint(\"\\nCSV read complete!\")",
+  "solutionCode": "import csv\nimport io\n\nCSV_DATA = '''name,level,health,class\nWarrior,10,150,warrior\nMage,12,70,mage\nRogue,11,100,rogue'''\n\nprint(\"=== CSV Reader ===\")\nprint()\n\nreader = csv.DictReader(io.StringIO(CSV_DATA))\n\nfor row in reader:\n    print(f\"{row['name']} (Lv {row['level']}) - {row['health']} HP\")\n\nprint(\"\\nCSV read complete!\")",
+  "hints": ["Use csv.DictReader to read CSV", "Access columns with row['column_name']"],
+  "validationTests": [
+    {"type": "code_contains", "value": "csv.DictReader", "description": "Must use DictReader"},
+    {"type": "output_contains", "value": "Warrior", "description": "Should read warrior"}
+  ],
+  "learningObjectives": ["Read CSV files", "Use csv.DictReader", "Process tabular data"],
+  "nextLessonId": 52,
+  "previousLessonId": 50,
+  "tags": ["intermediate", "csv", "data"]
+}

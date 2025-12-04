@@ -1,0 +1,24 @@
+{
+  "id": 80,
+  "trackId": 8,
+  "language": "python",
+  "title": "⭐ CHALLENGE: Async MMO Server",
+  "subtitle": "Build High-Performance Async System",
+  "difficulty": 6,
+  "estimatedTime": "2-3 hours",
+  "xpReward": 600,
+  "description": "# Build Async MMO Server!\n\n⚡ **Build a concurrent MMO server** handling multiple players.\n\n## Requirements\n\n- Async player connection handling\n- Concurrent combat resolution\n- Async database operations\n- Task scheduling\n- Performance monitoring\n\n*Hint: Use asyncio.create_task for background tasks.*",
+  "starterCode": "import asyncio\n\nprint('Build your async MMO server!')\nprint('Requirements:')\nprint('1. Async player handlers')\nprint('2. Concurrent combat')\nprint('3. Async database')\nprint('4. Task scheduling')\nprint('Good luck!')",
+  "solutionCode": "# Build it yourself using lessons 76-79!",
+  "hints": ["Start with async player class", "Use gather for concurrent operations", "Add timeout handling"],
+  "validationTests": [
+    {"type": "code_contains", "value": "async", "description": "Must use async"},
+    {"type": "code_contains", "value": "asyncio", "description": "Must use asyncio"}
+  ],
+  "learningObjectives": ["Build complete async system", "Handle concurrent operations", "Optimize performance"],
+  "nextLessonId": 81,
+  "previousLessonId": 79,
+  "tags": ["advanced", "challenge", "async", "server", "performance"],
+  "commonMistakes": [{"mistake": "Blocking the event loop", "explanation": "Never use time.sleep() in async code. Use await asyncio.sleep()."}],
+  "bonus": {"description": "Add WebSocket support for real-time communication", "xpReward": 200}
+}

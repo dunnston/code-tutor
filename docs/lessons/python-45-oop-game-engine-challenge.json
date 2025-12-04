@@ -1,0 +1,87 @@
+{
+  "id": 45,
+  "trackId": 7,
+  "language": "python",
+  "title": "⭐ The Game Engine Challenge",
+  "subtitle": "Build a Complete OOP System",
+  "difficulty": 7,
+  "estimatedTime": "90-120 minutes",
+  "xpReward": 400,
+  "description": "# ⭐ CHALLENGE: Advanced OOP Mastery\n\n🏆 **Build a complete game engine using everything you've learned!**\n\nThis challenge combines:\n- ✅ Inheritance\n- ✅ Method overriding\n- ✅ Polymorphism\n- ✅ Abstract base classes\n- ✅ Composition\n\n## The Mission\n\nCreate a **turn-based RPG battle system** with:\n- Abstract base classes for design\n- Inheritance hierarchy for characters\n- Polymorphic battle mechanics\n- Complete game loop\n\n## Architecture Requirements\n\n### Abstract Base: CombatEntity(ABC)\n\n**Abstract methods:**\n- `get_name()` - return entity name\n- `get_health()` - return current HP\n- `get_max_health()` - return max HP\n- `take_damage(amount)` - reduce HP\n- `is_alive()` - return bool\n- `get_attack_power()` - return damage\n- `choose_action(target)` - decide what to do\n\n**Concrete methods:**\n- `attack(target)` - perform attack\n- `health_percent()` - return HP percentage\n\n### Character Hierarchy\n\n**Base: PlayerCharacter(CombatEntity)**\n- Implements abstract methods\n- Adds: level, experience, skills\n- Methods: `level_up()`, `gain_xp()`\n\n**Three Classes:**\n1. **Warrior(PlayerCharacter)**\n   - High HP, medium damage\n   - Special: Bash (150% damage)\n   - Overrides: `get_attack_power()` for strength bonus\n\n2. **Mage(PlayerCharacter)**\n   - Low HP, high magic damage\n   - Special: Fireball (200% damage, costs mana)\n   - Overrides: `choose_action()` for mana management\n\n3. **Rogue(PlayerCharacter)**\n   - Medium HP, critical hits\n   - Special: Backstab (250% damage, 50% chance)\n   - Overrides: `attack()` for crit chance\n\n### Enemy Hierarchy\n\n**Base: Enemy(CombatEntity)**\n- Implements abstract methods\n- AI behavior\n\n**Three Types:**\n- **Goblin:** Weak, fast attacks\n- **Orc:** Strong, slow attacks\n- **Dragon:** Boss enemy, multiple attacks\n\n### Battle System\n\n**BattleManager class:**\n- Manages turn order\n- Handles combat flow\n- Determines winner\n- Awards XP\n\n## Success Criteria\n\n✅ Abstract base class with @abstractmethod\n✅ Full inheritance hierarchy (7+ classes)\n✅ Method overriding in child classes\n✅ Polymorphic battle system\n✅ Complete playable battle\n✅ Player levels up after victory\n\n## Example Battle Flow\n\n```\n=== BATTLE START ===\nWarrior (100/100 HP) vs Goblin (30/30 HP)\n\n--- Round 1 ---\nWarrior's turn:\n1. Attack\n2. Bash (Special)\nChoice: 2\nWarrior uses Bash!\nGoblin takes 45 damage! (0/30 HP)\nGoblin defeated!\n\n=== VICTORY ===\nWarrior gains 50 XP!\nWarrior leveled up to Level 2!\n```\n\n⚔️ **This is a complete system design - plan carefully before coding!**",
+  "starterCode": "# Game Engine Challenge - Turn-Based RPG Battle System\n# Build a complete OOP system with inheritance, polymorphism, and ABC\n\nfrom abc import ABC, abstractmethod\nimport random\n\n# TODO: Create abstract CombatEntity base class\nclass CombatEntity(ABC):\n    \"\"\"\n    Abstract base for all combat entities (players and enemies)\n    Defines the contract that all combat entities must follow\n    \"\"\"\n    # TODO: Add @abstractmethod for all required methods\n    pass\n\n# TODO: Create PlayerCharacter base class\nclass PlayerCharacter(CombatEntity):\n    \"\"\"\n    Base class for player characters\n    Implements CombatEntity and adds RPG features\n    \"\"\"\n    pass\n\n# TODO: Create Warrior class\nclass Warrior(PlayerCharacter):\n    \"\"\"\n    High HP tank class with shield bash special\n    \"\"\"\n    pass\n\n# TODO: Create Mage class\nclass Mage(PlayerCharacter):\n    \"\"\"\n    Low HP spellcaster with fireball special\n    \"\"\"\n    pass\n\n# TODO: Create Rogue class\nclass Rogue(PlayerCharacter):\n    \"\"\"\n    Medium HP assassin with critical strike special\n    \"\"\"\n    pass\n\n# TODO: Create Enemy base class\nclass Enemy(CombatEntity):\n    \"\"\"\n    Base class for enemy entities\n    \"\"\"\n    pass\n\n# TODO: Create enemy types (Goblin, Orc, Dragon)\nclass Goblin(Enemy):\n    pass\n\nclass Orc(Enemy):\n    pass\n\nclass Dragon(Enemy):\n    pass\n\n# TODO: Create BattleManager class\nclass BattleManager:\n    \"\"\"\n    Manages turn-based combat between player and enemy\n    \"\"\"\n    def __init__(self, player, enemy):\n        pass\n    \n    def start_battle(self):\n        \"\"\"\n        Main battle loop - fight until someone dies\n        \"\"\"\n        pass\n    \n    def player_turn(self):\n        \"\"\"\n        Handle player's turn (show menu, get choice)\n        \"\"\"\n        pass\n    \n    def enemy_turn(self):\n        \"\"\"\n        Handle enemy's turn (AI decides action)\n        \"\"\"\n        pass\n\n# ===== GAME DEMO =====\n\nprint(\"=== RPG Battle System ===\")\nprint()\nprint(\"Choose your class:\")\nprint(\"1. Warrior (High HP, Shield Bash)\")\nprint(\"2. Mage (High Magic, Fireball)\")\nprint(\"3. Rogue (Critical Hits, Backstab)\")\n\n# TODO: Implement character selection\n# TODO: Create enemy\n# TODO: Start battle\n# TODO: Award XP and level up if victorious\n\nprint(\"\\nGame Engine Challenge Complete!\")",
+  "solutionCode": "# Game Engine Challenge - Complete Solution\n\nfrom abc import ABC, abstractmethod\nimport random\n\nclass CombatEntity(ABC):\n    @abstractmethod\n    def get_name(self):\n        pass\n    \n    @abstractmethod\n    def get_health(self):\n        pass\n    \n    @abstractmethod\n    def get_max_health(self):\n        pass\n    \n    @abstractmethod\n    def take_damage(self, amount):\n        pass\n    \n    @abstractmethod\n    def is_alive(self):\n        pass\n    \n    @abstractmethod\n    def get_attack_power(self):\n        pass\n    \n    @abstractmethod\n    def choose_action(self, target):\n        pass\n    \n    def attack(self, target):\n        damage = self.get_attack_power()\n        target.take_damage(damage)\n        print(f\"{self.get_name()} attacks for {damage} damage!\")\n        print(f\"{target.get_name()} HP: {target.get_health()}/{target.get_max_health()}\")\n    \n    def health_percent(self):\n        return (self.get_health() / self.get_max_health()) * 100\n\nclass PlayerCharacter(CombatEntity):\n    def __init__(self, name, health, attack, defense):\n        self.name = name\n        self.health = health\n        self.max_health = health\n        self.attack = attack\n        self.defense = defense\n        self.level = 1\n        self.experience = 0\n    \n    def get_name(self):\n        return self.name\n    \n    def get_health(self):\n        return self.health\n    \n    def get_max_health(self):\n        return self.max_health\n    \n    def take_damage(self, amount):\n        actual_damage = max(0, amount - self.defense)\n        self.health -= actual_damage\n        if self.health < 0:\n            self.health = 0\n    \n    def is_alive(self):\n        return self.health > 0\n    \n    def get_attack_power(self):\n        return self.attack\n    \n    def choose_action(self, target):\n        print(f\"\\n{self.name}'s turn:\")\n        print(\"1. Attack\")\n        print(\"2. Special Ability\")\n        choice = input(\"Choose action: \")\n        return choice\n    \n    def gain_xp(self, amount):\n        self.experience += amount\n        print(f\"{self.name} gains {amount} XP!\")\n        if self.experience >= 100:\n            self.level_up()\n    \n    def level_up(self):\n        self.level += 1\n        self.experience = 0\n        self.max_health += 20\n        self.health = self.max_health\n        self.attack += 5\n        print(f\"🎉 {self.name} leveled up to Level {self.level}!\")\n\nclass Warrior(PlayerCharacter):\n    def __init__(self):\n        super().__init__(\"Warrior\", 120, 25, 10)\n    \n    def get_attack_power(self):\n        return self.attack + 5  # Strength bonus\n    \n    def special_ability(self, target):\n        damage = int(self.get_attack_power() * 1.5)\n        target.take_damage(damage)\n        print(f\"{self.name} uses Shield Bash!\")\n        print(f\"{target.get_name()} takes {damage} damage!\")\n\nclass Mage(PlayerCharacter):\n    def __init__(self):\n        super().__init__(\"Mage\", 70, 20, 5)\n        self.mana = 100\n        self.max_mana = 100\n    \n    def special_ability(self, target):\n        if self.mana >= 30:\n            damage = int(self.get_attack_power() * 2)\n            self.mana -= 30\n            target.take_damage(damage)\n            print(f\"{self.name} casts Fireball!\")\n            print(f\"{target.get_name()} takes {damage} damage!\")\n        else:\n            print(\"Not enough mana!\")\n            self.attack(target)\n\nclass Rogue(PlayerCharacter):\n    def __init__(self):\n        super().__init__(\"Rogue\", 90, 30, 7)\n    \n    def attack(self, target):\n        if random.random() < 0.3:  # 30% crit chance\n            damage = self.get_attack_power() * 2\n            target.take_damage(damage)\n            print(f\"{self.name} lands a CRITICAL HIT!\")\n            print(f\"{target.get_name()} takes {damage} damage!\")\n        else:\n            super().attack(target)\n    \n    def special_ability(self, target):\n        damage = int(self.get_attack_power() * 2.5)\n        target.take_damage(damage)\n        print(f\"{self.name} uses Backstab!\")\n        print(f\"{target.get_name()} takes {damage} damage!\")\n\nclass Enemy(CombatEntity):\n    def __init__(self, name, health, attack):\n        self.name = name\n        self.health = health\n        self.max_health = health\n        self.attack = attack\n    \n    def get_name(self):\n        return self.name\n    \n    def get_health(self):\n        return self.health\n    \n    def get_max_health(self):\n        return self.max_health\n    \n    def take_damage(self, amount):\n        self.health -= amount\n        if self.health < 0:\n            self.health = 0\n    \n    def is_alive(self):\n        return self.health > 0\n    \n    def get_attack_power(self):\n        return self.attack\n    \n    def choose_action(self, target):\n        self.attack(target)\n\nclass Goblin(Enemy):\n    def __init__(self):\n        super().__init__(\"Goblin\", 40, 12)\n\nclass Orc(Enemy):\n    def __init__(self):\n        super().__init__(\"Orc\", 70, 20)\n\nclass Dragon(Enemy):\n    def __init__(self):\n        super().__init__(\"Dragon\", 150, 35)\n\nclass BattleManager:\n    def __init__(self, player, enemy):\n        self.player = player\n        self.enemy = enemy\n    \n    def start_battle(self):\n        print(\"\\n=== BATTLE START ===\")\n        print(f\"{self.player.get_name()} vs {self.enemy.get_name()}\")\n        print()\n        \n        round_num = 1\n        while self.player.is_alive() and self.enemy.is_alive():\n            print(f\"\\n--- Round {round_num} ---\")\n            print(f\"{self.player.get_name()}: {self.player.get_health()}/{self.player.get_max_health()} HP\")\n            print(f\"{self.enemy.get_name()}: {self.enemy.get_health()}/{self.enemy.get_max_health()} HP\")\n            \n            self.player_turn()\n            if not self.enemy.is_alive():\n                break\n            \n            self.enemy_turn()\n            round_num += 1\n        \n        print(\"\\n=== BATTLE END ===\")\n        if self.player.is_alive():\n            print(f\"🎉 {self.player.get_name()} wins!\")\n            xp_reward = self.enemy.get_max_health() // 2\n            self.player.gain_xp(xp_reward)\n        else:\n            print(f\"💀 {self.player.get_name()} was defeated...\")\n    \n    def player_turn(self):\n        choice = self.player.choose_action(self.enemy)\n        if choice == \"1\":\n            self.player.attack(self.enemy)\n        elif choice == \"2\":\n            self.player.special_ability(self.enemy)\n    \n    def enemy_turn(self):\n        print(f\"\\n{self.enemy.get_name()}'s turn:\")\n        self.enemy.choose_action(self.player)\n\nprint(\"=== RPG Battle System ===\")\nprint()\nprint(\"Choose your class:\")\nprint(\"1. Warrior (High HP, Shield Bash)\")\nprint(\"2. Mage (High Magic, Fireball)\")\nprint(\"3. Rogue (Critical Hits, Backstab)\")\n\nchoice = input(\"Enter 1-3: \")\n\nif choice == \"1\":\n    player = Warrior()\nelif choice == \"2\":\n    player = Mage()\nelse:\n    player = Rogue()\n\nenemy = Goblin()\nbattle = BattleManager(player, enemy)\nbattle.start_battle()\n\nprint(\"\\nGame Engine Challenge Complete!\")",
+  "hints": [
+    "Start with CombatEntity ABC - define all @abstractmethod signatures first",
+    "PlayerCharacter should implement all abstract methods from CombatEntity",
+    "Each player class (Warrior/Mage/Rogue) inherits from PlayerCharacter and customizes behavior through overriding",
+    "BattleManager coordinates the combat - it calls methods on player and enemy polymorphically",
+    "For input in player_turn, use: choice = input('Choose action: ')",
+    "Structure overview:\n```\nCombatEntity (ABC)\n├── PlayerCharacter (implements ABC)\n│   ├── Warrior\n│   ├── Mage\n│   └── Rogue\n└── Enemy (implements ABC)\n    ├── Goblin\n    ├── Orc\n    └── Dragon\n```"
+  ],
+  "validationTests": [
+    {
+      "type": "code_contains",
+      "value": "from abc import ABC, abstractmethod",
+      "description": "Must import ABC and abstractmethod"
+    },
+    {
+      "type": "code_contains",
+      "value": "class CombatEntity(ABC):",
+      "description": "Must create abstract CombatEntity base"
+    },
+    {
+      "type": "code_contains",
+      "value": "@abstractmethod",
+      "description": "Must use abstract methods"
+    },
+    {
+      "type": "code_contains",
+      "value": "class PlayerCharacter(CombatEntity):",
+      "description": "PlayerCharacter must inherit from CombatEntity"
+    },
+    {
+      "type": "code_contains",
+      "value": "class Warrior(PlayerCharacter):",
+      "description": "Must create Warrior class"
+    },
+    {
+      "type": "code_contains",
+      "value": "class Enemy(CombatEntity):",
+      "description": "Enemy must inherit from CombatEntity"
+    },
+    {
+      "type": "code_contains",
+      "value": "class BattleManager:",
+      "description": "Must create BattleManager class"
+    }
+  ],
+  "learningObjectives": [
+    "Design complex class hierarchies with ABC",
+    "Implement full inheritance system (3+ levels deep)",
+    "Use polymorphism for flexible game systems",
+    "Override methods at multiple inheritance levels",
+    "Build complete working application with OOP",
+    "Integrate multiple OOP concepts in one project"
+  ],
+  "nextLessonId": 46,
+  "previousLessonId": 44,
+  "tags": ["intermediate", "challenge", "oop", "inheritance", "polymorphism", "abc", "game-dev"],
+  "commonMistakes": [
+    {
+      "mistake": "Not implementing all abstract methods",
+      "explanation": "Child classes MUST implement ALL @abstractmethod methods from the abstract base class, or Python will prevent instantiation."
+    },
+    {
+      "mistake": "Forgetting to call super().__init__()",
+      "explanation": "Each inheritance level needs super().__init__() to properly initialize parent attributes."
+    },
+    {
+      "mistake": "Hard-coding class names instead of using polymorphism",
+      "explanation": "Use polymorphic methods instead of if/else checks: call enemy.attack(player) not if isinstance(enemy, Goblin): goblin_attack()"
+    }
+  ],
+  "bonus": {
+    "description": "Add a Party system where the player controls 3 characters at once, and enemies come in waves. Implement turn priority based on speed stats!",
+    "xpReward": 200
+  }
+}

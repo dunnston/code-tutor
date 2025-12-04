@@ -1,0 +1,55 @@
+{
+  "id": 50,
+  "trackId": 7,
+  "language": "python",
+  "title": "⭐ The Save System Challenge",
+  "subtitle": "Complete Character Persistence",
+  "difficulty": 6,
+  "estimatedTime": "60-90 minutes",
+  "xpReward": 350,
+  "description": "# ⭐ CHALLENGE: Save/Load Character System\n\n🏆 Build a complete save/load system!\n\n## Requirements\n\n1. **Character to Dict** - Convert Character objects to dictionaries\n2. **Dict to Character** - Rebuild Character objects from dictionaries\n3. **Save Party** - Write party list to JSON file\n4. **Load Party** - Read and recreate Character objects\n5. **Backup System** - Create timestamped backups\n\n## Success Criteria\n\n✅ Convert objects ↔ dictionaries\n✅ Save/load with JSON\n✅ Preserve all character data\n✅ Handle multiple characters\n✅ Create backup files\n\n⚔️ Master data persistence!",
+  "starterCode": "import json\nfrom datetime import datetime\n\nclass Character:\n    def __init__(self, name, char_class, level, health, experience):\n        self.name = name\n        self.char_class = char_class\n        self.level = level\n        self.health = health\n        self.experience = experience\n    \n    def __str__(self):\n        return f\"{self.name} ({self.char_class}) Lv{self.level}\"\n\n# TODO: Implement character_to_dict(character)\ndef character_to_dict(character):\n    \"\"\"Convert Character object to dictionary\"\"\"\n    return {\n        \"name\": character.name,\n        \"char_class\": character.char_class,\n        \"level\": character.level,\n        \"health\": character.health,\n        \"experience\": character.experience\n    }\n\n# TODO: Implement dict_to_character(data)\ndef dict_to_character(data):\n    \"\"\"Create Character object from dictionary\"\"\"\n    return Character(\n        data[\"name\"],\n        data[\"char_class\"],\n        data[\"level\"],\n        data[\"health\"],\n        data[\"experience\"]\n    )\n\n# TODO: Implement save_party(party, filename)\ndef save_party(party, filename=\"party.json\"):\n    \"\"\"Save list of Characters to JSON\"\"\"\n    party_data = [character_to_dict(char) for char in party]\n    json_output = json.dumps(party_data, indent=2)\n    print(f\"Party saved!\\n{json_output}\")\n    return json_output\n\n# TODO: Implement load_party(json_string)\ndef load_party(json_string):\n    \"\"\"Load Characters from JSON string\"\"\"\n    party_data = json.loads(json_string)\n    return [dict_to_character(char_data) for char_data in party_data]\n\n# Demo\nprint(\"=== Character Save System ===\")\nprint()\n\n# Create party\nparty = [\n    Character(\"Warrior\", \"warrior\", 10, 150, 890),\n    Character(\"Mage\", \"mage\", 12, 70, 1100),\n    Character(\"Rogue\", \"rogue\", 11, 100, 950)\n]\n\nprint(\"Original Party:\")\nfor char in party:\n    print(f\"  {char}\")\nprint()\n\n# Save\njson_data = save_party(party)\nprint()\n\n# Load\nloaded_party = load_party(json_data)\n\nprint(\"Loaded Party:\")\nfor char in loaded_party:\n    print(f\"  {char}\")\n\nprint(\"\\nSave system complete!\")",
+  "solutionCode": "import json\nfrom datetime import datetime\n\nclass Character:\n    def __init__(self, name, char_class, level, health, experience):\n        self.name = name\n        self.char_class = char_class\n        self.level = level\n        self.health = health\n        self.experience = experience\n    \n    def __str__(self):\n        return f\"{self.name} ({self.char_class}) Lv{self.level}\"\n\ndef character_to_dict(character):\n    return {\n        \"name\": character.name,\n        \"char_class\": character.char_class,\n        \"level\": character.level,\n        \"health\": character.health,\n        \"experience\": character.experience\n    }\n\ndef dict_to_character(data):\n    return Character(\n        data[\"name\"],\n        data[\"char_class\"],\n        data[\"level\"],\n        data[\"health\"],\n        data[\"experience\"]\n    )\n\ndef save_party(party, filename=\"party.json\"):\n    party_data = [character_to_dict(char) for char in party]\n    json_output = json.dumps(party_data, indent=2)\n    print(f\"Party saved!\\n{json_output}\")\n    return json_output\n\ndef load_party(json_string):\n    party_data = json.loads(json_string)\n    return [dict_to_character(char_data) for char_data in party_data]\n\nprint(\"=== Character Save System ===\")\nprint()\n\nparty = [\n    Character(\"Warrior\", \"warrior\", 10, 150, 890),\n    Character(\"Mage\", \"mage\", 12, 70, 1100),\n    Character(\"Rogue\", \"rogue\", 11, 100, 950)\n]\n\nprint(\"Original Party:\")\nfor char in party:\n    print(f\"  {char}\")\nprint()\n\njson_data = save_party(party)\nprint()\n\nloaded_party = load_party(json_data)\n\nprint(\"Loaded Party:\")\nfor char in loaded_party:\n    print(f\"  {char}\")\n\nprint(\"\\nSave system complete!\")",
+  "hints": [
+    "character_to_dict: Return dict with all character attributes",
+    "dict_to_character: Create new Character() with values from dict",
+    "save_party: Use list comprehension to convert all characters, then json.dumps",
+    "load_party: Parse JSON, then rebuild each Character object"
+  ],
+  "validationTests": [
+    {
+      "type": "code_contains",
+      "value": "def character_to_dict",
+      "description": "Must implement character_to_dict"
+    },
+    {
+      "type": "code_contains",
+      "value": "def dict_to_character",
+      "description": "Must implement dict_to_character"
+    },
+    {
+      "type": "code_contains",
+      "value": "def save_party",
+      "description": "Must implement save_party"
+    },
+    {
+      "type": "code_contains",
+      "value": "def load_party",
+      "description": "Must implement load_party"
+    },
+    {
+      "type": "output_contains",
+      "value": "Warrior",
+      "description": "Should save and load warrior"
+    }
+  ],
+  "learningObjectives": [
+    "Convert objects to dictionaries",
+    "Rebuild objects from data",
+    "Implement save/load systems",
+    "Handle lists of objects"
+  ],
+  "nextLessonId": 51,
+  "previousLessonId": 49,
+  "tags": ["intermediate", "challenge", "json", "persistence", "oop"]
+}

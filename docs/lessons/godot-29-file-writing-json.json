@@ -1,0 +1,23 @@
+{
+  "id": 129,
+  "trackId": 2,
+  "language": "gdscript",
+  "title": "Saving Game Data",
+  "subtitle": "Writing Files & JSON",
+  "difficulty": 4,
+  "estimatedTime": "25-30 minutes",
+  "xpReward": 300,
+  "description": "# Saving Game Data\n\n## Writing Files in Godot\n\n```gdscript\nvar file = FileAccess.open(\"user://save.txt\", FileAccess.WRITE)\nif file:\n    file.store_string(\"Game saved!\")\n    file.close()\n```\n\n**Note:** Use `user://` for save files (writable directory)\n\n## Saving JSON\n\n```gdscript\nvar save_data = {\n    \"player\": \"Hero\",\n    \"level\": 10,\n    \"gold\": 500\n}\n\nvar json_string = JSON.stringify(save_data)\nvar file = FileAccess.open(\"user://save.json\", FileAccess.WRITE)\nfile.store_string(json_string)\nfile.close()\n```\n\n## Pretty JSON (Indented)\n\n```gdscript\nvar json_string = JSON.stringify(save_data, \"\\t\")  # Tab-indented\nprint(json_string)\n# {\n#     \"player\": \"Hero\",\n#     \"level\": 10\n# }\n```\n\n## Your Quest\n\nCreate a save/load system for game data.",
+  "starterCode": "# Save/Load System\n\n# Game state\nvar game_state = {\n    \"player_name\": \"Adventurer\",\n    \"level\": 15,\n    \"health\": 100,\n    \"gold\": 750,\n    \"inventory\": [\n        {\"name\": \"Sword\", \"value\": 100},\n        {\"name\": \"Shield\", \"value\": 75},\n        {\"name\": \"Potion\", \"value\": 50}\n    ],\n    \"settings\": {\n        \"difficulty\": \"normal\",\n        \"music_volume\": 80\n    }\n}\n\n# Convert to JSON and display\n\n",
+  "solutionCode": "# Save/Load System\n\n# Game state\nvar game_state = {\n    \"player_name\": \"Adventurer\",\n    \"level\": 15,\n    \"health\": 100,\n    \"gold\": 750,\n    \"inventory\": [\n        {\"name\": \"Sword\", \"value\": 100},\n        {\"name\": \"Shield\", \"value\": 75},\n        {\"name\": \"Potion\", \"value\": 50}\n    ],\n    \"settings\": {\n        \"difficulty\": \"normal\",\n        \"music_volume\": 80\n    }\n}\n\nprint(\"=== Saving Game ===\")\n\n# Convert to JSON (pretty formatted)\nvar json_string = JSON.stringify(game_state, \"\\t\")\n\nprint(\"Save data prepared:\")\nprint(json_string)\n\n# In real Godot, you would write to file:\nprint(\"\\n=== How to Save in Real Godot ===\")\nprint(\"var file = FileAccess.open('user://save.json', FileAccess.WRITE)\")\nprint(\"file.store_string(json_string)\")\nprint(\"file.close()\")\nprint(\"print('Game saved to user://save.json')\")\n\n# Demonstrate loading it back\nprint(\"\\n=== Testing Load ===\")\nvar json = JSON.new()\nvar parse_result = json.parse(json_string)\n\nif parse_result == OK:\n    var loaded_data = json.data\n    print(\"Save loaded successfully!\")\n    print(\"Player: \", loaded_data[\"player_name\"])\n    print(\"Level: \", loaded_data[\"level\"])\n    print(\"Gold: \", loaded_data[\"gold\"])\n    print(\"Items in inventory: \", loaded_data[\"inventory\"].size())\n    print(\"Difficulty: \", loaded_data[\"settings\"][\"difficulty\"])\nelse:\n    print(\"Error loading save!\")",
+  "hints": ["Use JSON.stringify() to convert to JSON", "Add \"\\t\" parameter for pretty formatting", "In real Godot, use FileAccess.WRITE", "Use user:// path for save files", "Test by parsing the JSON back"],
+  "validationTests": [
+    {"type": "code_contains", "value": "JSON.stringify", "description": "Should use JSON.stringify()"},
+    {"type": "output_contains", "value": "Saving", "description": "Should show saving message"},
+    {"type": "output_contains", "value": "Adventurer", "description": "Should contain player name in JSON"}
+  ],
+  "learningObjectives": ["Convert data to JSON", "Write files in Godot", "Create save systems", "Handle save/load workflow"],
+  "previousLessonId": 128,
+  "nextLessonId": 130,
+  "tags": ["beginner", "files", "json", "save-load", "persistence", "godot"]
+}

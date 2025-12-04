@@ -1,0 +1,81 @@
+{
+  "id": 32,
+  "trackId": 7,
+  "language": "python",
+  "title": "The Lambda Enchantment",
+  "subtitle": "Compact Spell Crafting",
+  "difficulty": 4,
+  "estimatedTime": "20-30 minutes",
+  "xpReward": 150,
+  "description": "# Lambda Functions: One-Line Magic\n\n🧙‍♂️ Sometimes you need a quick spell - too simple for a full function definition.\n\n## What are Lambda Functions?\n\nLambda functions are **anonymous, one-line functions** perfect for simple operations:\n\n```python\n# Regular function\ndef add(x, y):\n    return x + y\n\n# Lambda equivalent\nadd = lambda x, y: x + y\n\n# Both work the same:\nresult = add(5, 3)  # Returns 8\n```\n\n## Lambda Syntax\n\n```python\nlambda arguments: expression\n```\n\n- **No `def` keyword**\n- **No `return` keyword** (automatically returns the expression)\n- **Single expression only** (no multi-line code)\n- Often used with `map()`, `filter()`, `sorted()`\n\n## When to Use Lambdas\n\n✅ **Good uses:**\n- Simple transformations\n- Sorting with custom keys\n- Filtering with simple conditions\n- Short callbacks\n\n❌ **Avoid for:**\n- Complex logic (use `def` instead)\n- Multiple statements\n- Code that needs documentation\n\n## Combat Damage Formulas\n\nIn RPG combat, damage calculations follow predictable formulas. Lambdas are perfect for these!\n\n```python\n# Physical damage with armor reduction\nphysical_damage = lambda base, armor: base * (1 - armor/100)\n\n# Critical hit (double damage)\ncritical_hit = lambda damage: damage * 2\n\n# Elemental bonus (fire beats ice)\nelemental_bonus = lambda damage, multiplier: damage * multiplier\n```\n\n## Your Quest\n\nThe Battle Academy needs damage calculation formulas. You have working functions, but they want **concise lambda versions** for efficiency.\n\n**Convert regular functions to lambda functions where appropriate**, then use them in combat calculations!\n\n⚔️ Master the art of lambda enchantments!",
+  "starterCode": "# Battle Academy - Damage Calculation System\n# Convert regular functions to lambdas where appropriate\n\n# --- REGULAR FUNCTIONS (Convert these to lambdas) ---\n\n# Calculate physical damage with armor reduction\ndef physical_damage(base_damage, armor):\n    return base_damage * (1 - armor / 100)\n\n# Calculate magic damage (ignores armor)\ndef magic_damage(base_damage, magic_power):\n    return base_damage + magic_power\n\n# Apply critical hit multiplier\ndef critical_hit(damage):\n    return damage * 2\n\n# Calculate armor reduction percentage\ndef armor_reduction(armor_value):\n    return min(armor_value / 100, 0.75)  # Max 75% reduction\n\n# Apply elemental bonus (fire vs ice = 1.5x, etc.)\ndef elemental_bonus(damage, multiplier):\n    return damage * multiplier\n\n# --- TODO: Create lambda versions below ---\n# Name them with _lambda suffix\n# Example: physical_damage_lambda = lambda ...\n\nphysical_damage_lambda = None  # TODO: Convert physical_damage to lambda\n\nmagic_damage_lambda = None  # TODO: Convert magic_damage to lambda\n\ncritical_hit_lambda = None  # TODO: Convert critical_hit to lambda\n\narmor_reduction_lambda = None  # TODO: Convert armor_reduction to lambda\n\nelemental_bonus_lambda = None  # TODO: Convert elemental_bonus to lambda\n\n# --- Combat Simulation (Use your lambdas here) ---\n\nprint(\"=== Battle Academy Combat Test ===\")\nprint()\n\n# Test 1: Warrior physical attack\nwarrior_attack = 50\nenemy_armor = 20\n# TODO: Use physical_damage_lambda\ndamage = 0  # Replace with lambda call\nprint(f\"Warrior Attack: {damage} damage (50 base, 20 armor)\")\n\n# Test 2: Mage magic attack  \nmage_spell = 40\nmage_power = 15\n# TODO: Use magic_damage_lambda\ndamage = 0  # Replace with lambda call\nprint(f\"Mage Spell: {damage} damage (40 base, 15 magic power)\")\n\n# Test 3: Rogue critical strike\nrogue_attack = 35\n# TODO: Use physical_damage_lambda, then critical_hit_lambda\nbase_damage = 0  # Calculate with armor first\ncrit_damage = 0  # Apply critical\nprint(f\"Rogue Critical: {crit_damage} damage (35 base, 15 armor, CRIT!)\")\n\n# Test 4: Fire spell vs Ice enemy\nfire_spell = 45\nfire_vs_ice = 1.5  # 50% bonus\n# TODO: Use magic_damage_lambda, then elemental_bonus_lambda\nbase_spell = 0\nfinal_damage = 0\nprint(f\"Fire vs Ice: {final_damage} damage (45 base, 20 power, 1.5x bonus)\")\n\n# Test 5: Calculate effective armor reduction\nheavy_armor = 80\n# TODO: Use armor_reduction_lambda\nreduction = 0\nprint(f\"Heavy Armor: {reduction*100:.0f}% damage reduction\")\n\nprint()\nprint(\"Lambda enchantments complete!\")",
+  "solutionCode": "# Battle Academy - Damage Calculation System\n\n# Lambda versions of damage calculations\nphysical_damage_lambda = lambda base_damage, armor: base_damage * (1 - armor / 100)\n\nmagic_damage_lambda = lambda base_damage, magic_power: base_damage + magic_power\n\ncritical_hit_lambda = lambda damage: damage * 2\n\narmor_reduction_lambda = lambda armor_value: min(armor_value / 100, 0.75)\n\nelemental_bonus_lambda = lambda damage, multiplier: damage * multiplier\n\n# Combat Simulation\nprint(\"=== Battle Academy Combat Test ===\")\nprint()\n\n# Test 1: Warrior physical attack\nwarrior_attack = 50\nenemy_armor = 20\ndamage = physical_damage_lambda(warrior_attack, enemy_armor)\nprint(f\"Warrior Attack: {damage} damage (50 base, 20 armor)\")\n\n# Test 2: Mage magic attack\nmage_spell = 40\nmage_power = 15\ndamage = magic_damage_lambda(mage_spell, mage_power)\nprint(f\"Mage Spell: {damage} damage (40 base, 15 magic power)\")\n\n# Test 3: Rogue critical strike\nrogue_attack = 35\nrogue_enemy_armor = 15\nbase_damage = physical_damage_lambda(rogue_attack, rogue_enemy_armor)\ncrit_damage = critical_hit_lambda(base_damage)\nprint(f\"Rogue Critical: {crit_damage} damage (35 base, 15 armor, CRIT!)\")\n\n# Test 4: Fire spell vs Ice enemy\nfire_spell = 45\nfire_mage_power = 20\nfire_vs_ice = 1.5\nbase_spell = magic_damage_lambda(fire_spell, fire_mage_power)\nfinal_damage = elemental_bonus_lambda(base_spell, fire_vs_ice)\nprint(f\"Fire vs Ice: {final_damage} damage (45 base, 20 power, 1.5x bonus)\")\n\n# Test 5: Calculate effective armor reduction\nheavy_armor = 80\nreduction = armor_reduction_lambda(heavy_armor)\nprint(f\"Heavy Armor: {reduction*100:.0f}% damage reduction\")\n\nprint()\nprint(\"Lambda enchantments complete!\")",
+  "hints": [
+    "Lambda syntax: `lambda parameters: expression`. For physical_damage, you need two parameters (base_damage, armor) and return the calculation.",
+    "The armor reduction lambda needs to use the `min()` function. You can call functions inside lambda expressions: `lambda x: min(x/100, 0.75)`",
+    "To use a lambda, just call it like a function: `physical_damage_lambda(50, 20)` returns the calculated damage.",
+    "For the critical hit test, chain the lambdas: first calculate base damage with armor, then apply critical multiplier to that result.",
+    "Complete solution pattern:\n```python\nphysical_damage_lambda = lambda base, armor: base * (1 - armor/100)\nresult = physical_damage_lambda(50, 20)\n```"
+  ],
+  "validationTests": [
+    {
+      "type": "code_contains",
+      "value": "physical_damage_lambda = lambda",
+      "description": "Must create physical_damage_lambda using lambda syntax"
+    },
+    {
+      "type": "code_contains",
+      "value": "magic_damage_lambda = lambda",
+      "description": "Must create magic_damage_lambda using lambda syntax"
+    },
+    {
+      "type": "code_contains",
+      "value": "critical_hit_lambda = lambda",
+      "description": "Must create critical_hit_lambda using lambda syntax"
+    },
+    {
+      "type": "code_contains",
+      "value": "armor_reduction_lambda = lambda",
+      "description": "Must create armor_reduction_lambda using lambda syntax"
+    },
+    {
+      "type": "code_contains",
+      "value": "elemental_bonus_lambda = lambda",
+      "description": "Must create elemental_bonus_lambda using lambda syntax"
+    },
+    {
+      "type": "output_contains",
+      "value": "40.0 damage (50 base, 20 armor)",
+      "description": "Physical damage calculation should be correct"
+    },
+    {
+      "type": "output_contains",
+      "value": "55 damage (40 base, 15 magic power)",
+      "description": "Magic damage calculation should be correct"
+    }
+  ],
+  "learningObjectives": [
+    "Understand lambda function syntax",
+    "Convert regular functions to lambda expressions",
+    "Know when lambdas are appropriate vs regular functions",
+    "Use lambdas for simple calculations",
+    "Chain lambda function calls"
+  ],
+  "nextLessonId": 33,
+  "previousLessonId": 31,
+  "tags": ["intermediate", "lambda", "functions", "functional-programming"],
+  "commonMistakes": [
+    {
+      "mistake": "Using return keyword in lambda",
+      "explanation": "Lambdas automatically return the expression result. Don't use 'return' - it's a syntax error!"
+    },
+    {
+      "mistake": "Trying to write multi-line lambdas",
+      "explanation": "Lambdas can only contain a single expression. For complex logic, use a regular function with 'def'."
+    },
+    {
+      "mistake": "Forgetting parentheses when calling lambda",
+      "explanation": "Remember: `physical_damage_lambda(50, 20)` calls the function. `physical_damage_lambda` without parentheses is just the function object."
+    }
+  ]
+}

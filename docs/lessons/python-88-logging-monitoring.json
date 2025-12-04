@@ -1,0 +1,20 @@
+{
+  "id": 88,
+  "trackId": 8,
+  "language": "python",
+  "title": "The Observatory",
+  "subtitle": "Logging & Monitoring",
+  "difficulty": 4,
+  "estimatedTime": "35-45 minutes",
+  "xpReward": 200,
+  "description": "# Master Logging & Monitoring!\n\n📊 Production systems need logging and monitoring.\n\n## Python Logging\n```python\nimport logging\n\nlogging.basicConfig(\n    level=logging.INFO,\n    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',\n    handlers=[\n        logging.FileHandler('game.log'),\n        logging.StreamHandler()\n    ]\n)\n\nlogger = logging.getLogger(__name__)\n\nlogger.info('Player logged in')\nlogger.warning('Low health!')\nlogger.error('Combat failed')\n```\n\n## Metrics\n- Track request counts\n- Monitor response times\n- Log errors\n- Alert on anomalies\n\n*Hint: Log everything in production.*",
+  "starterCode": "import logging\n\n# TODO: Setup logging\n# TODO: Log important events\n# TODO: Track metrics\n\nif __name__ == '__main__':\n    print('Logging setup complete!')",
+  "solutionCode": "import logging\n\nlogging.basicConfig(\n    level=logging.INFO,\n    format='%(asctime)s - %(levelname)s - %(message)s'\n)\nlogger = logging.getLogger(__name__)\n\nlogger.info('Application started')\nlogger.warning('This is a warning')\nlogger.error('This is an error')\n\nprint('Logging setup complete!')",
+  "hints": ["Use logging module", "Log at appropriate levels", "Include context"],
+  "validationTests": [{"type": "code_contains", "value": "logging", "description": "Must use logging"}],
+  "learningObjectives": ["Setup Python logging", "Use appropriate log levels", "Monitor applications"],
+  "nextLessonId": 89,
+  "previousLessonId": 87,
+  "tags": ["advanced", "logging", "monitoring", "devops"],
+  "commonMistakes": [{"mistake": "Using print() in production", "explanation": "Use logging!"}]
+}

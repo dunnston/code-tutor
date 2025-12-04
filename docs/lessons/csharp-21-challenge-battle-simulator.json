@@ -1,0 +1,53 @@
+{
+  "id": 221,
+  "trackId": 3,
+  "language": "csharp",
+  "title": "⭐ CHALLENGE: The Arena",
+  "subtitle": "Turn-Based Battle Simulator",
+  "difficulty": 4,
+  "estimatedTime": "30-40 minutes",
+  "xpReward": 300,
+  "description": "# Module 3 Challenge!\n\nYou've mastered for loops, while loops, break, and continue. Now build a complete turn-based battle system!\n\n## The Quest\n\nCreate a **Turn-Based Battle Simulator** where a player fights multiple enemies.\n\n### Requirements:\n\n1. **Setup:**\n   - Player stats: 100 HP, 20 damage\n   - 3 Enemies with different stats (use arrays or simple objects)\n   - Track turn number\n\n2. **Battle Loop:**\n   - Fight each enemy in sequence using a for loop\n   - Each turn (while loop):\n     - Player attacks enemy\n     - If enemy still alive, enemy attacks player\n     - Display both health values\n   - Battle continues until enemy defeated or player dies\n   - If player dies, break from all battles\n\n3. **Victory Conditions:**\n   - If player defeats all enemies: Victory!\n   - If player health reaches 0: Defeat!\n\n### Example Output:\n```\n=== BATTLE START ===\nPlayer HP: 100\n\n--- Fighting Goblin (HP: 50) ---\nTurn 1:\n  Player attacks for 20 damage!\n  Goblin HP: 30\n  Goblin attacks for 10 damage!\n  Player HP: 90\n\nTurn 2:\n  Player attacks for 20 damage!\n  Goblin HP: 10\n  Goblin attacks for 10 damage!\n  Player HP: 80\n\nGoblin defeated!\n\n[Continue with next enemy...]\n```\n\n## Success Criteria:\n- ✅ Uses while loop for battle\n- ✅ Uses for loop to iterate enemies\n- ✅ Uses break if player dies\n- ✅ Tracks and displays turn numbers\n- ✅ Calculates damage correctly\n- ✅ Shows clear victory/defeat message",
+  "starterCode": "using System;\n\nclass Program\n{\n    static void Main()\n    {\n        // CHALLENGE: Turn-Based Battle Simulator\n        //\n        // Requirements:\n        // - Player: 100 HP, 20 damage\n        // - Fight 3 enemies in sequence\n        // - Turn-based combat\n        // - Break if player dies\n        // - Display battle progress\n        //\n        // Start coding below:\n        \n    }\n}\n",
+  "solutionCode": "using System;\n\nclass Program\n{\n    static void Main()\n    {\n        // CHALLENGE: Turn-Based Battle Simulator\n        \n        // Player stats\n        int playerHp = 100;\n        int playerDamage = 20;\n        \n        // Enemy data (parallel arrays)\n        string[] enemyNames = { \"Goblin\", \"Orc\", \"Dragon\" };\n        int[] enemyMaxHp = { 50, 80, 120 };\n        int[] enemyDamage = { 10, 15, 25 };\n        \n        Console.WriteLine(\"=== BATTLE START ===\");\n        Console.WriteLine($\"Player HP: {playerHp}\\n\");\n        \n        // Fight each enemy\n        for (int e = 0; e < enemyNames.Length; e++)\n        {\n            string enemyName = enemyNames[e];\n            int enemyHp = enemyMaxHp[e];\n            int damage = enemyDamage[e];\n            \n            Console.WriteLine($\"--- Fighting {enemyName} (HP: {enemyHp}) ---\");\n            int turn = 1;\n            \n            // Battle loop\n            while (enemyHp > 0 && playerHp > 0)\n            {\n                Console.WriteLine($\"\\nTurn {turn}:\");\n                \n                // Player attacks\n                enemyHp -= playerDamage;\n                Console.WriteLine($\"  Player attacks for {playerDamage} damage!\");\n                Console.WriteLine($\"  {enemyName} HP: {Math.Max(0, enemyHp)}\");\n                \n                // Check if enemy defeated\n                if (enemyHp <= 0)\n                {\n                    Console.WriteLine($\"\\n{enemyName} defeated!\\n\");\n                    break;\n                }\n                \n                // Enemy attacks\n                playerHp -= damage;\n                Console.WriteLine($\"  {enemyName} attacks for {damage} damage!\");\n                Console.WriteLine($\"  Player HP: {Math.Max(0, playerHp)}\");\n                \n                // Check if player defeated\n                if (playerHp <= 0)\n                {\n                    Console.WriteLine(\"\\n*** PLAYER DEFEATED ***\");\n                    break;\n                }\n                \n                turn++;\n            }\n            \n            // If player died, stop all battles\n            if (playerHp <= 0)\n            {\n                break;\n            }\n        }\n        \n        // Final result\n        if (playerHp > 0)\n        {\n            Console.WriteLine($\"\\n*** VICTORY! ***\");\n            Console.WriteLine($\"Player survived with {playerHp} HP remaining!\");\n        }\n        else\n        {\n            Console.WriteLine($\"\\nGame Over. Better luck next time!\");\n        }\n    }\n}\n",
+  "hints": [
+    "Start with playerHp = 100, playerDamage = 20. Create arrays for enemy names, hp, and damage",
+    "Use a for loop to iterate through the enemy arrays",
+    "For each enemy, use a while loop: while (enemyHp > 0 && playerHp > 0)",
+    "Inside the while loop: subtract damage from enemyHp, then check if enemy is dead. If not, subtract enemy damage from playerHp",
+    "Use Math.Max(0, hp) to prevent negative health displays",
+    "If playerHp <= 0, break from both the while loop and the for loop"
+  ],
+  "validationTests": [
+    {
+      "type": "code_contains",
+      "value": "for",
+      "description": "Must use for loop"
+    },
+    {
+      "type": "code_contains",
+      "value": "while",
+      "description": "Must use while loop"
+    },
+    {
+      "type": "code_contains",
+      "value": "break",
+      "description": "Must use break statement"
+    },
+    {
+      "type": "output_line_count",
+      "min": 10,
+      "description": "Should print multiple lines of battle progress"
+    }
+  ],
+  "learningObjectives": [
+    "Synthesize for loops, while loops, and break",
+    "Manage complex state across multiple battles",
+    "Implement turn-based game logic",
+    "Work with parallel arrays",
+    "Create engaging console output"
+  ],
+  "previousLessonId": 220,
+  "nextLessonId": 222,
+  "tags": ["challenge", "advanced", "for-loop", "while-loop", "break", "game-logic", "state-management"]
+}

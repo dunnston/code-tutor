@@ -1,0 +1,76 @@
+{
+  "id": 76,
+  "trackId": 8,
+  "language": "python",
+  "title": "The Concurrent Realm",
+  "subtitle": "Async/Await Basics with asyncio",
+  "difficulty": 5,
+  "estimatedTime": "45-55 minutes",
+  "xpReward": 250,
+  "description": "# Master Async Programming!\n\n⚡ **Async programming** lets you run multiple operations concurrently without blocking.\n\n## Why Async?\n\n- **Non-blocking I/O** - Don't wait for slow operations\n- **Scalability** - Handle thousands of connections\n- **Performance** - Better resource utilization\n- **Responsiveness** - UI stays responsive\n\n## Async/Await Syntax\n\n```python\nimport asyncio\n\n# Define async function with 'async def'\nasync def fetch_player_data(player_id):\n    # Simulate network delay\n    await asyncio.sleep(1)\n    return {\"id\": player_id, \"name\": f\"Player{player_id}\"}\n\n# Call async function with 'await'\nasync def main():\n    # Sequential (slow)\n    player1 = await fetch_player_data(1)\n    player2 = await fetch_player_data(2)\n    # Takes 2 seconds\n    \n    # Concurrent (fast!)\n    results = await asyncio.gather(\n        fetch_player_data(1),\n        fetch_player_data(2),\n        fetch_player_data(3)\n    )\n    # Takes only 1 second!\n\n# Run async code\nasyncio.run(main())\n```\n\n## Key Concepts\n\n**Coroutine**: Async function that can be paused and resumed\n```python\nasync def my_coroutine():\n    await some_async_operation()\n```\n\n**await**: Pause until async operation completes\n```python\nresult = await async_function()\n```\n\n**asyncio.gather()**: Run multiple coroutines concurrently\n```python\nresults = await asyncio.gather(coro1(), coro2(), coro3())\n```\n\n**asyncio.create_task()**: Schedule coroutine to run\n```python\ntask = asyncio.create_task(my_coroutine())\nresult = await task\n```\n\n## Your Mission\n\nBuild an async MMO system:\n1. **Async player loading**\n2. **Concurrent quest completions**\n3. **Async combat resolution**\n4. **Task management**\n\n⚔️ Make your code blazingly fast!\n\n*Hint: 'await' pauses the coroutine, 'gather' runs multiple concurrently.*",
+  "starterCode": "import asyncio\nimport time\nfrom typing import List, Dict\n\n# ===== ASYNC DATABASE OPERATIONS =====\n\nasync def fetch_player_from_db(player_id: int) -> Dict:\n    \"\"\"Simulate async database fetch\"\"\"\n    print(f\"  Loading player {player_id}...\")\n    await asyncio.sleep(0.5)  # Simulate network/database delay\n    return {\n        \"id\": player_id,\n        \"name\": f\"Player{player_id}\",\n        \"level\": player_id * 10\n    }\n\nasync def save_player_to_db(player: Dict):\n    \"\"\"Simulate async database save\"\"\"\n    print(f\"  Saving {player['name']}...\")\n    await asyncio.sleep(0.3)\n    print(f\"  ✓ Saved {player['name']}\")\n\n# ===== ASYNC GAME OPERATIONS =====\n\nasync def complete_quest(player_id: int, quest_name: str) -> Dict:\n    \"\"\"Simulate async quest completion\"\"\"\n    print(f\"  {quest_name} starting...\")\n    await asyncio.sleep(1.0)  # Quest takes time\n    return {\n        \"player_id\": player_id,\n        \"quest\": quest_name,\n        \"reward_xp\": 100,\n        \"reward_gold\": 50\n    }\n\nasync def resolve_combat(attacker_id: int, defender_id: int) -> Dict:\n    \"\"\"Simulate async combat resolution\"\"\"\n    print(f\"  Combat: Player{attacker_id} vs Player{defender_id}\")\n    await asyncio.sleep(0.8)\n    return {\n        \"winner_id\": attacker_id,\n        \"damage_dealt\": 75,\n        \"duration\": 0.8\n    }\n\n# ===== YOUR ASYNC FUNCTIONS =====\n\n# TODO: Implement load_multiple_players(player_ids: List[int])\n# Load multiple players CONCURRENTLY using asyncio.gather()\n# Should be much faster than loading one at a time\nasync def load_multiple_players(player_ids: List[int]) -> List[Dict]:\n    pass\n\n# TODO: Implement process_quests_concurrently(player_id: int, quests: List[str])\n# Complete multiple quests for a player concurrently\n# Return list of quest results\nasync def process_quests_concurrently(player_id: int, quests: List[str]) -> List[Dict]:\n    pass\n\n# TODO: Implement batch_save_players(players: List[Dict])\n# Save multiple players concurrently\nasync def batch_save_players(players: List[Dict]):\n    pass\n\n# TODO: Implement tournament_round(player_ids: List[int])\n# Run multiple combats concurrently (player 0 vs 1, 2 vs 3, etc.)\n# Return list of combat results\nasync def tournament_round(player_ids: List[int]) -> List[Dict]:\n    # Pair players: [0,1], [2,3], [4,5]\n    # Run combats concurrently\n    pass\n\n# TODO: Implement async_main()\n# Main async function that demonstrates:\n# 1. Loading players concurrently\n# 2. Processing quests concurrently\n# 3. Running tournament\n# 4. Saving results\nasync def async_main():\n    pass\n\n# ===== TESTS =====\n\nif __name__ == \"__main__\":\n    print(\"Testing Async Operations...\\n\")\n    \n    # Test 1: Load players concurrently\n    print(\"=== Test 1: Load Players (Concurrent) ===\")\n    start = time.time()\n    players = asyncio.run(load_multiple_players([1, 2, 3, 4]))\n    duration = time.time() - start\n    print(f\"Loaded {len(players)} players in {duration:.2f}s\")\n    print(f\"Expected ~0.5s (concurrent), would be ~2s (sequential)\\n\")\n    \n    # Test 2: Process quests concurrently\n    print(\"=== Test 2: Complete Quests (Concurrent) ===\")\n    start = time.time()\n    results = asyncio.run(process_quests_concurrently(\n        1, [\"Kill Goblins\", \"Collect Herbs\", \"Escort Merchant\"]\n    ))\n    duration = time.time() - start\n    print(f\"Completed {len(results)} quests in {duration:.2f}s\")\n    print(f\"Expected ~1s (concurrent), would be ~3s (sequential)\\n\")\n    \n    # Test 3: Tournament\n    print(\"=== Test 3: Tournament Round (Concurrent) ===\")\n    start = time.time()\n    combats = asyncio.run(tournament_round([1, 2, 3, 4, 5, 6]))\n    duration = time.time() - start\n    print(f\"Resolved {len(combats)} combats in {duration:.2f}s\")\n    print(f\"Expected ~0.8s (concurrent), would be ~2.4s (sequential)\\n\")\n    \n    # Test 4: Full async main\n    print(\"=== Test 4: Full Async Pipeline ===\")\n    asyncio.run(async_main())\n    \n    print(\"\\n✅ Async programming tests complete!\")",
+  "solutionCode": "import asyncio\nimport time\nfrom typing import List, Dict\n\nasync def fetch_player_from_db(player_id: int) -> Dict:\n    print(f\"  Loading player {player_id}...\")\n    await asyncio.sleep(0.5)\n    return {\n        \"id\": player_id,\n        \"name\": f\"Player{player_id}\",\n        \"level\": player_id * 10\n    }\n\nasync def save_player_to_db(player: Dict):\n    print(f\"  Saving {player['name']}...\")\n    await asyncio.sleep(0.3)\n    print(f\"  ✓ Saved {player['name']}\")\n\nasync def complete_quest(player_id: int, quest_name: str) -> Dict:\n    print(f\"  {quest_name} starting...\")\n    await asyncio.sleep(1.0)\n    return {\n        \"player_id\": player_id,\n        \"quest\": quest_name,\n        \"reward_xp\": 100,\n        \"reward_gold\": 50\n    }\n\nasync def resolve_combat(attacker_id: int, defender_id: int) -> Dict:\n    print(f\"  Combat: Player{attacker_id} vs Player{defender_id}\")\n    await asyncio.sleep(0.8)\n    return {\n        \"winner_id\": attacker_id,\n        \"damage_dealt\": 75,\n        \"duration\": 0.8\n    }\n\nasync def load_multiple_players(player_ids: List[int]) -> List[Dict]:\n    tasks = [fetch_player_from_db(pid) for pid in player_ids]\n    return await asyncio.gather(*tasks)\n\nasync def process_quests_concurrently(player_id: int, quests: List[str]) -> List[Dict]:\n    tasks = [complete_quest(player_id, quest) for quest in quests]\n    return await asyncio.gather(*tasks)\n\nasync def batch_save_players(players: List[Dict]):\n    tasks = [save_player_to_db(player) for player in players]\n    await asyncio.gather(*tasks)\n\nasync def tournament_round(player_ids: List[int]) -> List[Dict]:\n    combats = []\n    for i in range(0, len(player_ids), 2):\n        if i + 1 < len(player_ids):\n            combats.append(resolve_combat(player_ids[i], player_ids[i+1]))\n    return await asyncio.gather(*combats)\n\nasync def async_main():\n    print(\"\\n  Starting async pipeline...\")\n    \n    # Load players\n    print(\"  Loading players...\")\n    players = await load_multiple_players([1, 2, 3])\n    print(f\"  Loaded {len(players)} players\")\n    \n    # Process quests\n    print(\"  Processing quests...\")\n    quest_results = await process_quests_concurrently(1, [\"Quest A\", \"Quest B\"])\n    print(f\"  Completed {len(quest_results)} quests\")\n    \n    # Run tournament\n    print(\"  Running tournament...\")\n    combat_results = await tournament_round([1, 2, 3, 4])\n    print(f\"  Resolved {len(combat_results)} combats\")\n    \n    # Save players\n    print(\"  Saving players...\")\n    await batch_save_players(players)\n    \n    print(\"  Pipeline complete!\")\n\nif __name__ == \"__main__\":\n    print(\"Testing Async Operations...\\n\")\n    \n    print(\"=== Test 1: Load Players (Concurrent) ===\")\n    start = time.time()\n    players = asyncio.run(load_multiple_players([1, 2, 3, 4]))\n    duration = time.time() - start\n    print(f\"Loaded {len(players)} players in {duration:.2f}s\")\n    print(f\"Expected ~0.5s (concurrent), would be ~2s (sequential)\\n\")\n    \n    print(\"=== Test 2: Complete Quests (Concurrent) ===\")\n    start = time.time()\n    results = asyncio.run(process_quests_concurrently(\n        1, [\"Kill Goblins\", \"Collect Herbs\", \"Escort Merchant\"]\n    ))\n    duration = time.time() - start\n    print(f\"Completed {len(results)} quests in {duration:.2f}s\")\n    print(f\"Expected ~1s (concurrent), would be ~3s (sequential)\\n\")\n    \n    print(\"=== Test 3: Tournament Round (Concurrent) ===\")\n    start = time.time()\n    combats = asyncio.run(tournament_round([1, 2, 3, 4, 5, 6]))\n    duration = time.time() - start\n    print(f\"Resolved {len(combats)} combats in {duration:.2f}s\")\n    print(f\"Expected ~0.8s (concurrent), would be ~2.4s (sequential)\\n\")\n    \n    print(\"=== Test 4: Full Async Pipeline ===\")\n    asyncio.run(async_main())\n    \n    print(\"\\n✅ Async programming tests complete!\")",
+  "hints": [
+    "asyncio.gather(*tasks) runs all tasks concurrently. Use * to unpack list.",
+    "Create tasks with list comprehension: [fetch_player(id) for id in ids]",
+    "await pauses current coroutine until result is ready.",
+    "asyncio.run() is the entry point - call it from synchronous code.",
+    "For tournament, pair players: range(0, len, 2) gives indices 0, 2, 4..."
+  ],
+  "validationTests": [
+    {
+      "type": "code_contains",
+      "value": "async def",
+      "description": "Must use async def for async functions"
+    },
+    {
+      "type": "code_contains",
+      "value": "await",
+      "description": "Must use await for async operations"
+    },
+    {
+      "type": "code_contains",
+      "value": "asyncio.gather",
+      "description": "Must use asyncio.gather for concurrency"
+    },
+    {
+      "type": "code_contains",
+      "value": "asyncio.run",
+      "description": "Must use asyncio.run to execute async code"
+    },
+    {
+      "type": "output_contains",
+      "value": "Async programming tests complete",
+      "description": "Tests should complete"
+    }
+  ],
+  "learningObjectives": [
+    "Understand async/await syntax",
+    "Use asyncio.gather for concurrent operations",
+    "Write async functions (coroutines)",
+    "Run async code with asyncio.run",
+    "Recognize when to use async vs sync code",
+    "Measure performance benefits of concurrency"
+  ],
+  "nextLessonId": 77,
+  "previousLessonId": 75,
+  "tags": ["advanced", "async", "asyncio", "concurrency", "performance"],
+  "commonMistakes": [
+    {
+      "mistake": "Forgetting 'await' before async function call",
+      "explanation": "Calling async function without 'await' returns a coroutine object, doesn't execute it!"
+    },
+    {
+      "mistake": "Using asyncio.run() inside async function",
+      "explanation": "asyncio.run() is for starting async code from sync. Inside async, just use await."
+    },
+    {
+      "mistake": "Not unpacking list in gather",
+      "explanation": "Use asyncio.gather(*tasks), not asyncio.gather(tasks). The * unpacks the list."
+    },
+    {
+      "mistake": "Mixing sync and async without care",
+      "explanation": "Can't call await in sync function. Can't call sync blocking code in async (blocks event loop)."
+    }
+  ]
+}

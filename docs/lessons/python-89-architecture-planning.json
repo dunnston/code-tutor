@@ -1,0 +1,80 @@
+{
+  "id": 89,
+  "trackId": 8,
+  "language": "python",
+  "title": "The Master Blueprint",
+  "subtitle": "Software Architecture & System Design",
+  "difficulty": 5,
+  "estimatedTime": "60-90 minutes",
+  "xpReward": 300,
+  "description": "# Master Software Architecture!\n\n🏛️ **Architecture** is the foundation of professional systems.\n\n## Architecture Layers\n\n```\n┌──────────────────────────┐\n│    API Layer (Flask)     │  ← HTTP endpoints\n├──────────────────────────┤\n│   Service Layer          │  ← Business logic\n├──────────────────────────┤\n│   Repository Layer       │  ← Data access\n├──────────────────────────┤\n│   Database (SQLite)      │  ← Data storage\n└──────────────────────────┘\n```\n\n## Design Principles\n\n**SOLID:**\n- **S**ingle Responsibility\n- **O**pen/Closed\n- **L**iskov Substitution\n- **I**nterface Segregation\n- **D**ependency Inversion\n\n**DRY**: Don't Repeat Yourself\n\n**KISS**: Keep It Simple, Stupid\n\n**YAGNI**: You Aren't Gonna Need It\n\n## Your Mission\n\nPlan the architecture for your final project (Lesson 90):\n\n1. **Define requirements** - What features?\n2. **Design schema** - What tables and relationships?\n3. **Plan API endpoints** - What routes?\n4. **Choose patterns** - Which design patterns?\n5. **Draw diagrams** - Visualize system\n6. **Define milestones** - Break into phases\n\n## Project Planning Template\n\n```python\n# PROJECT: MMO Backend System\n\n# 1. REQUIREMENTS\nrequirements = {\n    'characters': 'CRUD operations, level system',\n    'guilds': 'Create, join, manage members',\n    'quests': 'Start, track progress, complete',\n    'combat': 'PvE and PvP resolution',\n    'inventory': 'Items, equipment, trading',\n}\n\n# 2. DATABASE SCHEMA\nschema = {\n    'characters': ['id', 'name', 'level', 'health', 'mana'],\n    'items': ['id', 'name', 'type', 'rarity', 'stats'],\n    'inventory': ['char_id', 'item_id', 'quantity'],\n    'guilds': ['id', 'name', 'description'],\n    'guild_members': ['char_id', 'guild_id', 'rank'],\n    'quests': ['id', 'name', 'description', 'rewards'],\n    'quest_progress': ['char_id', 'quest_id', 'progress'],\n    'combat_log': ['id', 'attacker_id', 'defender_id', 'result'],\n}\n\n# 3. API ENDPOINTS\nendpoints = {\n    'characters': [\n        'GET /api/characters',\n        'GET /api/characters/<id>',\n        'POST /api/characters',\n        'PUT /api/characters/<id>',\n        'DELETE /api/characters/<id>',\n    ],\n    'guilds': [\n        'GET /api/guilds',\n        'POST /api/guilds',\n        'POST /api/guilds/<id>/join',\n        'GET /api/guilds/<id>/members',\n    ],\n    # ... more endpoints\n}\n\n# 4. DESIGN PATTERNS\npatterns = {\n    'Singleton': ['GameManager', 'ConfigManager'],\n    'Factory': ['CharacterFactory', 'EnemyFactory'],\n    'Repository': ['CharacterRepo', 'GuildRepo', 'QuestRepo'],\n    'Observer': ['EventSystem for game events'],\n    'Strategy': ['CombatStrategy for different attack types'],\n}\n\n# 5. PROJECT STRUCTURE\nstructure = '''\n/\n├── src/\n│   ├── models/           # Data models\n│   ├── repositories/     # Data access\n│   ├── services/         # Business logic\n│   ├── api/             # Flask routes\n│   ├── utils/           # Utilities\n│   └── config.py        # Configuration\n├── tests/\n│   ├── unit/\n│   └── integration/\n├── migrations/\n├── docs/\n├── requirements.txt\n├── README.md\n└── main.py\n'''\n\n# 6. DEVELOPMENT MILESTONES\nmilestones = [\n    'Phase 1: Database schema & migrations',\n    'Phase 2: Repository layer',\n    'Phase 3: Service layer',\n    'Phase 4: Flask API',\n    'Phase 5: Authentication',\n    'Phase 6: Testing',\n    'Phase 7: Documentation',\n    'Phase 8: Deployment',\n]\n\nprint('Architecture planning complete!')\nprint('Ready for Lesson 90: Final Project!')\n```\n\n## Architecture Checklist\n\n✅ Requirements clearly defined\n✅ Database schema designed\n✅ API endpoints planned\n✅ Design patterns selected\n✅ Project structure organized\n✅ Development phases outlined\n✅ Testing strategy defined\n✅ Documentation plan ready\n\n## Your Task\n\nComplete the planning template above for YOUR final project.\n\n**Tips:**\n- Start simple, add complexity later\n- Design for testability\n- Plan for scalability\n- Document everything\n- Break into small milestones\n\n⚔️ **This planning will save you HOURS in lesson 90!**\n\n*Hint: Good architecture is about making good tradeoffs.*",
+  "starterCode": "# ARCHITECTURE PLANNING WORKSHEET\n# Complete this before starting Lesson 90!\n\n# 1. DEFINE YOUR REQUIREMENTS\n# What features will your MMO backend have?\nrequirements = {\n    # TODO: Define features\n    'characters': 'What character features?',\n    'guilds': 'What guild features?',\n    # Add more...\n}\n\n# 2. DESIGN DATABASE SCHEMA\n# What tables do you need?\nschema = {\n    # TODO: Define tables and columns\n    'characters': ['id', 'name', '...'],\n    # Add more tables...\n}\n\n# 3. PLAN API ENDPOINTS\n# What routes will your API have?\nendpoints = {\n    # TODO: Define endpoints\n    'characters': [\n        'GET /api/characters',\n        # Add more...\n    ],\n}\n\n# 4. SELECT DESIGN PATTERNS\n# Which patterns will you use?\npatterns = {\n    # TODO: List patterns and where you'll use them\n    'Singleton': ['Where?'],\n    'Factory': ['Where?'],\n    'Repository': ['What repos?'],\n}\n\n# 5. PROJECT STRUCTURE\n# How will you organize your code?\nprint('''\nPlan your folder structure:\n/\n├── src/\n│   ├── ...\n''')\n\n# 6. DEVELOPMENT PLAN\n# What order will you build features?\nmilestones = [\n    # TODO: Break project into phases\n    'Phase 1: ...',\n]\n\nprint('\\nComplete this planning before Lesson 90!')\nprint('Good planning = easier implementation!')",
+  "solutionCode": "# ARCHITECTURE PLANNING - EXAMPLE SOLUTION\n\nrequirements = {\n    'characters': 'CRUD, level system, stats, equipment slots',\n    'guilds': 'Create, join, leave, rank system, guild bank',\n    'quests': 'Quest chains, daily quests, rewards',\n    'combat': 'Turn-based, damage calculation, loot drops',\n    'inventory': 'Weight system, equipment, consumables, trading',\n    'market': 'Buy/sell items, auction house',\n    'achievements': 'Track milestones, rewards',\n}\n\nschema = {\n    'characters': ['id', 'name', 'level', 'health', 'mana', 'gold'],\n    'items': ['id', 'name', 'type', 'rarity', 'value', 'stats_json'],\n    'inventory': ['char_id', 'item_id', 'quantity', 'equipped'],\n    'guilds': ['id', 'name', 'description', 'created_at'],\n    'guild_members': ['char_id', 'guild_id', 'rank', 'join_date'],\n    'quests': ['id', 'name', 'description', 'rewards_json'],\n    'quest_progress': ['char_id', 'quest_id', 'progress', 'completed'],\n    'combat_log': ['id', 'attacker_id', 'defender_id', 'damage', 'timestamp'],\n    'achievements': ['id', 'char_id', 'achievement_type', 'unlocked_at'],\n}\n\nendpoints = {\n    'auth': ['POST /api/login', 'POST /api/register'],\n    'characters': [\n        'GET /api/characters',\n        'GET /api/characters/<id>',\n        'POST /api/characters',\n        'PUT /api/characters/<id>',\n        'DELETE /api/characters/<id>',\n        'POST /api/characters/<id>/level-up',\n    ],\n    'guilds': [\n        'GET /api/guilds',\n        'POST /api/guilds',\n        'GET /api/guilds/<id>/members',\n        'POST /api/guilds/<id>/join',\n        'DELETE /api/guilds/<id>/leave',\n    ],\n    'quests': [\n        'GET /api/quests',\n        'POST /api/quests/<id>/start',\n        'PUT /api/quests/<id>/progress',\n        'POST /api/quests/<id>/complete',\n    ],\n}\n\npatterns = {\n    'Singleton': ['GameManager', 'ConfigManager', 'EventBus'],\n    'Factory': ['CharacterFactory', 'ItemFactory', 'QuestFactory'],\n    'Repository': ['CharacterRepo', 'GuildRepo', 'QuestRepo', 'ItemRepo'],\n    'Observer': ['EventSystem for combat, leveling, achievements'],\n    'Strategy': ['CombatStrategy', 'LootStrategy'],\n    'Decorator': ['@require_auth', '@rate_limit', '@log_action'],\n}\n\nmilestones = [\n    'Phase 1: Database schema & migrations (2 days)',\n    'Phase 2: Repository layer with tests (3 days)',\n    'Phase 3: Service layer business logic (4 days)',\n    'Phase 4: Flask API endpoints (4 days)',\n    'Phase 5: Authentication & authorization (2 days)',\n    'Phase 6: Advanced features (quests, combat) (3 days)',\n    'Phase 7: Testing & debugging (3 days)',\n    'Phase 8: Documentation & deployment (2 days)',\n]\n\nprint('Architecture planning complete!')\nprint(f'Total phases: {len(milestones)}')\nprint('Ready to build!')",
+  "hints": [
+    "Start by listing ALL features you want to build.",
+    "Design database schema on paper first - draw tables and relationships.",
+    "Group related API endpoints together (characters, guilds, etc).",
+    "Don't use every design pattern - only ones that solve real problems.",
+    "Break project into small, testable milestones.",
+    "Plan for testing from the start - don't add it later!",
+    "Keep it simple initially - you can always add more features.",
+    "Document your decisions - why you chose certain approaches."
+  ],
+  "validationTests": [
+    {
+      "type": "code_contains",
+      "value": "requirements",
+      "description": "Must define requirements"
+    },
+    {
+      "type": "code_contains",
+      "value": "schema",
+      "description": "Must plan database schema"
+    },
+    {
+      "type": "code_contains",
+      "value": "endpoints",
+      "description": "Must plan API endpoints"
+    },
+    {
+      "type": "code_contains",
+      "value": "patterns",
+      "description": "Must select design patterns"
+    }
+  ],
+  "learningObjectives": [
+    "Plan software architecture systematically",
+    "Design database schemas",
+    "Plan API endpoints and routes",
+    "Select appropriate design patterns",
+    "Break projects into manageable phases",
+    "Apply SOLID principles",
+    "Create development roadmaps",
+    "Understand architecture tradeoffs"
+  ],
+  "nextLessonId": 90,
+  "previousLessonId": 88,
+  "tags": ["advanced", "architecture", "design", "planning", "solid", "system-design"],
+  "commonMistakes": [
+    {
+      "mistake": "Starting to code without planning",
+      "explanation": "ALWAYS plan first! 1 hour of planning saves 10 hours of coding."
+    },
+    {
+      "mistake": "Over-engineering the architecture",
+      "explanation": "Start simple. Add complexity only when needed. YAGNI principle!"
+    },
+    {
+      "mistake": "Not defining requirements clearly",
+      "explanation": "Vague requirements lead to scope creep. Be specific about what you're building."
+    },
+    {
+      "mistake": "Ignoring database design",
+      "explanation": "Database schema is the foundation. Get it right early or refactor painfully later."
+    },
+    {
+      "mistake": "No testing strategy",
+      "explanation": "Plan how you'll test from day one. Retrofit tests are much harder."
+    }
+  ]
+}

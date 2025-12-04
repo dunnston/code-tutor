@@ -1,0 +1,42 @@
+{
+  "id": 49,
+  "trackId": 7,
+  "language": "python",
+  "title": "The Nested Realms",
+  "subtitle": "Complex JSON Structures",
+  "difficulty": 5,
+  "estimatedTime": "30 minutes",
+  "xpReward": 200,
+  "description": "# Complex Nested JSON: Game World Data\n\n🗺️ Navigate deeply nested JSON structures!\n\n## Nested JSON Example\n\n```json\n{\n  \"world\": {\n    \"regions\": [\n      {\n        \"name\": \"Forest\",\n        \"cities\": [\n          {\n            \"name\": \"Elf Village\",\n            \"npcs\": [{\"name\": \"Elder\", \"quests\": []}]\n          }\n        ]\n      }\n    ]\n  }\n}\n```\n\n## Accessing Nested Data\n\n```python\ndata = json.loads(json_string)\nregion = data['world']['regions'][0]\ncity = region['cities'][0]\nnpc = city['npcs'][0]\nprint(npc['name'])\n```\n\n⚔️ Query nested game data!",
+  "starterCode": "import json\n\nWORLD_JSON = '''\n{\n  \"world_name\": \"Aetheria\",\n  \"regions\": [\n    {\n      \"name\": \"Dark Forest\",\n      \"level_range\": [1, 10],\n      \"cities\": [\n        {\n          \"name\": \"Eldergrove\",\n          \"population\": 500,\n          \"shops\": [{\"type\": \"blacksmith\", \"items\": [\"sword\", \"shield\"]}]\n        }\n      ]\n    },\n    {\n      \"name\": \"Mountain Pass\",\n      \"level_range\": [10, 20],\n      \"cities\": [\n        {\n          \"name\": \"Peak Haven\",\n          \"population\": 300,\n          \"shops\": [{\"type\": \"alchemist\", \"items\": [\"potion\", \"elixir\"]}]\n        }\n      ]\n    }\n  ]\n}\n'''\n\nprint(\"=== Game World Explorer ===\")\nprint()\n\n# TODO: Load and explore nested JSON\nworld = json.loads(WORLD_JSON)\n\n# TODO: Print world name\nprint(f\"World: {world['world_name']}\")\n\n# TODO: Loop through regions and print details\nfor region in world['regions']:\n    print(f\"Region: {region['name']}\")\n    for city in region['cities']:\n        print(f\"  City: {city['name']}\")\n\nprint(\"\\nWorld explored!\")",
+  "solutionCode": "import json\n\nWORLD_JSON = '''\n{\n  \"world_name\": \"Aetheria\",\n  \"regions\": [\n    {\n      \"name\": \"Dark Forest\",\n      \"level_range\": [1, 10],\n      \"cities\": [\n        {\n          \"name\": \"Eldergrove\",\n          \"population\": 500,\n          \"shops\": [{\"type\": \"blacksmith\", \"items\": [\"sword\", \"shield\"]}]\n        }\n      ]\n    },\n    {\n      \"name\": \"Mountain Pass\",\n      \"level_range\": [10, 20],\n      \"cities\": [\n        {\n          \"name\": \"Peak Haven\",\n          \"population\": 300,\n          \"shops\": [{\"type\": \"alchemist\", \"items\": [\"potion\", \"elixir\"]}]\n        }\n      ]\n    }\n  ]\n}\n'''\n\nprint(\"=== Game World Explorer ===\")\nprint()\n\nworld = json.loads(WORLD_JSON)\nprint(f\"World: {world['world_name']}\")\nprint()\n\nfor region in world['regions']:\n    print(f\"Region: {region['name']} (Levels {region['level_range'][0]}-{region['level_range'][1]})\")\n    for city in region['cities']:\n        print(f\"  City: {city['name']} (Pop: {city['population']})\")\n        for shop in city['shops']:\n            print(f\"    Shop: {shop['type']} - {', '.join(shop['items'])}\")\n    print()\n\nprint(\"World explored!\")",
+  "hints": [
+    "Access nested data with chaining: data['regions'][0]['cities'][0]",
+    "Use nested loops for nested lists"
+  ],
+  "validationTests": [
+    {
+      "type": "code_contains",
+      "value": "json.loads",
+      "description": "Must parse JSON"
+    },
+    {
+      "type": "output_contains",
+      "value": "Aetheria",
+      "description": "Should print world name"
+    },
+    {
+      "type": "output_contains",
+      "value": "Dark Forest",
+      "description": "Should print region names"
+    }
+  ],
+  "learningObjectives": [
+    "Navigate nested JSON structures",
+    "Access deeply nested data",
+    "Loop through nested arrays"
+  ],
+  "nextLessonId": 50,
+  "previousLessonId": 48,
+  "tags": ["intermediate", "json", "nested-data"]
+}

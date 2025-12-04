@@ -1,0 +1,24 @@
+{
+  "id": 81,
+  "trackId": 8,
+  "language": "python",
+  "title": "The REST Sanctum",
+  "subtitle": "Flask & REST API Basics",
+  "difficulty": 4,
+  "estimatedTime": "40-50 minutes",
+  "xpReward": 250,
+  "description": "# Master Flask & REST APIs!\n\n🌐 **Flask** is a lightweight web framework for building APIs.\n\n## Flask Basics\n```python\nfrom flask import Flask, jsonify, request\n\napp = Flask(__name__)\n\n@app.route('/api/players', methods=['GET'])\ndef get_players():\n    return jsonify([{'id': 1, 'name': 'Hero'}])\n\n@app.route('/api/players', methods=['POST'])\ndef create_player():\n    data = request.json\n    return jsonify(data), 201\n\nif __name__ == '__main__':\n    app.run(debug=True)\n```\n\n## RESTful Design\n- GET /api/players - List all\n- GET /api/players/1 - Get one\n- POST /api/players - Create\n- PUT /api/players/1 - Update\n- DELETE /api/players/1 - Delete\n\n## Your Mission\n\nBuild character API with CRUD endpoints.\n\n*Hint: Use jsonify() for JSON responses.*",
+  "starterCode": "from flask import Flask, jsonify, request\n\napp = Flask(__name__)\n\n# TODO: Implement GET /api/characters\n# TODO: Implement GET /api/characters/<id>\n# TODO: Implement POST /api/characters\n# TODO: Implement PUT /api/characters/<id>\n# TODO: Implement DELETE /api/characters/<id>\n\n@app.route('/')\ndef index():\n    return jsonify({'message': 'MMO API v1'})\n\nif __name__ == '__main__':\n    print('API running on http://localhost:5000')\n    app.run(debug=True)",
+  "solutionCode": "from flask import Flask, jsonify, request\n\napp = Flask(__name__)\n\ncharacters = {}\nnext_id = 1\n\n@app.route('/api/characters', methods=['GET'])\ndef get_characters():\n    return jsonify(list(characters.values()))\n\n@app.route('/api/characters/<int:char_id>', methods=['GET'])\ndef get_character(char_id):\n    if char_id in characters:\n        return jsonify(characters[char_id])\n    return jsonify({'error': 'Not found'}), 404\n\n@app.route('/api/characters', methods=['POST'])\ndef create_character():\n    global next_id\n    data = request.json\n    data['id'] = next_id\n    characters[next_id] = data\n    next_id += 1\n    return jsonify(data), 201\n\n@app.route('/')\ndef index():\n    return jsonify({'message': 'MMO API v1'})\n\nif __name__ == '__main__':\n    print('API running on http://localhost:5000')\n    app.run(debug=True)",
+  "hints": ["Use @app.route decorator for endpoints", "request.json gets JSON body", "jsonify returns JSON response"],
+  "validationTests": [
+    {"type": "code_contains", "value": "from flask import", "description": "Must import Flask"},
+    {"type": "code_contains", "value": "@app.route", "description": "Must define routes"},
+    {"type": "code_contains", "value": "jsonify", "description": "Must use jsonify"}
+  ],
+  "learningObjectives": ["Build REST API with Flask", "Handle HTTP methods", "Return JSON responses"],
+  "nextLessonId": 82,
+  "previousLessonId": 80,
+  "tags": ["advanced", "flask", "rest", "api", "web"],
+  "commonMistakes": [{"mistake": "Not returning proper status codes", "explanation": "Always return appropriate HTTP status codes (200, 201, 404, etc)."}]
+}

@@ -1,0 +1,81 @@
+{
+  "id": 37,
+  "trackId": 7,
+  "language": "python",
+  "title": "The Methods of Power",
+  "subtitle": "Instance Methods and Self",
+  "difficulty": 4,
+  "estimatedTime": "25-30 minutes",
+  "xpReward": 150,
+  "description": "# Instance Methods: Giving Objects Behavior\n\n⚡ Classes aren't just data containers - they can DO things!\n\n## What are Instance Methods?\n\nMethods are **functions that belong to a class**:\n\n```python\nclass Character:\n    def __init__(self, name, health):\n        self.name = name\n        self.health = health\n    \n    # This is an instance method\n    def take_damage(self, amount):\n        self.health -= amount\n        print(f\"{self.name} takes {amount} damage!\")\n\nhero = Character(\"Hero\", 100)\nhero.take_damage(20)  # \"Hero takes 20 damage!\"\nprint(hero.health)     # 80\n```\n\n## Methods vs Functions\n\n| Functions | Methods |\n|-----------|----------|\n| Standalone | Belong to a class |\n| `def func():` | `def method(self):` |\n| Called directly | Called on instances |\n| `func()` | `obj.method()` |\n\n## The `self` Parameter\n\n**Every instance method must have `self` as first parameter:**\n\n```python\nclass Dog:\n    def __init__(self, name):\n        self.name = name\n    \n    def bark(self):  # self gives access to instance\n        print(f\"{self.name} says WOOF!\")\n\ndog = Dog(\"Rex\")\ndog.bark()  # \"Rex says WOOF!\"\n```\n\nWhen you call `dog.bark()`, Python automatically passes `dog` as `self`!\n\n## Common Method Patterns\n\n### 1. Modifying Attributes\n\n```python\ndef take_damage(self, amount):\n    self.health -= amount\n```\n\n### 2. Using Attributes in Logic\n\n```python\ndef is_alive(self):\n    return self.health > 0\n```\n\n### 3. Returning Values\n\n```python\ndef get_status(self):\n    return f\"{self.name}: {self.health} HP\"\n```\n\n## Your Quest\n\nAdd methods to the Character class:\n\n1. **`take_damage(amount)`** - Reduce health by amount\n2. **`heal(amount)`** - Increase health (don't exceed max)\n3. **`gain_xp(amount)`** - Add experience, level up if needed\n4. **`level_up()`** - Increase level, reset XP, boost stats\n\nImplement these methods to bring your characters to life!\n\n⚔️ Transform static data into dynamic behavior!",
+  "starterCode": "# Character System - Adding Methods\n\nclass Character:\n    def __init__(self, name, health, max_health, mana, level, experience):\n        self.name = name\n        self.health = health\n        self.max_health = max_health\n        self.mana = mana\n        self.level = level\n        self.experience = experience\n    \n    # TODO: Implement take_damage method\n    # Should reduce health by amount\n    # Print: \"{name} takes {amount} damage!\"\n    def take_damage(self, amount):\n        pass\n    \n    # TODO: Implement heal method\n    # Should increase health by amount\n    # Don't exceed max_health!\n    # Print: \"{name} heals for {actual_healing} HP!\"\n    def heal(self, amount):\n        pass\n    \n    # TODO: Implement gain_xp method\n    # Should add to experience\n    # If experience >= 100, call level_up()\n    # Print: \"{name} gains {amount} XP!\"\n    def gain_xp(self, amount):\n        pass\n    \n    # TODO: Implement level_up method\n    # Should: increase level by 1\n    #         reset experience to 0\n    #         increase max_health by 10\n    #         fully heal (health = max_health)\n    # Print: \"{name} leveled up to Level {level}!\"\n    def level_up(self):\n        pass\n\n# Test the methods\nprint(\"=== Character Methods Test ===\")\nprint()\n\nhero = Character(\"Warrior\", 100, 100, 50, 1, 0)\n\nprint(f\"Starting: {hero.name} - HP: {hero.health}/{hero.max_health}, Level: {hero.level}, XP: {hero.experience}\")\nprint()\n\n# Test take_damage\nprint(\"--- Combat Test ---\")\nhero.take_damage(30)\nprint(f\"Current HP: {hero.health}/{hero.max_health}\")\nprint()\n\n# Test heal\nprint(\"--- Healing Test ---\")\nhero.heal(20)\nprint(f\"Current HP: {hero.health}/{hero.max_health}\")\nprint()\n\n# Test gaining XP\nprint(\"--- Experience Test ---\")\nhero.gain_xp(60)\nprint(f\"Current XP: {hero.experience}\")\nhero.gain_xp(50)  # Should trigger level up!\nprint(f\"Current Level: {hero.level}, XP: {hero.experience}\")\nprint(f\"Current HP: {hero.health}/{hero.max_health}\")\nprint()\n\nprint(\"Methods implemented successfully!\")",
+  "solutionCode": "# Character System - Methods Solution\n\nclass Character:\n    def __init__(self, name, health, max_health, mana, level, experience):\n        self.name = name\n        self.health = health\n        self.max_health = max_health\n        self.mana = mana\n        self.level = level\n        self.experience = experience\n    \n    def take_damage(self, amount):\n        self.health -= amount\n        if self.health < 0:\n            self.health = 0\n        print(f\"{self.name} takes {amount} damage!\")\n    \n    def heal(self, amount):\n        old_health = self.health\n        self.health += amount\n        if self.health > self.max_health:\n            self.health = self.max_health\n        actual_healing = self.health - old_health\n        print(f\"{self.name} heals for {actual_healing} HP!\")\n    \n    def gain_xp(self, amount):\n        self.experience += amount\n        print(f\"{self.name} gains {amount} XP!\")\n        if self.experience >= 100:\n            self.level_up()\n    \n    def level_up(self):\n        self.level += 1\n        self.experience = 0\n        self.max_health += 10\n        self.health = self.max_health\n        print(f\"{self.name} leveled up to Level {self.level}!\")\n\nhero = Character(\"Warrior\", 100, 100, 50, 1, 0)\n\nprint(\"=== Character Methods Test ===\")\nprint()\n\nprint(f\"Starting: {hero.name} - HP: {hero.health}/{hero.max_health}, Level: {hero.level}, XP: {hero.experience}\")\nprint()\n\nprint(\"--- Combat Test ---\")\nhero.take_damage(30)\nprint(f\"Current HP: {hero.health}/{hero.max_health}\")\nprint()\n\nprint(\"--- Healing Test ---\")\nhero.heal(20)\nprint(f\"Current HP: {hero.health}/{hero.max_health}\")\nprint()\n\nprint(\"--- Experience Test ---\")\nhero.gain_xp(60)\nprint(f\"Current XP: {hero.experience}\")\nhero.gain_xp(50)\nprint(f\"Current Level: {hero.level}, XP: {hero.experience}\")\nprint(f\"Current HP: {hero.health}/{hero.max_health}\")\nprint()\n\nprint(\"Methods implemented successfully!\")",
+  "hints": [
+    "Methods are just like functions, but they have 'self' as the first parameter and are inside a class.",
+    "To modify an attribute in a method: self.health -= amount or self.health += amount",
+    "For heal(), save old health first, then add healing, then cap at max_health, then calculate actual healing done.",
+    "For gain_xp(), add to self.experience first, then check if >= 100, and if so, call self.level_up()",
+    "Complete take_damage example:\n```python\ndef take_damage(self, amount):\n    self.health -= amount\n    if self.health < 0:\n        self.health = 0\n    print(f\"{self.name} takes {amount} damage!\")\n```"
+  ],
+  "validationTests": [
+    {
+      "type": "code_contains",
+      "value": "def take_damage(self, amount):",
+      "description": "Must implement take_damage method"
+    },
+    {
+      "type": "code_contains",
+      "value": "def heal(self, amount):",
+      "description": "Must implement heal method"
+    },
+    {
+      "type": "code_contains",
+      "value": "def gain_xp(self, amount):",
+      "description": "Must implement gain_xp method"
+    },
+    {
+      "type": "code_contains",
+      "value": "def level_up(self):",
+      "description": "Must implement level_up method"
+    },
+    {
+      "type": "output_contains",
+      "value": "takes 30 damage",
+      "description": "Should print damage message"
+    },
+    {
+      "type": "output_contains",
+      "value": "heals for",
+      "description": "Should print healing message"
+    },
+    {
+      "type": "output_contains",
+      "value": "leveled up to Level 2",
+      "description": "Should level up when XP >= 100"
+    }
+  ],
+  "learningObjectives": [
+    "Write instance methods with self parameter",
+    "Modify instance attributes within methods",
+    "Call other methods from within a method",
+    "Implement conditional logic in methods",
+    "Return values from methods"
+  ],
+  "nextLessonId": 38,
+  "previousLessonId": 36,
+  "tags": ["intermediate", "oop", "methods", "self", "classes"],
+  "commonMistakes": [
+    {
+      "mistake": "Forgetting self parameter in methods",
+      "explanation": "Every instance method needs 'self' as the first parameter. Without it, Python can't access instance attributes."
+    },
+    {
+      "mistake": "Not using self when accessing attributes",
+      "explanation": "Inside methods, use self.attribute_name, not just attribute_name. Otherwise Python thinks it's a local variable."
+    },
+    {
+      "mistake": "Passing self when calling methods",
+      "explanation": "When calling methods, DON'T pass self explicitly. Python does it automatically: hero.take_damage(20), not hero.take_damage(hero, 20)."
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "id": 214,
+  "trackId": 3,
+  "language": "csharp",
+  "language": "csharp",
+  "title": "The Merchant's Decision",
+  "subtitle": "If/Else Branching",
+  "difficulty": 2,
+  "estimatedTime": "15-20 minutes",
+  "xpReward": 100,
+  "description": "# Making Choices with Else\n\nYou've learned if statements, but what happens when the condition is false? That's where **else** comes in!\n\n## If/Else Structure\n\nThe else block runs when the if condition is false:\n\n```csharp\nint gold = 30;\nint itemCost = 50;\n\nif (gold >= itemCost)\n{\n    Console.WriteLine(\"Purchase successful!\");\n    gold = gold - itemCost;\n}\nelse\n{\n    Console.WriteLine(\"Not enough gold!\");\n}\n```\n\nOne of these blocks will ALWAYS run - either if or else.\n\n**Key C# differences from Python:**\n- Conditions must be in parentheses `( )`\n- Code blocks use curly braces `{ }`\n- Statements end with semicolons `;`\n\n## Comparison Operators\n\nC# supports many comparison operators:\n\n```csharp\n==  // Equal to\n!=  // Not equal to\n>   // Greater than\n<   // Less than\n>=  // Greater than or equal to\n<=  // Less than or equal to\n```\n\n## Your Quest\n\nCreate a merchant system that checks if a player can afford an item:\n1. Set player's gold amount\n2. Set item cost\n3. Use if/else to check if player has enough gold\n4. If yes: Print success message and show remaining gold\n5. If no: Print how much more gold is needed",
+  "starterCode": "using System;\n\nclass Program\n{\n    static void Main()\n    {\n        // Merchant Purchase System\n        \n        // Set up variables\n        int playerGold = 75;\n        int itemCost = 50;\n        string itemName = \"Steel Sword\";\n        \n        // Check if player can afford the item\n        if (/* Write the condition here */)\n        {\n            // Player has enough gold\n            int remainingGold = /* Calculate remaining gold */;\n            Console.WriteLine($\"Purchase successful! You bought {itemName}.\");\n            Console.WriteLine($\"Gold remaining: {remainingGold}\");\n        }\n        else\n        {\n            // Player doesn't have enough gold\n            int goldNeeded = /* Calculate how much more is needed */;\n            Console.WriteLine($\"Not enough gold for {itemName}!\");\n            Console.WriteLine($\"You need {goldNeeded} more gold.\");\n        }\n    }\n}\n",
+  "solutionCode": "using System;\n\nclass Program\n{\n    static void Main()\n    {\n        // Merchant Purchase System\n        \n        // Set up variables\n        int playerGold = 75;\n        int itemCost = 50;\n        string itemName = \"Steel Sword\";\n        \n        // Check if player can afford the item\n        if (playerGold >= itemCost)\n        {\n            // Player has enough gold\n            int remainingGold = playerGold - itemCost;\n            Console.WriteLine($\"Purchase successful! You bought {itemName}.\");\n            Console.WriteLine($\"Gold remaining: {remainingGold}\");\n        }\n        else\n        {\n            // Player doesn't have enough gold\n            int goldNeeded = itemCost - playerGold;\n            Console.WriteLine($\"Not enough gold for {itemName}!\");\n            Console.WriteLine($\"You need {goldNeeded} more gold.\");\n        }\n    }\n}\n",
+  "hints": [
+    "The condition should check if playerGold >= itemCost (don't forget parentheses!)",
+    "In the if block, calculate remainingGold = playerGold - itemCost",
+    "In the else block, calculate goldNeeded = itemCost - playerGold",
+    "Make sure both blocks print appropriate messages",
+    "Remember: conditions go in ( ), code blocks go in { }, statements end with ;"
+  ],
+  "validationTests": [
+    {
+      "type": "code_contains",
+      "value": "if",
+      "description": "Must use if statement"
+    },
+    {
+      "type": "code_contains",
+      "value": "else",
+      "description": "Must use else statement"
+    },
+    {
+      "type": "code_contains",
+      "value": ">=",
+      "description": "Should use >= or > comparison operator"
+    },
+    {
+      "type": "output_line_count",
+      "min": 2,
+      "description": "Should print at least 2 lines"
+    }
+  ],
+  "learningObjectives": [
+    "Understand if/else branching logic in C#",
+    "Use comparison operators for conditions",
+    "Use proper C# syntax with parentheses and braces",
+    "Perform calculations in both branches",
+    "Create programs that respond to different situations"
+  ],
+  "previousLessonId": 213,
+  "nextLessonId": 215,
+  "tags": ["intermediate", "if-else", "conditions", "branching", "comparisons"]
+}

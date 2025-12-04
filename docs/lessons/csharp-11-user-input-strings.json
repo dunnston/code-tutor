@@ -1,0 +1,52 @@
+{
+  "id": 211,
+  "trackId": 3,
+  "language": "csharp",
+  "title": "The User's Voice",
+  "subtitle": "Input and String Operations",
+  "difficulty": 3,
+  "estimatedTime": "15-20 minutes",
+  "xpReward": 150,
+  "description": "# Listening to the User\n\nYour programs need to interact with users! Let's learn how to get input and manipulate strings in C#.\n\n## Getting User Input\n\nUse `Console.ReadLine()` to get text from the user:\n\n```csharp\nConsole.Write(\"Enter your name: \");\nstring name = Console.ReadLine();\nConsole.WriteLine($\"Hello, {name}!\");\n```\n\n**Note:** `Console.ReadLine()` always returns a string. To get numbers, you must convert them!\n\n## Converting Strings to Numbers\n\n```csharp\nConsole.Write(\"Enter your age: \");\nstring ageInput = Console.ReadLine();\nint age = int.Parse(ageInput);  // Converts string to int\n\n// Or use Convert class:\nint age = Convert.ToInt32(Console.ReadLine());\n```\n\n## String Operations\n\n```csharp\nstring name = \"Aria\";\n\n// String properties and methods\nint length = name.Length;              // 4\nstring upper = name.ToUpper();         // \"ARIA\"\nstring lower = name.ToLower();         // \"aria\"\nbool contains = name.Contains(\"ri\");   // true\n\n// String interpolation\nstring message = $\"Hero name: {name}\";\n```\n\n## Your Quest\n\n1. Ask the user for their character's name (string)\n2. Ask for their character's level (convert to int)\n3. Ask for their starting gold (convert to int)\n4. Display a formatted welcome message\n5. Show the name in UPPERCASE\n6. Show the length of their name",
+  "starterCode": "using System;\n\nclass Program\n{\n    static void Main()\n    {\n        // Ask for character name\n        Console.Write(\"Enter your character's name: \");\n        // Get and store the name\n        \n        // Ask for character level\n        Console.Write(\"Enter your level: \");\n        // Get, convert to int, and store\n        \n        // Ask for starting gold\n        Console.Write(\"Enter your starting gold: \");\n        // Get, convert to int, and store\n        \n        // Display welcome message\n        \n        \n        // Show name in uppercase\n        \n        \n        // Show name length\n        \n    }\n}\n",
+  "solutionCode": "using System;\n\nclass Program\n{\n    static void Main()\n    {\n        // Ask for character name\n        Console.Write(\"Enter your character's name: \");\n        string name = Console.ReadLine();\n        \n        // Ask for character level\n        Console.Write(\"Enter your level: \");\n        int level = int.Parse(Console.ReadLine());\n        \n        // Ask for starting gold\n        Console.Write(\"Enter your starting gold: \");\n        int gold = int.Parse(Console.ReadLine());\n        \n        // Display welcome message\n        Console.WriteLine($\"\\nWelcome, {name}!\");\n        Console.WriteLine($\"Level: {level} | Gold: {gold}\");\n        \n        // Show name in uppercase\n        Console.WriteLine($\"Hero name in caps: {name.ToUpper()}\");\n        \n        // Show name length\n        Console.WriteLine($\"Name length: {name.Length} characters\");\n    }\n}\n",
+  "hints": [
+    "Use Console.ReadLine() to get string input from the user",
+    "Convert string to int with int.Parse(stringValue) or Convert.ToInt32(stringValue)",
+    "Use .ToUpper() method to convert a string to uppercase",
+    "Use .Length property to get the number of characters in a string",
+    "Use string interpolation $\"...\" for formatted output"
+  ],
+  "validationTests": [
+    {
+      "type": "code_contains",
+      "value": "Console.ReadLine",
+      "description": "Must use Console.ReadLine() for input"
+    },
+    {
+      "type": "code_contains",
+      "value": "Parse",
+      "description": "Must convert strings to numbers using Parse or Convert"
+    },
+    {
+      "type": "code_contains",
+      "value": "ToUpper",
+      "description": "Must use ToUpper() method"
+    },
+    {
+      "type": "code_contains",
+      "value": "Length",
+      "description": "Must use Length property"
+    }
+  ],
+  "learningObjectives": [
+    "Get user input with Console.ReadLine()",
+    "Convert strings to integers using int.Parse()",
+    "Use string methods like ToUpper() and ToLower()",
+    "Access string properties like Length",
+    "Format output using string interpolation"
+  ],
+  "previousLessonId": 210,
+  "nextLessonId": 212,
+  "tags": ["input", "strings", "console", "parsing", "string-methods"]
+}

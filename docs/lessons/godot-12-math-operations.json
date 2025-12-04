@@ -1,0 +1,51 @@
+{
+  "id": 112,
+  "trackId": 2,
+  "language": "gdscript",
+  "title": "The Math Forge",
+  "subtitle": "Calculations & Math Operations",
+  "difficulty": 2,
+  "estimatedTime": "20-25 minutes",
+  "xpReward": 200,
+  "description": "# The Math Forge: Calculations for Games\n\nGames are full of math! Damage calculations, movement speed, timers - let's master them!\n\n## Basic Math Operators\n\n```gdscript\nvar a = 10\nvar b = 3\n\nprint(a + b)   # 13 (addition)\nprint(a - b)   # 7  (subtraction)\nprint(a * b)   # 30 (multiplication)\nprint(a / b)   # 3.333 (division)\nprint(a % b)   # 1  (modulo - remainder)\nprint(a ** b)  # 1000 (exponent - power)\n```\n\n## Integer Division\n\n```gdscript\nprint(10 / 3)   # 3.333 (regular division)\nprint(10 // 3)  # 3 (integer division - no decimal)\n```\n\n## Math Functions\n\nGDScript has built-in math functions:\n\n```gdscript\nprint(abs(-5))      # 5 (absolute value)\nprint(max(10, 20))  # 20 (maximum)\nprint(min(10, 20))  # 10 (minimum)\nprint(pow(2, 3))    # 8 (2 to power of 3)\nprint(sqrt(16))     # 4 (square root)\n```\n\n## Rounding\n\n```gdscript\nprint(round(3.7))   # 4\nprint(floor(3.7))   # 3 (round down)\nprint(ceil(3.2))    # 4 (round up)\n```\n\n## Your Quest\n\nCreate a damage calculator:\n\n1. Calculate base damage from strength\n2. Add weapon bonus\n3. Apply critical hit multiplier\n4. Calculate final damage with armor reduction\n5. Round to nearest integer",
+  "starterCode": "# Character stats\nvar strength = 15\nvar weapon_damage = 25\nvar critical_multiplier = 1.5\nvar enemy_armor = 10\n\n# Calculate base damage (strength + weapon_damage)\n\n# Apply critical hit (multiply by critical_multiplier)\n\n# Reduce by armor (subtract enemy_armor)\n\n# Round to integer\n\n# Print final damage\n\n",
+  "solutionCode": "# Character stats\nvar strength = 15\nvar weapon_damage = 25\nvar critical_multiplier = 1.5\nvar enemy_armor = 10\n\n# Calculate base damage (strength + weapon_damage)\nvar base_damage = strength + weapon_damage\nprint(\"Base damage: \", base_damage)\n\n# Apply critical hit (multiply by critical_multiplier)\nvar critical_damage = base_damage * critical_multiplier\nprint(\"Critical damage: \", critical_damage)\n\n# Reduce by armor (subtract enemy_armor)\nvar final_damage = critical_damage - enemy_armor\nprint(\"After armor: \", final_damage)\n\n# Round to integer\nvar rounded_damage = round(final_damage)\nprint(\"Final damage: \", rounded_damage)",
+  "hints": [
+    "Add strength and weapon_damage for base",
+    "Multiply by critical_multiplier for critical hit",
+    "Subtract enemy_armor to reduce damage",
+    "Use round() function to get integer",
+    "Print each step to see the calculation"
+  ],
+  "validationTests": [
+    {
+      "type": "code_contains",
+      "value": "+",
+      "description": "Should use addition"
+    },
+    {
+      "type": "code_contains",
+      "value": "*",
+      "description": "Should use multiplication"
+    },
+    {
+      "type": "code_contains",
+      "value": "round(",
+      "description": "Should use round() function"
+    },
+    {
+      "type": "output_contains",
+      "value": "50",
+      "description": "Should show final rounded damage (50)"
+    }
+  ],
+  "learningObjectives": [
+    "Use arithmetic operators",
+    "Apply math functions",
+    "Round numbers appropriately",
+    "Create game calculations"
+  ],
+  "previousLessonId": 111,
+  "nextLessonId": 113,
+  "tags": ["beginner", "math", "arithmetic", "calculations", "godot"]
+}

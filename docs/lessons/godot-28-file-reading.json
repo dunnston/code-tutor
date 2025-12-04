@@ -1,0 +1,23 @@
+{
+  "id": 128,
+  "trackId": 2,
+  "language": "gdscript",
+  "title": "Reading Game Data",
+  "subtitle": "File Operations & JSON",
+  "difficulty": 4,
+  "estimatedTime": "25-30 minutes",
+  "xpReward": 300,
+  "description": "# Reading Game Data Files\n\n## File Reading in Godot\n\nGodot uses FileAccess to read files:\n\n```gdscript\nvar file = FileAccess.open(\"res://data.txt\", FileAccess.READ)\nif file:\n    var content = file.get_as_text()\n    print(content)\n    file.close()\n```\n\n## Reading Line by Line\n\n```gdscript\nvar file = FileAccess.open(\"res://scores.txt\", FileAccess.READ)\nwhile not file.eof_reached():\n    var line = file.get_line()\n    print(line)\nfile.close()\n```\n\n## Parsing JSON\n\nGames often store data as JSON:\n\n```gdscript\nvar file = FileAccess.open(\"res://config.json\", FileAccess.READ)\nvar json_text = file.get_as_text()\nfile.close()\n\nvar json = JSON.new()\nvar result = json.parse(json_text)\nif result == OK:\n    var data = json.data\n    print(\"Loaded: \", data)\n```\n\n## Simulated File Reading (For This Lesson)\n\nSince we can't access real files in this environment, we'll simulate it:\n\n```gdscript\nfunc load_config() -> Dictionary:\n    # Simulates reading from file\n    var json_text = '{\"difficulty\": \"normal\", \"volume\": 80}'\n    var json = JSON.new()\n    json.parse(json_text)\n    return json.data\n```\n\n## Your Quest\n\nSimulate loading game data from JSON.",
+  "starterCode": "# File Reading Simulation\n\n# Simulated game data file content\nvar json_data = '''\n{\n    \"player_name\": \"Hero\",\n    \"level\": 10,\n    \"gold\": 500,\n    \"completed_quests\": [\"Tutorial\", \"First Battle\", \"Find the Key\"]\n}\n'''\n\n# Parse and use the data\n\n",
+  "solutionCode": "# File Reading Simulation\n\n# Simulated game data file content\nvar json_data = '''\n{\n    \"player_name\": \"Hero\",\n    \"level\": 10,\n    \"gold\": 500,\n    \"completed_quests\": [\"Tutorial\", \"First Battle\", \"Find the Key\"]\n}\n'''\n\nprint(\"=== Loading Save Game ===\")\n\n# Parse JSON\nvar json = JSON.new()\nvar parse_result = json.parse(json_data)\n\nif parse_result == OK:\n    var save_data = json.data\n    \n    print(\"Save file loaded successfully!\")\n    print(\"\\nPlayer: \", save_data[\"player_name\"])\n    print(\"Level: \", save_data[\"level\"])\n    print(\"Gold: \", save_data[\"gold\"])\n    \n    print(\"\\nCompleted Quests:\")\n    for quest in save_data[\"completed_quests\"]:\n        print(\"  ✓ \", quest)\n    \n    print(\"\\nTotal quests completed: \", save_data[\"completed_quests\"].size())\nelse:\n    print(\"Error parsing save file!\")\n\n# Demonstrate how this would work with real file:\nprint(\"\\n=== Real Godot File Reading ===\")\nprint(\"var file = FileAccess.open('res://save.json', FileAccess.READ)\")\nprint(\"var json_text = file.get_as_text()\")\nprint(\"file.close()\")\nprint(\"# Then parse json_text as shown above\")",
+  "hints": ["Use JSON.new() to create parser", "Call .parse() with JSON string", "Check if parse_result == OK", "Access parsed data with json.data", "JSON data becomes dictionaries/arrays"],
+  "validationTests": [
+    {"type": "code_contains", "value": "JSON.new()", "description": "Should create JSON parser"},
+    {"type": "code_contains", "value": ".parse(", "description": "Should parse JSON"},
+    {"type": "output_contains", "value": "Hero", "description": "Should show player name"}
+  ],
+  "learningObjectives": ["Understand file operations", "Parse JSON data", "Load game data", "Handle parse errors"],
+  "previousLessonId": 127,
+  "nextLessonId": 129,
+  "tags": ["beginner", "files", "json", "data", "save-load", "godot"]
+}

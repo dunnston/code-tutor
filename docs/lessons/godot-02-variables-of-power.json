@@ -1,0 +1,63 @@
+{
+  "id": 102,
+  "trackId": 2,
+  "language": "gdscript",
+  "title": "Variables of Power",
+  "subtitle": "Storing Magic in Containers",
+  "difficulty": 1,
+  "estimatedTime": "10-15 minutes",
+  "xpReward": 150,
+  "description": "# Variables: Containers for Magic\n\nGreat work, game developer! Now you'll learn about **variables** - magical containers that store values in your game.\n\nThink of variables as labeled boxes that hold different types of data:\n- A box labeled `health` might hold the number `100`\n- A box labeled `player_name` might hold the text `\"Hero\"`\n- A box labeled `has_sword` might hold `true` or `false`\n\n## Creating Variables in GDScript\n\nTo create a variable in GDScript, use the `var` keyword:\n\n```gdscript\nvar player_name = \"Knight\"\nvar health = 100\nvar level = 1\n```\n\n**The pattern:**\n- `var` - tells GDScript you're making a variable\n- Variable name - what you call it\n- `=` - the equals sign means \"store this value\"\n- Value - what to store\n\n## Using Variables\n\nOnce you create a variable, you can use it with print:\n\n```gdscript\nprint(player_name)  # Displays: Knight\nprint(health)       # Displays: 100\n```\n\n## Variable Naming Rules\n\n✅ **Good names:**\n- `player_name` (use underscores for spaces)\n- `max_health`\n- `gold_amount`\n\n❌ **Bad names:**\n- `player name` (no spaces!)\n- `123gold` (can't start with numbers)\n- `max-health` (dashes not allowed)\n\n## Your Quest\n\nCreate a character for your game:\n\n1. Create a variable called `hero_name` with YOUR name (as text in quotes)\n2. Create a variable called `starting_gold` with the value `50`\n3. Create a variable called `quest_active` with the value `true`\n4. Print all three variables on separate lines\n\n**Tip:** In GDScript, use `true` and `false` (lowercase), not `True` and `False`!",
+  "starterCode": "# Create your character's variables here\n\n# Print your variables below\n\n",
+  "solutionCode": "# Create your character's variables here\nvar hero_name = \"Hero\"\nvar starting_gold = 50\nvar quest_active = true\n\n# Print your variables below\nprint(hero_name)\nprint(starting_gold)\nprint(quest_active)",
+  "hints": [
+    "All variables in GDScript start with 'var'",
+    "Variable names use lowercase and underscores: hero_name",
+    "Text (Strings) needs quotation marks: \"like this\"",
+    "Numbers DON'T need quotation marks: 50",
+    "Boolean values are 'true' and 'false' (lowercase in GDScript)",
+    "Use print() to display each variable: print(hero_name)"
+  ],
+  "validationTests": [
+    {
+      "type": "code_contains",
+      "value": "var hero_name",
+      "description": "Variable 'hero_name' should be defined with var"
+    },
+    {
+      "type": "code_contains",
+      "value": "var starting_gold",
+      "description": "Variable 'starting_gold' should be defined with var"
+    },
+    {
+      "type": "code_contains",
+      "value": "var quest_active",
+      "description": "Variable 'quest_active' should be defined with var"
+    },
+    {
+      "type": "code_contains",
+      "value": "= 50",
+      "description": "starting_gold should be assigned 50"
+    },
+    {
+      "type": "code_contains",
+      "value": "= true",
+      "description": "quest_active should be assigned true"
+    },
+    {
+      "type": "output_line_count",
+      "min": 3,
+      "description": "Should print at least 3 lines"
+    }
+  ],
+  "learningObjectives": [
+    "Understand what variables are and why they're useful",
+    "Learn to create variables with the var keyword",
+    "Know the difference between Strings, numbers, and booleans",
+    "Follow GDScript variable naming conventions",
+    "Print variable values to see what's stored"
+  ],
+  "previousLessonId": 101,
+  "nextLessonId": 103,
+  "tags": ["beginner", "variables", "var", "data-types", "godot"]
+}

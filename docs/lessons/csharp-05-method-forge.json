@@ -1,0 +1,37 @@
+{
+  "id": 205,
+  "trackId": 3,
+  "language": "csharp",
+  "title": "The Method Forge",
+  "subtitle": "Creating Reusable Code",
+  "difficulty": 3,
+  "estimatedTime": "20-25 minutes",
+  "xpReward": 300,
+  "description": "# The Method Forge: Crafting Reusable Code\n\nIn C#, functions are called **methods**. Methods let you organize and reuse code.\n\n## Defining a Method in C#\n\n```csharp\nstatic void DisplayAttack()\n{\n    Console.WriteLine(\"=====\");\n    Console.WriteLine(\"ATTACK!\");\n    Console.WriteLine(\"=====\");\n}\n\n// Use it:\nDisplayAttack();\n```\n\n**Method anatomy:**\n- `static` - can call without creating an object (for now)\n- `void` - doesn't return a value\n- `DisplayAttack` - method name (PascalCase!)\n- `()` - parameters go here\n- `{ }` - method body\n\n## Methods with Parameters\n\n```csharp\nstatic void GreetHero(string name)\n{\n    Console.WriteLine(\"Hello, \" + name);\n}\n\nGreetHero(\"Knight\");   // Hello, Knight\nGreetHero(\"Wizard\");   // Hello, Wizard\n```\n\n## Methods with Return Values\n\n```csharp\nstatic int CalculateDamage(int strength, int weaponBonus)\n{\n    int total = strength + weaponBonus;\n    return total;\n}\n\nint myDamage = CalculateDamage(10, 5);\nConsole.WriteLine(\"Damage: \" + myDamage);  // 15\n```\n\n## Your Quest\n\nCreate three methods:\n\n1. **HealPlayer(int amount)** - prints healing message, returns amount\n2. **CalculateTotalGold(int coins, int treasure)** - returns sum\n3. **DisplayStats(string name, int health, int gold)** - prints stats\n\nThen test them!",
+  "starterCode": "// Method 1: HealPlayer\nstatic int HealPlayer(int amount)\n{\n    // Print message and return amount\n    return 0; // Fix this\n}\n\n// Method 2: CalculateTotalGold\nstatic int CalculateTotalGold(int coins, int treasure)\n{\n    // Calculate and return total\n    return 0; // Fix this\n}\n\n// Method 3: DisplayStats\nstatic void DisplayStats(string name, int health, int gold)\n{\n    // Print character stats\n}\n\n// Test your methods\nint healing = HealPlayer(25);\nint totalGold = CalculateTotalGold(50, 100);\nDisplayStats(\"Knight\", 100, totalGold);\n",
+  "solutionCode": "// Method 1: HealPlayer\nstatic int HealPlayer(int amount)\n{\n    Console.WriteLine(\"Healed for \" + amount + \" health!\");\n    return amount;\n}\n\n// Method 2: CalculateTotalGold\nstatic int CalculateTotalGold(int coins, int treasure)\n{\n    int total = coins + treasure;\n    return total;\n}\n\n// Method 3: DisplayStats\nstatic void DisplayStats(string name, int health, int gold)\n{\n    Console.WriteLine(\"=== Character Stats ===\");\n    Console.WriteLine(\"Name: \" + name);\n    Console.WriteLine(\"Health: \" + health);\n    Console.WriteLine(\"Gold: \" + gold);\n}\n\n// Test your methods\nint healing = HealPlayer(25);\nint totalGold = CalculateTotalGold(50, 100);\nDisplayStats(\"Knight\", 100, totalGold);",
+  "hints": [
+    "Use 'static' before return type for all methods",
+    "Method names use PascalCase in C#",
+    "Use 'return value;' to send a result back",
+    "void methods don't return anything",
+    "Don't forget semicolons and curly braces!"
+  ],
+  "validationTests": [
+    {"type": "code_contains", "value": "static int HealPlayer", "description": "Should define HealPlayer method"},
+    {"type": "code_contains", "value": "static int CalculateTotalGold", "description": "Should define CalculateTotalGold method"},
+    {"type": "code_contains", "value": "static void DisplayStats", "description": "Should define DisplayStats method"},
+    {"type": "output_contains", "value": "Healed for 25 health!", "description": "Should print healing message"},
+    {"type": "output_contains", "value": "Gold: 150", "description": "Should calculate 50+100=150"}
+  ],
+  "learningObjectives": [
+    "Define methods with static keyword",
+    "Use parameters and return types",
+    "Follow C# naming conventions (PascalCase for methods)",
+    "Return values from methods",
+    "Organize code with methods"
+  ],
+  "previousLessonId": 204,
+  "nextLessonId": 206,
+  "tags": ["beginner", "methods", "functions", "parameters", "return", "csharp"]
+}

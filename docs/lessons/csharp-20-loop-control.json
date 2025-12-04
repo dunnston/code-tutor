@@ -1,0 +1,57 @@
+{
+  "id": 220,
+  "trackId": 3,
+  "language": "csharp",
+  "title": "The Loop Master",
+  "subtitle": "Break and Continue",
+  "difficulty": 4,
+  "estimatedTime": "20-25 minutes",
+  "xpReward": 200,
+  "description": "# Controlling Loop Flow\n\nSometimes you need to exit a loop early or skip certain iterations. That's where **break** and **continue** come in!\n\n## The Break Statement\n\n`break` immediately exits the loop:\n\n```csharp\n// Search for an item\nstring[] items = { \"sword\", \"shield\", \"potion\", \"helmet\" };\nstring target = \"potion\";\n\nfor (int i = 0; i < items.Length; i++)\n{\n    if (items[i] == target)\n    {\n        Console.WriteLine($\"Found {target} at index {i}!\");\n        break;  // Exit loop early\n    }\n}\n```\n\n## The Continue Statement\n\n`continue` skips the rest of the current iteration and moves to the next one:\n\n```csharp\n// Skip even numbers\nfor (int i = 1; i <= 10; i++)\n{\n    if (i % 2 == 0)\n    {\n        continue;  // Skip even numbers\n    }\n    Console.WriteLine(i);  // Only prints odd numbers: 1, 3, 5, 7, 9\n}\n```\n\n## Using Break and Continue Together\n\n```csharp\nint health = 100;\nint potions = 3;\n\nfor (int turn = 1; turn <= 10; turn++)\n{\n    health -= 20;\n    \n    if (health <= 0)\n    {\n        Console.WriteLine(\"Defeated!\");\n        break;  // Exit - player died\n    }\n    \n    if (health > 50)\n    {\n        continue;  // Skip healing - health is fine\n    }\n    \n    // Heal if health low and potions available\n    if (potions > 0)\n    {\n        health += 30;\n        potions--;\n        Console.WriteLine(\"Used potion!\");\n    }\n}\n```\n\n## Your Quest\n\n1. **Item Search**: Loop through inventory, use `break` when rare item found\n2. **Skip Broken Items**: Loop through items, use `continue` to skip items with 0 durability\n3. **Battle with Escape**: Fight enemies, use `break` if health drops too low\n4. **Selective Upgrade**: Loop through weapons, use `continue` to skip weak weapons, upgrade strong ones",
+  "starterCode": "using System;\n\nclass Program\n{\n    static void Main()\n    {\n        Console.WriteLine(\"=== ITEM SEARCH ===\");\n        string[] inventory = { \"sword\", \"shield\", \"rare gem\", \"potion\", \"helmet\" };\n        \n        for (int i = 0; i < inventory.Length; i++)\n        {\n            Console.WriteLine($\"Checking: {inventory[i]}\");\n            \n            if (inventory[i] == \"rare gem\")\n            {\n                Console.WriteLine(\"Found the rare gem!\");\n                // Use break to exit the loop\n            }\n        }\n        \n        Console.WriteLine(\"\\n=== SKIP BROKEN ITEMS ===\");\n        string[] items = { \"Sword\", \"Broken Shield\", \"Helmet\", \"Broken Bow\", \"Potion\" };\n        int[] durability = { 100, 0, 80, 0, 50 };\n        \n        for (int i = 0; i < items.Length; i++)\n        {\n            if (durability[i] == 0)\n            {\n                Console.WriteLine($\"{items[i]} is broken - skipping...\");\n                // Use continue to skip to next iteration\n            }\n            \n            Console.WriteLine($\"✓ {items[i]} (Durability: {durability[i]})\");\n        }\n        \n        Console.WriteLine(\"\\n=== BATTLE WITH ESCAPE ===\");\n        int health = 100;\n        int enemyDamage = 25;\n        int turn = 1;\n        \n        while (turn <= 10)\n        {\n            Console.WriteLine($\"Turn {turn}: Health = {health}\");\n            health -= enemyDamage;\n            \n            if (health <= 20)\n            {\n                Console.WriteLine(\"Health critical! Escaping battle!\");\n                // Use break to escape\n            }\n            \n            turn++;\n        }\n        \n        Console.WriteLine($\"\\nBattle ended. Final health: {health}\");\n    }\n}\n",
+  "solutionCode": "using System;\n\nclass Program\n{\n    static void Main()\n    {\n        Console.WriteLine(\"=== ITEM SEARCH ===\");\n        string[] inventory = { \"sword\", \"shield\", \"rare gem\", \"potion\", \"helmet\" };\n        \n        for (int i = 0; i < inventory.Length; i++)\n        {\n            Console.WriteLine($\"Checking: {inventory[i]}\");\n            \n            if (inventory[i] == \"rare gem\")\n            {\n                Console.WriteLine(\"Found the rare gem!\");\n                break;\n            }\n        }\n        \n        Console.WriteLine(\"\\n=== SKIP BROKEN ITEMS ===\");\n        string[] items = { \"Sword\", \"Broken Shield\", \"Helmet\", \"Broken Bow\", \"Potion\" };\n        int[] durability = { 100, 0, 80, 0, 50 };\n        \n        for (int i = 0; i < items.Length; i++)\n        {\n            if (durability[i] == 0)\n            {\n                Console.WriteLine($\"{items[i]} is broken - skipping...\");\n                continue;\n            }\n            \n            Console.WriteLine($\"✓ {items[i]} (Durability: {durability[i]})\");\n        }\n        \n        Console.WriteLine(\"\\n=== BATTLE WITH ESCAPE ===\");\n        int health = 100;\n        int enemyDamage = 25;\n        int turn = 1;\n        \n        while (turn <= 10)\n        {\n            Console.WriteLine($\"Turn {turn}: Health = {health}\");\n            health -= enemyDamage;\n            \n            if (health <= 20)\n            {\n                Console.WriteLine(\"Health critical! Escaping battle!\");\n                break;\n            }\n            \n            turn++;\n        }\n        \n        Console.WriteLine($\"\\nBattle ended. Final health: {health}\");\n    }\n}\n",
+  "hints": [
+    "Use break; to immediately exit a loop (usually inside an if statement)",
+    "Use continue; to skip the rest of the current iteration and move to the next one",
+    "Break is useful when searching for something - once found, no need to continue",
+    "Continue is useful when filtering - skip items that don't meet criteria",
+    "Both break and continue must be followed by a semicolon in C#"
+  ],
+  "validationTests": [
+    {
+      "type": "code_contains",
+      "value": "break",
+      "description": "Must use break statement"
+    },
+    {
+      "type": "code_contains",
+      "value": "continue",
+      "description": "Must use continue statement"
+    },
+    {
+      "type": "output_contains",
+      "value": "rare gem",
+      "description": "Should find and display rare gem"
+    },
+    {
+      "type": "output_contains",
+      "value": "skipping",
+      "description": "Should skip broken items"
+    },
+    {
+      "type": "output_contains",
+      "value": "Escaping",
+      "description": "Should escape battle when health is low"
+    }
+  ],
+  "learningObjectives": [
+    "Use break to exit loops early",
+    "Use continue to skip loop iterations",
+    "Understand when to use break vs continue",
+    "Combine loop control with conditionals",
+    "Implement search and filter patterns"
+  ],
+  "previousLessonId": 219,
+  "nextLessonId": 221,
+  "tags": ["intermediate", "break", "continue", "loop-control", "flow-control"]
+}

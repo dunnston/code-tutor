@@ -1,0 +1,23 @@
+{
+  "id": 119,
+  "trackId": 2,
+  "language": "gdscript",
+  "title": "The While Loop",
+  "subtitle": "Condition-Based Looping",
+  "difficulty": 3,
+  "estimatedTime": "20-25 minutes",
+  "xpReward": 250,
+  "description": "# While Loops: Loop Until Condition Changes\n\n## What is a While Loop?\n\nWhile loops repeat WHILE a condition is true:\n\n```gdscript\nvar health = 100\n\nwhile health > 0:\n    print(\"Still alive! Health: \", health)\n    health -= 20\nprint(\"Game Over!\")\n```\n\n## While vs For\n\n**For Loop:** Use when you know how many times to repeat\n**While Loop:** Use when you repeat until something happens\n\n## Be Careful!\n\n⚠️ Make sure the condition eventually becomes false, or you'll get an infinite loop!\n\n```gdscript\n# INFINITE LOOP - BAD!\nvar x = 0\nwhile x < 10:\n    print(x)  # x never changes!\n\n# GOOD - x changes\nvar x = 0\nwhile x < 10:\n    print(x)\n    x += 1  # Now it will end!\n```\n\n## Your Quest\n\nCreate game systems using while loops.",
+  "starterCode": "# While Loop Challenges\n\n# 1. Health regeneration - heal 10 HP per turn until full (max 100)\nvar health = 50\nvar max_health = 100\n\n# 2. Gold collection - collect 25 gold per turn until you have 200\nvar gold = 0\n\n# 3. Enemy spawn - spawn enemies while count < 5\nvar enemy_count = 0\n\n",
+  "solutionCode": "# While Loop Challenges\n\n# 1. Health regeneration\nvar health = 50\nvar max_health = 100\nprint(\"Regenerating health...\")\nwhile health < max_health:\n    health += 10\n    print(\"Health: \", health)\nprint(\"Fully healed!\\n\")\n\n# 2. Gold collection\nvar gold = 0\nprint(\"Collecting gold...\")\nwhile gold < 200:\n    gold += 25\n    print(\"Gold: \", gold)\nprint(\"Goal reached!\\n\")\n\n# 3. Enemy spawn\nvar enemy_count = 0\nprint(\"Spawning enemies...\")\nwhile enemy_count < 5:\n    enemy_count += 1\n    print(\"Enemy \", enemy_count, \" spawned!\")\nprint(\"Wave complete!\")",
+  "hints": ["Check condition at start of while", "Update the variable inside the loop!", "Make sure the condition eventually becomes false", "Print progress to see what's happening"],
+  "validationTests": [
+    {"type": "code_contains", "value": "while ", "description": "Should use while loop"},
+    {"type": "output_contains", "value": "100", "description": "Should show full health"},
+    {"type": "output_contains", "value": "200", "description": "Should show target gold"}
+  ],
+  "learningObjectives": ["Understand while loops", "Avoid infinite loops", "Use condition-based iteration", "Know when to use while vs for"],
+  "previousLessonId": 118,
+  "nextLessonId": 120,
+  "tags": ["beginner", "while-loops", "iteration", "conditionals", "godot"]
+}

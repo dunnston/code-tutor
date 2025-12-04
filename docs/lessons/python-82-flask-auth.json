@@ -1,0 +1,23 @@
+{
+  "id": 82,
+  "trackId": 8,
+  "language": "python",
+  "title": "The Guardian's Gate",
+  "subtitle": "Authentication & Authorization",
+  "difficulty": 5,
+  "estimatedTime": "45-55 minutes",
+  "xpReward": 300,
+  "description": "# Master API Authentication!\n\n🔒 **Authentication** secures your API.\n\n## JWT Tokens\n```python\nimport jwt\nfrom flask import request, jsonify\n\nSECRET_KEY = 'your-secret-key'\n\ndef create_token(user_id):\n    return jwt.encode({'user_id': user_id}, SECRET_KEY, algorithm='HS256')\n\ndef verify_token(token):\n    try:\n        return jwt.decode(token, SECRET_KEY, algorithms=['HS256'])\n    except jwt.InvalidTokenError:\n        return None\n\ndef require_auth(f):\n    def wrapper(*args, **kwargs):\n        token = request.headers.get('Authorization')\n        if not token or not verify_token(token):\n            return jsonify({'error': 'Unauthorized'}), 401\n        return f(*args, **kwargs)\n    return wrapper\n```\n\n## Your Mission\n\nImplement authentication system for MMO API.\n\n*Hint: Store tokens securely, never in code.*",
+  "starterCode": "from flask import Flask, jsonify, request\nimport jwt\n\napp = Flask(__name__)\nSECRET_KEY = 'dev-secret-key'\n\n# TODO: Implement login endpoint\n# TODO: Implement require_auth decorator\n# TODO: Protect character endpoints\n\nif __name__ == '__main__':\n    print('Auth API running')\n    app.run(debug=True)",
+  "solutionCode": "from flask import Flask, jsonify, request\nimport jwt\nfrom functools import wraps\n\napp = Flask(__name__)\nSECRET_KEY = 'dev-secret-key'\n\nusers = {'admin': 'password123'}\n\ndef require_auth(f):\n    @wraps(f)\n    def wrapper(*args, **kwargs):\n        token = request.headers.get('Authorization')\n        if not token:\n            return jsonify({'error': 'No token'}), 401\n        try:\n            jwt.decode(token, SECRET_KEY, algorithms=['HS256'])\n        except:\n            return jsonify({'error': 'Invalid token'}), 401\n        return f(*args, **kwargs)\n    return wrapper\n\n@app.route('/api/login', methods=['POST'])\ndef login():\n    data = request.json\n    if data.get('username') in users:\n        token = jwt.encode({'user': data['username']}, SECRET_KEY, algorithm='HS256')\n        return jsonify({'token': token})\n    return jsonify({'error': 'Invalid credentials'}), 401\n\n@app.route('/api/protected')\n@require_auth\ndef protected():\n    return jsonify({'message': 'You are authenticated!'})\n\nif __name__ == '__main__':\n    print('Auth API running')\n    app.run(debug=True)",
+  "hints": ["Use PyJWT library", "Decorator pattern for auth", "Check Authorization header"],
+  "validationTests": [
+    {"type": "code_contains", "value": "jwt", "description": "Must use JWT"},
+    {"type": "code_contains", "value": "require_auth", "description": "Must implement auth decorator"}
+  ],
+  "learningObjectives": ["Implement JWT authentication", "Use decorators for authorization", "Secure API endpoints"],
+  "nextLessonId": 83,
+  "previousLessonId": 81,
+  "tags": ["advanced", "flask", "authentication", "jwt", "security"],
+  "commonMistakes": [{"mistake": "Hardcoding secrets", "explanation": "Use environment variables for secrets, never hardcode!"}]
+}

@@ -1,0 +1,54 @@
+{
+  "id": 224,
+  "trackId": 3,
+  "language": "csharp",
+  "title": "The Array Sage",
+  "subtitle": "Advanced Array and LINQ Operations",
+  "difficulty": 4,
+  "estimatedTime": "25-30 minutes",
+  "xpReward": 200,
+  "description": "# Advanced Array Operations\n\nArrays and Lists have powerful built-in methods! Plus, C# has **LINQ** (Language Integrated Query) for elegant data manipulation.\n\n## Array and List Methods\n\n```csharp\nusing System.Collections.Generic;\nusing System.Linq;\n\nList<int> numbers = new List<int> { 5, 2, 8, 1, 9, 3 };\n\n// Sorting\nnumbers.Sort();  // Sorts in place: 1, 2, 3, 5, 8, 9\nnumbers.Reverse();  // Reverses: 9, 8, 5, 3, 2, 1\n\n// Finding\nbool contains = numbers.Contains(5);  // true\nint index = numbers.IndexOf(8);  // Returns index or -1\n\n// Aggregation\nint min = numbers.Min();  // LINQ: smallest value\nint max = numbers.Max();  // LINQ: largest value\nint sum = numbers.Sum();  // LINQ: total\ndouble avg = numbers.Average();  // LINQ: average\n```\n\n## LINQ Filtering and Selection\n\n```csharp\nList<int> numbers = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };\n\n// Where - filter items\nList<int> evens = numbers.Where(n => n % 2 == 0).ToList();\n// Result: [2, 4, 6, 8, 10]\n\n// Select - transform items\nList<int> doubled = numbers.Select(n => n * 2).ToList();\n// Result: [2, 4, 6, 8, 10, 12, 14, 16, 18, 20]\n\n// First/Last with condition\nint firstEven = numbers.First(n => n % 2 == 0);  // 2\nint lastOdd = numbers.Last(n => n % 2 != 0);  // 9\n\n// Any/All\nbool hasEven = numbers.Any(n => n % 2 == 0);  // true\nbool allPositive = numbers.All(n => n > 0);  // true\n```\n\n## Working with Objects\n\n```csharp\npublic class Item\n{\n    public string Name { get; set; }\n    public int Value { get; set; }\n}\n\nList<Item> inventory = new List<Item>\n{\n    new Item { Name = \"Sword\", Value = 100 },\n    new Item { Name = \"Shield\", Value = 75 },\n    new Item { Name = \"Potion\", Value = 25 }\n};\n\n// Filter expensive items\nList<Item> expensive = inventory.Where(i => i.Value > 50).ToList();\n\n// Sort by value\nList<Item> sorted = inventory.OrderBy(i => i.Value).ToList();\nList<Item> sortedDesc = inventory.OrderByDescending(i => i.Value).ToList();\n\n// Calculate total value\nint total = inventory.Sum(i => i.Value);\n```\n\n## Your Quest\n\nCreate an item management system:\n1. Create a list of items with names and values\n2. Find the most and least valuable items\n3. Filter items worth more than 50 gold\n4. Sort items by value (descending)\n5. Calculate total value and average value\n6. Check if any items are worth over 100 gold",
+  "starterCode": "using System;\nusing System.Collections.Generic;\nusing System.Linq;\n\nclass Program\n{\n    public class Item\n    {\n        public string Name { get; set; }\n        public int Value { get; set; }\n    }\n    \n    static void Main()\n    {\n        Console.WriteLine(\"=== ITEM MANAGEMENT SYSTEM ===\");\n        \n        // Create inventory\n        List<Item> inventory = new List<Item>\n        {\n            new Item { Name = \"Iron Sword\", Value = 50 },\n            new Item { Name = \"Steel Sword\", Value = 150 },\n            new Item { Name = \"Health Potion\", Value = 25 },\n            new Item { Name = \"Magic Ring\", Value = 200 },\n            new Item { Name = \"Leather Armor\", Value = 75 },\n            new Item { Name = \"Wooden Shield\", Value = 30 }\n        };\n        \n        // Find most valuable item (use Max or OrderByDescending + First)\n        Item mostValuable = /* Fill in */;\n        Console.WriteLine($\"Most Valuable: {mostValuable.Name} ({mostValuable.Value}g)\");\n        \n        // Find least valuable item (use Min or OrderBy + First)\n        Item leastValuable = /* Fill in */;\n        Console.WriteLine($\"Least Valuable: {leastValuable.Name} ({leastValuable.Value}g)\");\n        \n        // Filter expensive items (value > 50)\n        List<Item> expensive = /* Use Where */;\n        Console.WriteLine($\"\\nExpensive Items (>50g): {expensive.Count}\");\n        foreach (var item in expensive)\n        {\n            Console.WriteLine($\"  - {item.Name}: {item.Value}g\");\n        }\n        \n        // Sort by value (descending)\n        List<Item> sorted = /* Use OrderByDescending */;\n        Console.WriteLine(\"\\nSorted by Value (High to Low):\");\n        foreach (var item in sorted)\n        {\n            Console.WriteLine($\"  {item.Name}: {item.Value}g\");\n        }\n        \n        // Calculate totals\n        int totalValue = /* Use Sum */;\n        double averageValue = /* Use Average */;\n        Console.WriteLine($\"\\nTotal Value: {totalValue}g\");\n        Console.WriteLine($\"Average Value: {averageValue:F1}g\");\n        \n        // Check for legendary items (value > 100)\n        bool hasLegendary = /* Use Any */;\n        Console.WriteLine($\"\\nHas Legendary Items (>100g): {hasLegendary}\");\n    }\n}\n",
+  "solutionCode": "using System;\nusing System.Collections.Generic;\nusing System.Linq;\n\nclass Program\n{\n    public class Item\n    {\n        public string Name { get; set; }\n        public int Value { get; set; }\n    }\n    \n    static void Main()\n    {\n        Console.WriteLine(\"=== ITEM MANAGEMENT SYSTEM ===\");\n        \n        // Create inventory\n        List<Item> inventory = new List<Item>\n        {\n            new Item { Name = \"Iron Sword\", Value = 50 },\n            new Item { Name = \"Steel Sword\", Value = 150 },\n            new Item { Name = \"Health Potion\", Value = 25 },\n            new Item { Name = \"Magic Ring\", Value = 200 },\n            new Item { Name = \"Leather Armor\", Value = 75 },\n            new Item { Name = \"Wooden Shield\", Value = 30 }\n        };\n        \n        // Find most valuable item\n        Item mostValuable = inventory.OrderByDescending(i => i.Value).First();\n        Console.WriteLine($\"Most Valuable: {mostValuable.Name} ({mostValuable.Value}g)\");\n        \n        // Find least valuable item\n        Item leastValuable = inventory.OrderBy(i => i.Value).First();\n        Console.WriteLine($\"Least Valuable: {leastValuable.Name} ({leastValuable.Value}g)\");\n        \n        // Filter expensive items (value > 50)\n        List<Item> expensive = inventory.Where(i => i.Value > 50).ToList();\n        Console.WriteLine($\"\\nExpensive Items (>50g): {expensive.Count}\");\n        foreach (var item in expensive)\n        {\n            Console.WriteLine($\"  - {item.Name}: {item.Value}g\");\n        }\n        \n        // Sort by value (descending)\n        List<Item> sorted = inventory.OrderByDescending(i => i.Value).ToList();\n        Console.WriteLine(\"\\nSorted by Value (High to Low):\");\n        foreach (var item in sorted)\n        {\n            Console.WriteLine($\"  {item.Name}: {item.Value}g\");\n        }\n        \n        // Calculate totals\n        int totalValue = inventory.Sum(i => i.Value);\n        double averageValue = inventory.Average(i => i.Value);\n        Console.WriteLine($\"\\nTotal Value: {totalValue}g\");\n        Console.WriteLine($\"Average Value: {averageValue:F1}g\");\n        \n        // Check for legendary items (value > 100)\n        bool hasLegendary = inventory.Any(i => i.Value > 100);\n        Console.WriteLine($\"\\nHas Legendary Items (>100g): {hasLegendary}\");\n    }\n}\n",
+  "hints": [
+    "Add 'using System.Linq;' at the top to use LINQ methods",
+    "Use .OrderByDescending(i => i.Value).First() to get the most valuable item",
+    "Use .Where(i => i.Value > 50).ToList() to filter items",
+    "Use .Sum(i => i.Value) to calculate total value",
+    "Use .Any(i => i.Value > 100) to check if any items match a condition",
+    "Lambda syntax: i => i.Value means 'for each item i, use i.Value'"
+  ],
+  "validationTests": [
+    {
+      "type": "code_contains",
+      "value": "using System.Linq",
+      "description": "Must import System.Linq"
+    },
+    {
+      "type": "code_contains",
+      "value": "Where",
+      "description": "Should use Where for filtering"
+    },
+    {
+      "type": "code_contains",
+      "value": "Sum",
+      "description": "Should use Sum for totals"
+    },
+    {
+      "type": "code_contains",
+      "value": "Any",
+      "description": "Should use Any for checking conditions"
+    }
+  ],
+  "learningObjectives": [
+    "Use LINQ methods for data manipulation",
+    "Filter collections with Where()",
+    "Sort collections with OrderBy() and OrderByDescending()",
+    "Aggregate data with Sum(), Average(), Min(), Max()",
+    "Check conditions with Any() and All()",
+    "Work with lambda expressions"
+  ],
+  "previousLessonId": 223,
+  "nextLessonId": 225,
+  "tags": ["advanced", "linq", "arrays", "lists", "filtering", "sorting", "lambdas"]
+}

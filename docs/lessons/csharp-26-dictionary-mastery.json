@@ -1,0 +1,53 @@
+{
+  "id": 226,
+  "trackId": 3,
+  "language": "csharp",
+  "title": "The Dictionary Sage",
+  "subtitle": "Advanced Dictionary Operations",
+  "difficulty": 3,
+  "estimatedTime": "25-30 minutes",
+  "xpReward": 200,
+  "description": "# Mastering Dictionaries\n\nYou've worked with dictionaries, but there's so much more! Learn advanced techniques to manipulate these powerful data structures in C#.\n\n## Dictionary Methods and Properties\n\n```csharp\nDictionary<string, int> player = new Dictionary<string, int>\n{\n    { \"level\", 5 },\n    { \"gold\", 100 },\n    { \"health\", 100 }\n};\n\n// Get values safely with TryGetValue\nif (player.TryGetValue(\"level\", out int level))\n{\n    Console.WriteLine($\"Level: {level}\");\n}\n\n// Check if key exists\nif (player.ContainsKey(\"gold\"))\n{\n    Console.WriteLine(\"Has gold\");\n}\n\n// Get all keys and values\nvar keys = player.Keys;      // Collection of keys\nvar values = player.Values;  // Collection of values\n\n// Remove items\nplayer.Remove(\"health\");     // Remove by key\n\n// Count\nint count = player.Count;\n```\n\n## Looping Through Dictionaries\n\n```csharp\n// Loop through key-value pairs\nforeach (var pair in player)\n{\n    Console.WriteLine($\"{pair.Key}: {pair.Value}\");\n}\n\n// Loop through just keys\nforeach (var key in player.Keys)\n{\n    Console.WriteLine(key);\n}\n\n// Loop through just values\nforeach (var value in player.Values)\n{\n    Console.WriteLine(value);\n}\n```\n\n## Your Quest\n\nCreate a character stat manager:\n1. Use TryGetValue for safe access\n2. Use ContainsKey to check for stats\n3. Loop through stats to display them\n4. Calculate total stat points\n5. Update and remove stats",
+  "starterCode": "using System;\nusing System.Collections.Generic;\n\nclass Program\n{\n    static void Main()\n    {\n        Dictionary<string, int> character = new Dictionary<string, int>\n        {\n            { \"level\", 10 },\n            { \"health\", 100 },\n            { \"mana\", 50 },\n            { \"strength\", 15 },\n            { \"intelligence\", 10 }\n        };\n        \n        Console.WriteLine(\"=== CHARACTER INFO ===\");\n        \n        // Try to get level safely\n        if (character.TryGetValue(/* key */, out int level))\n        {\n            Console.WriteLine($\"Level: {level}\");\n        }\n        \n        // Check if defense exists, if not, assume 5\n        int defense;\n        if (/* Check if \"defense\" key exists */)\n        {\n            defense = character[\"defense\"];\n        }\n        else\n        {\n            defense = 5;\n        }\n        Console.WriteLine($\"Defense: {defense}\");\n        \n        Console.WriteLine(\"\\n=== LEVELING UP ===\");\n        // Update stats\n        character[\"level\"] = /* Increase by 1 */;\n        character[\"health\"] = /* Add 20 */;\n        character[\"mana\"] = /* Add 10 */;\n        Console.WriteLine(\"Leveled up!\");\n        \n        Console.WriteLine(\"\\n=== CURRENT STATS ===\");\n        // Loop through all stats\n        foreach (/* Loop through KeyValuePair */)\n        {\n            Console.WriteLine($\"{0}: {0}\");  // Fix this\n        }\n        \n        Console.WriteLine(\"\\n=== STAT CALCULATION ===\");\n        // Calculate total combat stats (strength + intelligence + defense)\n        int totalStats = 0;\n        \n        if (character.TryGetValue(\"strength\", out int str))\n            totalStats += str;\n        if (character.TryGetValue(\"intelligence\", out int intel))\n            totalStats += intel;\n        totalStats += defense;\n        \n        Console.WriteLine($\"Total combat stats: {totalStats}\");\n        \n        Console.WriteLine(\"\\n=== REMOVING MANA ===\");\n        // Remove mana\n        if (character.Remove(/* key */))\n        {\n            Console.WriteLine(\"Removed mana stat\");\n        }\n        Console.WriteLine($\"Remaining stats: {character.Count}\");\n    }\n}\n",
+  "solutionCode": "using System;\nusing System.Collections.Generic;\n\nclass Program\n{\n    static void Main()\n    {\n        Dictionary<string, int> character = new Dictionary<string, int>\n        {\n            { \"level\", 10 },\n            { \"health\", 100 },\n            { \"mana\", 50 },\n            { \"strength\", 15 },\n            { \"intelligence\", 10 }\n        };\n        \n        Console.WriteLine(\"=== CHARACTER INFO ===\");\n        \n        // Try to get level safely\n        if (character.TryGetValue(\"level\", out int level))\n        {\n            Console.WriteLine($\"Level: {level}\");\n        }\n        \n        // Check if defense exists, if not, assume 5\n        int defense;\n        if (character.ContainsKey(\"defense\"))\n        {\n            defense = character[\"defense\"];\n        }\n        else\n        {\n            defense = 5;\n        }\n        Console.WriteLine($\"Defense: {defense}\");\n        \n        Console.WriteLine(\"\\n=== LEVELING UP ===\");\n        // Update stats\n        character[\"level\"] = 11;\n        character[\"health\"] = 120;\n        character[\"mana\"] = 60;\n        Console.WriteLine(\"Leveled up!\");\n        \n        Console.WriteLine(\"\\n=== CURRENT STATS ===\");\n        // Loop through all stats\n        foreach (var pair in character)\n        {\n            Console.WriteLine($\"{pair.Key}: {pair.Value}\");\n        }\n        \n        Console.WriteLine(\"\\n=== STAT CALCULATION ===\");\n        // Calculate total combat stats (strength + intelligence + defense)\n        int totalStats = 0;\n        \n        if (character.TryGetValue(\"strength\", out int str))\n            totalStats += str;\n        if (character.TryGetValue(\"intelligence\", out int intel))\n            totalStats += intel;\n        totalStats += defense;\n        \n        Console.WriteLine($\"Total combat stats: {totalStats}\");\n        \n        Console.WriteLine(\"\\n=== REMOVING MANA ===\");\n        // Remove mana\n        if (character.Remove(\"mana\"))\n        {\n            Console.WriteLine(\"Removed mana stat\");\n        }\n        Console.WriteLine($\"Remaining stats: {character.Count}\");\n    }\n}\n",
+  "hints": [
+    "Use TryGetValue to safely get values: dictionary.TryGetValue(\"key\", out var value)",
+    "Use ContainsKey to check if a key exists: dictionary.ContainsKey(\"key\")",
+    "Loop with foreach: foreach (var pair in dictionary) and access pair.Key and pair.Value",
+    "Update values with: dictionary[\"key\"] = newValue;",
+    "Remove with: dictionary.Remove(\"key\"); which returns true if successful"
+  ],
+  "validationTests": [
+    {
+      "type": "code_contains",
+      "value": "TryGetValue",
+      "description": "Must use TryGetValue method"
+    },
+    {
+      "type": "code_contains",
+      "value": "ContainsKey",
+      "description": "Must use ContainsKey method"
+    },
+    {
+      "type": "code_contains",
+      "value": "foreach",
+      "description": "Must use foreach loop"
+    },
+    {
+      "type": "code_contains",
+      "value": "Remove",
+      "description": "Must use Remove method"
+    }
+  ],
+  "learningObjectives": [
+    "Use TryGetValue for safe value access",
+    "Check for key existence with ContainsKey",
+    "Loop through dictionaries with foreach",
+    "Update dictionary values",
+    "Remove items with Remove()",
+    "Access Keys and Values collections"
+  ],
+  "previousLessonId": 225,
+  "nextLessonId": 227,
+  "tags": ["advanced", "dictionaries", "methods", "iteration", "data-structures"]
+}

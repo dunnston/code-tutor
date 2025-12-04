@@ -1,0 +1,58 @@
+{
+  "id": 208,
+  "trackId": 3,
+  "language": "csharp",
+  "title": "The Dictionary Codex",
+  "subtitle": "Key-Value Pairs of Power",
+  "difficulty": 5,
+  "estimatedTime": "15-20 minutes",
+  "xpReward": 200,
+  "description": "# The Ancient Codex\n\nYou've discovered an ancient codex that stores information in **key-value pairs**. In C#, we call this a **Dictionary<TKey, TValue>**!\n\n## What is a Dictionary?\n\nA dictionary stores data as pairs: a **key** and its **value**. Think of it like a real dictionary where you look up a word (key) to find its definition (value).\n\n```csharp\nusing System.Collections.Generic;\n\nDictionary<string, string> hero = new Dictionary<string, string>\n{\n    { \"name\", \"Aria\" },\n    { \"class\", \"Mage\" }\n};\n```\n\n**Key concepts:**\n- Dictionaries use `Dictionary<TKey, TValue>` generic type\n- Each entry has a key and a value\n- Use curly braces with nested braces for initialization\n- Keys must be unique\n- Values can be any type\n\n## Accessing Dictionary Values\n\nUse the key to get its value:\n\n```csharp\nDictionary<string, int> hero = new Dictionary<string, int>\n{\n    { \"level\", 5 }\n};\nConsole.WriteLine(hero[\"level\"]);  // Prints: 5\n```\n\n## Adding or Updating Values\n\n```csharp\nDictionary<string, string> hero = new Dictionary<string, string>\n{\n    { \"name\", \"Aria\" }\n};\nhero[\"level\"] = \"5\";      // Adds a new key-value pair\nhero[\"name\"] = \"Aria the Brave\";  // Updates existing value\n```\n\n## Your Quest\n\n1. Create a Dictionary called `character` with string keys and object values:\n   - `\"name\"` with value `\"Valor\"`\n   - `\"health\"` with value `100`\n   - `\"weapon\"` with value `\"Excalibur\"`\n2. Print the character's name\n3. Print the character's weapon\n4. Add a new key `\"armor\"` with value `\"Plate Mail\"`\n5. Update the health to `150`\n6. Print the count of items in the dictionary",
+  "starterCode": "using System;\nusing System.Collections.Generic;\n\nclass Program\n{\n    static void Main()\n    {\n        // Create your character dictionary\n        // Dictionary<string, object> character = new Dictionary<string, object>\n        // {\n        //     { ... }\n        // };\n        \n        // Print the character's name\n        \n        \n        // Print the character's weapon\n        \n        \n        // Add armor\n        \n        \n        // Update health to 150\n        \n        \n        // Print the number of properties\n        \n    }\n}\n",
+  "solutionCode": "using System;\nusing System.Collections.Generic;\n\nclass Program\n{\n    static void Main()\n    {\n        // Create your character dictionary\n        Dictionary<string, object> character = new Dictionary<string, object>\n        {\n            { \"name\", \"Valor\" },\n            { \"health\", 100 },\n            { \"weapon\", \"Excalibur\" }\n        };\n        \n        // Print the character's name\n        Console.WriteLine(character[\"name\"]);\n        \n        // Print the character's weapon\n        Console.WriteLine(character[\"weapon\"]);\n        \n        // Add armor\n        character[\"armor\"] = \"Plate Mail\";\n        \n        // Update health to 150\n        character[\"health\"] = 150;\n        \n        // Print the number of properties\n        Console.WriteLine(character.Count);\n    }\n}\n",
+  "hints": [
+    "Dictionaries use Dictionary<TKey, TValue> with nested braces for initialization",
+    "Access values with character[\"key\"]",
+    "Add new entries with character[\"new_key\"] = value",
+    "Update existing values the same way you add new ones",
+    "Don't forget quotation marks around string keys and semicolons!"
+  ],
+  "validationTests": [
+    {
+      "type": "code_contains",
+      "value": "Dictionary",
+      "description": "Code should use Dictionary type"
+    },
+    {
+      "type": "code_contains",
+      "value": "character",
+      "description": "Code should define a variable named 'character'"
+    },
+    {
+      "type": "output_contains",
+      "value": "Valor",
+      "description": "Output should contain 'Valor'"
+    },
+    {
+      "type": "output_contains",
+      "value": "Excalibur",
+      "description": "Output should contain 'Excalibur'"
+    },
+    {
+      "type": "output_contains",
+      "value": "4",
+      "description": "Output should contain the count of 4 properties"
+    }
+  ],
+  "learningObjectives": [
+    "Understand what dictionaries are and when to use them",
+    "Create a dictionary with multiple key-value pairs",
+    "Access dictionary values using keys",
+    "Add new key-value pairs to a dictionary",
+    "Update existing values in a dictionary",
+    "Use Dictionary<TKey, TValue> generic syntax"
+  ],
+  "previousLessonId": 207,
+  "nextLessonId": 209,
+  "tags": ["dictionaries", "key-value", "data-structures", "hash-maps", "generics"]
+}

@@ -19,6 +19,38 @@ fn get_db_path(app: &AppHandle) -> Result<PathBuf, String> {
 /// Initialize the database with schema and seed data
 pub fn initialize_database(app: &AppHandle) -> Result<(), String> {
     let db_path = get_db_path(app)?;
+
+    // Check if this is the first launch (database doesn't exist)
+    let is_first_launch = !db_path.exists();
+
+    if is_first_launch {
+        log::info!("First launch detected - checking for seed database...");
+
+        // Try to copy bundled seed database if it exists
+        // The seed database should be exported from dev using export-database-for-production.ps1
+        #[cfg(not(debug_assertions))]
+        {
+            // In production builds, try to use bundled seed database
+            let seed_db_bytes = include_bytes!("../seed_database.db");
+
+            // Only use seed if it's not empty (file exists and has content)
+            if seed_db_bytes.len() > 1024 {
+                log::info!("Found bundled seed database ({} bytes), copying to app data...", seed_db_bytes.len());
+                std::fs::write(&db_path, seed_db_bytes)
+                    .map_err(|e| format!("Failed to write seed database: {}", e))?;
+                log::info!("✓ Seed database copied successfully!");
+                log::info!("  All questions, enemies, items, and content are now available!");
+            } else {
+                log::warn!("Seed database is empty or not found, creating fresh database...");
+            }
+        }
+
+        #[cfg(debug_assertions)]
+        {
+            log::info!("Development mode - creating fresh database with migrations");
+        }
+    }
+
     let conn = Connection::open(&db_path)
         .map_err(|e| format!("Failed to open database: {}", e))?;
 
@@ -298,6 +330,23 @@ pub fn initialize_database(app: &AppHandle) -> Result<(), String> {
     let mcq_migration = include_str!("../migrations/033_mcq_questions.sql");
     let _ = conn.execute_batch(mcq_migration); // Allow failure if table already exists
     log::info!("MCQ questions migration completed");
+
+    // Auto-seed MCQ questions if none exist (for production builds)
+    log::info!("Checking if MCQ questions need to be seeded...");
+    let question_count: i32 = conn
+        .query_row("SELECT COUNT(*) FROM mcq_questions", [], |row| row.get(0))
+        .unwrap_or(0);
+
+    if question_count == 0 {
+        log::info!("No MCQ questions found, attempting to seed from markdown...");
+        // Try to seed questions from bundled markdown
+        // This will be called automatically on first app launch
+        // Note: In production, you'll want to bundle the markdown file or
+        // pre-populate the database with a seeded version
+        log::info!("Auto-seeding skipped - use the Question Manager to import questions");
+    } else {
+        log::info!("Found {} MCQ questions in database", question_count);
+    }
 
     log::info!("Database initialized successfully at {:?}", db_path);
     Ok(())

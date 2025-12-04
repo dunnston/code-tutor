@@ -1,0 +1,81 @@
+{
+  "id": 75,
+  "trackId": 8,
+  "language": "python",
+  "title": "⭐ CHALLENGE: The Grand Database",
+  "subtitle": "Complete MMO Database System",
+  "difficulty": 6,
+  "estimatedTime": "2-3 hours",
+  "xpReward": 600,
+  "description": "# Build a Complete MMO Database!\n\n🏆 **Build a production-ready MMO database system** using everything you've learned!\n\n## Requirements\n\n### Database Schema\n1. **Characters** (id, name, level, health, mana, created_at)\n2. **Items** (id, name, type, rarity, value, stats_json)\n3. **Inventory** (character_id, item_id, quantity, equipped)\n4. **Guilds** (id, name, description, created_at)\n5. **Guild_Members** (character_id, guild_id, rank, join_date)\n6. **Quests** (id, name, description, rewards_json)\n7. **Quest_Progress** (character_id, quest_id, progress, completed)\n8. **Combat_Log** (id, attacker_id, defender_id, damage, timestamp)\n\n### Repository Layer\n- CharacterRepository (full CRUD + custom queries)\n- ItemRepository\n- GuildRepository\n- QuestRepository\n- CombatLogRepository\n\n### Business Logic Layer\n- CharacterService (level up, take damage, heal)\n- GuildService (create, join, leave, promote)\n- QuestService (start, update progress, complete)\n- CombatService (resolve combat, log actions)\n- InventoryService (add/remove items, equip/unequip)\n\n### Migration System\n- At least 5 migrations creating schema\n- MigrationManager with up/down\n- Proper versioning\n\n### Advanced Queries\n1. Get character with full inventory (JOIN)\n2. Get guild roster with equipment (multiple JOINs)\n3. Get top 10 characters by level (ORDER BY, LIMIT)\n4. Get character combat stats (aggregate functions)\n5. Get quest completion rate per character\n\n### Testing\n- Test all repositories\n- Test business logic\n- Test migrations\n- Integration tests\n\n## Success Criteria\n\n✅ Complete schema with relationships\n✅ All repositories implemented\n✅ Business logic layer working\n✅ Migration system functional\n✅ Complex queries work correctly\n✅ Proper error handling\n✅ Code is clean and organized\n✅ Tests pass\n\n*Hint: This is your database portfolio piece!*",
+  "starterCode": "# ⭐ CHALLENGE: Complete MMO Database System\n# Build from scratch!\n\nimport sqlite3\nfrom typing import List, Optional, Dict, Any\nfrom datetime import datetime\nimport json\n\n# ===== PROJECT STRUCTURE =====\n# /\n# ├── models/           # Data models (Character, Item, etc.)\n# ├── repositories/     # Data access layer\n# ├── services/         # Business logic\n# ├── migrations/       # Database migrations\n# └── tests/           # Test suite\n\nprint(\"Build your MMO Database System!\")\nprint(\"\")\nprint(\"Requirements:\")\nprint(\"1. Complete schema with 8 tables\")\nprint(\"2. Repository layer for all entities\")\nprint(\"3. Business logic services\")\nprint(\"4. Migration system\")\nprint(\"5. Advanced queries with JOINs\")\nprint(\"6. Comprehensive tests\")\nprint(\"\")\nprint(\"Start by creating your migration classes...\")\nprint(\"\")\nprint(\"Good luck!\")",
+  "solutionCode": "# This is YOUR challenge - build it yourself!\n# No solution provided. Use everything from lessons 71-74.\n\n# Suggested approach:\n\n# Step 1: Create models/\nclass Character:\n    def __init__(self, id=None, name='', level=1, health=100, mana=100):\n        self.id = id\n        self.name = name\n        self.level = level\n        self.health = health\n        self.mana = mana\n\nclass Item:\n    pass\n\nclass Guild:\n    pass\n\n# Step 2: Create migrations/\nclass Migration001:\n    @staticmethod\n    def up(conn):\n        # Create characters table\n        pass\n    \n    @staticmethod\n    def down(conn):\n        pass\n\n# Step 3: Create repositories/\nclass BaseRepository:\n    pass\n\nclass CharacterRepository(BaseRepository):\n    def get_by_id(self, char_id):\n        pass\n    \n    def save(self, character):\n        pass\n    \n    def get_with_inventory(self, char_id):\n        # Complex query with JOIN\n        pass\n\n# Step 4: Create services/\nclass CharacterService:\n    def __init__(self, char_repo, inventory_repo):\n        self.char_repo = char_repo\n        self.inventory_repo = inventory_repo\n    \n    def level_up(self, character):\n        # Business logic\n        pass\n\n# Step 5: Integration\nif __name__ == '__main__':\n    # Run migrations\n    # Test all features\n    # Show working system\n    print(\"MMO Database System running!\")",
+  "hints": [
+    "Start with migrations - get schema right first.",
+    "Build models (plain Python classes) for each entity.",
+    "Create BaseRepository with shared database helpers.",
+    "Implement one repository at a time, test each one.",
+    "Services use repositories - never write SQL in services.",
+    "Use JSON columns (as TEXT) for complex data like item stats.",
+    "Test repositories independently from services.",
+    "For JOINs, use conn.row_factory = sqlite3.Row for dict results.",
+    "Migrations should be reversible (up/down).",
+    "Keep it simple first, add features incrementally."
+  ],
+  "validationTests": [
+    {
+      "type": "code_contains",
+      "value": "class",
+      "description": "Should have multiple classes"
+    },
+    {
+      "type": "code_contains",
+      "value": "Repository",
+      "description": "Should implement repositories"
+    },
+    {
+      "type": "code_contains",
+      "value": "def",
+      "description": "Should have multiple functions"
+    }
+  ],
+  "learningObjectives": [
+    "Design complete database schema",
+    "Implement full repository layer",
+    "Build business logic services",
+    "Create migration system from scratch",
+    "Write complex SQL queries with JOINs",
+    "Organize large codebase professionally",
+    "Test database systems thoroughly",
+    "Demonstrate mastery of database concepts"
+  ],
+  "nextLessonId": 76,
+  "previousLessonId": 74,
+  "tags": ["advanced", "challenge", "database", "sql", "repository", "migrations", "architecture"],
+  "commonMistakes": [
+    {
+      "mistake": "Building everything at once",
+      "explanation": "Build incrementally! Get one table and repository working, test it, then add the next."
+    },
+    {
+      "mistake": "Putting SQL in service layer",
+      "explanation": "SQL belongs in repositories only. Services call repository methods, never write SQL."
+    },
+    {
+      "mistake": "Not testing repositories independently",
+      "explanation": "Test each repository in isolation before building services on top of them."
+    },
+    {
+      "mistake": "Forgetting foreign key constraints",
+      "explanation": "Always add FOREIGN KEY constraints to maintain referential integrity."
+    },
+    {
+      "mistake": "Not using transactions for multi-step operations",
+      "explanation": "Group related database operations in transactions for data consistency."
+    }
+  ],
+  "bonus": {
+    "description": "Enhance your database system with:\n- Transaction support for multi-step operations\n- Database connection pooling\n- Query result caching\n- Database backup/restore\n- Full-text search on quest descriptions\n- Leaderboards with ranking\n- Trading system between players\n- Achievement tracking system",
+    "xpReward": 300
+  }
+}

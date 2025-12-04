@@ -1,0 +1,57 @@
+{
+  "id": 210,
+  "trackId": 3,
+  "language": "csharp",
+  "title": "The Class Blueprint",
+  "subtitle": "Creating Your Own Classes",
+  "difficulty": 5,
+  "estimatedTime": "20-25 minutes",
+  "xpReward": 200,
+  "description": "# Forging Your Own Classes\n\nNow that you understand how to use classes, it's time to create your own! You'll design a complete character class from scratch.\n\n## Creating a Class\n\nA class defines a custom type with properties:\n\n```csharp\npublic class Character\n{\n    public string Name { get; set; }\n    public int Level { get; set; }\n    public int Health { get; set; }\n    public string CharacterClass { get; set; }\n}\n```\n\n## Using Your Custom Class\n\n```csharp\nCharacter hero = new Character\n{\n    Name = \"Valor\",\n    Level = 1,\n    Health = 100,\n    CharacterClass = \"Warrior\"\n};\n\nConsole.WriteLine($\"{hero.Name} is a level {hero.Level} {hero.CharacterClass}\");\n```\n\n## Multiple Objects\n\nYou can create multiple objects from the same class:\n\n```csharp\nCharacter hero1 = new Character { Name = \"Aria\", Level = 5 };\nCharacter hero2 = new Character { Name = \"Valor\", Level = 3 };\n```\n\n## Your Quest\n\n1. Create a class called `Item` with these properties:\n   - `string Name`\n   - `string Type`\n   - `int Value`\n   - `int Weight`\n2. Create two Item objects:\n   - A sword: name \"Iron Sword\", type \"Weapon\", value 50, weight 10\n   - A potion: name \"Health Potion\", type \"Consumable\", value 25, weight 2\n3. Print information about both items\n4. Calculate and print the total value and total weight",
+  "starterCode": "using System;\n\nclass Program\n{\n    // Create your Item class here\n    // public class Item\n    // {\n    //     ...\n    // }\n    \n    static void Main()\n    {\n        // Create sword item\n        \n        \n        // Create potion item\n        \n        \n        // Print sword information\n        \n        \n        // Print potion information\n        \n        \n        // Calculate and print totals\n        \n    }\n}\n",
+  "solutionCode": "using System;\n\nclass Program\n{\n    // Create your Item class here\n    public class Item\n    {\n        public string Name { get; set; }\n        public string Type { get; set; }\n        public int Value { get; set; }\n        public int Weight { get; set; }\n    }\n    \n    static void Main()\n    {\n        // Create sword item\n        Item sword = new Item\n        {\n            Name = \"Iron Sword\",\n            Type = \"Weapon\",\n            Value = 50,\n            Weight = 10\n        };\n        \n        // Create potion item\n        Item potion = new Item\n        {\n            Name = \"Health Potion\",\n            Type = \"Consumable\",\n            Value = 25,\n            Weight = 2\n        };\n        \n        // Print sword information\n        Console.WriteLine($\"{sword.Name} ({sword.Type}) - Value: {sword.Value}g, Weight: {sword.Weight}kg\");\n        \n        // Print potion information\n        Console.WriteLine($\"{potion.Name} ({potion.Type}) - Value: {potion.Value}g, Weight: {potion.Weight}kg\");\n        \n        // Calculate and print totals\n        int totalValue = sword.Value + potion.Value;\n        int totalWeight = sword.Weight + potion.Weight;\n        Console.WriteLine($\"\\nTotal Value: {totalValue}g\");\n        Console.WriteLine($\"Total Weight: {totalWeight}kg\");\n    }\n}\n",
+  "hints": [
+    "Define the Item class with public class Item { } and add properties inside",
+    "Each property should be: public Type PropertyName { get; set; }",
+    "Create objects with object initializer syntax: new Item { Name = ..., Type = ... }",
+    "Access properties with dot notation to calculate totals",
+    "Use string interpolation with $\"...\" for formatted output"
+  ],
+  "validationTests": [
+    {
+      "type": "code_contains",
+      "value": "class Item",
+      "description": "Code should define an Item class"
+    },
+    {
+      "type": "code_contains",
+      "value": "new Item",
+      "description": "Code should create Item objects"
+    },
+    {
+      "type": "output_contains",
+      "value": "Iron Sword",
+      "description": "Output should contain 'Iron Sword'"
+    },
+    {
+      "type": "output_contains",
+      "value": "Health Potion",
+      "description": "Output should contain 'Health Potion'"
+    },
+    {
+      "type": "output_contains",
+      "value": "75",
+      "description": "Output should contain total value of 75"
+    }
+  ],
+  "learningObjectives": [
+    "Create custom classes from scratch",
+    "Define multiple properties in a class",
+    "Create multiple objects from the same class",
+    "Perform calculations using object properties",
+    "Format output using string interpolation"
+  ],
+  "previousLessonId": 209,
+  "nextLessonId": 211,
+  "tags": ["classes", "objects", "properties", "oop", "custom-types"]
+}

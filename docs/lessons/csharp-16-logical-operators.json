@@ -1,0 +1,52 @@
+{
+  "id": 216,
+  "trackId": 3,
+  "language": "csharp",
+  "title": "The Logic Master",
+  "subtitle": "Logical Operators (AND, OR, NOT)",
+  "difficulty": 4,
+  "estimatedTime": "20-25 minutes",
+  "xpReward": 175,
+  "description": "# Mastering Logical Operators\n\nCombine multiple conditions with logical operators to create complex decision-making logic!\n\n## The Three Logical Operators\n\n### AND (&&) - Both must be true\n```csharp\nint level = 10;\nint gold = 500;\n\nif (level >= 10 && gold >= 300)\n{\n    Console.WriteLine(\"You can enter the elite dungeon!\");\n}\n```\n\n### OR (||) - At least one must be true\n```csharp\nstring role = \"Mage\";\nint intelligence = 15;\n\nif (role == \"Mage\" || intelligence >= 20)\n{\n    Console.WriteLine(\"You can cast magic!\");\n}\n```\n\n### NOT (!) - Inverts a boolean\n```csharp\nbool hasKey = false;\n\nif (!hasKey)\n{\n    Console.WriteLine(\"You need a key to open this door!\");\n}\n```\n\n## Combining Operators\n\n```csharp\nint health = 50;\nint mana = 20;\nbool inCombat = true;\n\nif ((health > 30 && mana > 10) || !inCombat)\n{\n    Console.WriteLine(\"You can cast a spell!\");\n}\n```\n\n## Your Quest\n\nCreate an advanced quest eligibility checker:\n1. Get player level, gold, and whether they have a guild membership\n2. Check multiple quest eligibilities:\n   - **Epic Quest**: Level >= 15 AND Gold >= 1000\n   - **Guild Quest**: Has guild membership OR Level >= 20\n   - **Starter Quest**: Level < 5 AND Gold < 100\n   - **Any Quest**: NOT in combat (always true for now)\n3. Display which quests they're eligible for",
+  "starterCode": "using System;\n\nclass Program\n{\n    static void Main()\n    {\n        Console.WriteLine(\"=== QUEST ELIGIBILITY CHECKER ===\");\n        \n        // Get player info\n        Console.Write(\"Enter your level: \");\n        int level = int.Parse(Console.ReadLine());\n        \n        Console.Write(\"Enter your gold: \");\n        int gold = int.Parse(Console.ReadLine());\n        \n        Console.Write(\"Are you in a guild? (yes/no): \");\n        string guildInput = Console.ReadLine().ToLower();\n        bool hasGuild = (guildInput == \"yes\");\n        \n        bool inCombat = false;  // Assume not in combat\n        \n        Console.WriteLine(\"\\n=== ELIGIBLE QUESTS ===\");\n        \n        // Check Epic Quest (Level >= 15 AND Gold >= 1000)\n        if (/* Fill in condition */)\n        {\n            Console.WriteLine(\"✓ Epic Quest: The Dragon's Lair\");\n        }\n        \n        // Check Guild Quest (Has guild OR Level >= 20)\n        if (/* Fill in condition */)\n        {\n            Console.WriteLine(\"✓ Guild Quest: Brotherhood Trials\");\n        }\n        \n        // Check Starter Quest (Level < 5 AND Gold < 100)\n        if (/* Fill in condition */)\n        {\n            Console.WriteLine(\"✓ Starter Quest: First Steps\");\n        }\n        \n        // Check Any Quest (NOT in combat)\n        if (/* Fill in condition */)\n        {\n            Console.WriteLine(\"✓ General Quest: Available when not in combat\");\n        }\n    }\n}\n",
+  "solutionCode": "using System;\n\nclass Program\n{\n    static void Main()\n    {\n        Console.WriteLine(\"=== QUEST ELIGIBILITY CHECKER ===\");\n        \n        // Get player info\n        Console.Write(\"Enter your level: \");\n        int level = int.Parse(Console.ReadLine());\n        \n        Console.Write(\"Enter your gold: \");\n        int gold = int.Parse(Console.ReadLine());\n        \n        Console.Write(\"Are you in a guild? (yes/no): \");\n        string guildInput = Console.ReadLine().ToLower();\n        bool hasGuild = (guildInput == \"yes\");\n        \n        bool inCombat = false;  // Assume not in combat\n        \n        Console.WriteLine(\"\\n=== ELIGIBLE QUESTS ===\");\n        \n        // Check Epic Quest (Level >= 15 AND Gold >= 1000)\n        if (level >= 15 && gold >= 1000)\n        {\n            Console.WriteLine(\"✓ Epic Quest: The Dragon's Lair\");\n        }\n        \n        // Check Guild Quest (Has guild OR Level >= 20)\n        if (hasGuild || level >= 20)\n        {\n            Console.WriteLine(\"✓ Guild Quest: Brotherhood Trials\");\n        }\n        \n        // Check Starter Quest (Level < 5 AND Gold < 100)\n        if (level < 5 && gold < 100)\n        {\n            Console.WriteLine(\"✓ Starter Quest: First Steps\");\n        }\n        \n        // Check Any Quest (NOT in combat)\n        if (!inCombat)\n        {\n            Console.WriteLine(\"✓ General Quest: Available when not in combat\");\n        }\n    }\n}\n",
+  "hints": [
+    "Use && for AND - both conditions must be true: (level >= 15 && gold >= 1000)",
+    "Use || for OR - at least one condition must be true: (hasGuild || level >= 20)",
+    "Use ! for NOT - inverts a boolean: !inCombat",
+    "Remember to use parentheses ( ) around your conditions",
+    "In C#: && is AND, || is OR, ! is NOT (different from Python's 'and', 'or', 'not')"
+  ],
+  "validationTests": [
+    {
+      "type": "code_contains",
+      "value": "&&",
+      "description": "Must use && (AND operator)"
+    },
+    {
+      "type": "code_contains",
+      "value": "||",
+      "description": "Must use || (OR operator)"
+    },
+    {
+      "type": "code_contains",
+      "value": "!",
+      "description": "Must use ! (NOT operator)"
+    },
+    {
+      "type": "code_contains",
+      "value": "if",
+      "description": "Must use if statements"
+    }
+  ],
+  "learningObjectives": [
+    "Use AND (&&) operator to require multiple conditions",
+    "Use OR (||) operator for alternative conditions",
+    "Use NOT (!) operator to invert boolean values",
+    "Combine logical operators in complex conditions",
+    "Understand operator precedence with parentheses"
+  ],
+  "previousLessonId": 215,
+  "nextLessonId": 217,
+  "tags": ["intermediate", "logical-operators", "and", "or", "not", "boolean-logic"]
+}

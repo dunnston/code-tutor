@@ -1,0 +1,86 @@
+{
+  "id": 42,
+  "trackId": 7,
+  "language": "python",
+  "title": "The Override Ritual",
+  "subtitle": "Method Overriding and Customization",
+  "difficulty": 5,
+  "estimatedTime": "25-30 minutes",
+  "xpReward": 150,
+  "description": "# Method Overriding: Customizing Inherited Behavior\n\n🔄 Child classes can replace parent methods with their own versions!\n\n## What is Method Overriding?\n\n**Method overriding** means defining a method in the child class with the same name as a parent method:\n\n```python\nclass Character:\n    def attack(self):\n        return 10\n\nclass Warrior(Character):\n    def attack(self):  # Overrides parent's attack\n        return 25  # Warriors hit harder!\n\nclass Mage(Character):\n    def attack(self):  # Different override\n        return 15  # Mages hit differently\n\nwarrior = Warrior()\nmage = Mage()\nprint(warrior.attack())  # 25 (uses Warrior's version)\nprint(mage.attack())     # 15 (uses Mage's version)\n```\n\n## Why Override Methods?\n\n- **Specialize behavior** - Each class can have unique implementation\n- **Maintain interface** - Same method name, different logic\n- **Polymorphism** - Treat different types uniformly\n- **Extend functionality** - Add to parent's behavior\n\n## Complete Override vs Extending\n\n**Complete Override** (replace entirely):\n```python\nclass Warrior(Character):\n    def attack(self):\n        return self.strength * 3  # Completely new logic\n```\n\n**Extending** (add to parent's behavior):\n```python\nclass Warrior(Character):\n    def attack(self):\n        base_damage = super().attack()  # Call parent's version\n        bonus_damage = self.armor * 0.5  # Add warrior bonus\n        return base_damage + bonus_damage\n```\n\n## Common Methods to Override\n\n**`__str__` - Custom string representation:**\n```python\nclass Character:\n    def __str__(self):\n        return f\"{self.name}\"\n\nclass Warrior(Character):\n    def __str__(self):\n        return super().__str__() + f\" (Warrior)\"\n```\n\n**`__init__` - Custom initialization:**\n```python\nclass Mage(Character):\n    def __init__(self, name, health, mana):\n        super().__init__(name, health)\n        self.mana = mana  # Add mage-specific setup\n```\n\n## Your Quest\n\nCreate character classes with overridden methods:\n\n**Base Character:**\n- `attack()` - returns base damage (10)\n- `defend()` - returns base defense (5)\n- `special_ability()` - returns \"No special ability\"\n\n**Override in each class:**\n- **Warrior:** Higher attack (strength * 3), shield defense (defense + armor)\n- **Mage:** Magic attack (intelligence * 2), spell shield (defense + mana/10)\n- **Rogue:** Critical hits (agility * 4), dodge (agility * 2)\n\nEach class calculates differently!\n\n⚔️ Master the art of method customization!",
+  "starterCode": "# Method Overriding System\n\n# Base Character class\nclass Character:\n    def __init__(self, name, health):\n        self.name = name\n        self.health = health\n    \n    def attack(self):\n        \"\"\"Base attack damage\"\"\"\n        return 10\n    \n    def defend(self):\n        \"\"\"Base defense value\"\"\"\n        return 5\n    \n    def special_ability(self):\n        \"\"\"Special ability description\"\"\"\n        return \"No special ability\"\n    \n    def __str__(self):\n        return f\"{self.name} ({self.health} HP)\"\n\n# TODO: Create Warrior class with overridden methods\nclass Warrior(Character):\n    def __init__(self, name, health, strength, armor):\n        # TODO: Call super().__init__\n        # TODO: Add strength and armor attributes\n        pass\n    \n    # TODO: Override attack() - return strength * 3\n    def attack(self):\n        pass\n    \n    # TODO: Override defend() - return base defense + armor\n    def defend(self):\n        pass\n    \n    # TODO: Override special_ability() - return \"Shield Bash\"\n    def special_ability(self):\n        pass\n    \n    # TODO: Override __str__() - add \" (Warrior)\" to parent string\n    def __str__(self):\n        pass\n\n# TODO: Create Mage class with overridden methods\nclass Mage(Character):\n    def __init__(self, name, health, intelligence, mana):\n        # TODO: Call super().__init__\n        # TODO: Add intelligence and mana attributes\n        pass\n    \n    # TODO: Override attack() - return intelligence * 2\n    def attack(self):\n        pass\n    \n    # TODO: Override defend() - return base defense + (mana / 10)\n    def defend(self):\n        pass\n    \n    # TODO: Override special_ability() - return \"Arcane Blast\"\n    def special_ability(self):\n        pass\n    \n    # TODO: Override __str__() - add \" (Mage)\" to parent string\n    def __str__(self):\n        pass\n\n# TODO: Create Rogue class with overridden methods\nclass Rogue(Character):\n    def __init__(self, name, health, agility):\n        # TODO: Call super().__init__\n        # TODO: Add agility attribute\n        pass\n    \n    # TODO: Override attack() - return agility * 4 (critical hits!)\n    def attack(self):\n        pass\n    \n    # TODO: Override defend() - return agility * 2 (dodge!)\n    def defend(self):\n        pass\n    \n    # TODO: Override special_ability() - return \"Backstab\"\n    def special_ability(self):\n        pass\n    \n    # TODO: Override __str__() - add \" (Rogue)\" to parent string\n    def __str__(self):\n        pass\n\n# Test method overriding\nprint(\"=== Method Overriding Test ===\")\nprint()\n\nwarrior = Warrior(\"Ragnar\", 150, 20, 30)\nmage = Mage(\"Gandalf\", 70, 25, 200)\nrogue = Rogue(\"Shadow\", 100, 18)\n\nprint(\"--- Characters ---\")\nprint(warrior)\nprint(mage)\nprint(rogue)\nprint()\n\nprint(\"--- Attack Values (Overridden) ---\")\nprint(f\"{warrior.name} attack: {warrior.attack()}\")\nprint(f\"{mage.name} attack: {mage.attack()}\")\nprint(f\"{rogue.name} attack: {rogue.attack()}\")\nprint()\n\nprint(\"--- Defense Values (Overridden) ---\")\nprint(f\"{warrior.name} defense: {warrior.defend()}\")\nprint(f\"{mage.name} defense: {mage.defend()}\")\nprint(f\"{rogue.name} defense: {rogue.defend()}\")\nprint()\n\nprint(\"--- Special Abilities (Overridden) ---\")\nprint(f\"{warrior.name}: {warrior.special_ability()}\")\nprint(f\"{mage.name}: {mage.special_ability()}\")\nprint(f\"{rogue.name}: {rogue.special_ability()}\")\nprint()\n\nprint(\"Method overriding complete!\")",
+  "solutionCode": "# Method Overriding System - Solution\n\nclass Character:\n    def __init__(self, name, health):\n        self.name = name\n        self.health = health\n    \n    def attack(self):\n        return 10\n    \n    def defend(self):\n        return 5\n    \n    def special_ability(self):\n        return \"No special ability\"\n    \n    def __str__(self):\n        return f\"{self.name} ({self.health} HP)\"\n\nclass Warrior(Character):\n    def __init__(self, name, health, strength, armor):\n        super().__init__(name, health)\n        self.strength = strength\n        self.armor = armor\n    \n    def attack(self):\n        return self.strength * 3\n    \n    def defend(self):\n        return super().defend() + self.armor\n    \n    def special_ability(self):\n        return \"Shield Bash\"\n    \n    def __str__(self):\n        return super().__str__() + \" (Warrior)\"\n\nclass Mage(Character):\n    def __init__(self, name, health, intelligence, mana):\n        super().__init__(name, health)\n        self.intelligence = intelligence\n        self.mana = mana\n    \n    def attack(self):\n        return self.intelligence * 2\n    \n    def defend(self):\n        return super().defend() + (self.mana / 10)\n    \n    def special_ability(self):\n        return \"Arcane Blast\"\n    \n    def __str__(self):\n        return super().__str__() + \" (Mage)\"\n\nclass Rogue(Character):\n    def __init__(self, name, health, agility):\n        super().__init__(name, health)\n        self.agility = agility\n    \n    def attack(self):\n        return self.agility * 4\n    \n    def defend(self):\n        return self.agility * 2\n    \n    def special_ability(self):\n        return \"Backstab\"\n    \n    def __str__(self):\n        return super().__str__() + \" (Rogue)\"\n\nprint(\"=== Method Overriding Test ===\")\nprint()\n\nwarrior = Warrior(\"Ragnar\", 150, 20, 30)\nmage = Mage(\"Gandalf\", 70, 25, 200)\nrogue = Rogue(\"Shadow\", 100, 18)\n\nprint(\"--- Characters ---\")\nprint(warrior)\nprint(mage)\nprint(rogue)\nprint()\n\nprint(\"--- Attack Values (Overridden) ---\")\nprint(f\"{warrior.name} attack: {warrior.attack()}\")\nprint(f\"{mage.name} attack: {mage.attack()}\")\nprint(f\"{rogue.name} attack: {rogue.attack()}\")\nprint()\n\nprint(\"--- Defense Values (Overridden) ---\")\nprint(f\"{warrior.name} defense: {warrior.defend()}\")\nprint(f\"{mage.name} defense: {mage.defend()}\")\nprint(f\"{rogue.name} defense: {rogue.defend()}\")\nprint()\n\nprint(\"--- Special Abilities (Overridden) ---\")\nprint(f\"{warrior.name}: {warrior.special_ability()}\")\nprint(f\"{mage.name}: {mage.special_ability()}\")\nprint(f\"{rogue.name}: {rogue.special_ability()}\")\nprint()\n\nprint(\"Method overriding complete!\")",
+  "hints": [
+    "To override a method, just define it again in the child class with the same name.",
+    "You can call the parent's version with super().method_name(). For example: super().defend() + self.armor",
+    "For __str__, call super().__str__() to get parent's string, then add your own: return super().__str__() + ' (Warrior)'",
+    "Warrior's attack should multiply strength by 3: return self.strength * 3",
+    "Complete override example:\n```python\nclass Warrior(Character):\n    def attack(self):\n        return self.strength * 3\n    \n    def defend(self):\n        return super().defend() + self.armor\n```"
+  ],
+  "validationTests": [
+    {
+      "type": "code_contains",
+      "value": "def attack(self):",
+      "description": "Child classes must override attack method"
+    },
+    {
+      "type": "code_contains",
+      "value": "def defend(self):",
+      "description": "Child classes must override defend method"
+    },
+    {
+      "type": "code_contains",
+      "value": "def special_ability(self):",
+      "description": "Child classes must override special_ability method"
+    },
+    {
+      "type": "output_contains",
+      "value": "60",
+      "description": "Warrior attack should be 20 * 3 = 60"
+    },
+    {
+      "type": "output_contains",
+      "value": "50",
+      "description": "Mage attack should be 25 * 2 = 50"
+    },
+    {
+      "type": "output_contains",
+      "value": "72",
+      "description": "Rogue attack should be 18 * 4 = 72"
+    },
+    {
+      "type": "output_contains",
+      "value": "Shield Bash",
+      "description": "Warrior special ability should be Shield Bash"
+    },
+    {
+      "type": "output_contains",
+      "value": "Arcane Blast",
+      "description": "Mage special ability should be Arcane Blast"
+    }
+  ],
+  "learningObjectives": [
+    "Understand method overriding concept",
+    "Override parent methods in child classes",
+    "Use super() to extend parent functionality",
+    "Know when to completely override vs extend",
+    "Implement polymorphism through method overriding"
+  ],
+  "nextLessonId": 43,
+  "previousLessonId": 41,
+  "tags": ["intermediate", "oop", "inheritance", "overriding", "polymorphism"],
+  "commonMistakes": [
+    {
+      "mistake": "Not using same method signature",
+      "explanation": "To override, the method must have the SAME NAME and compatible parameters as the parent method."
+    },
+    {
+      "mistake": "Forgetting to return values in overridden methods",
+      "explanation": "If parent method returns a value, your override should too! Don't forget the return statement."
+    },
+    {
+      "mistake": "Not calling super() when extending behavior",
+      "explanation": "If you want to ADD to parent's behavior (not replace), call super().method_name() first."
+    }
+  ]
+}

@@ -1,0 +1,77 @@
+{
+  "id": 74,
+  "trackId": 8,
+  "language": "python",
+  "title": "The Schema Scrolls",
+  "subtitle": "Database Migrations & Schema Management",
+  "difficulty": 5,
+  "estimatedTime": "40-50 minutes",
+  "xpReward": 250,
+  "description": "# Master Database Migrations!\n\n📜 **Migrations** track and apply database schema changes over time.\n\n## Why Migrations?\n\n- **Version control for database** - Track schema changes\n- **Team collaboration** - Everyone has same schema\n- **Safe deployments** - Apply changes incrementally\n- **Rollback capability** - Undo migrations if needed\n- **Production safety** - No manual schema changes\n\n## Migration Pattern\n\n```python\n# migrations/001_create_characters.py\ndef up(conn):\n    cursor = conn.cursor()\n    cursor.execute('''\n        CREATE TABLE characters (\n            id INTEGER PRIMARY KEY,\n            name TEXT NOT NULL\n        )\n    ''')\n    conn.commit()\n\ndef down(conn):\n    cursor = conn.cursor()\n    cursor.execute('DROP TABLE characters')\n    conn.commit()\n```\n\n## Migration System\n\n1. **Track applied migrations** in database\n2. **Apply pending migrations** in order\n3. **Rollback** if needed\n4. **Migration files** numbered sequentially\n\n## Your Mission\n\nBuild a migration system:\n1. **MigrationManager** class\n2. **Track applied migrations** in schema_migrations table\n3. **Apply pending migrations** from folder\n4. **Rollback last migration**\n5. **Show migration status**\n\n⚔️ Build production-ready schema management!\n\n*Hint: Never modify old migrations. Create new ones!*",
+  "starterCode": "import sqlite3\nimport os\nfrom typing import List, Tuple\nfrom datetime import datetime\n\nclass MigrationManager:\n    def __init__(self, db_path='game.db', migrations_dir='migrations'):\n        self.db_path = db_path\n        self.migrations_dir = migrations_dir\n        self.init_migrations_table()\n    \n    def get_connection(self):\n        return sqlite3.connect(self.db_path)\n    \n    def init_migrations_table(self):\n        \"\"\"Create schema_migrations table to track applied migrations\"\"\"\n        conn = self.get_connection()\n        cursor = conn.cursor()\n        cursor.execute('''\n            CREATE TABLE IF NOT EXISTS schema_migrations (\n                id INTEGER PRIMARY KEY AUTOINCREMENT,\n                version TEXT UNIQUE NOT NULL,\n                applied_at TEXT DEFAULT CURRENT_TIMESTAMP\n            )\n        ''')\n        conn.commit()\n        conn.close()\n    \n    # TODO: Implement get_applied_migrations() -> List[str]\n    # Return list of applied migration versions\n    \n    # TODO: Implement mark_migration_applied(version: str)\n    # Add migration to schema_migrations table\n    \n    # TODO: Implement mark_migration_rolled_back(version: str)\n    # Remove migration from schema_migrations table\n    \n    # TODO: Implement get_pending_migrations() -> List[str]\n    # Return list of migration files not yet applied\n    # Compare files in migrations_dir with applied migrations\n    \n    # TODO: Implement apply_migration(version: str)\n    # Execute the 'up' function from migration file\n    # Mark as applied\n    \n    # TODO: Implement rollback_migration(version: str)\n    # Execute the 'down' function from migration file\n    # Mark as rolled back\n    \n    # TODO: Implement migrate()\n    # Apply all pending migrations in order\n    \n    # TODO: Implement rollback()\n    # Rollback the most recent migration\n    \n    # TODO: Implement status()\n    # Print current migration status\n\n# ===== SAMPLE MIGRATIONS =====\n\n# This would be migrations/001_create_characters.py\nclass Migration001:\n    @staticmethod\n    def up(conn):\n        cursor = conn.cursor()\n        cursor.execute('''\n            CREATE TABLE characters (\n                id INTEGER PRIMARY KEY AUTOINCREMENT,\n                name TEXT NOT NULL,\n                level INTEGER DEFAULT 1\n            )\n        ''')\n        conn.commit()\n        print(\"  ✓ Created characters table\")\n    \n    @staticmethod\n    def down(conn):\n        cursor = conn.cursor()\n        cursor.execute('DROP TABLE IF EXISTS characters')\n        conn.commit()\n        print(\"  ✓ Dropped characters table\")\n\n# This would be migrations/002_add_health_column.py\nclass Migration002:\n    @staticmethod\n    def up(conn):\n        cursor = conn.cursor()\n        cursor.execute('ALTER TABLE characters ADD COLUMN health INTEGER DEFAULT 100')\n        conn.commit()\n        print(\"  ✓ Added health column to characters\")\n    \n    @staticmethod\n    def down(conn):\n        # SQLite doesn't support DROP COLUMN easily, so we recreate table\n        cursor = conn.cursor()\n        cursor.execute('ALTER TABLE characters DROP COLUMN health')\n        conn.commit()\n        print(\"  ✓ Removed health column from characters\")\n\n# This would be migrations/003_create_items.py\nclass Migration003:\n    @staticmethod\n    def up(conn):\n        cursor = conn.cursor()\n        cursor.execute('''\n            CREATE TABLE items (\n                id INTEGER PRIMARY KEY AUTOINCREMENT,\n                name TEXT NOT NULL,\n                value INTEGER DEFAULT 0\n            )\n        ''')\n        conn.commit()\n        print(\"  ✓ Created items table\")\n    \n    @staticmethod\n    def down(conn):\n        cursor = conn.cursor()\n        cursor.execute('DROP TABLE IF EXISTS items')\n        conn.commit()\n        print(\"  ✓ Dropped items table\")\n\n# Migration registry (in real app, load from files)\nMIGRATIONS = {\n    '001': Migration001,\n    '002': Migration002,\n    '003': Migration003,\n}\n\n# ===== TESTS =====\n\nif __name__ == \"__main__\":\n    print(\"Testing Migration System...\\n\")\n    \n    # Create migration manager\n    manager = MigrationManager('test_migrations.db')\n    \n    # Override get_pending_migrations to use our registry\n    def get_pending_migrations_override():\n        applied = manager.get_applied_migrations()\n        return [v for v in sorted(MIGRATIONS.keys()) if v not in applied]\n    \n    def apply_migration_override(version):\n        conn = manager.get_connection()\n        MIGRATIONS[version].up(conn)\n        conn.close()\n        manager.mark_migration_applied(version)\n    \n    def rollback_migration_override(version):\n        conn = manager.get_connection()\n        MIGRATIONS[version].down(conn)\n        conn.close()\n        manager.mark_migration_rolled_back(version)\n    \n    manager.get_pending_migrations = get_pending_migrations_override\n    manager.apply_migration = apply_migration_override\n    manager.rollback_migration = rollback_migration_override\n    \n    # Show initial status\n    print(\"=== Initial Status ===\")\n    manager.status()\n    \n    # Apply all migrations\n    print(\"\\n=== Applying Migrations ===\")\n    manager.migrate()\n    \n    # Show status after migration\n    print(\"\\n=== Status After Migration ===\")\n    manager.status()\n    \n    # Rollback one migration\n    print(\"\\n=== Rolling Back Last Migration ===\")\n    manager.rollback()\n    \n    # Show final status\n    print(\"\\n=== Final Status ===\")\n    manager.status()\n    \n    print(\"\\n✅ Migration system tests complete!\")",
+  "solutionCode": "import sqlite3\nimport os\nfrom typing import List, Tuple\nfrom datetime import datetime\n\nclass MigrationManager:\n    def __init__(self, db_path='game.db', migrations_dir='migrations'):\n        self.db_path = db_path\n        self.migrations_dir = migrations_dir\n        self.init_migrations_table()\n    \n    def get_connection(self):\n        return sqlite3.connect(self.db_path)\n    \n    def init_migrations_table(self):\n        conn = self.get_connection()\n        cursor = conn.cursor()\n        cursor.execute('''\n            CREATE TABLE IF NOT EXISTS schema_migrations (\n                id INTEGER PRIMARY KEY AUTOINCREMENT,\n                version TEXT UNIQUE NOT NULL,\n                applied_at TEXT DEFAULT CURRENT_TIMESTAMP\n            )\n        ''')\n        conn.commit()\n        conn.close()\n    \n    def get_applied_migrations(self) -> List[str]:\n        conn = self.get_connection()\n        cursor = conn.cursor()\n        cursor.execute('SELECT version FROM schema_migrations ORDER BY version')\n        results = [row[0] for row in cursor.fetchall()]\n        conn.close()\n        return results\n    \n    def mark_migration_applied(self, version: str):\n        conn = self.get_connection()\n        cursor = conn.cursor()\n        cursor.execute('INSERT INTO schema_migrations (version) VALUES (?)', (version,))\n        conn.commit()\n        conn.close()\n    \n    def mark_migration_rolled_back(self, version: str):\n        conn = self.get_connection()\n        cursor = conn.cursor()\n        cursor.execute('DELETE FROM schema_migrations WHERE version = ?', (version,))\n        conn.commit()\n        conn.close()\n    \n    def get_pending_migrations(self) -> List[str]:\n        applied = self.get_applied_migrations()\n        all_migrations = sorted(MIGRATIONS.keys())\n        return [v for v in all_migrations if v not in applied]\n    \n    def apply_migration(self, version: str):\n        print(f\"Applying migration {version}...\")\n        conn = self.get_connection()\n        MIGRATIONS[version].up(conn)\n        conn.close()\n        self.mark_migration_applied(version)\n    \n    def rollback_migration(self, version: str):\n        print(f\"Rolling back migration {version}...\")\n        conn = self.get_connection()\n        MIGRATIONS[version].down(conn)\n        conn.close()\n        self.mark_migration_rolled_back(version)\n    \n    def migrate(self):\n        pending = self.get_pending_migrations()\n        if not pending:\n            print(\"No pending migrations.\")\n            return\n        \n        print(f\"Applying {len(pending)} migrations...\")\n        for version in pending:\n            self.apply_migration(version)\n        print(f\"✓ Applied {len(pending)} migrations\")\n    \n    def rollback(self):\n        applied = self.get_applied_migrations()\n        if not applied:\n            print(\"No migrations to rollback.\")\n            return\n        \n        last_version = applied[-1]\n        self.rollback_migration(last_version)\n        print(f\"✓ Rolled back migration {last_version}\")\n    \n    def status(self):\n        applied = self.get_applied_migrations()\n        pending = self.get_pending_migrations()\n        \n        print(f\"Applied migrations: {len(applied)}\")\n        for version in applied:\n            print(f\"  ✓ {version}\")\n        \n        print(f\"\\nPending migrations: {len(pending)}\")\n        for version in pending:\n            print(f\"  ○ {version}\")\n\nclass Migration001:\n    @staticmethod\n    def up(conn):\n        cursor = conn.cursor()\n        cursor.execute('''\n            CREATE TABLE characters (\n                id INTEGER PRIMARY KEY AUTOINCREMENT,\n                name TEXT NOT NULL,\n                level INTEGER DEFAULT 1\n            )\n        ''')\n        conn.commit()\n        print(\"  ✓ Created characters table\")\n    \n    @staticmethod\n    def down(conn):\n        cursor = conn.cursor()\n        cursor.execute('DROP TABLE IF EXISTS characters')\n        conn.commit()\n        print(\"  ✓ Dropped characters table\")\n\nclass Migration002:\n    @staticmethod\n    def up(conn):\n        cursor = conn.cursor()\n        cursor.execute('ALTER TABLE characters ADD COLUMN health INTEGER DEFAULT 100')\n        conn.commit()\n        print(\"  ✓ Added health column to characters\")\n    \n    @staticmethod\n    def down(conn):\n        cursor = conn.cursor()\n        cursor.execute('ALTER TABLE characters DROP COLUMN health')\n        conn.commit()\n        print(\"  ✓ Removed health column from characters\")\n\nclass Migration003:\n    @staticmethod\n    def up(conn):\n        cursor = conn.cursor()\n        cursor.execute('''\n            CREATE TABLE items (\n                id INTEGER PRIMARY KEY AUTOINCREMENT,\n                name TEXT NOT NULL,\n                value INTEGER DEFAULT 0\n            )\n        ''')\n        conn.commit()\n        print(\"  ✓ Created items table\")\n    \n    @staticmethod\n    def down(conn):\n        cursor = conn.cursor()\n        cursor.execute('DROP TABLE IF EXISTS items')\n        conn.commit()\n        print(\"  ✓ Dropped items table\")\n\nMIGRATIONS = {\n    '001': Migration001,\n    '002': Migration002,\n    '003': Migration003,\n}\n\nif __name__ == \"__main__\":\n    print(\"Testing Migration System...\\n\")\n    \n    manager = MigrationManager('test_migrations.db')\n    \n    print(\"=== Initial Status ===\")\n    manager.status()\n    \n    print(\"\\n=== Applying Migrations ===\")\n    manager.migrate()\n    \n    print(\"\\n=== Status After Migration ===\")\n    manager.status()\n    \n    print(\"\\n=== Rolling Back Last Migration ===\")\n    manager.rollback()\n    \n    print(\"\\n=== Final Status ===\")\n    manager.status()\n    \n    print(\"\\n✅ Migration system tests complete!\")",
+  "hints": [
+    "schema_migrations table is your single source of truth for applied migrations.",
+    "get_pending_migrations compares all available migrations with applied ones.",
+    "Migrations should be numbered sequentially: 001, 002, 003, etc.",
+    "Each migration has up() (apply) and down() (rollback) methods.",
+    "In production, load migration classes dynamically from files in migrations_dir."
+  ],
+  "validationTests": [
+    {
+      "type": "code_contains",
+      "value": "schema_migrations",
+      "description": "Must create schema_migrations tracking table"
+    },
+    {
+      "type": "code_contains",
+      "value": "def get_applied_migrations",
+      "description": "Must implement get_applied_migrations"
+    },
+    {
+      "type": "code_contains",
+      "value": "def get_pending_migrations",
+      "description": "Must implement get_pending_migrations"
+    },
+    {
+      "type": "code_contains",
+      "value": "def migrate",
+      "description": "Must implement migrate method"
+    },
+    {
+      "type": "code_contains",
+      "value": "def rollback",
+      "description": "Must implement rollback method"
+    },
+    {
+      "type": "output_contains",
+      "value": "Migration system tests complete",
+      "description": "Tests should complete"
+    }
+  ],
+  "learningObjectives": [
+    "Build database migration system",
+    "Track schema changes over time",
+    "Implement up/down migration pattern",
+    "Apply migrations safely in order",
+    "Rollback migrations when needed",
+    "Understand production database management"
+  ],
+  "nextLessonId": 75,
+  "previousLessonId": 73,
+  "tags": ["advanced", "database", "migrations", "schema", "devops"],
+  "commonMistakes": [
+    {
+      "mistake": "Modifying old migrations",
+      "explanation": "NEVER modify migrations that have been applied! Create a new migration to make changes."
+    },
+    {
+      "mistake": "Not tracking applied migrations",
+      "explanation": "You must track which migrations have run. Use schema_migrations table as single source of truth."
+    },
+    {
+      "mistake": "Running migrations out of order",
+      "explanation": "Migrations must run in sequential order. Sort by version number before applying."
+    }
+  ]
+}

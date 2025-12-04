@@ -1,0 +1,107 @@
+{
+  "id": 35,
+  "trackId": 7,
+  "language": "python",
+  "title": "⭐ The Combat Engine Challenge",
+  "subtitle": "Build a Complete Damage System",
+  "difficulty": 6,
+  "estimatedTime": "60-90 minutes",
+  "xpReward": 300,
+  "description": "# ⭐ CHALLENGE: Advanced Functions Mastery\n\n🏆 **Time to prove your mastery!**\n\nThis challenge combines everything from Module 1:\n- ✅ Variable scope (global/local/nonlocal)\n- ✅ Lambda functions\n- ✅ List comprehensions\n- ✅ Map, filter, reduce\n\n## The Mission\n\nBuild a **flexible combat damage system** for an RPG battle engine. Your system must:\n\n1. Calculate different types of damage (physical, magic, critical)\n2. Apply damage to multiple party members\n3. Track combat statistics globally\n4. Process battle results functionally\n\n## Requirements\n\n### Part 1: Lambda Damage Formulas (4 lambdas)\n\nCreate lambda functions for:\n- `physical_damage` - calculates physical damage with armor reduction\n- `magic_damage` - calculates magic damage ignoring armor\n- `critical_hit` - doubles damage for critical strikes\n- `armor_reduction` - calculates damage reduction percentage from armor\n\n### Part 2: Combat Functions\n\nImplement these functions:\n\n**`calculate_damage(base, damage_type, is_critical, armor)`**\n- Use your lambdas to calculate final damage\n- damage_type: 'physical' or 'magic'\n- Returns final damage amount\n\n**`apply_damage_to_party(party_list, damage_amount)`**\n- Use list comprehension to reduce HP for all party members\n- Returns new list with updated HP\n- Don't let HP go below 0\n\n**`get_alive_members(party_list)`**\n- Use filter to get only members with HP > 0\n- Returns list of alive members\n\n**`get_total_party_hp(party_list)`**\n- Use reduce to sum all party HP\n- Returns total HP number\n\n### Part 3: Global Combat Statistics\n\nTrack these globally:\n- `total_damage_dealt` - starts at 0\n- `battles_fought` - starts at 0\n- `critical_hits_landed` - starts at 0\n\nCreate functions that modify these globals:\n- `record_damage(amount, was_critical)` - updates statistics\n- `get_combat_stats()` - returns dict with all stats\n- `start_new_battle()` - increments battles_fought\n\n## Battle Simulation\n\nYour code will be tested with this scenario:\n\n1. **Wave 1:** AOE physical attack (30 damage, 20 armor) hits all party\n2. **Wave 2:** Critical magic attack (50 damage) hits all party\n3. **Wave 3:** Physical attack (40 damage, 15 armor) hits all survivors\n4. Print final statistics\n\n## Success Criteria\n\n✅ All lambdas defined correctly\n✅ Functions use appropriate techniques (comprehensions, map/filter/reduce)\n✅ Global statistics tracked properly\n✅ Battle simulation runs without errors\n✅ Final party state is correct\n\n## Example Output\n\n```\n=== Battle Start ===\nParty: Warrior (100 HP), Mage (70 HP), Rogue (80 HP)\n\nWave 1: Physical AOE (30 damage, 20 armor)\nWarrior: 100 → 76 HP\nMage: 70 → 46 HP\nRogue: 80 → 56 HP\n\nWave 2: Critical Magic (50 damage)\nWarrior: 76 → 0 HP (DEAD)\nMage: 46 → 0 HP (DEAD)\nRogue: 56 → 0 HP (DEAD)\n\n=== Battle End ===\nSurvivors: 0/3\nTotal damage dealt: 324\nCritical hits: 1\nBattles fought: 1\n```\n\n⚔️ **This is a full system design challenge - plan before you code!**\n\n*Starter code provides structure only. You must implement all logic.*",
+  "starterCode": "# Combat Engine Challenge - Build a Complete Damage System\n# Combine: scope, lambdas, comprehensions, map/filter/reduce\n\nfrom functools import reduce\n\n# ===== PART 1: Lambda Damage Formulas =====\n\n# TODO: Create lambda for physical damage\n# Formula: base_damage * (1 - armor/100)\nphysical_damage = None\n\n# TODO: Create lambda for magic damage  \n# Formula: base_damage (ignores armor)\nmagic_damage = None\n\n# TODO: Create lambda for critical hit\n# Formula: damage * 2\ncritical_hit = None\n\n# TODO: Create lambda for armor reduction\n# Formula: armor / 100 (as decimal)\narmor_reduction = None\n\n# ===== PART 2: Global Combat Statistics =====\n\n# TODO: Create global variables for tracking\ntotal_damage_dealt = 0\nbattles_fought = 0\ncritical_hits_landed = 0\n\n# TODO: Function to record damage (updates globals)\ndef record_damage(amount, was_critical=False):\n    # Update total_damage_dealt\n    # If was_critical, increment critical_hits_landed\n    # Remember to use 'global' keyword!\n    pass\n\n# TODO: Function to start new battle (updates globals)\ndef start_new_battle():\n    # Increment battles_fought\n    # Remember to use 'global' keyword!\n    pass\n\n# TODO: Function to get statistics\ndef get_combat_stats():\n    # Return dict with all statistics\n    return {\n        'total_damage_dealt': 0,\n        'battles_fought': 0,\n        'critical_hits_landed': 0\n    }\n\n# ===== PART 3: Combat Functions =====\n\n# TODO: Calculate final damage amount\ndef calculate_damage(base, damage_type, is_critical, armor):\n    \"\"\"\n    Calculate final damage using lambdas\n    \n    Args:\n        base: Base damage amount\n        damage_type: 'physical' or 'magic'\n        is_critical: Boolean for critical hit\n        armor: Armor value (only applies to physical)\n    \n    Returns:\n        Final damage amount (float)\n    \"\"\"\n    # Step 1: Calculate base damage based on type\n    # Step 2: Apply critical if needed\n    # Step 3: Return final damage\n    pass\n\n# TODO: Apply damage to all party members\ndef apply_damage_to_party(party_list, damage_amount):\n    \"\"\"\n    Reduce HP for all party members\n    \n    Use list comprehension!\n    \n    Returns: New list with updated HP (don't go below 0)\n    \"\"\"\n    pass\n\n# TODO: Get alive party members\ndef get_alive_members(party_list):\n    \"\"\"\n    Filter party members with HP > 0\n    \n    Use filter()!\n    \n    Returns: List of alive members\n    \"\"\"\n    pass\n\n# TODO: Get total party HP\ndef get_total_party_hp(party_list):\n    \"\"\"\n    Sum all party member HP\n    \n    Use reduce()!\n    \n    Returns: Total HP (int)\n    \"\"\"\n    pass\n\n# ===== BATTLE SIMULATION =====\n\n# Initial party\nparty = [\n    {'name': 'Warrior', 'hp': 100, 'max_hp': 100},\n    {'name': 'Mage', 'hp': 70, 'max_hp': 70},\n    {'name': 'Rogue', 'hp': 80, 'max_hp': 80},\n]\n\nprint(\"=== Battle Start ===\")\nprint(f\"Party: {', '.join([f\"{m['name']} ({m['hp']} HP)\" for m in party])}\")\nprint()\n\nstart_new_battle()\n\n# Wave 1: Physical AOE attack\nprint(\"Wave 1: Physical AOE (30 damage, 20 armor)\")\ndamage = calculate_damage(30, 'physical', False, 20)\nprint(f\"Damage per target: {damage}\")\nparty = apply_damage_to_party(party, damage)\nrecord_damage(damage * 3, False)  # 3 targets\nfor member in party:\n    status = \"DEAD\" if member['hp'] == 0 else f\"{member['hp']} HP\"\n    print(f\"  {member['name']}: {status}\")\nprint()\n\n# Wave 2: Critical magic attack  \nprint(\"Wave 2: Critical Magic (50 damage)\")\ndamage = calculate_damage(50, 'magic', True, 0)\nprint(f\"Damage per target: {damage} (CRITICAL!)\")\nalive = get_alive_members(party)\nfor member in alive:\n    member['hp'] = max(0, member['hp'] - damage)\nrecord_damage(damage * len(alive), True)\nfor member in party:\n    status = \"DEAD\" if member['hp'] == 0 else f\"{member['hp']} HP\"\n    print(f\"  {member['name']}: {status}\")\nprint()\n\n# Battle End\nprint(\"=== Battle End ===\")\nalive = get_alive_members(party)\nprint(f\"Survivors: {len(alive)}/{len(party)}\")\n\nstats = get_combat_stats()\nprint(f\"Total damage dealt: {stats['total_damage_dealt']}\")\nprint(f\"Critical hits: {stats['critical_hits_landed']}\")\nprint(f\"Battles fought: {stats['battles_fought']}\")",
+  "solutionCode": "# Combat Engine Challenge - Complete Solution\n\nfrom functools import reduce\n\n# ===== PART 1: Lambda Damage Formulas =====\n\nphysical_damage = lambda base, armor: base * (1 - armor/100)\nmagic_damage = lambda base: base\ncritical_hit = lambda damage: damage * 2\narmor_reduction = lambda armor: armor / 100\n\n# ===== PART 2: Global Combat Statistics =====\n\ntotal_damage_dealt = 0\nbattles_fought = 0\ncritical_hits_landed = 0\n\ndef record_damage(amount, was_critical=False):\n    global total_damage_dealt, critical_hits_landed\n    total_damage_dealt += amount\n    if was_critical:\n        critical_hits_landed += 1\n\ndef start_new_battle():\n    global battles_fought\n    battles_fought += 1\n\ndef get_combat_stats():\n    return {\n        'total_damage_dealt': total_damage_dealt,\n        'battles_fought': battles_fought,\n        'critical_hits_landed': critical_hits_landed\n    }\n\n# ===== PART 3: Combat Functions =====\n\ndef calculate_damage(base, damage_type, is_critical, armor):\n    if damage_type == 'physical':\n        damage = physical_damage(base, armor)\n    else:  # magic\n        damage = magic_damage(base)\n    \n    if is_critical:\n        damage = critical_hit(damage)\n    \n    return damage\n\ndef apply_damage_to_party(party_list, damage_amount):\n    return [{**member, 'hp': max(0, member['hp'] - damage_amount)} for member in party_list]\n\ndef get_alive_members(party_list):\n    return list(filter(lambda member: member['hp'] > 0, party_list))\n\ndef get_total_party_hp(party_list):\n    return reduce(lambda total, member: total + member['hp'], party_list, 0)\n\n# ===== BATTLE SIMULATION =====\n\nparty = [\n    {'name': 'Warrior', 'hp': 100, 'max_hp': 100},\n    {'name': 'Mage', 'hp': 70, 'max_hp': 70},\n    {'name': 'Rogue', 'hp': 80, 'max_hp': 80},\n]\n\nprint(\"=== Battle Start ===\")\nprint(f\"Party: {', '.join([f\"{m['name']} ({m['hp']} HP)\" for m in party])}\")\nprint()\n\nstart_new_battle()\n\n# Wave 1\nprint(\"Wave 1: Physical AOE (30 damage, 20 armor)\")\ndamage = calculate_damage(30, 'physical', False, 20)\nprint(f\"Damage per target: {damage}\")\nparty = apply_damage_to_party(party, damage)\nrecord_damage(damage * 3, False)\nfor member in party:\n    status = \"DEAD\" if member['hp'] == 0 else f\"{member['hp']} HP\"\n    print(f\"  {member['name']}: {status}\")\nprint()\n\n# Wave 2\nprint(\"Wave 2: Critical Magic (50 damage)\")\ndamage = calculate_damage(50, 'magic', True, 0)\nprint(f\"Damage per target: {damage} (CRITICAL!)\")\nalive = get_alive_members(party)\nfor member in alive:\n    member['hp'] = max(0, member['hp'] - damage)\nrecord_damage(damage * len(alive), True)\nfor member in party:\n    status = \"DEAD\" if member['hp'] == 0 else f\"{member['hp']} HP\"\n    print(f\"  {member['name']}: {status}\")\nprint()\n\nprint(\"=== Battle End ===\")\nalive = get_alive_members(party)\nprint(f\"Survivors: {len(alive)}/{len(party)}\")\n\nstats = get_combat_stats()\nprint(f\"Total damage dealt: {stats['total_damage_dealt']}\")\nprint(f\"Critical hits: {stats['critical_hits_landed']}\")\nprint(f\"Battles fought: {stats['battles_fought']}\")",
+  "hints": [
+    "Start with the lambdas - they're the building blocks. physical_damage needs TWO parameters, magic_damage needs ONE.",
+    "For global variables, you need 'global variable_name' at the start of functions that modify them. Reading doesn't need 'global'.",
+    "The calculate_damage function should use an if/else to check damage_type, then call the appropriate lambda. Apply critical_hit lambda if is_critical is True.",
+    "List comprehension for apply_damage_to_party: `[{**member, 'hp': max(0, member['hp'] - damage_amount)} for member in party_list]`",
+    "Complete lambda examples:\n```python\nphysical_damage = lambda base, armor: base * (1 - armor/100)\nmagic_damage = lambda base: base\ncritical_hit = lambda dmg: dmg * 2\n```",
+    "For reduce in get_total_party_hp:\n```python\nreduce(lambda total, member: total + member['hp'], party_list, 0)\n```",
+    "Don't forget to import reduce from functools at the top: `from functools import reduce`"
+  ],
+  "validationTests": [
+    {
+      "type": "code_contains",
+      "value": "physical_damage = lambda",
+      "description": "Must define physical_damage lambda"
+    },
+    {
+      "type": "code_contains",
+      "value": "magic_damage = lambda",
+      "description": "Must define magic_damage lambda"
+    },
+    {
+      "type": "code_contains",
+      "value": "critical_hit = lambda",
+      "description": "Must define critical_hit lambda"
+    },
+    {
+      "type": "code_contains",
+      "value": "global total_damage_dealt",
+      "description": "Must use global keyword for statistics tracking"
+    },
+    {
+      "type": "code_contains",
+      "value": "for member in",
+      "description": "Must use list comprehension in apply_damage_to_party"
+    },
+    {
+      "type": "code_contains",
+      "value": "filter(",
+      "description": "Must use filter() in get_alive_members"
+    },
+    {
+      "type": "code_contains",
+      "value": "reduce(",
+      "description": "Must use reduce() in get_total_party_hp"
+    },
+    {
+      "type": "output_contains",
+      "value": "Wave 1: Physical AOE",
+      "description": "Should execute Wave 1 attack"
+    },
+    {
+      "type": "output_contains",
+      "value": "Wave 2: Critical Magic",
+      "description": "Should execute Wave 2 attack"
+    },
+    {
+      "type": "output_contains",
+      "value": "Battles fought: 1",
+      "description": "Should track battle count correctly"
+    }
+  ],
+  "learningObjectives": [
+    "Combine multiple advanced function techniques in one system",
+    "Use lambdas for calculation formulas",
+    "Apply list comprehensions for data transformation",
+    "Use map/filter/reduce for functional processing",
+    "Manage global state properly with scope keywords",
+    "Design a complete system from requirements"
+  ],
+  "nextLessonId": 36,
+  "previousLessonId": 34,
+  "tags": ["intermediate", "challenge", "lambda", "comprehensions", "map", "filter", "reduce", "scope"],
+  "commonMistakes": [
+    {
+      "mistake": "Not using global keyword in statistics functions",
+      "explanation": "Functions that MODIFY global variables must declare them with 'global' keyword, or changes won't persist."
+    },
+    {
+      "mistake": "Forgetting to return new dictionaries in apply_damage_to_party",
+      "explanation": "Use dict spreading `{**member, 'hp': new_value}` to create updated copies, don't modify originals!"
+    },
+    {
+      "mistake": "Not handling HP going below 0",
+      "explanation": "Use `max(0, member['hp'] - damage)` to ensure HP never becomes negative."
+    },
+    {
+      "mistake": "Wrong lambda parameter counts",
+      "explanation": "physical_damage needs (base, armor), magic_damage needs (base), critical_hit needs (damage). Check parameter counts!"
+    }
+  ],
+  "bonus": {
+    "description": "Add a function `simulate_healing(party_list, heal_amount)` that uses map() to heal all party members (not exceeding max_hp). Then heal the party by 30 HP and show results!",
+    "xpReward": 100
+  }
+}

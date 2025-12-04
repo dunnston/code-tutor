@@ -1,0 +1,80 @@
+{
+  "id": 31,
+  "trackId": 7,
+  "language": "python",
+  "title": "The Chamber of Scopes",
+  "subtitle": "Mastering Variable Visibility",
+  "difficulty": 4,
+  "estimatedTime": "20-30 minutes",
+  "xpReward": 100,
+  "description": "# Welcome to Advanced Python!\n\n🎓 You've mastered the fundamentals. Now it's time to level up your skills!\n\nIn this quest, you'll dive deep into **variable scope** - understanding where variables live and how they're accessed.\n\n## The LEGB Rule\n\nPython follows the **LEGB** scope resolution order:\n- **L**ocal: Inside the current function\n- **E**nclosing: Inside enclosing functions (nested functions)\n- **G**lobal: At the module level\n- **B**uilt-in: Python's built-in names\n\n## The Problem\n\nThe Royal Treasury has a gold tracking system, but it's riddled with scope bugs! Gold is being lost, duplicated, or incorrectly tracked due to variable scope confusion.\n\n```python\n# BROKEN CODE EXAMPLE:\ngold = 100  # Global gold\n\ndef add_gold(amount):\n    gold = gold + amount  # ERROR! This won't work!\n    return gold\n\nresult = add_gold(50)\nprint(gold)  # Still 100? What happened?\n```\n\n## Your Quest\n\nFix the Treasury's gold tracking system by correcting scope issues:\n\n1. **Fix the global gold counter** - Use `global` keyword properly\n2. **Fix the party gold function** - Understand local vs global scope\n3. **Fix nested function scope** - Use `nonlocal` for enclosing scope\n4. **Fix the shadow bug** - Avoid variable shadowing\n5. **Add proper tracking** - Ensure gold changes persist\n\n## Key Concepts\n\n**Global Keyword:**\n```python\nglobal_var = 10\n\ndef modify_global():\n    global global_var  # Declare we're using the global\n    global_var += 5\n```\n\n**Local Scope:**\n```python\ndef my_function():\n    local_var = 20  # Only exists inside function\n    return local_var\n```\n\n**Nonlocal Keyword:**\n```python\ndef outer():\n    x = 10\n    def inner():\n        nonlocal x  # Refers to outer's x\n        x += 5\n    inner()\n    return x  # Returns 15\n```\n\n⚔️ Debug the code, fix all scope issues, and make the treasury work correctly!\n\n*Hint: Pay close attention to where variables are declared and modified.*",
+  "starterCode": "# Royal Treasury - Gold Tracking System (BROKEN!)\n# Fix all 5 scope bugs to make this system work correctly\n\n# Global treasury gold\ntreasury_gold = 1000\n\n# BUG 1: This function should add to global treasury_gold\ndef deposit_gold(amount):\n    # TODO: Fix this - gold isn't being added to treasury!\n    treasury_gold = treasury_gold + amount\n    print(f\"Deposited {amount} gold\")\n\n# BUG 2: This function should subtract from global treasury_gold  \ndef withdraw_gold(amount):\n    # TODO: Fix this - need to access and modify global variable\n    if treasury_gold >= amount:\n        treasury_gold = treasury_gold - amount\n        print(f\"Withdrew {amount} gold\")\n        return True\n    else:\n        print(\"Not enough gold!\")\n        return False\n\n# BUG 3: Nested function scope issue\ndef create_party_wallet(starting_gold):\n    party_gold = starting_gold\n    \n    def add_to_party(amount):\n        # TODO: Fix this - should modify party_gold from outer function\n        party_gold = party_gold + amount\n    \n    def get_party_gold():\n        return party_gold\n    \n    # Add some gold to test\n    add_to_party(50)\n    return get_party_gold()\n\n# BUG 4: Variable shadowing issue\ndef calculate_tax(gold_amount):\n    treasury_gold = gold_amount * 0.1  # Oops! Shadows global\n    return treasury_gold\n\n# BUG 5: Function should update global treasury after tax\ndef collect_tax(gold_amount):\n    tax = calculate_tax(gold_amount)\n    # TODO: Add tax to global treasury_gold\n    treasury_gold = treasury_gold + tax\n    return tax\n\n# Test the system (don't modify this part)\nprint(f\"Starting treasury: {treasury_gold} gold\")\ndeposit_gold(500)\nprint(f\"After deposit: {treasury_gold} gold\")  # Should be 1500\n\nwithdraw_gold(200)\nprint(f\"After withdrawal: {treasury_gold} gold\")  # Should be 1300\n\nparty_gold = create_party_wallet(100)\nprint(f\"Party gold: {party_gold} gold\")  # Should be 150\n\ntax = collect_tax(1000)\nprint(f\"Tax collected: {tax} gold\")\nprint(f\"Final treasury: {treasury_gold} gold\")  # Should be 1400",
+  "solutionCode": "# Royal Treasury - Gold Tracking System (FIXED!)\n\n# Global treasury gold\ntreasury_gold = 1000\n\n# FIX 1: Use global keyword to modify global variable\ndef deposit_gold(amount):\n    global treasury_gold\n    treasury_gold = treasury_gold + amount\n    print(f\"Deposited {amount} gold\")\n\n# FIX 2: Use global keyword to access and modify\ndef withdraw_gold(amount):\n    global treasury_gold\n    if treasury_gold >= amount:\n        treasury_gold = treasury_gold - amount\n        print(f\"Withdrew {amount} gold\")\n        return True\n    else:\n        print(\"Not enough gold!\")\n        return False\n\n# FIX 3: Use nonlocal to modify enclosing scope variable\ndef create_party_wallet(starting_gold):\n    party_gold = starting_gold\n    \n    def add_to_party(amount):\n        nonlocal party_gold\n        party_gold = party_gold + amount\n    \n    def get_party_gold():\n        return party_gold\n    \n    add_to_party(50)\n    return get_party_gold()\n\n# FIX 4: Use different variable name to avoid shadowing\ndef calculate_tax(gold_amount):\n    tax_amount = gold_amount * 0.1\n    return tax_amount\n\n# FIX 5: Use global keyword to update treasury\ndef collect_tax(gold_amount):\n    global treasury_gold\n    tax = calculate_tax(gold_amount)\n    treasury_gold = treasury_gold + tax\n    return tax\n\n# Test the system\nprint(f\"Starting treasury: {treasury_gold} gold\")\ndeposit_gold(500)\nprint(f\"After deposit: {treasury_gold} gold\")\n\nwithdraw_gold(200)\nprint(f\"After withdrawal: {treasury_gold} gold\")\n\nparty_gold = create_party_wallet(100)\nprint(f\"Party gold: {party_gold} gold\")\n\ntax = collect_tax(1000)\nprint(f\"Tax collected: {tax} gold\")\nprint(f\"Final treasury: {treasury_gold} gold\")",
+  "hints": [
+    "Look at the first function `deposit_gold()`. It tries to modify `treasury_gold`, but Python thinks you're creating a new local variable. You need to tell Python you want to use the GLOBAL variable.",
+    "The `global` keyword tells Python: 'I want to use the global variable, not create a local one.' Add `global treasury_gold` at the start of functions that need to modify it.",
+    "For the nested function `add_to_party()`, you can't use `global` because `party_gold` isn't global - it's in the enclosing function. Use the `nonlocal` keyword instead!",
+    "In `calculate_tax()`, the variable name `treasury_gold` shadows (hides) the global one. Use a different variable name like `tax_amount` to avoid confusion.",
+    "Pattern to fix scope issues:\n1. Modifying global variable? → Add `global variable_name`\n2. Modifying enclosing function's variable? → Add `nonlocal variable_name`\n3. Just reading a variable? → No keyword needed\n4. Creating a local variable? → Just assign it (no keyword)"
+  ],
+  "validationTests": [
+    {
+      "type": "output_contains",
+      "value": "After deposit: 1500 gold",
+      "description": "Treasury should have 1500 gold after depositing 500"
+    },
+    {
+      "type": "output_contains",
+      "value": "After withdrawal: 1300 gold",
+      "description": "Treasury should have 1300 gold after withdrawing 200"
+    },
+    {
+      "type": "output_contains",
+      "value": "Party gold: 150 gold",
+      "description": "Party wallet should show 150 gold (100 + 50)"
+    },
+    {
+      "type": "output_contains",
+      "value": "Final treasury: 1400 gold",
+      "description": "Final treasury should be 1400 gold (1300 + 100 tax)"
+    },
+    {
+      "type": "code_contains",
+      "value": "global treasury_gold",
+      "description": "Must use 'global' keyword to modify treasury_gold"
+    },
+    {
+      "type": "code_contains",
+      "value": "nonlocal party_gold",
+      "description": "Must use 'nonlocal' keyword for nested function scope"
+    }
+  ],
+  "learningObjectives": [
+    "Understand the LEGB scope resolution order",
+    "Use the global keyword to modify global variables",
+    "Use the nonlocal keyword for enclosing function scope",
+    "Avoid variable shadowing bugs",
+    "Debug scope-related errors effectively"
+  ],
+  "nextLessonId": 32,
+  "previousLessonId": 30,
+  "tags": ["intermediate", "scope", "global", "nonlocal", "debugging"],
+  "commonMistakes": [
+    {
+      "mistake": "Forgetting the global keyword when modifying global variables",
+      "explanation": "Python assumes you're creating a local variable if you assign to a name. Use 'global' to explicitly say you want the global one."
+    },
+    {
+      "mistake": "Using global for variables in enclosing functions",
+      "explanation": "Use 'nonlocal' for variables in enclosing functions, not 'global'. Global is only for module-level variables."
+    },
+    {
+      "mistake": "Adding global when only reading a variable",
+      "explanation": "You only need 'global' when MODIFYING a variable. Reading global variables works without the keyword."
+    },
+    {
+      "mistake": "Variable shadowing without realizing it",
+      "explanation": "If you create a local variable with the same name as a global, it 'shadows' (hides) the global. Use different names to avoid confusion."
+    }
+  ]
+}

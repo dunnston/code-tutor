@@ -1,0 +1,23 @@
+{
+  "id": 116,
+  "trackId": 2,
+  "language": "gdscript",
+  "title": "The Logic Gates",
+  "subtitle": "And, Or, Not Operators",
+  "difficulty": 3,
+  "estimatedTime": "25-30 minutes",
+  "xpReward": 200,
+  "description": "# Logical Operators: Combining Conditions\n\n## The AND Operator\n\nBoth conditions must be true:\n\n```gdscript\nvar has_key = true\nvar door_unlocked = false\n\nif has_key and not door_unlocked:\n    print(\"Can unlock door!\")\n```\n\n## The OR Operator\n\nAt least one condition must be true:\n\n```gdscript\nif health < 20 or mana < 10:\n    print(\"Resources low!\")\n```\n\n## The NOT Operator\n\nReverses a boolean:\n\n```gdscript\nvar is_daytime = false\nif not is_daytime:\n    print(\"It's night!\")\n```\n\n## Your Quest\n\nCreate a quest eligibility checker using logical operators.",
+  "starterCode": "# Quest Eligibility Checker\nvar player_level = 15\nvar has_completed_tutorial = true\nvar has_weapon = true\nvar gold = 100\n\n# Check if player can start quest\n# Requirements: level >= 10 AND tutorial done AND (has weapon OR gold >= 50)\n\n",
+  "solutionCode": "# Quest Eligibility Checker\nvar player_level = 15\nvar has_completed_tutorial = true\nvar has_weapon = true\nvar gold = 100\n\n# Check if player can start quest\nif player_level >= 10 and has_completed_tutorial and (has_weapon or gold >= 50):\n    print(\"Quest Available!\")\n    print(\"You meet all requirements\")\nelse:\n    print(\"Quest Locked\")\n    if player_level < 10:\n        print(\"- Level too low (need 10)\")\n    if not has_completed_tutorial:\n        print(\"- Complete tutorial first\")\n    if not has_weapon and gold < 50:\n        print(\"- Need weapon or 50 gold\")",
+  "hints": ["Use 'and' to require multiple conditions", "Use 'or' for alternatives", "Use 'not' to reverse booleans", "Parentheses help group conditions"],
+  "validationTests": [
+    {"type": "code_contains", "value": " and ", "description": "Should use 'and' operator"},
+    {"type": "code_contains", "value": " or ", "description": "Should use 'or' operator"},
+    {"type": "output_contains", "value": "Quest", "description": "Should show quest status"}
+  ],
+  "learningObjectives": ["Use and/or/not operators", "Combine multiple conditions", "Create complex logic", "Check eligibility"],
+  "previousLessonId": 115,
+  "nextLessonId": 117,
+  "tags": ["beginner", "logical-operators", "and-or-not", "conditionals", "godot"]
+}

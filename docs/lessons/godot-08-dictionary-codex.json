@@ -1,0 +1,52 @@
+{
+  "id": 108,
+  "trackId": 2,
+  "language": "gdscript",
+  "title": "The Dictionary Codex",
+  "subtitle": "Key-Value Magic",
+  "difficulty": 3,
+  "estimatedTime": "20-25 minutes",
+  "xpReward": 300,
+  "description": "# Dictionaries: The Codex of Key-Value Pairs\n\nWelcome to the Dictionary Codex! Here you'll learn about **Dictionaries** - powerful data structures that store information as key-value pairs.\n\n## What is a Dictionary?\n\nA Dictionary is like a real codex where you look up information:\n- **Key**: The word you're looking up\n- **Value**: The definition/information\n\n```gdscript\nvar player = {\n    \"name\": \"Knight\",\n    \"health\": 100,\n    \"level\": 5\n}\n```\n\n## Creating Dictionaries\n\nUse curly braces `{}` with key-value pairs:\n\n```gdscript\nvar weapon = {\n    \"name\": \"Excalibur\",\n    \"damage\": 50,\n    \"type\": \"sword\"\n}\n```\n\n## Accessing Values\n\nUse the key in square brackets:\n\n```gdscript\nprint(weapon[\"name\"])    # Excalibur\nprint(weapon[\"damage\"])  # 50\n```\n\nOr use dot notation:\n\n```gdscript\nprint(weapon.name)    # Excalibur\nprint(weapon.damage)  # 50\n```\n\n## Modifying Dictionaries\n\n**Change a value:**\n```gdscript\nplayer[\"health\"] = 80\n```\n\n**Add a new key-value pair:**\n```gdscript\nplayer[\"mana\"] = 50\n```\n\n**Remove a key:**\n```gdscript\nplayer.erase(\"level\")\n```\n\n## Checking Keys\n\n```gdscript\nif \"health\" in player:\n    print(\"Player has health stat\")\n```\n\n## Your Quest\n\nCreate a character stats system:\n\n1. Create a dictionary called `hero` with:\n   - name: \"Warrior\"\n   - health: 100\n   - strength: 15\n   - gold: 50\n\n2. Print the hero's name\n3. Add a new key \"level\" with value 1\n4. Increase gold by 25\n5. Print all stats using a loop",
+  "starterCode": "# Create hero dictionary\n\n# Print hero's name\n\n# Add level key\n\n# Increase gold by 25\n\n# Print all stats\n\n",
+  "solutionCode": "# Create hero dictionary\nvar hero = {\n    \"name\": \"Warrior\",\n    \"health\": 100,\n    \"strength\": 15,\n    \"gold\": 50\n}\n\n# Print hero's name\nprint(\"Hero: \", hero[\"name\"])\n\n# Add level key\nhero[\"level\"] = 1\n\n# Increase gold by 25\nhero[\"gold\"] += 25\n\n# Print all stats\nfor key in hero:\n    print(key, \": \", hero[key])",
+  "hints": [
+    "Create dictionary with curly braces: {\"key\": value}",
+    "Access values with square brackets: hero[\"name\"]",
+    "Add new keys by assigning: hero[\"level\"] = 1",
+    "Increase values with +=: hero[\"gold\"] += 25",
+    "Loop through keys: for key in hero:"
+  ],
+  "validationTests": [
+    {
+      "type": "code_contains",
+      "value": "{",
+      "description": "Should create a dictionary"
+    },
+    {
+      "type": "code_contains",
+      "value": "\"name\":",
+      "description": "Should have name key"
+    },
+    {
+      "type": "code_contains",
+      "value": "\"health\":",
+      "description": "Should have health key"
+    },
+    {
+      "type": "code_contains",
+      "value": "for ",
+      "description": "Should loop through dictionary"
+    }
+  ],
+  "learningObjectives": [
+    "Create and use Dictionaries",
+    "Access dictionary values",
+    "Add and modify dictionary entries",
+    "Loop through dictionary keys",
+    "Store structured game data"
+  ],
+  "previousLessonId": 107,
+  "nextLessonId": 109,
+  "tags": ["beginner", "dictionaries", "key-value", "data-structures", "godot"]
+}

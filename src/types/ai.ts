@@ -77,6 +77,14 @@ export interface PromptContext {
     title: string
     tags: string[]
   }>
+  lastCompletedLesson?: {
+    id: number
+    title: string
+    tags: string[]
+    description: string
+    courseName: string
+    language: string
+  }
   playgroundMode?: boolean
 
   // Puzzle-specific context

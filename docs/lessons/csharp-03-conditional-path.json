@@ -1,0 +1,65 @@
+{
+  "id": 203,
+  "trackId": 3,
+  "language": "csharp",
+  "title": "The Conditional Path",
+  "subtitle": "Making Decisions with If/Else",
+  "difficulty": 2,
+  "estimatedTime": "15-20 minutes",
+  "xpReward": 200,
+  "description": "# The Conditional Path: Making Decisions\n\nWelcome back, warrior! Your journey continues where you must make choices.\n\nIn programming, we often need code to make decisions:\n- If the player has enough gold, allow the purchase\n- If health is below 20, show a warning\n- If the door is locked, require a key\n\n## The If Statement in C#\n\nThe `if` statement checks a condition:\n\n```csharp\nint health = 15;\n\nif (health < 20)\n{\n    Console.WriteLine(\"Warning: Low health!\");\n}\n```\n\n**How it works:**\n- `if` starts the condition check\n- Condition goes in parentheses: `(health < 20)`\n- Code block goes in curly braces: `{ }`\n- Code inside `{ }` runs only if condition is true\n\n## Comparison Operators\n\nUse these to compare values:\n- `<` less than\n- `>` greater than\n- `<=` less than or equal\n- `>=` greater than or equal\n- `==` equal to (two equals signs!)\n- `!=` not equal to\n\n## The Else Statement\n\nUse `else` to handle what happens when condition is false:\n\n```csharp\nint gold = 100;\n\nif (gold >= 50)\n{\n    Console.WriteLine(\"You can afford the sword!\");\n}\nelse\n{\n    Console.WriteLine(\"Not enough gold yet.\");\n}\n```\n\n## C# Curly Braces Style\n\nC# typically puts opening brace on **same line** (different from some languages):\n\n```csharp\nif (condition) {\n    // code here\n}\n```\n\n## Your Quest\n\nYou encounter a magical door that requires a password.\n\n1. Create a `string` variable called `password` with the value `\"dragon\"`\n2. Create a `string` variable called `userInput` with the value `\"dragon\"`\n3. Write an if statement:\n   - If `userInput == password`, print: `\"Access granted!\"`\n   - Otherwise (else), print: `\"Access denied!\"`\n\n**Test both paths:** Try changing `userInput` to something else to see the else branch!",
+  "starterCode": "// Create your variables\nstring password = \"dragon\";\nstring userInput = \"dragon\";\n\n// Write your if/else statement below\n\n",
+  "solutionCode": "// Create your variables\nstring password = \"dragon\";\nstring userInput = \"dragon\";\n\n// Write your if/else statement below\nif (userInput == password)\n{\n    Console.WriteLine(\"Access granted!\");\n}\nelse\n{\n    Console.WriteLine(\"Access denied!\");\n}",
+  "hints": [
+    "Use two equals signs to check equality: userInput == password",
+    "Put the condition in parentheses: if (condition)",
+    "Use curly braces { } for code blocks",
+    "Don't forget semicolons after each statement inside { }",
+    "Make sure you use == (comparison) not = (assignment)"
+  ],
+  "validationTests": [
+    {
+      "type": "code_contains",
+      "value": "if ",
+      "description": "Code should contain an if statement"
+    },
+    {
+      "type": "code_contains",
+      "value": "else",
+      "description": "Code should contain an else statement"
+    },
+    {
+      "type": "output_contains",
+      "value": "Access granted!",
+      "description": "Should print 'Access granted!' when passwords match"
+    }
+  ],
+  "bonus": {
+    "description": "After submitting, change `userInput` to `\"wizard\"` and run again to see the else branch!",
+    "xpReward": 50
+  },
+  "learningObjectives": [
+    "Understand how if statements make decisions",
+    "Use comparison operators (==, <, >, etc.)",
+    "Write if/else blocks with curly braces",
+    "Use else to handle alternative outcomes",
+    "Test different conditions to see branching behavior"
+  ],
+  "commonMistakes": [
+    {
+      "mistake": "Using = instead of ==",
+      "explanation": "One equals (=) assigns a value. Two equals (==) compares values."
+    },
+    {
+      "mistake": "Forgetting curly braces",
+      "explanation": "C# requires { } around code blocks, even for single statements (best practice)."
+    },
+    {
+      "mistake": "Missing semicolons",
+      "explanation": "Every statement inside { } needs to end with a semicolon (;)."
+    }
+  ],
+  "previousLessonId": 202,
+  "nextLessonId": 204,
+  "tags": ["beginner", "conditionals", "if-else", "comparison", "logic", "csharp"]
+}

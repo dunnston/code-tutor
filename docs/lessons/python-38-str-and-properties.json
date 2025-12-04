@@ -1,0 +1,91 @@
+{
+  "id": 38,
+  "trackId": 7,
+  "language": "python",
+  "title": "The ToString Enchantment",
+  "subtitle": "Special Methods and Properties",
+  "difficulty": 4,
+  "estimatedTime": "25-30 minutes",
+  "xpReward": 150,
+  "description": "# Special Methods: __str__ and Properties\n\n📜 Make your objects print beautifully and add computed properties!\n\n## The `__str__` Method\n\nBy default, printing an object looks ugly:\n\n```python\nclass Character:\n    def __init__(self, name):\n        self.name = name\n\nhero = Character(\"Hero\")\nprint(hero)  # <__main__.Character object at 0x...>\n```\n\n**Fix it with `__str__`:**\n\n```python\nclass Character:\n    def __init__(self, name, health):\n        self.name = name\n        self.health = health\n    \n    def __str__(self):\n        return f\"{self.name} ({self.health} HP)\"\n\nhero = Character(\"Hero\", 100)\nprint(hero)  # \"Hero (100 HP)\"\n```\n\n## Why Use `__str__`?\n\n- Makes debugging easier\n- Creates readable output\n- Allows objects to be printed nicely\n- Called automatically by `print()` and `str()`\n\n## Property-Like Methods\n\nSome methods act like properties - they compute values from existing attributes:\n\n```python\nclass Character:\n    def __init__(self, health, max_health):\n        self.health = health\n        self.max_health = max_health\n    \n    def is_alive(self):\n        return self.health > 0\n    \n    def health_percent(self):\n        return (self.health / self.max_health) * 100\n\nhero = Character(50, 100)\nif hero.is_alive():\n    print(f\"Health: {hero.health_percent():.0f}%\")\n```\n\n## Property Methods Pattern\n\n**Boolean checks (is_X):**\n```python\ndef is_alive(self):\n    return self.health > 0\n\ndef is_full_health(self):\n    return self.health == self.max_health\n```\n\n**Calculated values:**\n```python\ndef health_percent(self):\n    return (self.health / self.max_health) * 100\n\ndef can_cast_spell(self, cost):\n    return self.mana >= cost\n```\n\n## Your Quest\n\nEnhance the Character class with:\n\n1. **`__str__` method** - Return nice string representation\n2. **`is_alive()`** - Return True if health > 0\n3. **`is_full_health()`** - Return True if health == max_health\n4. **`is_low_health()`** - Return True if health < 30% of max\n5. **`can_level_up()`** - Return True if experience >= 100\n\nMake your characters informative and intelligent!\n\n⚔️ Add polish and computed properties to your character system!",
+  "starterCode": "# Character System - Special Methods and Properties\n\nclass Character:\n    def __init__(self, name, health, max_health, mana, level, experience):\n        self.name = name\n        self.health = health\n        self.max_health = max_health\n        self.mana = mana\n        self.level = level\n        self.experience = experience\n    \n    # TODO: Implement __str__ method\n    # Return string like: \"Warrior (Lv 5) - 80/100 HP, 50 MP\"\n    def __str__(self):\n        pass\n    \n    # TODO: Implement is_alive property method\n    # Return True if health > 0\n    def is_alive(self):\n        pass\n    \n    # TODO: Implement is_full_health property method\n    # Return True if health == max_health\n    def is_full_health(self):\n        pass\n    \n    # TODO: Implement is_low_health property method\n    # Return True if health < 30% of max_health\n    def is_low_health(self):\n        pass\n    \n    # TODO: Implement can_level_up property method\n    # Return True if experience >= 100\n    def can_level_up(self):\n        pass\n    \n    # Existing methods from previous lesson\n    def take_damage(self, amount):\n        self.health -= amount\n        if self.health < 0:\n            self.health = 0\n    \n    def heal(self, amount):\n        self.health += amount\n        if self.health > self.max_health:\n            self.health = self.max_health\n\n# Test the special methods and properties\nprint(\"=== Character Special Methods Test ===\")\nprint()\n\n# Create test characters\nwarrior = Character(\"Warrior\", 80, 100, 50, 5, 75)\nmage = Character(\"Mage\", 25, 70, 100, 3, 120)\nrogue = Character(\"Rogue\", 0, 90, 60, 2, 50)\n\nprint(\"--- __str__ Test ---\")\nprint(warrior)\nprint(mage)\nprint(rogue)\nprint()\n\nprint(\"--- Property Methods Test ---\")\nprint(f\"{warrior.name} is alive: {warrior.is_alive()}\")\nprint(f\"{warrior.name} is full health: {warrior.is_full_health()}\")\nprint(f\"{warrior.name} is low health: {warrior.is_low_health()}\")\nprint(f\"{warrior.name} can level up: {warrior.can_level_up()}\")\nprint()\n\nprint(f\"{mage.name} is alive: {mage.is_alive()}\")\nprint(f\"{mage.name} is full health: {mage.is_full_health()}\")\nprint(f\"{mage.name} is low health: {mage.is_low_health()}\")\nprint(f\"{mage.name} can level up: {mage.can_level_up()}\")\nprint()\n\nprint(f\"{rogue.name} is alive: {rogue.is_alive()}\")\nprint(f\"{rogue.name} is full health: {rogue.is_full_health()}\")\nprint(f\"{rogue.name} is low health: {rogue.is_low_health()}\")\nprint(f\"{rogue.name} can level up: {rogue.can_level_up()}\")\nprint()\n\n# Test with healing\nprint(\"--- Healing Warrior ---\")\nwarrior.heal(20)\nprint(warrior)\nprint(f\"Is full health now: {warrior.is_full_health()}\")\nprint()\n\nprint(\"Special methods implemented successfully!\")",
+  "solutionCode": "# Character System - Special Methods Solution\n\nclass Character:\n    def __init__(self, name, health, max_health, mana, level, experience):\n        self.name = name\n        self.health = health\n        self.max_health = max_health\n        self.mana = mana\n        self.level = level\n        self.experience = experience\n    \n    def __str__(self):\n        return f\"{self.name} (Lv {self.level}) - {self.health}/{self.max_health} HP, {self.mana} MP\"\n    \n    def is_alive(self):\n        return self.health > 0\n    \n    def is_full_health(self):\n        return self.health == self.max_health\n    \n    def is_low_health(self):\n        return self.health < self.max_health * 0.3\n    \n    def can_level_up(self):\n        return self.experience >= 100\n    \n    def take_damage(self, amount):\n        self.health -= amount\n        if self.health < 0:\n            self.health = 0\n    \n    def heal(self, amount):\n        self.health += amount\n        if self.health > self.max_health:\n            self.health = self.max_health\n\nprint(\"=== Character Special Methods Test ===\")\nprint()\n\nwarrior = Character(\"Warrior\", 80, 100, 50, 5, 75)\nmage = Character(\"Mage\", 25, 70, 100, 3, 120)\nrogue = Character(\"Rogue\", 0, 90, 60, 2, 50)\n\nprint(\"--- __str__ Test ---\")\nprint(warrior)\nprint(mage)\nprint(rogue)\nprint()\n\nprint(\"--- Property Methods Test ---\")\nprint(f\"{warrior.name} is alive: {warrior.is_alive()}\")\nprint(f\"{warrior.name} is full health: {warrior.is_full_health()}\")\nprint(f\"{warrior.name} is low health: {warrior.is_low_health()}\")\nprint(f\"{warrior.name} can level up: {warrior.can_level_up()}\")\nprint()\n\nprint(f\"{mage.name} is alive: {mage.is_alive()}\")\nprint(f\"{mage.name} is full health: {mage.is_full_health()}\")\nprint(f\"{mage.name} is low health: {mage.is_low_health()}\")\nprint(f\"{mage.name} can level up: {mage.can_level_up()}\")\nprint()\n\nprint(f\"{rogue.name} is alive: {rogue.is_alive()}\")\nprint(f\"{rogue.name} is full health: {rogue.is_full_health()}\")\nprint(f\"{rogue.name} is low health: {rogue.is_low_health()}\")\nprint(f\"{rogue.name} can level up: {rogue.can_level_up()}\")\nprint()\n\nprint(\"--- Healing Warrior ---\")\nwarrior.heal(20)\nprint(warrior)\nprint(f\"Is full health now: {warrior.is_full_health()}\")\nprint()\n\nprint(\"Special methods implemented successfully!\")",
+  "hints": [
+    "__str__ must RETURN a string, not print it. Use f-string formatting: return f\"{self.name} (Lv {self.level}) - {self.health}/{self.max_health} HP, {self.mana} MP\"",
+    "Property methods should return boolean values (True/False). They're like asking questions about the object's state.",
+    "For is_low_health, compare health to 30% of max_health: return self.health < self.max_health * 0.3",
+    "Property methods don't need parameters (except self). They use existing attributes to compute their answer.",
+    "Complete solutions:\n```python\ndef __str__(self):\n    return f\"{self.name} (Lv {self.level}) - {self.health}/{self.max_health} HP, {self.mana} MP\"\n\ndef is_alive(self):\n    return self.health > 0\n```"
+  ],
+  "validationTests": [
+    {
+      "type": "code_contains",
+      "value": "def __str__(self):",
+      "description": "Must implement __str__ method"
+    },
+    {
+      "type": "code_contains",
+      "value": "def is_alive(self):",
+      "description": "Must implement is_alive method"
+    },
+    {
+      "type": "code_contains",
+      "value": "def is_full_health(self):",
+      "description": "Must implement is_full_health method"
+    },
+    {
+      "type": "code_contains",
+      "value": "def is_low_health(self):",
+      "description": "Must implement is_low_health method"
+    },
+    {
+      "type": "code_contains",
+      "value": "def can_level_up(self):",
+      "description": "Must implement can_level_up method"
+    },
+    {
+      "type": "output_contains",
+      "value": "Warrior (Lv 5)",
+      "description": "__str__ should format character nicely"
+    },
+    {
+      "type": "output_contains",
+      "value": "Warrior is alive: True",
+      "description": "is_alive should return True for living characters"
+    },
+    {
+      "type": "output_contains",
+      "value": "Rogue is alive: False",
+      "description": "is_alive should return False for dead characters"
+    },
+    {
+      "type": "output_contains",
+      "value": "Mage can level up: True",
+      "description": "can_level_up should return True when XP >= 100"
+    }
+  ],
+  "learningObjectives": [
+    "Implement __str__ for readable object printing",
+    "Create property-like methods that return boolean values",
+    "Compute values from existing attributes",
+    "Understand when to use special methods",
+    "Make classes more user-friendly and informative"
+  ],
+  "nextLessonId": 39,
+  "previousLessonId": 37,
+  "tags": ["intermediate", "oop", "__str__", "properties", "special-methods"],
+  "commonMistakes": [
+    {
+      "mistake": "Printing instead of returning in __str__",
+      "explanation": "__str__ must RETURN a string, not print it. Use 'return', not 'print'!"
+    },
+    {
+      "mistake": "Not using self in property methods",
+      "explanation": "Property methods need to access self.attribute to check the object's state. Don't forget self!"
+    },
+    {
+      "mistake": "Adding parameters to property methods",
+      "explanation": "Simple property methods like is_alive() only need self as parameter. They check the object's own state."
+    }
+  ]
+}

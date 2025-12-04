@@ -1,0 +1,81 @@
+{
+  "id": 33,
+  "trackId": 7,
+  "language": "python",
+  "title": "The Inventory Transmutation",
+  "subtitle": "List Comprehensions Mastery",
+  "difficulty": 4,
+  "estimatedTime": "25-30 minutes",
+  "xpReward": 150,
+  "description": "# List Comprehensions: Elegant List Transformation\n\n📜 Transform entire lists with a single elegant line of code!\n\n## What are List Comprehensions?\n\nList comprehensions provide a concise way to create lists based on existing lists:\n\n```python\n# Traditional approach\nnumbers = [1, 2, 3, 4, 5]\nsquares = []\nfor num in numbers:\n    squares.append(num ** 2)\n\n# List comprehension\nsquares = [num ** 2 for num in numbers]\n```\n\nBoth produce `[1, 4, 9, 16, 25]`, but comprehensions are more **Pythonic**!\n\n## List Comprehension Syntax\n\n```python\n# Basic form\n[expression for item in iterable]\n\n# With condition (filter)\n[expression for item in iterable if condition]\n\n# Examples:\ndoubled = [x * 2 for x in range(5)]  # [0, 2, 4, 6, 8]\nevens = [x for x in range(10) if x % 2 == 0]  # [0, 2, 4, 6, 8]\nuppercase = [word.upper() for word in ['hello', 'world']]  # ['HELLO', 'WORLD']\n```\n\n## When to Use List Comprehensions\n\n✅ **Good for:**\n- Transforming all items in a list\n- Filtering items based on condition\n- Creating new lists from existing data\n- One-line operations that are clear\n\n❌ **Avoid for:**\n- Complex multi-step operations\n- Operations with side effects (like printing)\n- Nested loops that become hard to read\n\n## The Inventory System Challenge\n\nThe Merchant's Guild has piles of inventory data that needs processing:\n- Filter items by rarity\n- Apply discounts to prices\n- Extract specific attributes\n- Categorize equipment\n\nYour starter code uses traditional `for` loops. **Convert them to list comprehensions!**\n\n## Pattern Guide\n\n```python\n# Pattern 1: Transform each item\nprices = [10, 20, 30]\ndiscounted = [price * 0.9 for price in prices]\n\n# Pattern 2: Filter items\nitems = ['sword', 'shield', 'potion', 'scroll']\nequipment = [item for item in items if item in ['sword', 'shield']]\n\n# Pattern 3: Transform with condition\nnumbers = [1, 2, 3, 4, 5]\nresult = [num * 2 if num % 2 == 0 else num for num in numbers]\n```\n\n⚔️ Master list comprehensions and revolutionize your inventory management!\n\n*Remember: Comprehensions are just syntax sugar - they're not magic, but they're elegant!*",
+  "starterCode": "# Merchant's Guild - Inventory Processing System\n# Convert traditional loops to list comprehensions\n\n# Sample inventory data\ninventory = [\n    {'name': 'Iron Sword', 'rarity': 'common', 'price': 50, 'type': 'weapon'},\n    {'name': 'Steel Shield', 'rarity': 'common', 'price': 40, 'type': 'armor'},\n    {'name': 'Healing Potion', 'rarity': 'common', 'price': 10, 'type': 'consumable'},\n    {'name': 'Mithril Sword', 'rarity': 'rare', 'price': 500, 'type': 'weapon'},\n    {'name': 'Dragon Scale Armor', 'rarity': 'legendary', 'price': 2000, 'type': 'armor'},\n    {'name': 'Elixir of Life', 'rarity': 'rare', 'price': 300, 'type': 'consumable'},\n    {'name': 'Rusty Dagger', 'rarity': 'common', 'price': 5, 'type': 'weapon'},\n    {'name': 'Phoenix Feather', 'rarity': 'legendary', 'price': 1500, 'type': 'consumable'},\n]\n\nprint(\"=== Inventory Processing System ===\")\nprint()\n\n# Task 1: Extract all item names\n# Traditional loop:\nitem_names = []\nfor item in inventory:\n    item_names.append(item['name'])\nprint(f\"All items: {item_names}\")\n\n# TODO: Convert to list comprehension\nitem_names_comp = []  # Replace with comprehension\nprint(f\"All items (comprehension): {item_names_comp}\")\nprint()\n\n# Task 2: Get all legendary items\n# Traditional loop:\nlegendary_items = []\nfor item in inventory:\n    if item['rarity'] == 'legendary':\n        legendary_items.append(item['name'])\nprint(f\"Legendary items: {legendary_items}\")\n\n# TODO: Convert to list comprehension\nlegendary_items_comp = []  # Replace with comprehension\nprint(f\"Legendary items (comprehension): {legendary_items_comp}\")\nprint()\n\n# Task 3: Apply 20% discount to all prices\n# Traditional loop:\ndiscounted_prices = []\nfor item in inventory:\n    discounted_prices.append(item['price'] * 0.8)\nprint(f\"Discounted prices: {discounted_prices}\")\n\n# TODO: Convert to list comprehension\ndiscounted_prices_comp = []  # Replace with comprehension\nprint(f\"Discounted prices (comprehension): {discounted_prices_comp}\")\nprint()\n\n# Task 4: Get names of items that cost more than 100 gold\n# Traditional loop:\nexpensive_items = []\nfor item in inventory:\n    if item['price'] > 100:\n        expensive_items.append(item['name'])\nprint(f\"Expensive items (>100g): {expensive_items}\")\n\n# TODO: Convert to list comprehension\nexpensive_items_comp = []  # Replace with comprehension\nprint(f\"Expensive items (comprehension): {expensive_items_comp}\")\nprint()\n\n# Task 5: Get all weapon names in uppercase\n# Traditional loop:\nweapon_names = []\nfor item in inventory:\n    if item['type'] == 'weapon':\n        weapon_names.append(item['name'].upper())\nprint(f\"Weapons (UPPERCASE): {weapon_names}\")\n\n# TODO: Convert to list comprehension\nweapon_names_comp = []  # Replace with comprehension\nprint(f\"Weapons (comprehension): {weapon_names_comp}\")\nprint()\n\nprint(\"Inventory transmutation complete!\")",
+  "solutionCode": "# Merchant's Guild - Inventory Processing System\n\ninventory = [\n    {'name': 'Iron Sword', 'rarity': 'common', 'price': 50, 'type': 'weapon'},\n    {'name': 'Steel Shield', 'rarity': 'common', 'price': 40, 'type': 'armor'},\n    {'name': 'Healing Potion', 'rarity': 'common', 'price': 10, 'type': 'consumable'},\n    {'name': 'Mithril Sword', 'rarity': 'rare', 'price': 500, 'type': 'weapon'},\n    {'name': 'Dragon Scale Armor', 'rarity': 'legendary', 'price': 2000, 'type': 'armor'},\n    {'name': 'Elixir of Life', 'rarity': 'rare', 'price': 300, 'type': 'consumable'},\n    {'name': 'Rusty Dagger', 'rarity': 'common', 'price': 5, 'type': 'weapon'},\n    {'name': 'Phoenix Feather', 'rarity': 'legendary', 'price': 1500, 'type': 'consumable'},\n]\n\nprint(\"=== Inventory Processing System ===\")\nprint()\n\n# Task 1: Extract all item names\nitem_names_comp = [item['name'] for item in inventory]\nprint(f\"All items (comprehension): {item_names_comp}\")\nprint()\n\n# Task 2: Get all legendary items\nlegendary_items_comp = [item['name'] for item in inventory if item['rarity'] == 'legendary']\nprint(f\"Legendary items (comprehension): {legendary_items_comp}\")\nprint()\n\n# Task 3: Apply 20% discount to all prices\ndiscounted_prices_comp = [item['price'] * 0.8 for item in inventory]\nprint(f\"Discounted prices (comprehension): {discounted_prices_comp}\")\nprint()\n\n# Task 4: Get names of items that cost more than 100 gold\nexpensive_items_comp = [item['name'] for item in inventory if item['price'] > 100]\nprint(f\"Expensive items (comprehension): {expensive_items_comp}\")\nprint()\n\n# Task 5: Get all weapon names in uppercase\nweapon_names_comp = [item['name'].upper() for item in inventory if item['type'] == 'weapon']\nprint(f\"Weapons (comprehension): {weapon_names_comp}\")\nprint()\n\nprint(\"Inventory transmutation complete!\")",
+  "hints": [
+    "Basic pattern: `[item['field'] for item in list]` extracts a field from each dictionary.",
+    "For filtering: `[item for item in list if condition]`. For example: `[item for item in inventory if item['rarity'] == 'legendary']`",
+    "For transformations: put the transformation expression before 'for'. Example: `[price * 0.8 for price in prices]`",
+    "You can combine transformation and filtering: `[item['name'].upper() for item in inventory if item['type'] == 'weapon']`",
+    "Complete solutions:\n- Names: `[item['name'] for item in inventory]`\n- Legendary: `[item['name'] for item in inventory if item['rarity'] == 'legendary']`\n- Discounts: `[item['price'] * 0.8 for item in inventory]`"
+  ],
+  "validationTests": [
+    {
+      "type": "code_contains",
+      "value": "[item['name'] for item in inventory]",
+      "description": "Must use list comprehension to extract names"
+    },
+    {
+      "type": "code_contains",
+      "value": "if item['rarity'] == 'legendary'",
+      "description": "Must filter legendary items using comprehension"
+    },
+    {
+      "type": "code_contains",
+      "value": "item['price'] * 0.8 for item",
+      "description": "Must apply discount using comprehension"
+    },
+    {
+      "type": "code_contains",
+      "value": "if item['price'] > 100",
+      "description": "Must filter expensive items using comprehension"
+    },
+    {
+      "type": "code_contains",
+      "value": ".upper()",
+      "description": "Must convert weapon names to uppercase in comprehension"
+    },
+    {
+      "type": "output_contains",
+      "value": "Dragon Scale Armor",
+      "description": "Should correctly identify legendary items"
+    },
+    {
+      "type": "output_contains",
+      "value": "Phoenix Feather",
+      "description": "Should correctly identify all legendary items"
+    }
+  ],
+  "learningObjectives": [
+    "Write basic list comprehensions",
+    "Filter items using comprehensions with if conditions",
+    "Transform data using comprehensions",
+    "Combine filtering and transformation",
+    "Recognize when comprehensions improve code readability"
+  ],
+  "nextLessonId": 34,
+  "previousLessonId": 32,
+  "tags": ["intermediate", "list-comprehensions", "functional-programming", "lists"],
+  "commonMistakes": [
+    {
+      "mistake": "Forgetting the square brackets",
+      "explanation": "List comprehensions must be wrapped in `[` and `]`. Without them, you'll get a generator expression instead."
+    },
+    {
+      "mistake": "Putting the condition before 'for'",
+      "explanation": "The if condition comes AFTER the for loop: `[x for x in list if condition]`, not `[x if condition for x in list]`."
+    },
+    {
+      "mistake": "Making comprehensions too complex",
+      "explanation": "If your comprehension needs multiple lines or is hard to read, use a regular for loop instead. Readability counts!"
+    }
+  ]
+}

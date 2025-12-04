@@ -1,5 +1,5 @@
 import type { Course, CourseCategory, UserCourseProgress } from '@/types/course'
-import { getLessonsByLanguage } from './lessons'
+import { getLessonsByTrack } from './lessons'
 import { loadProgress } from './storage'
 
 /**
@@ -21,26 +21,26 @@ const COURSE_DEFINITIONS: Omit<Course, 'lessons' | 'lessonCount' | 'xpTotal'>[] 
   {
     id: 2,
     name: 'GDScript for Game Development',
-    description: 'Learn GDScript, the language powering Godot Engine. Build games while mastering programming concepts!',
+    description: 'Master GDScript from scratch through game development! Learn variables, loops, functions, data structures, and build a complete RPG system. Perfect for aspiring Godot developers!',
     language: 'gdscript',
     category: 'game-dev',
     skillLevel: 'beginner',
     icon: '🎮',
-    estimatedHours: 5,
+    estimatedHours: 25,
     featured: true,
-    tags: ['beginner', 'gdscript', 'game-dev', 'godot'],
+    tags: ['beginner', 'gdscript', 'game-dev', 'godot', 'complete'],
   },
   {
     id: 3,
     name: 'C# Essentials',
-    description: 'Dive into C# programming. Perfect for Unity game development and enterprise applications.',
+    description: 'Master C# from scratch through an epic coding adventure! Learn variables, loops, methods, collections, LINQ, and build a complete RPG system. Perfect for Unity and .NET development!',
     language: 'csharp',
     category: 'game-dev',
     skillLevel: 'beginner',
     icon: '⚔️',
-    estimatedHours: 5,
+    estimatedHours: 25,
     featured: true,
-    tags: ['beginner', 'csharp', 'game-dev', 'unity'],
+    tags: ['beginner', 'csharp', 'game-dev', 'unity', 'dotnet', 'complete'],
   },
   {
     id: 4,
@@ -78,6 +78,32 @@ const COURSE_DEFINITIONS: Omit<Course, 'lessons' | 'lessonCount' | 'xpTotal'>[] 
     featured: true,
     tags: ['beginner', 'git', 'version-control', 'devtools'],
   },
+  {
+    id: 7,
+    name: 'Python Applications',
+    description: 'Build complete Python applications using OOP, file handling, and data processing. Create a full RPG game engine while mastering intermediate concepts!',
+    language: 'python',
+    category: 'backend',
+    skillLevel: 'intermediate',
+    icon: '🏗️',
+    estimatedHours: 30,
+    featured: true,
+    tags: ['intermediate', 'python', 'backend', 'oop', 'json', 'csv', 'complete'],
+    prerequisites: [1],
+  },
+  {
+    id: 8,
+    name: 'Python Mastery (Advanced)',
+    description: 'Master professional Python development: advanced OOP with design patterns, async programming, database integration, Flask APIs, testing & TDD. Build a production-ready MMO backend!',
+    language: 'python',
+    category: 'backend',
+    skillLevel: 'advanced',
+    icon: '🔥',
+    estimatedHours: 40,
+    featured: true,
+    tags: ['advanced', 'python', 'backend', 'async', 'api', 'database', 'testing', 'flask', 'professional'],
+    prerequisites: [7],
+  },
 ]
 
 /**
@@ -85,7 +111,9 @@ const COURSE_DEFINITIONS: Omit<Course, 'lessons' | 'lessonCount' | 'xpTotal'>[] 
  */
 export function getAllCourses(): Course[] {
   return COURSE_DEFINITIONS.map((def) => {
-    const lessons = getLessonsByLanguage(def.language)
+    // Use trackId (which matches course id) to get correct lesson subset
+    // This ensures multi-course languages (like Python) get the right lessons
+    const lessons = getLessonsByTrack(def.id)
     const xpTotal = lessons.reduce((sum, lesson) => sum + lesson.xpReward, 0)
 
     return {

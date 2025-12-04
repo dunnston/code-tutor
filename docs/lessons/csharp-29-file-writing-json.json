@@ -1,0 +1,52 @@
+{
+  "id": 229,
+  "trackId": 3,
+  "language": "csharp",
+  "title": "The Scroll Scribe",
+  "subtitle": "Writing Files & JSON Serialization",
+  "difficulty": 4,
+  "estimatedTime": "25-30 minutes",
+  "xpReward": 225,
+  "description": "# Writing Data and JSON\n\nLearn to save data to files and work with JSON - the standard format for storing structured data!\n\n## Writing Text Files\n\n```csharp\nusing System.IO;\n\n// Write all text at once\nFile.WriteAllText(\"save.txt\", \"Player Level: 10\\nGold: 500\");\n\n// Write array of lines\nstring[] lines = { \"Sword\", \"Shield\", \"Potion\" };\nFile.WriteAllLines(\"inventory.txt\", lines);\n\n// Append to file\nFile.AppendAllText(\"log.txt\", \"New quest completed\\n\");\n```\n\n## Working with JSON\n\nJSON (JavaScript Object Notation) is perfect for saving complex data:\n\n```csharp\nusing System.Text.Json;\n\npublic class Character\n{\n    public string Name { get; set; }\n    public int Level { get; set; }\n    public int Gold { get; set; }\n}\n\n// Serialize to JSON string\nCharacter player = new Character { Name = \"Aria\", Level = 10, Gold = 500 };\nstring json = JsonSerializer.Serialize(player);\nConsole.WriteLine(json);\n// Output: {\"Name\":\"Aria\",\"Level\":10,\"Gold\":500}\n\n// Save to file\nFile.WriteAllText(\"character.json\", json);\n\n// Deserialize from JSON string\nstring loadedJson = File.ReadAllText(\"character.json\");\nCharacter loadedPlayer = JsonSerializer.Deserialize<Character>(loadedJson);\n```\n\n## Pretty JSON\n\n```csharp\nvar options = new JsonSerializerOptions { WriteIndented = true };\nstring prettyJson = JsonSerializer.Serialize(player, options);\n```\n\n## Your Quest\n\nCreate a character save/load system:\n1. Create a Character class\n2. Serialize character to JSON\n3. \"Save\" to a string (simulating file)\n4. \"Load\" from string and deserialize\n5. Verify data was preserved",
+  "starterCode": "using System;\nusing System.Text.Json;\n\nclass Program\n{\n    public class Character\n    {\n        public string Name { get; set; }\n        public string Class { get; set; }\n        public int Level { get; set; }\n        public int Gold { get; set; }\n        public int Health { get; set; }\n    }\n    \n    static void Main()\n    {\n        Console.WriteLine(\"=== CHARACTER CREATION ===\");\n        \n        // Create a character\n        Character hero = new Character\n        {\n            /* Fill in: Name=\"Thorin\", Class=\"Warrior\", Level=15, Gold=1000, Health=200 */\n        };\n        \n        Console.WriteLine($\"Created: {hero.Name} the {hero.Class}\");\n        Console.WriteLine($\"Level: {hero.Level} | Gold: {hero.Gold} | Health: {hero.Health}\");\n        \n        Console.WriteLine(\"\\n=== SAVING CHARACTER (JSON) ===\");\n        \n        // Serialize to JSON with pretty formatting\n        var options = new JsonSerializerOptions { WriteIndented = true };\n        string json = /* Serialize hero to JSON with options */;\n        \n        Console.WriteLine(\"Saved character data:\");\n        Console.WriteLine(json);\n        \n        // In real app: File.WriteAllText(\"character.json\", json);\n        \n        Console.WriteLine(\"\\n=== LOADING CHARACTER ===\");\n        \n        // Simulate loading from file\n        string loadedJson = json;\n        \n        // Deserialize from JSON\n        Character loadedHero = /* Deserialize from loadedJson */;\n        \n        Console.WriteLine($\"Loaded: {loadedHero.Name} the {loadedHero.Class}\");\n        Console.WriteLine($\"Level: {loadedHero.Level} | Gold: {loadedHero.Gold} | Health: {loadedHero.Health}\");\n        \n        Console.WriteLine(\"\\n=== VERIFICATION ===\");\n        \n        // Verify all data matches\n        bool nameMatches = hero.Name == loadedHero.Name;\n        bool levelMatches = hero.Level == loadedHero.Level;\n        bool goldMatches = hero.Gold == loadedHero.Gold;\n        \n        if (nameMatches && levelMatches && goldMatches)\n        {\n            Console.WriteLine(\"✓ Save/Load successful! All data preserved.\");\n        }\n        else\n        {\n            Console.WriteLine(\"✗ Data mismatch detected.\");\n        }\n        \n        Console.WriteLine(\"\\n=== BULK SAVE: PARTY ===\");\n        \n        // Save multiple characters\n        var party = new Character[]\n        {\n            hero,\n            new Character { Name = \"Aria\", Class = \"Mage\", Level = 12, Gold = 800, Health = 150 },\n            new Character { Name = \"Luna\", Class = \"Rogue\", Level = 10, Gold = 600, Health = 120 }\n        };\n        \n        string partyJson = JsonSerializer.Serialize(party, options);\n        Console.WriteLine(\"Party saved:\");\n        Console.WriteLine(partyJson);\n    }\n}\n",
+  "solutionCode": "using System;\nusing System.Text.Json;\n\nclass Program\n{\n    public class Character\n    {\n        public string Name { get; set; }\n        public string Class { get; set; }\n        public int Level { get; set; }\n        public int Gold { get; set; }\n        public int Health { get; set; }\n    }\n    \n    static void Main()\n    {\n        Console.WriteLine(\"=== CHARACTER CREATION ===\");\n        \n        // Create a character\n        Character hero = new Character\n        {\n            Name = \"Thorin\",\n            Class = \"Warrior\",\n            Level = 15,\n            Gold = 1000,\n            Health = 200\n        };\n        \n        Console.WriteLine($\"Created: {hero.Name} the {hero.Class}\");\n        Console.WriteLine($\"Level: {hero.Level} | Gold: {hero.Gold} | Health: {hero.Health}\");\n        \n        Console.WriteLine(\"\\n=== SAVING CHARACTER (JSON) ===\");\n        \n        // Serialize to JSON with pretty formatting\n        var options = new JsonSerializerOptions { WriteIndented = true };\n        string json = JsonSerializer.Serialize(hero, options);\n        \n        Console.WriteLine(\"Saved character data:\");\n        Console.WriteLine(json);\n        \n        // In real app: File.WriteAllText(\"character.json\", json);\n        \n        Console.WriteLine(\"\\n=== LOADING CHARACTER ===\");\n        \n        // Simulate loading from file\n        string loadedJson = json;\n        \n        // Deserialize from JSON\n        Character loadedHero = JsonSerializer.Deserialize<Character>(loadedJson);\n        \n        Console.WriteLine($\"Loaded: {loadedHero.Name} the {loadedHero.Class}\");\n        Console.WriteLine($\"Level: {loadedHero.Level} | Gold: {loadedHero.Gold} | Health: {loadedHero.Health}\");\n        \n        Console.WriteLine(\"\\n=== VERIFICATION ===\");\n        \n        // Verify all data matches\n        bool nameMatches = hero.Name == loadedHero.Name;\n        bool levelMatches = hero.Level == loadedHero.Level;\n        bool goldMatches = hero.Gold == loadedHero.Gold;\n        \n        if (nameMatches && levelMatches && goldMatches)\n        {\n            Console.WriteLine(\"✓ Save/Load successful! All data preserved.\");\n        }\n        else\n        {\n            Console.WriteLine(\"✗ Data mismatch detected.\");\n        }\n        \n        Console.WriteLine(\"\\n=== BULK SAVE: PARTY ===\");\n        \n        // Save multiple characters\n        var party = new Character[]\n        {\n            hero,\n            new Character { Name = \"Aria\", Class = \"Mage\", Level = 12, Gold = 800, Health = 150 },\n            new Character { Name = \"Luna\", Class = \"Rogue\", Level = 10, Gold = 600, Health = 120 }\n        };\n        \n        string partyJson = JsonSerializer.Serialize(party, options);\n        Console.WriteLine(\"Party saved:\");\n        Console.WriteLine(partyJson);\n    }\n}\n",
+  "hints": [
+    "Import System.Text.Json at the top",
+    "Serialize: JsonSerializer.Serialize(object, options)",
+    "Deserialize: JsonSerializer.Deserialize<Type>(jsonString)",
+    "For pretty JSON: new JsonSerializerOptions { WriteIndented = true }",
+    "JSON preserves all public properties automatically"
+  ],
+  "validationTests": [
+    {
+      "type": "code_contains",
+      "value": "using System.Text.Json",
+      "description": "Must import System.Text.Json"
+    },
+    {
+      "type": "code_contains",
+      "value": "JsonSerializer.Serialize",
+      "description": "Must serialize to JSON"
+    },
+    {
+      "type": "code_contains",
+      "value": "JsonSerializer.Deserialize",
+      "description": "Must deserialize from JSON"
+    },
+    {
+      "type": "output_contains",
+      "value": "Name",
+      "description": "Should display JSON with Name property"
+    }
+  ],
+  "learningObjectives": [
+    "Serialize objects to JSON strings",
+    "Deserialize JSON strings back to objects",
+    "Use JsonSerializerOptions for formatting",
+    "Understand JSON structure",
+    "Save and load complex data"
+  ],
+  "previousLessonId": 228,
+  "nextLessonId": 230,
+  "tags": ["advanced", "json", "serialization", "files", "data-persistence"]
+}

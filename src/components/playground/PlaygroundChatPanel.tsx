@@ -5,6 +5,7 @@ import type { AIProviderType, PromptType } from '@/types/ai'
 import { MarkdownRenderer } from '../MarkdownRenderer'
 import { buildPrompt } from '@/lib/ai/prompts'
 import { getLessonById } from '@/lib/lessons'
+import { getActiveCourse, getAllCourses } from '@/lib/courses'
 
 interface PlaygroundChatMessage {
   id: string
@@ -103,16 +104,73 @@ export function PlaygroundChatPanel({ isOpen, onToggle }: PlaygroundChatPanelPro
     return 'playground_chat'
   }
 
+  /**
+   * Get the last completed lesson from the active course, with fallback
+   * This helps the AI generate challenges based on recent learning
+   */
+  const getLastCompletedLessonFromActiveCourse = () => {
+    const activeCourse = getActiveCourse()
+
+    // Try to get from active course first
+    if (activeCourse) {
+      const activeCourseCompletedLessons = activeCourse.lessons.filter((lesson) =>
+        progress.completedLessons.includes(lesson.id)
+      )
+
+      if (activeCourseCompletedLessons.length > 0) {
+        const lastLesson = activeCourseCompletedLessons[activeCourseCompletedLessons.length - 1]
+        return {
+          id: lastLesson.id,
+          title: lastLesson.title,
+          tags: lastLesson.tags,
+          description: lastLesson.description,
+          courseName: activeCourse.name,
+          language: lastLesson.language,
+        }
+      }
+    }
+
+    // Fallback: Get most recent completed lesson from ANY course that matches playground language
+    if (progress.completedLessons.length > 0) {
+      // Get all completed lessons in reverse order (most recent first)
+      const recentCompletedLessons = [...progress.completedLessons].reverse()
+
+      for (const lessonId of recentCompletedLessons) {
+        const lesson = getLessonById(lessonId)
+        if (lesson && lesson.language === playgroundLanguage) {
+          // Find which course this lesson belongs to
+          const courses = getAllCourses()
+          const parentCourse = courses.find((c) =>
+            c.lessons.some((l) => l.id === lesson.id)
+          )
+
+          return {
+            id: lesson.id,
+            title: lesson.title,
+            tags: lesson.tags,
+            description: lesson.description,
+            courseName: parentCourse?.name || 'Unknown Course',
+            language: lesson.language,
+          }
+        }
+      }
+    }
+
+    return null
+  }
+
   const sendMessage = async (userMessage: string) => {
     setIsSending(true)
     addMessage('user', userMessage)
 
     try {
-      // Get completed lessons with details
+      // Get completed lessons with details (filtered to match playground language)
       const completedLessons = progress.completedLessons
         .map((lessonId) => {
           const lesson = getLessonById(lessonId)
           if (!lesson) return null
+          // Only include lessons that match the current playground language
+          if (lesson.language !== playgroundLanguage) return null
           return {
             id: lesson.id,
             title: lesson.title,
@@ -120,6 +178,9 @@ export function PlaygroundChatPanel({ isOpen, onToggle }: PlaygroundChatPanelPro
           }
         })
         .filter((l) => l !== null)
+
+      // Get the last completed lesson from active course for targeted challenges
+      const lastCompletedLesson = getLastCompletedLessonFromActiveCourse()
 
       // Build prompt context for playground
       const promptContext = {
@@ -131,7 +192,7 @@ export function PlaygroundChatPanel({ isOpen, onToggle }: PlaygroundChatPanelPro
             : progress.level <= 7
             ? ('intermediate' as const)
             : ('advanced' as const),
-        courseName: '',
+        courseName: lastCompletedLesson?.courseName || '',
         lessonTitle: 'Playground',
         lessonDescription: 'Free-form coding practice area',
         conceptName: 'Playground',
@@ -145,6 +206,7 @@ export function PlaygroundChatPanel({ isOpen, onToggle }: PlaygroundChatPanelPro
         conversationHistory: messages,
         playgroundMode: true,
         completedLessons,
+        lastCompletedLesson, // NEW: Add the most recent lesson for focused challenges
       }
 
       // Detect appropriate prompt type
