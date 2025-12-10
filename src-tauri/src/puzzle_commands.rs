@@ -457,3 +457,358 @@ pub fn mark_puzzle_solved(
 
     Ok(points)
 }
+
+// ============================================================================
+// DAILY PUZZLE CHALLENGE
+// ============================================================================
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct DailyPuzzleChallenge {
+    pub id: i32,
+    pub puzzle_id: String,
+    pub date: String,
+    pub bonus_points: i32,
+    pub puzzle: Puzzle,
+    pub completed_today: bool,
+    pub completed_languages: Vec<String>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct DailyPuzzleStreak {
+    pub current_streak: i32,
+    pub longest_streak: i32,
+    pub total_completed: i32,
+    pub last_completion_date: Option<String>,
+}
+
+/// Helper: Select appropriate puzzle for user based on their progress
+fn select_daily_puzzle_for_user(conn: &rusqlite::Connection, user_id: i32) -> Result<String, String> {
+    // Count incomplete puzzles by difficulty
+    let easy_remaining: i32 = conn
+        .query_row(
+            "SELECT COUNT(*) FROM puzzles p
+             WHERE p.difficulty = 'easy'
+             AND NOT EXISTS (
+                 SELECT 1 FROM user_puzzle_progress upp
+                 WHERE upp.user_id = ?1 AND upp.puzzle_id = p.id AND upp.status = 'solved'
+             )",
+            params![user_id],
+            |row| row.get(0),
+        )
+        .unwrap_or(0);
+
+    let medium_remaining: i32 = conn
+        .query_row(
+            "SELECT COUNT(*) FROM puzzles p
+             WHERE p.difficulty = 'medium'
+             AND NOT EXISTS (
+                 SELECT 1 FROM user_puzzle_progress upp
+                 WHERE upp.user_id = ?1 AND upp.puzzle_id = p.id AND upp.status = 'solved'
+             )",
+            params![user_id],
+            |row| row.get(0),
+        )
+        .unwrap_or(0);
+
+    let hard_remaining: i32 = conn
+        .query_row(
+            "SELECT COUNT(*) FROM puzzles p
+             WHERE p.difficulty = 'hard'
+             AND NOT EXISTS (
+                 SELECT 1 FROM user_puzzle_progress upp
+                 WHERE upp.user_id = ?1 AND upp.puzzle_id = p.id AND upp.status = 'solved'
+             )",
+            params![user_id],
+            |row| row.get(0),
+        )
+        .unwrap_or(0);
+
+    let expert_remaining: i32 = conn
+        .query_row(
+            "SELECT COUNT(*) FROM puzzles p
+             WHERE p.difficulty = 'expert'
+             AND NOT EXISTS (
+                 SELECT 1 FROM user_puzzle_progress upp
+                 WHERE upp.user_id = ?1 AND upp.puzzle_id = p.id AND upp.status = 'solved'
+             )",
+            params![user_id],
+            |row| row.get(0),
+        )
+        .unwrap_or(0);
+
+    // Determine difficulty level
+    let difficulty = if easy_remaining > 0 {
+        "easy"
+    } else if medium_remaining > 0 {
+        "medium"
+    } else if hard_remaining > 0 {
+        "hard"
+    } else if expert_remaining > 0 {
+        "expert"
+    } else {
+        // All puzzles solved, select random from all
+        "any"
+    };
+
+    // Select random puzzle at chosen difficulty
+    let puzzle_id: String = if difficulty == "any" {
+        conn.query_row(
+            "SELECT id FROM puzzles ORDER BY RANDOM() LIMIT 1",
+            [],
+            |row| row.get(0),
+        )
+        .map_err(|e| format!("Failed to select random puzzle: {}", e))?
+    } else {
+        conn.query_row(
+            "SELECT id FROM puzzles
+             WHERE difficulty = ?1
+             AND NOT EXISTS (
+                 SELECT 1 FROM user_puzzle_progress upp
+                 WHERE upp.user_id = ?2
+                 AND upp.puzzle_id = puzzles.id
+                 AND upp.status = 'solved'
+             )
+             ORDER BY RANDOM() LIMIT 1",
+            params![difficulty, user_id],
+            |row| row.get(0),
+        )
+        .map_err(|e| format!("Failed to select {} puzzle: {}", difficulty, e))?
+    };
+
+    Ok(puzzle_id)
+}
+
+/// Helper: Update daily puzzle streak
+fn update_daily_puzzle_streak(
+    tx: &rusqlite::Transaction,
+    user_id: i32,
+    today: &str,
+) -> Result<(), String> {
+    // Get current streak data
+    let (current_streak, last_date): (i32, Option<String>) = tx
+        .query_row(
+            "SELECT daily_puzzle_streak, daily_puzzle_last_completion_date
+             FROM user_achievement_stats
+             WHERE user_id = ?1",
+            params![user_id],
+            |row| Ok((row.get(0)?, row.get(1)?)),
+        )
+        .unwrap_or((0, None));
+
+    let new_streak = match last_date {
+        None => 1, // First ever completion
+        Some(last) => {
+            // Parse dates
+            let today_date = chrono::NaiveDate::parse_from_str(today, "%Y-%m-%d")
+                .map_err(|e| format!("Invalid date format: {}", e))?;
+            let last_date = chrono::NaiveDate::parse_from_str(&last, "%Y-%m-%d")
+                .map_err(|e| format!("Invalid last date format: {}", e))?;
+
+            let days_diff = today_date.signed_duration_since(last_date).num_days();
+
+            match days_diff {
+                0 => current_streak, // Same day, no change
+                1 => current_streak + 1, // Consecutive day
+                _ => 1, // Streak broken, start fresh
+            }
+        }
+    };
+
+    // Update streak
+    tx.execute(
+        "UPDATE user_achievement_stats
+         SET daily_puzzle_streak = ?2,
+             longest_daily_puzzle_streak = MAX(longest_daily_puzzle_streak, ?2)
+         WHERE user_id = ?1",
+        params![user_id, new_streak],
+    )
+    .map_err(|e| format!("Failed to update streak: {}", e))?;
+
+    Ok(())
+}
+
+/// Get today's daily puzzle challenge
+#[tauri::command]
+pub fn get_daily_puzzle(app: AppHandle) -> Result<DailyPuzzleChallenge, String> {
+    let conn = db::get_connection(&app)?;
+    let user_id = 1; // Hardcoded for now
+
+    // Get today's date (local)
+    let today = chrono::Local::now().format("%Y-%m-%d").to_string();
+
+    // Check if daily puzzle exists for today
+    let existing_puzzle: Option<(i32, String, i32)> = conn
+        .query_row(
+            "SELECT id, puzzle_id, bonus_points FROM daily_puzzles WHERE date = ?1",
+            params![&today],
+            |row| Ok((row.get(0)?, row.get(1)?, row.get(2)?)),
+        )
+        .ok();
+
+    let (daily_id, puzzle_id, bonus_points) = match existing_puzzle {
+        Some(data) => data,
+        None => {
+            // Generate new daily puzzle
+            let selected_puzzle_id = select_daily_puzzle_for_user(&conn, user_id)?;
+
+            conn.execute(
+                "INSERT INTO daily_puzzles (puzzle_id, date, bonus_points)
+                 VALUES (?1, ?2, 50)",
+                params![&selected_puzzle_id, &today],
+            )
+            .map_err(|e| format!("Failed to insert daily puzzle: {}", e))?;
+
+            let daily_id = conn.last_insert_rowid() as i32;
+            (daily_id, selected_puzzle_id, 50)
+        }
+    };
+
+    // Get puzzle details
+    let puzzle = get_puzzle(app.clone(), puzzle_id.clone())?;
+
+    // Check if user completed today
+    let completed_today: bool = conn
+        .query_row(
+            "SELECT EXISTS(
+                 SELECT 1 FROM user_puzzle_progress
+                 WHERE user_id = ?1
+                 AND puzzle_id = ?2
+                 AND DATE(solved_at) = ?3
+                 AND status = 'solved'
+             )",
+            params![user_id, &puzzle_id, &today],
+            |row| row.get(0),
+        )
+        .unwrap_or(false);
+
+    // Get languages completed in
+    let mut stmt = conn
+        .prepare(
+            "SELECT language_id FROM user_puzzle_progress
+             WHERE user_id = ?1 AND puzzle_id = ?2 AND status = 'solved'",
+        )
+        .map_err(|e| format!("Failed to query completed languages: {}", e))?;
+
+    let completed_languages: Vec<String> = stmt
+        .query_map(params![user_id, &puzzle_id], |row| row.get(0))
+        .map_err(|e| format!("Failed to map languages: {}", e))?
+        .collect::<Result<Vec<_>, _>>()
+        .map_err(|e| format!("Failed to collect languages: {}", e))?;
+
+    Ok(DailyPuzzleChallenge {
+        id: daily_id,
+        puzzle_id,
+        date: today,
+        bonus_points,
+        puzzle,
+        completed_today,
+        completed_languages,
+    })
+}
+
+/// Complete today's daily puzzle and award bonus points
+#[tauri::command]
+pub fn complete_daily_puzzle(
+    app: AppHandle,
+    puzzle_id: String,
+    language_id: String,
+) -> Result<i32, String> {
+    let mut conn = db::get_connection(&app)?;
+    let user_id = 1;
+
+    let today = chrono::Local::now().format("%Y-%m-%d").to_string();
+
+    // Check if this is the first completion today for this puzzle
+    let first_completion_today: bool = conn
+        .query_row(
+            "SELECT NOT EXISTS(
+                 SELECT 1 FROM user_puzzle_progress
+                 WHERE user_id = ?1
+                 AND puzzle_id = ?2
+                 AND DATE(solved_at) = ?3
+                 AND status = 'solved'
+             )",
+            params![user_id, &puzzle_id, &today],
+            |row| row.get(0),
+        )
+        .unwrap_or(false);
+
+    let bonus_awarded = if first_completion_today {
+        let tx = conn.transaction().map_err(|e| e.to_string())?;
+
+        // Get bonus points
+        let bonus: i32 = tx
+            .query_row(
+                "SELECT bonus_points FROM daily_puzzles WHERE date = ?1 AND puzzle_id = ?2",
+                params![&today, &puzzle_id],
+                |row| row.get(0),
+            )
+            .unwrap_or(50);
+
+        // Update streak tracking
+        update_daily_puzzle_streak(&tx, user_id, &today)?;
+
+        // Update achievement stats
+        tx.execute(
+            "UPDATE user_achievement_stats
+             SET daily_puzzles_completed = daily_puzzles_completed + 1,
+                 daily_puzzle_last_completion_date = ?2,
+                 updated_at = CURRENT_TIMESTAMP
+             WHERE user_id = ?1",
+            params![user_id, &today],
+        )
+        .map_err(|e| format!("Failed to update stats: {}", e))?;
+
+        tx.commit().map_err(|e| e.to_string())?;
+
+        // Trigger achievement checks (use existing achievement system)
+        if let Ok(achievements) = crate::achievement_commands::update_achievement_progress(
+            app.clone(),
+            user_id,
+            "daily_puzzles_completed".to_string(),
+            1,
+        ) {
+            log::info!("Unlocked achievements: {:?}", achievements);
+        }
+
+        if let Ok(achievements) = crate::achievement_commands::update_achievement_progress(
+            app,
+            user_id,
+            "daily_puzzle_streak".to_string(),
+            0, // Increment of 0, just triggers check
+        ) {
+            log::info!("Streak achievements: {:?}", achievements);
+        }
+
+        bonus
+    } else {
+        0 // No bonus for additional language completions on same day
+    };
+
+    Ok(bonus_awarded)
+}
+
+/// Get user's daily puzzle streak information
+#[tauri::command]
+pub fn get_daily_puzzle_streak(app: AppHandle) -> Result<DailyPuzzleStreak, String> {
+    let conn = db::get_connection(&app)?;
+    let user_id = 1;
+
+    let (current_streak, longest_streak, total_completed, last_date): (i32, i32, i32, Option<String>) = conn
+        .query_row(
+            "SELECT daily_puzzle_streak, longest_daily_puzzle_streak,
+                    daily_puzzles_completed, daily_puzzle_last_completion_date
+             FROM user_achievement_stats
+             WHERE user_id = ?1",
+            params![user_id],
+            |row| Ok((row.get(0)?, row.get(1)?, row.get(2)?, row.get(3)?)),
+        )
+        .unwrap_or((0, 0, 0, None));
+
+    Ok(DailyPuzzleStreak {
+        current_streak,
+        longest_streak,
+        total_completed,
+        last_completion_date: last_date,
+    })
+}

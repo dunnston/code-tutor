@@ -4,6 +4,7 @@ import type { ConsoleMessage, ExecutionStatus } from '@/types/execution'
 import type { ChatMessage, AIProviderType } from '@/types/ai'
 import type { UserSettings } from '@components/SettingsModal'
 import type { UserCurrency, InventoryItem, UserQuestProgress, ActiveEffect } from '@/types/gamification'
+import type { DailyPuzzleChallenge, DailyPuzzleStreak } from '@/types/puzzle'
 import {
   loadUserCode,
   saveUserCode,
@@ -101,6 +102,13 @@ interface AppState {
   setCurrentPuzzleCategoryId: (categoryId: string | null) => void
   currentPuzzleId: string | null
   setCurrentPuzzleId: (puzzleId: string | null) => void
+
+  // Daily puzzle state
+  dailyPuzzle: DailyPuzzleChallenge | null
+  dailyPuzzleStreak: DailyPuzzleStreak | null
+  setDailyPuzzle: (puzzle: DailyPuzzleChallenge | null) => void
+  setDailyPuzzleStreak: (streak: DailyPuzzleStreak | null) => void
+  refreshDailyPuzzle: () => Promise<void>
 
   // Playground state
   playgroundProjectId: string | null
@@ -334,6 +342,24 @@ export const useAppStore = create<AppState>((set, get) => ({
   setCurrentPuzzleCategoryId: (categoryId) => set({ currentPuzzleCategoryId: categoryId }),
   currentPuzzleId: null,
   setCurrentPuzzleId: (puzzleId) => set({ currentPuzzleId: puzzleId }),
+
+  // Daily puzzle state
+  dailyPuzzle: null,
+  dailyPuzzleStreak: null,
+  setDailyPuzzle: (puzzle) => set({ dailyPuzzle: puzzle }),
+  setDailyPuzzleStreak: (streak) => set({ dailyPuzzleStreak: streak }),
+  refreshDailyPuzzle: async () => {
+    try {
+      const { getDailyPuzzle, getDailyPuzzleStreak } = await import('./puzzles')
+      const [puzzle, streak] = await Promise.all([
+        getDailyPuzzle(),
+        getDailyPuzzleStreak(),
+      ])
+      set({ dailyPuzzle: puzzle, dailyPuzzleStreak: streak })
+    } catch (error) {
+      console.error('Failed to refresh daily puzzle:', error)
+    }
+  },
 
   // Playground state
   playgroundProjectId: null,

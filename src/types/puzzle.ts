@@ -134,6 +134,29 @@ export interface DailyPuzzle {
 }
 
 /**
+ * Daily puzzle challenge with completion status and full puzzle details
+ */
+export interface DailyPuzzleChallenge {
+  id: number
+  puzzleId: string
+  date: string // YYYY-MM-DD format
+  bonusPoints: number
+  puzzle: Puzzle
+  completedToday: boolean
+  completedLanguages: string[]
+}
+
+/**
+ * Daily puzzle streak information
+ */
+export interface DailyPuzzleStreak {
+  currentStreak: number
+  longestStreak: number
+  totalCompleted: number
+  lastCompletionDate?: string
+}
+
+/**
  * Achievement types
  */
 export type AchievementType = 'count' | 'streak' | 'difficulty' | 'language' | 'optimization'

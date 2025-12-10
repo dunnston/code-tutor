@@ -8,6 +8,8 @@ import type {
   PuzzleCategory,
   Puzzle,
   PuzzleImplementation,
+  DailyPuzzleChallenge,
+  DailyPuzzleStreak,
 } from '@/types/puzzle'
 
 /**
@@ -244,6 +246,70 @@ export async function markPuzzleSolved(
     return points
   } catch (error) {
     console.error(`Failed to mark puzzle solved ${puzzleId}/${languageId}:`, error)
+    throw error
+  }
+}
+
+// ============================================================================
+// DAILY PUZZLE CHALLENGE
+// ============================================================================
+
+/**
+ * Get today's daily puzzle challenge
+ */
+export async function getDailyPuzzle(): Promise<DailyPuzzleChallenge> {
+  try {
+    const challenge = await invoke<any>('get_daily_puzzle')
+
+    return {
+      id: challenge.id,
+      puzzleId: challenge.puzzle_id,
+      date: challenge.date,
+      bonusPoints: challenge.bonus_points,
+      puzzle: mapPuzzleFromRust(challenge.puzzle),
+      completedToday: challenge.completed_today,
+      completedLanguages: challenge.completed_languages,
+    }
+  } catch (error) {
+    console.error('Failed to get daily puzzle:', error)
+    throw error
+  }
+}
+
+/**
+ * Complete today's daily puzzle and get bonus points awarded
+ */
+export async function completeDailyPuzzle(
+  puzzleId: string,
+  languageId: string
+): Promise<number> {
+  try {
+    const bonusPoints = await invoke<number>('complete_daily_puzzle', {
+      puzzleId,
+      languageId,
+    })
+    return bonusPoints
+  } catch (error) {
+    console.error('Failed to complete daily puzzle:', error)
+    throw error
+  }
+}
+
+/**
+ * Get daily puzzle streak information
+ */
+export async function getDailyPuzzleStreak(): Promise<DailyPuzzleStreak> {
+  try {
+    const streak = await invoke<any>('get_daily_puzzle_streak')
+
+    return {
+      currentStreak: streak.current_streak,
+      longestStreak: streak.longest_streak,
+      totalCompleted: streak.total_completed,
+      lastCompletionDate: streak.last_completion_date,
+    }
+  } catch (error) {
+    console.error('Failed to get daily puzzle streak:', error)
     throw error
   }
 }

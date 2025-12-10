@@ -8,6 +8,8 @@ import {
   recordHintUsed,
   recordSolutionViewed,
   markPuzzleSolved,
+  getDailyPuzzle,
+  completeDailyPuzzle,
 } from '@/lib/puzzles'
 import { validatePuzzleSolution, formatTestResults } from '@/lib/puzzleValidation'
 import { useAppStore } from '@/lib/store'
@@ -244,6 +246,30 @@ export function PuzzleSolver({ puzzleId }: PuzzleSolverProps) {
           }
         } catch (error) {
           console.error('Failed to track achievements:', error)
+        }
+
+        // Check if this is today's daily puzzle and award bonus
+        try {
+          const dailyChallenge = await getDailyPuzzle()
+          if (dailyChallenge.puzzleId === puzzleId && !dailyChallenge.completedToday) {
+            const bonusPoints = await completeDailyPuzzle(puzzleId, selectedLanguage)
+            if (bonusPoints > 0) {
+              addConsoleMessage({
+                type: 'success',
+                content: `🎉 Daily Challenge Complete! +${bonusPoints} bonus points!`,
+              })
+
+              // Add bonus XP to user profile
+              addXP(bonusPoints)
+
+              // Refresh daily puzzle state
+              const { refreshDailyPuzzle } = useAppStore.getState()
+              await refreshDailyPuzzle()
+            }
+          }
+        } catch (error) {
+          console.error('Failed to check daily puzzle:', error)
+          // Non-critical, continue
         }
 
         addConsoleMessage({

@@ -57,6 +57,10 @@ pub fn run() {
       puzzle_commands::record_hint_used,
       puzzle_commands::record_solution_viewed,
       puzzle_commands::mark_puzzle_solved,
+      // Daily puzzle commands
+      puzzle_commands::get_daily_puzzle,
+      puzzle_commands::complete_daily_puzzle,
+      puzzle_commands::get_daily_puzzle_streak,
       // Playground commands
       playground_commands::get_playground_projects,
       playground_commands::get_playground_project,

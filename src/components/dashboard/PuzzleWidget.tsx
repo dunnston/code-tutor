@@ -1,12 +1,27 @@
+import { useEffect, useState } from 'react'
 import { useAppStore } from '@/lib/store'
+import { getDailyPuzzleStreak } from '@/lib/puzzles'
 
 export function PuzzleWidget() {
   const setCurrentView = useAppStore((state) => state.setCurrentView)
+  const [dailyStreak, setDailyStreak] = useState(0)
 
   // TODO: Get actual puzzle stats from user progress
   const puzzlesSolved = 0
-  const currentStreak = 0
   const totalPoints = 0
+
+  useEffect(() => {
+    loadDailyStreak()
+  }, [])
+
+  const loadDailyStreak = async () => {
+    try {
+      const streakData = await getDailyPuzzleStreak()
+      setDailyStreak(streakData.currentStreak)
+    } catch (error) {
+      console.error('Failed to load daily puzzle streak:', error)
+    }
+  }
 
   const handleOpenPuzzles = () => {
     setCurrentView('puzzles')
@@ -39,9 +54,9 @@ export function PuzzleWidget() {
           <div className="text-2xl font-bold text-white">{puzzlesSolved}</div>
         </div>
         <div className="bg-navy-900/50 rounded-lg p-4 border border-purple-700/30">
-          <div className="text-sm text-gray-400 mb-1">Streak</div>
+          <div className="text-sm text-gray-400 mb-1">Daily Streak</div>
           <div className="text-2xl font-bold text-orange-500 flex items-center gap-2">
-            {currentStreak}
+            {dailyStreak}
             <span className="text-xl">🔥</span>
           </div>
         </div>

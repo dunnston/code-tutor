@@ -3,6 +3,7 @@ import { getPuzzleCategories, getPuzzlesByCategory } from '@/lib/puzzles'
 import { useAppStore } from '@/lib/store'
 import type { PuzzleCategory } from '@/types/puzzle'
 import { CategoryCard } from './CategoryCard'
+import { DailyChallengeCard } from './DailyChallengeCard'
 
 export function PuzzleHub() {
   const [categories, setCategories] = useState<PuzzleCategory[]>([])
@@ -131,28 +132,9 @@ export function PuzzleHub() {
           </div>
         </div>
 
-        {/* Daily Challenge (Coming Soon) */}
-        <div className="bg-gradient-to-r from-purple-900/30 to-blue-900/30 border border-purple-700/50 rounded-lg p-6 mb-8">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-xl font-bold text-white mb-2 flex items-center gap-2">
-                <span className="text-2xl">⭐</span>
-                Daily Challenge
-              </h3>
-              <p className="text-gray-400">
-                Complete today's puzzle for bonus points!
-              </p>
-            </div>
-            <div className="text-right">
-              <div className="text-sm text-gray-400 mb-1">Coming Soon</div>
-              <button
-                disabled
-                className="px-6 py-2 bg-gray-700 text-gray-500 rounded-lg cursor-not-allowed"
-              >
-                Start Challenge
-              </button>
-            </div>
-          </div>
+        {/* Daily Challenge */}
+        <div className="mb-8">
+          <DailyChallengeCard />
         </div>
 
         {/* Categories */}
