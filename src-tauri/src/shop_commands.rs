@@ -318,16 +318,19 @@ pub fn get_rpg_shop_items(app: AppHandle, user_id: i64) -> Result<Vec<ShopItem>,
 
     let mut shop_items = Vec::new();
 
-    // Get active shop inventory (from shop_active_inventory instead of shop_inventory)
+    // Get active shop inventory with required_level from shop_inventory
     let mut stmt = conn
         .prepare(
-            "SELECT id, item_type, item_id, display_order, price, stock_quantity, added_at
-             FROM shop_active_inventory
-             ORDER BY display_order ASC",
+            "SELECT DISTINCT sai.id, sai.item_type, sai.item_id, sai.display_order, sai.price, sai.stock_quantity, sai.added_at,
+                   COALESCE(MAX(si.required_level), 1) as required_level
+             FROM shop_active_inventory sai
+             LEFT JOIN shop_inventory si ON si.item_id = sai.item_id AND si.item_type = sai.item_type
+             GROUP BY sai.id, sai.item_type, sai.item_id, sai.display_order, sai.price, sai.stock_quantity, sai.added_at
+             ORDER BY sai.display_order ASC",
         )
         .map_err(|e| format!("Failed to prepare shop query: {}", e))?;
 
-    let inventory_items: Vec<(i64, String, String, i64, i64, Option<i64>, String)> = stmt
+    let inventory_items: Vec<(i64, String, String, i64, i64, Option<i64>, String, i64)> = stmt
         .query_map([], |row| {
             Ok((
                 row.get(0)?, // id
@@ -337,13 +340,14 @@ pub fn get_rpg_shop_items(app: AppHandle, user_id: i64) -> Result<Vec<ShopItem>,
                 row.get(4)?, // price
                 row.get(5)?, // stock_quantity
                 row.get(6)?, // added_at
+                row.get(7)?, // required_level
             ))
         })
         .map_err(|e| format!("Failed to query shop inventory: {}", e))?
         .collect::<Result<Vec<_>, _>>()
         .map_err(|e| format!("Failed to collect shop inventory: {}", e))?;
 
-    for (id, item_type, item_id, _display_order, price, stock_quantity, _added_at) in inventory_items {
+    for (id, item_type, item_id, _display_order, price, stock_quantity, _added_at, required_level) in inventory_items {
         let in_stock = stock_quantity.map_or(true, |stock| stock > 0);
 
         if item_type == "equipment" {
@@ -368,7 +372,7 @@ pub fn get_rpg_shop_items(app: AppHandle, user_id: i64) -> Result<Vec<ShopItem>,
                 equipment,
                 price,
                 in_stock,
-                required_level: 1, // Can be made dynamic later
+                required_level,
             });
         } else if item_type == "consumable" {
             // Fetch consumable details
@@ -389,7 +393,7 @@ pub fn get_rpg_shop_items(app: AppHandle, user_id: i64) -> Result<Vec<ShopItem>,
                 consumable,
                 price,
                 in_stock,
-                required_level: 1, // Can be made dynamic later
+                required_level,
             });
         }
     }
@@ -488,12 +492,34 @@ pub fn purchase_shop_item(
 
     // Add item to inventory
     if item_type == "equipment" {
-        conn.execute(
-            "INSERT INTO user_equipment_inventory (user_id, equipment_id, quantity, acquired_at)
-             VALUES (?, ?, ?, CURRENT_TIMESTAMP)",
-            params![user_id, item_id, quantity],
-        )
-        .map_err(|e| format!("Failed to add equipment to inventory: {}", e))?;
+        // Check if equipment already exists
+        let existing_quantity: Option<i64> = conn
+            .query_row(
+                "SELECT quantity FROM user_equipment_inventory
+                 WHERE user_id = ? AND equipment_id = ?",
+                params![user_id, item_id],
+                |row| row.get(0),
+            )
+            .ok();
+
+        if let Some(current_qty) = existing_quantity {
+            // Update quantity if already owned
+            conn.execute(
+                "UPDATE user_equipment_inventory
+                 SET quantity = quantity + ?
+                 WHERE user_id = ? AND equipment_id = ?",
+                params![quantity, user_id, item_id],
+            )
+            .map_err(|e| format!("Failed to update equipment quantity: {}", e))?;
+        } else {
+            // Insert new equipment
+            conn.execute(
+                "INSERT INTO user_equipment_inventory (user_id, equipment_id, quantity, acquired_at)
+                 VALUES (?, ?, ?, CURRENT_TIMESTAMP)",
+                params![user_id, item_id, quantity],
+            )
+            .map_err(|e| format!("Failed to add equipment to inventory: {}", e))?;
+        }
     } else {
         // Add consumable (merge with existing if already owned)
         conn.execute(

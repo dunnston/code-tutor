@@ -149,6 +149,7 @@ pub fn run() {
       combat_commands::execute_combat_turn,
       combat_commands::end_combat_victory,
       combat_commands::end_combat_defeat,
+      combat_commands::end_combat_flee,
       // Narrative dungeon commands
       narrative_commands::roll_d20,
       narrative_commands::get_user_narrative_progress,

@@ -22,6 +22,8 @@ import {
   // Consumables
   getConsumableInventory,
   useConsumable,
+  // Combat
+  endCombatFlee,
 } from '../../lib/rpg';
 import type {
   DungeonFloor,
@@ -432,8 +434,15 @@ export function DungeonExplorer({ userId, onClose }: DungeonExplorerProps) {
     // Don't auto-continue, wait for Continue button (or close if defeat)
   }
 
-  function handleFlee() {
+  async function handleFlee() {
     console.log('Fled from combat!');
+
+    // End combat in the database (clear in_combat flag)
+    try {
+      await endCombatFlee(userId);
+    } catch (err) {
+      console.error('Failed to end combat flee in database:', err);
+    }
 
     setCurrentOutcome({
       id: 'combat_flee',

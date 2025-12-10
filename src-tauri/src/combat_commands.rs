@@ -488,3 +488,25 @@ pub fn end_combat_defeat(app: AppHandle, user_id: i64) -> Result<(), String> {
 
     Ok(())
 }
+
+#[tauri::command]
+pub fn end_combat_flee(app: AppHandle, user_id: i64) -> Result<(), String> {
+    let conn = get_connection(&app)?;
+
+    // Update dungeon progress - clear combat state
+    conn.execute(
+        "UPDATE user_dungeon_progress
+         SET in_combat = FALSE,
+             current_enemy_id = NULL,
+             current_enemy_health = NULL,
+             updated_at = CURRENT_TIMESTAMP
+         WHERE user_id = ?",
+        params![user_id],
+    )
+    .map_err(|e| format!("Failed to update dungeon progress: {}", e))?;
+
+    // Note: Player keeps their current health and damage taken during flee
+    // This is handled in the frontend flee logic
+
+    Ok(())
+}

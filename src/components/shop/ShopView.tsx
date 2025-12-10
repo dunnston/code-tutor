@@ -189,6 +189,7 @@ export function ShopView() {
         <PurchaseModal
           item={selectedItem}
           userCurrency={userCurrency}
+          userLevel={progress.level}
           quantity={purchaseQuantity}
           onQuantityChange={setPurchaseQuantity}
           onConfirm={handlePurchase}

@@ -53,17 +53,11 @@ export function DungeonWidget({ userId, onEnterDungeon }: DungeonWidgetProps) {
   }
 
   const healthPercent = (stats.currentHealth / stats.maxHealth) * 100;
-  const inCombat = progress.inCombat;
 
   return (
     <div className="bg-slate-800 rounded-lg p-6 border border-slate-700 hover:border-orange-500/50 transition-colors">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-bold text-orange-400">⚔️ Dungeon Crawler</h3>
-        {inCombat && (
-          <span className="text-xs bg-red-500/20 text-red-400 px-2 py-1 rounded animate-pulse">
-            IN COMBAT
-          </span>
-        )}
       </div>
 
       <div className="space-y-3 mb-4">
@@ -113,17 +107,8 @@ export function DungeonWidget({ userId, onEnterDungeon }: DungeonWidgetProps) {
         onClick={onEnterDungeon}
         className="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 px-4 rounded-lg transition-colors flex items-center justify-center gap-2"
       >
-        {inCombat ? (
-          <>
-            <span>⚔️</span>
-            <span>Continue Battle</span>
-          </>
-        ) : (
-          <>
-            <span>🗡️</span>
-            <span>Enter Dungeon</span>
-          </>
-        )}
+        <span>🗡️</span>
+        <span>Start Adventure</span>
       </button>
 
       {/* Quick Stats Footer */}

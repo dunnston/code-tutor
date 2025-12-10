@@ -1,0 +1,15 @@
+# Seed Database Placeholder
+#
+# This file will be replaced by your production database.
+#
+# To export your development database with all content:
+#   1. Run: .\export-database-for-production.ps1
+#   2. This will copy your dev database to: src-tauri\seed_database.db
+#   3. Build production: npm run tauri build
+#
+# The seed database will include:
+#   - All 300+ MCQ questions
+#   - Custom enemies and bosses
+#   - Equipment items and consumables
+#   - Dungeon levels and content
+#   - Everything you've created in the editor!

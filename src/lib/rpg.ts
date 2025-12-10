@@ -597,6 +597,10 @@ export async function endCombatDefeat(userId: number): Promise<void> {
   await invoke('end_combat_defeat', { userId });
 }
 
+export async function endCombatFlee(userId: number): Promise<void> {
+  await invoke('end_combat_flee', { userId });
+}
+
 // ============================================================================
 // NARRATIVE DUNGEON SYSTEM
 // ============================================================================

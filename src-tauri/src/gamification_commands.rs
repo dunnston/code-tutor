@@ -419,6 +419,21 @@ pub fn purchase_item(
     let total_gold = item.cost_gold * quantity;
     let total_gems = item.cost_gems * quantity;
 
+    // Check level requirement
+    let user_level: i64 = conn.query_row(
+        "SELECT level FROM character_stats WHERE user_id = ?",
+        params![user_id],
+        |row| row.get(0),
+    ).unwrap_or(1); // Default to level 1 if not found
+
+    if user_level < item.required_level {
+        return Err(format!(
+            "Level requirement not met: Requires level {} (you are level {})",
+            item.required_level,
+            user_level
+        ));
+    }
+
     // Check if user has enough currency
     let currency = get_user_currency(app.clone(), user_id)?;
     if currency.gold < total_gold {

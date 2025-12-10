@@ -4,6 +4,7 @@ import type { ShopItem, UserCurrency } from '@/types/gamification';
 interface PurchaseModalProps {
   item: ShopItem;
   userCurrency: UserCurrency;
+  userLevel: number;
   quantity: number;
   onQuantityChange: (quantity: number) => void;
   onConfirm: () => void;
@@ -14,6 +15,7 @@ interface PurchaseModalProps {
 export function PurchaseModal({
   item,
   userCurrency,
+  userLevel,
   quantity,
   onQuantityChange,
   onConfirm,
@@ -24,6 +26,8 @@ export function PurchaseModal({
   const totalGems = item.costGems * quantity;
   const canAfford =
     userCurrency.gold >= totalGold && userCurrency.gems >= totalGems;
+  const meetsLevelRequirement = userLevel >= item.requiredLevel;
+  const canPurchase = canAfford && meetsLevelRequirement;
 
   const remainingGold = userCurrency.gold - totalGold;
   const remainingGems = userCurrency.gems - totalGems;
@@ -138,8 +142,17 @@ export function PurchaseModal({
           )}
         </div>
 
+        {/* Warning if level requirement not met */}
+        {!meetsLevelRequirement && (
+          <div className="mb-4 p-3 bg-red-900 bg-opacity-30 border border-red-600 rounded-lg">
+            <p className="text-red-400 text-sm">
+              ⚠️ Level requirement not met: Requires level {item.requiredLevel} (you are level {userLevel})
+            </p>
+          </div>
+        )}
+
         {/* Warning if can't afford */}
-        {!canAfford && (
+        {meetsLevelRequirement && !canAfford && (
           <div className="mb-4 p-3 bg-red-900 bg-opacity-30 border border-red-600 rounded-lg">
             <p className="text-red-400 text-sm">
               ⚠️ You don't have enough currency for this purchase
@@ -158,7 +171,7 @@ export function PurchaseModal({
           </button>
           <button
             onClick={onConfirm}
-            disabled={!canAfford || purchasing}
+            disabled={!canPurchase || purchasing}
             className="flex-1 py-3 bg-[#fb923c] hover:bg-[#f59e0b] disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg font-bold transition-colors"
           >
             {purchasing ? 'Purchasing...' : 'Confirm Purchase'}
