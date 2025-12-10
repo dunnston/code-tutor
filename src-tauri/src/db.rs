@@ -331,6 +331,12 @@ pub fn initialize_database(app: &AppHandle) -> Result<(), String> {
     let _ = conn.execute_batch(mcq_migration); // Allow failure if table already exists
     log::info!("MCQ questions migration completed");
 
+    // Execute challenge history foreign key fix migration
+    log::info!("Loading challenge history FK fix migration...");
+    let challenge_history_fk_migration = include_str!("../migrations/034_fix_challenge_history_fk.sql");
+    let _ = conn.execute_batch(challenge_history_fk_migration); // Allow failure if already fixed
+    log::info!("Challenge history FK fix migration completed");
+
     // Auto-seed MCQ questions if none exist (for production builds)
     log::info!("Checking if MCQ questions need to be seeded...");
     let question_count: i32 = conn

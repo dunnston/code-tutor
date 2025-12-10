@@ -19,7 +19,7 @@ pub struct McqQuestion {
     pub updated_at: String,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct QuestionListItem {
     pub id: String,
@@ -131,7 +131,7 @@ pub fn list_mcq_questions(
 ) -> Result<Vec<QuestionListItem>, String> {
     let conn = db::get_connection(&app)?;
 
-    let mut query = "SELECT id, question_text, difficulty, topic, language FROM mcq_questions WHERE 1=1".to_string();
+    let mut query = "SELECT id, question_text, difficulty, topic, language FROM mcq_questions WHERE question_text IS NOT NULL AND question_text != ''".to_string();
     let mut params_vec: Vec<String> = Vec::new();
 
     if let Some(diff) = difficulty_filter {
@@ -238,6 +238,109 @@ pub fn get_random_mcq_question(
     let mut rng = rand::thread_rng();
     let random_index = rng.gen_range(0..questions.len());
     let selected = &questions[random_index];
+
+    load_mcq_question(app, selected.id.clone())
+}
+
+// Get smart question selection based on user history
+// Prioritizes: 1) Never seen before, 2) Failed recently, 3) Not seen recently
+#[tauri::command]
+pub fn get_smart_mcq_question(
+    app: AppHandle,
+    user_id: i64,
+    difficulty: Option<String>,
+    language: Option<String>,
+    topic: Option<String>,
+) -> Result<McqQuestion, String> {
+    let conn = db::get_connection(&app)?;
+
+    // First try with the specified difficulty
+    let mut questions = list_mcq_questions(app.clone(), difficulty.clone(), language.clone(), topic.clone())?;
+
+    // If no questions found with specific difficulty, try without difficulty filter
+    if questions.is_empty() && difficulty.is_some() {
+        eprintln!("No questions found for difficulty {:?}, trying without difficulty filter", difficulty);
+        questions = list_mcq_questions(app.clone(), None, language.clone(), topic.clone())?;
+    }
+
+    if questions.is_empty() {
+        return Err(format!("No questions available in mcq_questions table (difficulty: {:?}, language: {:?}, topic: {:?}). Please add questions using the Question Manager.",
+            difficulty, language, topic));
+    }
+
+    // Get user's question history (questions they've seen and when)
+    let mut seen_questions = std::collections::HashMap::new();
+    let mut stmt = conn
+        .prepare(
+            "SELECT challenge_id, success, MAX(completed_at) as last_seen
+             FROM user_challenge_history
+             WHERE user_id = ? AND challenge_id IN (SELECT id FROM mcq_questions)
+             GROUP BY challenge_id"
+        )
+        .map_err(|e| format!("Failed to query history: {}", e))?;
+
+    let history = stmt
+        .query_map([user_id], |row| {
+            Ok((
+                row.get::<_, String>(0)?,  // challenge_id
+                row.get::<_, bool>(1)?,     // success (last attempt)
+                row.get::<_, String>(2)?,   // last_seen timestamp
+            ))
+        })
+        .map_err(|e| format!("Failed to map history: {}", e))?;
+
+    for result in history {
+        if let Ok((id, success, last_seen)) = result {
+            seen_questions.insert(id, (success, last_seen));
+        }
+    }
+
+    // Categorize questions by priority
+    let mut never_seen = Vec::new();
+    let mut failed_before = Vec::new();
+    let mut seen_long_ago = Vec::new();
+    let mut recently_seen = Vec::new();
+
+    let now = chrono::Utc::now();
+
+    for q in &questions {
+        if let Some((last_success, last_seen_str)) = seen_questions.get(&q.id) {
+            // Parse the timestamp
+            if let Ok(last_seen_time) = chrono::DateTime::parse_from_rfc3339(&last_seen_str) {
+                let hours_ago = now.signed_duration_since(last_seen_time).num_hours();
+
+                if !last_success {
+                    // Failed before - high priority
+                    failed_before.push(q.clone());
+                } else if hours_ago > 24 {
+                    // Seen more than 24 hours ago
+                    seen_long_ago.push(q.clone());
+                } else {
+                    // Seen recently
+                    recently_seen.push(q.clone());
+                }
+            }
+        } else {
+            // Never seen before - highest priority
+            never_seen.push(q.clone());
+        }
+    }
+
+    // Select from highest priority pool available
+    use rand::Rng;
+    let mut rng = rand::thread_rng();
+
+    let selected = if !never_seen.is_empty() {
+        &never_seen[rng.gen_range(0..never_seen.len())]
+    } else if !failed_before.is_empty() {
+        &failed_before[rng.gen_range(0..failed_before.len())]
+    } else if !seen_long_ago.is_empty() {
+        &seen_long_ago[rng.gen_range(0..seen_long_ago.len())]
+    } else if !recently_seen.is_empty() {
+        &recently_seen[rng.gen_range(0..recently_seen.len())]
+    } else {
+        return Err("No suitable questions found".to_string());
+    };
 
     load_mcq_question(app, selected.id.clone())
 }

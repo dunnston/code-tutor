@@ -19,7 +19,7 @@ import { CharacterStatsDisplay } from '../rpg/CharacterStats';
 import { CombatModal } from '../rpg/CombatModal';
 import type { CharacterStats, EnemyType, BossEnemy, DungeonChallenge } from '../../types/rpg';
 import type { CombatRewards } from '../../lib/rpg';
-import { getCharacterStats, getEnemyById, getChallengeForAction, recordChallengeAttempt } from '../../lib/rpg';
+import { getCharacterStats, getEnemyById, getCustomEnemyById, getChallengeForAction, recordChallengeAttempt, restoreHealthAndMana } from '../../lib/rpg';
 import { getCurrentProfile } from '../../lib/profiles';
 
 interface LevelPlayerEnhancedProps {
@@ -29,7 +29,7 @@ interface LevelPlayerEnhancedProps {
   onExit?: () => void;
 }
 
-type GamePhase = 'narrative' | 'choice' | 'ability-check' | 'combat' | 'challenge' | 'outcome' | 'loot';
+type GamePhase = 'town' | 'narrative' | 'choice' | 'ability-check' | 'combat' | 'challenge' | 'outcome' | 'loot';
 
 interface PlayerState {
   currentNodeId: string;
@@ -56,7 +56,7 @@ export const LevelPlayerEnhanced: React.FC<LevelPlayerEnhancedProps> = ({
   const [stats, setStats] = useState<CharacterStats | null>(null);
   const [playerAvatar, setPlayerAvatar] = useState<string>('');
 
-  const [phase, setPhase] = useState<GamePhase>('narrative');
+  const [phase, setPhase] = useState<GamePhase>('town');
   const [playerState, setPlayerState] = useState<PlayerState>({
     currentNodeId: '',
     visitedNodes: [],
@@ -109,16 +109,8 @@ export const LevelPlayerEnhanced: React.FC<LevelPlayerEnhancedProps> = ({
         maxHealth: characterStats.maxHealth,
       }));
 
-      // Find start node
-      if (level) {
-        const startNode = level.nodes.find((n) => n.type === DungeonNodeType.START);
-        if (startNode) {
-          setPlayerState((prev) => ({ ...prev, currentNodeId: startNode.id }));
-          processNode(startNode);
-        } else {
-          setNarrativeText(['ERROR: No start node found in level!']);
-        }
-      }
+      // Start at town instead of jumping into dungeon
+      setPhase('town');
     } catch (error) {
       console.error('Failed to initialize player:', error);
       setNarrativeText(['Failed to load character data']);
@@ -260,38 +252,129 @@ export const LevelPlayerEnhanced: React.FC<LevelPlayerEnhancedProps> = ({
     setAvailableActions(actions);
   };
 
-  const handleAbilityCheck = (node: DungeonNode) => {
+  const handleAbilityCheck = async (node: DungeonNode) => {
     const data = node.data as AbilityCheckNodeData;
-    setPhase('ability-check');
-    addNarrative(`${data.ability} Check (DC ${data.dc})`);
-    addNarrative('Roll the dice to test your abilities!');
+
+    // Check if this ability check uses MCQ
+    if (data.useMcq) {
+      // MCQ-based ability check
+      setPhase('challenge');
+      addNarrative(`${data.ability} Check (DC ${data.dc})`);
+      addNarrative('Answer the question to gain a bonus to your roll!');
+
+      try {
+        let challengeData;
+
+        // If question ID is provided, use that specific question
+        // Otherwise, get a random question
+        if (data.mcqQuestionId && data.mcqQuestionId.trim() !== '') {
+          challengeData = await invoke('load_mcq_question', { questionId: data.mcqQuestionId }) as any;
+        } else {
+          challengeData = await invoke('get_smart_mcq_question', {
+            userId,
+            difficulty: null,
+            language: null,
+            topic: null,
+          }) as any;
+        }
+
+        console.log('Challenge data from backend:', challengeData);
+
+        const parsedChallenge = {
+          ...challengeData,
+          choices: JSON.parse(challengeData.options),
+          correctAnswer: String.fromCharCode(65 + challengeData.correctAnswerIndex), // camelCase from Rust
+          question_text: challengeData.questionText, // Map camelCase to snake_case for compatibility
+        };
+
+        console.log('Parsed challenge:', parsedChallenge);
+        console.log('Question text (camelCase):', challengeData.questionText);
+        console.log('Question text type:', typeof challengeData.questionText);
+
+        setChallenge(parsedChallenge);
+
+        // Display the question text
+        if (challengeData.questionText && challengeData.questionText.trim()) {
+          addNarrative('');
+          addNarrative(challengeData.questionText);
+        } else {
+          addNarrative('');
+          addNarrative('[Question text missing from database]');
+          console.error('Question text is empty or null:', challengeData.questionText);
+        }
+
+        // Store the ability check data for after the question is answered
+        (window as any)._pendingAbilityCheck = {
+          node,
+          data,
+        };
+
+      } catch (error) {
+        console.error('Failed to load question:', error);
+        addNarrative('Failed to load challenge question - proceeding with normal roll');
+        // Fall back to normal dice roll
+        handleAbilityCheckRoll(node, data, false, 0);
+      }
+    } else {
+      // Standard dice roll ability check (no MCQ)
+      setPhase('ability-check');
+      addNarrative(`${data.ability} Check (DC ${data.dc})`);
+      addNarrative('Roll the dice to test your abilities!');
+
+      setAvailableActions([{
+        label: `🎲 Roll ${data.ability} Check`,
+        action: () => handleAbilityCheckRoll(node, data, false, 0),
+      }]);
+    }
+  };
+
+  const handleAbilityCheckRoll = (node: DungeonNode, data: AbilityCheckNodeData, useMcqModifier: boolean, mcqModifier: number) => {
+    const roll = Math.floor(Math.random() * 20) + 1;
+
+    // Get raw stat value for non-MCQ mode instead of D&D modifier
+    let rawStatValue = 0;
+    if (!useMcqModifier) {
+      switch (data.ability.toLowerCase()) {
+        case 'str':
+        case 'strength':
+          rawStatValue = stats?.strength || 0;
+          break;
+        case 'int':
+        case 'intelligence':
+          rawStatValue = stats?.intelligence || 0;
+          break;
+        case 'dex':
+        case 'dexterity':
+          rawStatValue = stats?.dexterity || 0;
+          break;
+        case 'cha':
+        case 'charisma':
+          rawStatValue = stats?.charisma || 0;
+          break;
+      }
+    }
+
+    const modifier = useMcqModifier ? mcqModifier : rawStatValue;
+    const total = roll + modifier;
+    const success = total >= data.dc;
+
+    setDiceRoll(roll);
+    setCheckResult({ passed: success, total, dc: data.dc });
+    setPhase('outcome');
+
+    clearNarrative();
+    addNarrative(`You rolled: ${roll} + ${modifier} (${data.ability}) = ${total}`);
+    addNarrative(success ? `✅ Success!` : `❌ Failed!`);
+    addNarrative(success ? data.successText : data.failureText);
 
     setAvailableActions([{
-      label: `🎲 Roll ${data.ability} Check`,
-      action: async () => {
-        const roll = Math.floor(Math.random() * 20) + 1;
-        const modifier = getStatModifier(data.ability, stats);
-        const total = roll + modifier;
-        const success = total >= data.dc;
-
-        setDiceRoll(roll);
-        setCheckResult({ passed: success, total, dc: data.dc });
-        setPhase('outcome');
-
-        clearNarrative();
-        addNarrative(`You rolled: ${roll} + ${modifier} (${data.ability}) = ${total}`);
-        addNarrative(success ? `✅ ${data.successText}` : `❌ ${data.failureText}`);
-
-        setAvailableActions([{
-          label: 'Continue',
-          action: () => {
-            const nextNodes = getNextNodes(node.id, success ? 'success' : 'failure');
-            if (nextNodes.length > 0) {
-              setPlayerState((prev) => ({ ...prev, currentNodeId: nextNodes[0].id }));
-              processNode(nextNodes[0]);
-            }
-          },
-        }]);
+      label: 'Continue',
+      action: () => {
+        const nextNodes = getNextNodes(node.id, success ? 'success' : 'failure');
+        if (nextNodes.length > 0) {
+          setPlayerState((prev) => ({ ...prev, currentNodeId: nextNodes[0].id }));
+          processNode(nextNodes[0]);
+        }
       },
     }]);
   };
@@ -314,10 +397,15 @@ export const LevelPlayerEnhanced: React.FC<LevelPlayerEnhancedProps> = ({
             addNarrative(`Rolled ${total} - You avoid the trap!`);
           } else {
             addNarrative(`Rolled ${total} - You trigger the trap!`);
+            const newHealth = Math.max(0, playerState.health - data.damage);
             setPlayerState((prev) => ({
               ...prev,
-              health: Math.max(0, prev.health - data.damage),
+              health: newHealth,
             }));
+            setStats((prev) => prev ? ({
+              ...prev,
+              currentHealth: newHealth,
+            }) : prev);
             addNarrative(`You take ${data.damage} damage!`);
           }
 
@@ -326,10 +414,15 @@ export const LevelPlayerEnhanced: React.FC<LevelPlayerEnhancedProps> = ({
       }]);
     } else {
       addNarrative(`You trigger the trap! -${data.damage} HP`);
+      const newHealth = Math.max(0, playerState.health - data.damage);
       setPlayerState((prev) => ({
         ...prev,
-        health: Math.max(0, prev.health - data.damage),
+        health: newHealth,
       }));
+      setStats((prev) => prev ? ({
+        ...prev,
+        currentHealth: newHealth,
+      }) : prev);
       setTimeout(() => autoProgress(node), 1500);
     }
   };
@@ -338,27 +431,116 @@ export const LevelPlayerEnhanced: React.FC<LevelPlayerEnhancedProps> = ({
     const data = node.data as CombatNodeData;
     addNarrative(data.flavorText || 'Enemies appear!');
 
-    data.enemies.forEach((enemy) => {
-      addNarrative(`- ${enemy.count}x ${enemy.type} (Level ${enemy.level})`);
+    // Load enemy details to show proper names
+    const enemyPromises = data.enemies.map(async (enemyRef) => {
+      if (enemyRef.customEnemyId) {
+        try {
+          const enemy = await getCustomEnemyById(enemyRef.customEnemyId);
+          return { ...enemyRef, name: enemy.name };
+        } catch {
+          return { ...enemyRef, name: 'Unknown Enemy' };
+        }
+      }
+      return { ...enemyRef, name: enemyRef.type || 'Unknown' };
     });
 
+    const enemiesWithNames = await Promise.all(enemyPromises);
+
+    // Flatten enemy groups (e.g., 3x Giant Rat becomes 3 separate combats)
+    const flattenedEnemies: Array<{ customEnemyId: string; name: string; level: number }> = [];
+    enemiesWithNames.forEach((enemyGroup) => {
+      for (let i = 0; i < enemyGroup.count; i++) {
+        flattenedEnemies.push({
+          customEnemyId: enemyGroup.customEnemyId!,
+          name: enemyGroup.name,
+          level: enemyGroup.level,
+        });
+      }
+    });
+
+    addNarrative(`Total enemies: ${flattenedEnemies.length}`);
+    enemiesWithNames.forEach((enemy) => {
+      addNarrative(`- ${enemy.count}x ${enemy.name} (Level ${enemy.level})`);
+    });
+
+    // Start combat sequence
+    let currentEnemyIndex = 0;
+
+    const startNextCombat = async () => {
+      if (currentEnemyIndex >= flattenedEnemies.length) {
+        // All enemies defeated
+        clearNarrative();
+        addNarrative('🎉 Victory! All enemies defeated!');
+        addNarrative(`You earned ${data.rewardXp} XP and ${data.rewardGold} gold!`);
+
+        setPlayerState((prev) => ({
+          ...prev,
+          totalXp: prev.totalXp + data.rewardXp,
+          totalGold: prev.totalGold + data.rewardGold,
+        }));
+
+        setAvailableActions([{
+          label: 'Continue',
+          action: () => autoProgress(node),
+        }]);
+        return;
+      }
+
+      const currentEnemy = flattenedEnemies[currentEnemyIndex];
+
+      try {
+        const enemy = await getCustomEnemyById(currentEnemy.customEnemyId);
+        setCombatEnemy(enemy);
+        setIsBossFight(false);
+        setPhase('combat');
+      } catch (error) {
+        console.error('Failed to load enemy:', error);
+        addNarrative(`ERROR: Could not load enemy with ID: ${currentEnemy.customEnemyId}`);
+        addNarrative('Please ensure the enemy exists in the Enemy Manager.');
+      }
+    };
+
     setAvailableActions([{
-      label: '⚔️ Enter Combat',
-      action: async () => {
-        // For simplicity, fight the first enemy. In a full implementation, handle multiple enemies
-        const firstEnemy = data.enemies[0];
-        try {
-          const enemy = await getEnemyById(firstEnemy.type.toLowerCase());
-          setCombatEnemy(enemy);
-          setIsBossFight(false);
-          setPhase('combat');
-        } catch (error) {
-          console.error('Failed to load enemy:', error);
-          // Fallback: simulate combat
-          simulateCombat(data.rewardXp, data.rewardGold, node);
+      label: `⚔️ Enter Combat (${flattenedEnemies.length} enemies)`,
+      action: startNextCombat,
+    }]);
+
+    // Override handleCombatVictory to continue the sequence
+    const originalHandleCombatVictory = handleCombatVictory;
+    window._dungeonCombatSequence = {
+      enemies: flattenedEnemies,
+      currentIndex: 0,
+      onVictory: (rewards: CombatRewards) => {
+        currentEnemyIndex++;
+        const remaining = flattenedEnemies.length - currentEnemyIndex;
+
+        clearNarrative();
+        addNarrative(`Defeated ${flattenedEnemies[currentEnemyIndex - 1].name}!`);
+        addNarrative(`Enemies remaining: ${remaining}`);
+
+        if (remaining > 0) {
+          setAvailableActions([{
+            label: `⚔️ Fight Next Enemy (${remaining} left)`,
+            action: startNextCombat,
+          }]);
+        } else {
+          // Final enemy defeated
+          addNarrative('🎉 All enemies defeated!');
+          addNarrative(`Total rewards: ${data.rewardXp} XP and ${data.rewardGold} gold!`);
+
+          setPlayerState((prev) => ({
+            ...prev,
+            totalXp: prev.totalXp + data.rewardXp,
+            totalGold: prev.totalGold + data.rewardGold,
+          }));
+
+          setAvailableActions([{
+            label: 'Continue',
+            action: () => autoProgress(node),
+          }]);
         }
       },
-    }]);
+    };
   };
 
   const handleBoss = async (node: DungeonNode) => {
@@ -374,14 +556,23 @@ export const LevelPlayerEnhanced: React.FC<LevelPlayerEnhancedProps> = ({
     setAvailableActions([{
       label: '⚔️ Fight the Boss!',
       action: async () => {
+        // Check if we have a valid enemy ID
+        if (!data.customEnemyId) {
+          console.error('Boss node missing customEnemyId. Please configure boss in the Enemy Manager.');
+          addNarrative('ERROR: No boss enemy configured for this encounter.');
+          addNarrative('Please configure the boss using the Enemy Manager.');
+          return;
+        }
+
         try {
-          const enemy = await getEnemyById(data.bossType.toLowerCase());
+          const enemy = await getCustomEnemyById(data.customEnemyId);
           setCombatEnemy(enemy);
           setIsBossFight(true);
           setPhase('combat');
         } catch (error) {
           console.error('Failed to load boss:', error);
-          simulateCombat(data.rewardXp, data.rewardGold, node, data.rewardItems);
+          addNarrative(`ERROR: Could not load boss with ID: ${data.customEnemyId}`);
+          addNarrative('Please ensure the boss exists in the Enemy Manager.');
         }
       },
     }]);
@@ -410,7 +601,22 @@ export const LevelPlayerEnhanced: React.FC<LevelPlayerEnhancedProps> = ({
 
     setAvailableActions([{
       label: 'Take Loot',
-      action: () => autoProgress(node),
+      action: async () => {
+        try {
+          // Add items to actual inventory in database
+          if (data.items.length > 0) {
+            await invoke('add_dungeon_loot_to_inventory', {
+              userId,
+              lootItems: data.items
+            });
+            addNarrative('✅ Items added to your inventory!');
+          }
+        } catch (error) {
+          console.error('Failed to add loot to inventory:', error);
+          addNarrative('⚠️ Warning: Failed to save items to inventory');
+        }
+        autoProgress(node);
+      },
     }]);
   };
 
@@ -440,22 +646,65 @@ export const LevelPlayerEnhanced: React.FC<LevelPlayerEnhancedProps> = ({
     if (!challenge || !selectedAnswer) return;
 
     const correct = selectedAnswer === challenge.correctAnswer;
-    setPhase('outcome');
 
-    clearNarrative();
-    addNarrative(correct ? '✅ Correct!' : '❌ Incorrect');
+    // Check if this is an ability check with MCQ
+    const pendingCheck = (window as any)._pendingAbilityCheck;
+    if (pendingCheck) {
+      // This is an ability check - show result and proceed to dice roll
+      clearNarrative();
 
-    const nextNodes = getNextNodes(node.id, correct ? 'correct' : 'incorrect');
+      // Get the raw stat value (not the D&D modifier)
+      let statValue = 0;
+      switch (pendingCheck.data.ability.toLowerCase()) {
+        case 'str':
+        case 'strength':
+          statValue = stats?.strength || 0;
+          break;
+        case 'int':
+        case 'intelligence':
+          statValue = stats?.intelligence || 0;
+          break;
+        case 'dex':
+        case 'dexterity':
+          statValue = stats?.dexterity || 0;
+          break;
+        case 'cha':
+        case 'charisma':
+          statValue = stats?.charisma || 0;
+          break;
+      }
 
-    setAvailableActions([{
-      label: 'Continue',
-      action: () => {
-        if (nextNodes.length > 0) {
-          setPlayerState((prev) => ({ ...prev, currentNodeId: nextNodes[0].id }));
-          processNode(nextNodes[0]);
-        }
-      },
-    }]);
+      const modifier = correct ? statValue : -2;
+      addNarrative(correct ? `✅ Correct! Your modifier is +${statValue}` : '❌ Incorrect - your modifier is -2');
+
+      // Clear the pending check
+      (window as any)._pendingAbilityCheck = null;
+      setChallenge(null);
+      setSelectedAnswer('');
+
+      setAvailableActions([{
+        label: `🎲 Roll ${pendingCheck.data.ability} Check`,
+        action: () => handleAbilityCheckRoll(pendingCheck.node, pendingCheck.data, true, modifier),
+      }]);
+    } else {
+      // Regular question node - use correct/incorrect paths
+      setPhase('outcome');
+
+      clearNarrative();
+      addNarrative(correct ? '✅ Correct!' : '❌ Incorrect');
+
+      const nextNodes = getNextNodes(node.id, correct ? 'correct' : 'incorrect');
+
+      setAvailableActions([{
+        label: 'Continue',
+        action: () => {
+          if (nextNodes.length > 0) {
+            setPlayerState((prev) => ({ ...prev, currentNodeId: nextNodes[0].id }));
+            processNode(nextNodes[0]);
+          }
+        },
+      }]);
+    }
   };
 
   const handleEnd = (node: DungeonNode) => {
@@ -516,7 +765,17 @@ export const LevelPlayerEnhanced: React.FC<LevelPlayerEnhancedProps> = ({
     const node = getCurrentNode();
     if (!node) return;
 
-    setPhase('outcome');
+    setCombatEnemy(null);
+    setPhase('narrative');
+
+    // Check if this is part of a multi-enemy sequence
+    const sequence = (window as any)._dungeonCombatSequence;
+    if (sequence && sequence.onVictory) {
+      sequence.onVictory(rewards);
+      return;
+    }
+
+    // Single enemy victory (default behavior)
     clearNarrative();
     addNarrative(`Victory! You defeated the enemy!`);
     addNarrative(`Earned ${rewards.xpGained} XP and ${rewards.goldGained} gold!`);
@@ -526,8 +785,6 @@ export const LevelPlayerEnhanced: React.FC<LevelPlayerEnhancedProps> = ({
       totalXp: prev.totalXp + rewards.xpGained,
       totalGold: prev.totalGold + rewards.goldGained,
     }));
-
-    setCombatEnemy(null);
 
     setAvailableActions([{
       label: 'Continue',
@@ -550,19 +807,67 @@ export const LevelPlayerEnhanced: React.FC<LevelPlayerEnhancedProps> = ({
   };
 
   const handleFlee = () => {
-    const node = getCurrentNode();
-    if (!node) return;
-
     setPhase('outcome');
     clearNarrative();
     addNarrative('You flee from combat!');
+    addNarrative('You escape back to the safety of town.');
 
     setCombatEnemy(null);
 
     setAvailableActions([{
-      label: 'Continue',
-      action: () => autoProgress(node),
+      label: 'Return to Town',
+      action: () => returnToTown(),
     }]);
+  };
+
+  const handleEnterDungeon = () => {
+    if (!level) return;
+
+    // Find start node
+    const startNode = level.nodes.find((n) => n.type === DungeonNodeType.START);
+    if (startNode) {
+      setPlayerState((prev) => ({
+        ...prev,
+        currentNodeId: startNode.id,
+        visitedNodes: [], // Reset visited nodes when entering
+      }));
+      processNode(startNode);
+    } else {
+      setNarrativeText(['ERROR: No start node found in level!']);
+    }
+  };
+
+  const handleRestAtInn = async () => {
+    try {
+      await restoreHealthAndMana(userId);
+
+      // Reload character stats
+      const characterStats = await getCharacterStats(userId);
+      setStats(characterStats);
+      setPlayerState(prev => ({
+        ...prev,
+        health: characterStats.currentHealth,
+        maxHealth: characterStats.maxHealth,
+      }));
+
+      console.log('Rested at inn - health and mana restored!');
+    } catch (err) {
+      console.error('Failed to rest:', err);
+    }
+  };
+
+  const returnToTown = () => {
+    setPhase('town');
+    clearNarrative();
+    setAvailableActions([]);
+    setCombatEnemy(null);
+
+    // Reset player position but keep earned rewards
+    setPlayerState(prev => ({
+      ...prev,
+      currentNodeId: '',
+      visitedNodes: [],
+    }));
   };
 
   function getStatModifier(ability: string, stats: CharacterStats | null): number {
@@ -622,6 +927,68 @@ export const LevelPlayerEnhanced: React.FC<LevelPlayerEnhancedProps> = ({
 
           {/* Main Content */}
           <div className="p-6">
+            {/* Town View */}
+            {phase === 'town' && (
+              <div className="max-w-4xl mx-auto">
+                <div className="text-center mb-8">
+                  <h3 className="text-3xl font-bold text-orange-400 mb-2">🏰 Town</h3>
+                  <p className="text-gray-400">Prepare for your dungeon adventure</p>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                  {/* Character Stats Card */}
+                  <div className="bg-slate-900 border-2 border-slate-700 rounded-lg p-6">
+                    <CharacterStatsDisplay stats={stats} compact />
+                  </div>
+
+                  {/* Progress Card */}
+                  <div className="bg-slate-900 border-2 border-slate-700 rounded-lg p-6">
+                    <h4 className="text-lg font-semibold text-gray-300 mb-4">Adventure Progress</h4>
+                    <div className="space-y-3 text-sm">
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">XP Earned:</span>
+                        <span className="text-green-400 font-semibold">{playerState.totalXp}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">Gold Earned:</span>
+                        <span className="text-yellow-400 font-semibold">{playerState.totalGold}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">Items Collected:</span>
+                        <span className="text-cyan-400 font-semibold">{playerState.inventory.length}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Town Actions */}
+                <div className="space-y-4">
+                  <button
+                    onClick={handleEnterDungeon}
+                    className="w-full bg-orange-500 hover:bg-orange-600 border-2 border-orange-400 text-white font-bold py-4 px-6 rounded-lg transition-colors text-lg"
+                  >
+                    ⚔️ Enter Dungeon
+                  </button>
+
+                  <button
+                    onClick={handleRestAtInn}
+                    className="w-full bg-blue-600 hover:bg-blue-700 border-2 border-blue-500 text-white font-semibold py-3 px-6 rounded-lg transition-colors"
+                  >
+                    🛏️ Rest at Inn (Restore Health & Mana)
+                  </button>
+
+                  <button
+                    onClick={onExit}
+                    className="w-full bg-slate-700 hover:bg-slate-600 border-2 border-slate-600 text-white font-semibold py-3 px-6 rounded-lg transition-colors"
+                  >
+                    ← Return to Editor
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Dungeon View */}
+            {phase !== 'town' && (
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               {/* Left Column - Character Stats */}
               <div className="lg:col-span-1">
@@ -717,6 +1084,7 @@ export const LevelPlayerEnhanced: React.FC<LevelPlayerEnhancedProps> = ({
                 </div>
               </div>
             </div>
+            )}
           </div>
         </div>
       </div>

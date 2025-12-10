@@ -192,7 +192,8 @@ export function DungeonExplorer({ userId, onClose }: DungeonExplorerProps) {
       const challengeData = await getChallengeForAction(
         selectedChoice.challengeActionType,
         floor?.floorNumber || 1,
-        undefined
+        undefined,
+        userId
       );
       setChallenge(challengeData);
       setSelectedAnswer('');

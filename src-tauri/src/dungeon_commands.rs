@@ -470,53 +470,113 @@ pub fn get_challenge_for_action(
     action_type: String,
     floor_number: i64,
     difficulty: Option<String>,
+    user_id: Option<i64>, // Optional for backwards compatibility
 ) -> Result<DungeonChallenge, String> {
-    let conn = get_connection(&app)?;
+    // Map floor number to difficulty if not specified
+    let target_difficulty = difficulty.unwrap_or_else(|| {
+        if floor_number <= 2 {
+            "easy".to_string()
+        } else if floor_number <= 4 {
+            "medium".to_string()
+        } else if floor_number <= 6 {
+            "hard".to_string()
+        } else {
+            "expert".to_string()
+        }
+    });
 
-    let query = if let Some(ref _diff) = difficulty {
-        format!(
-            "SELECT id, difficulty, action_type, title, description, starter_code, solution,
-                    test_cases, choices, correct_answer, required_language, min_floor, max_floor,
-                    times_used, success_rate, created_at
-             FROM dungeon_challenges
-             WHERE action_type = ?
-               AND difficulty = ?
-               AND min_floor <= ?
-               AND (max_floor IS NULL OR max_floor >= ?)
-             ORDER BY RANDOM()
-             LIMIT 1"
+    // Get a question from the MCQ system (which is managed by Question Manager)
+    // This ensures combat uses the same question pool as the question manager
+    let mcq_result = if let Some(uid) = user_id {
+        // Use smart selection based on user history to avoid repetition
+        crate::mcq_commands::get_smart_mcq_question(
+            app.clone(),
+            uid,
+            Some(target_difficulty.clone()),
+            None, // language filter - accept any language for now
+            None, // topic filter - accept any topic
         )
     } else {
-        format!(
-            "SELECT id, difficulty, action_type, title, description, starter_code, solution,
-                    test_cases, choices, correct_answer, required_language, min_floor, max_floor,
-                    times_used, success_rate, created_at
-             FROM dungeon_challenges
-             WHERE action_type = ?
-               AND min_floor <= ?
-               AND (max_floor IS NULL OR max_floor >= ?)
-             ORDER BY RANDOM()
-             LIMIT 1"
+        // Fallback to random selection if no user_id provided
+        crate::mcq_commands::get_random_mcq_question(
+            app.clone(),
+            Some(target_difficulty.clone()),
+            None,
+            None,
         )
     };
 
-    let mut stmt = conn
-        .prepare(&query)
-        .map_err(|e| format!("Failed to prepare statement: {}", e))?;
-
-    let challenge = if let Some(ref diff) = difficulty {
-        stmt.query_row(
-            params![action_type, diff, floor_number, floor_number],
-            DungeonChallenge::from_row,
-        )
-    } else {
-        stmt.query_row(
-            params![action_type, floor_number, floor_number],
-            DungeonChallenge::from_row,
-        )
+    // If no questions found, try to import from dungeon_challenges first
+    let mcq = match mcq_result {
+        Ok(q) => q,
+        Err(e) if e.contains("No questions available") => {
+            eprintln!("No MCQ questions found, attempting to import from dungeon_challenges...");
+            match crate::mcq_commands::import_dungeon_challenges_to_mcq(app.clone()) {
+                Ok(count) => {
+                    eprintln!("Successfully imported {} questions from dungeon_challenges", count);
+                    // Try again after import
+                    if let Some(uid) = user_id {
+                        crate::mcq_commands::get_smart_mcq_question(
+                            app.clone(),
+                            uid,
+                            Some(target_difficulty.clone()),
+                            None,
+                            None,
+                        )?
+                    } else {
+                        crate::mcq_commands::get_random_mcq_question(
+                            app.clone(),
+                            Some(target_difficulty.clone()),
+                            None,
+                            None,
+                        )?
+                    }
+                }
+                Err(import_err) => {
+                    return Err(format!("No questions available and import failed: {}. Please add questions using the Question Manager in the Dungeon Editor. Original error: {}", import_err, e));
+                }
+            }
+        }
+        Err(e) => return Err(e),
     };
 
-    challenge.map_err(|e| format!("Failed to get challenge: {}", e))
+    // Convert MCQ format to DungeonChallenge format for combat compatibility
+    let options: Vec<String> = serde_json::from_str(&mcq.options)
+        .map_err(|e| format!("Failed to parse MCQ options: {}", e))?;
+
+    // Convert options to the old format with letter prefixes: "A) text", "B) text", etc.
+    let letters = ["A", "B", "C", "D"];
+    let formatted_choices: Vec<String> = options
+        .iter()
+        .enumerate()
+        .map(|(i, opt)| format!("{}) {}", letters.get(i).unwrap_or(&"?"), opt))
+        .collect();
+
+    // Determine correct answer letter based on index
+    let correct_letter = letters
+        .get(mcq.correct_answer_index as usize)
+        .unwrap_or(&"A")
+        .to_string();
+
+    Ok(DungeonChallenge {
+        id: mcq.id,
+        difficulty: mcq.difficulty,
+        action_type: action_type, // Keep the action type for compatibility
+        title: mcq.question_text.clone(),
+        description: mcq.question_text,
+        starter_code: Some(String::new()),
+        solution: Some(mcq.explanation.unwrap_or_default()),
+        test_cases: Some(String::new()),
+        choices: Some(serde_json::to_string(&formatted_choices)
+            .map_err(|e| format!("Failed to serialize choices: {}", e))?),
+        correct_answer: Some(correct_letter),
+        required_language: Some(mcq.language),
+        min_floor: 1,
+        max_floor: None,
+        times_used: 0,
+        success_rate: 0.0,
+        created_at: mcq.created_at,
+    })
 }
 
 #[tauri::command]

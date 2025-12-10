@@ -402,6 +402,52 @@ export async function getEnemyById(enemyId: string): Promise<EnemyType> {
   return convertEnemyType(raw);
 }
 
+// Load a custom enemy and convert to EnemyType format for combat
+export async function getCustomEnemyById(enemyId: string): Promise<EnemyType> {
+  const customEnemy = await invoke<any>('load_custom_enemy', { enemyId });
+
+  console.log('Loading custom enemy from database:', customEnemy);
+
+  // Parse attacks if it's a JSON string
+  const attacks = typeof customEnemy.attacks === 'string'
+    ? JSON.parse(customEnemy.attacks)
+    : customEnemy.attacks;
+
+  // Calculate rewards based on level (simple scaling)
+  const goldPerLevel = 10;
+  const xpPerLevel = 25;
+
+  // Extract stats with proper fallbacks
+  const baseHealth = customEnemy.base_health || customEnemy.baseHealth || 50;
+  const baseDamage = customEnemy.base_attack || customEnemy.baseAttack || 10;
+  const baseDefense = customEnemy.base_defense || customEnemy.baseDefense || 5;
+
+  console.log('Converted enemy stats:', {
+    name: customEnemy.name,
+    baseHealth,
+    baseDamage,
+    baseDefense
+  });
+
+  // Convert CustomEnemy to EnemyType format
+  return {
+    id: customEnemy.id,
+    name: customEnemy.name,
+    description: customEnemy.description,
+    baseHealth,
+    baseDamage,
+    baseDefense,
+    behaviorType: 'balanced' as EnemyBehavior, // Default behavior
+    goldDropMin: customEnemy.level * goldPerLevel * 0.8,
+    goldDropMax: customEnemy.level * goldPerLevel * 1.2,
+    xpReward: customEnemy.level * xpPerLevel,
+    lootTable: [], // Custom enemies don't have loot tables yet
+    icon: customEnemy.image_path || customEnemy.imagePath || '👹',
+    asciiArt: undefined,
+    createdAt: new Date(customEnemy.created_at || customEnemy.createdAt),
+  };
+}
+
 // ============================================================================
 // ENCOUNTERS
 // ============================================================================
@@ -435,12 +481,14 @@ export async function getRandomEncounter(
 export async function getChallengeForAction(
   actionType: string,
   floorNumber: number,
-  difficulty?: string
+  difficulty?: string,
+  userId?: number
 ): Promise<DungeonChallenge> {
   const raw = await invoke<DungeonChallengeRaw>('get_challenge_for_action', {
     actionType,
     floorNumber,
     difficulty,
+    userId,
   });
   return convertDungeonChallenge(raw);
 }

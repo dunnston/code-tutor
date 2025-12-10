@@ -118,7 +118,7 @@ export function CombatModal({
         actionType = 'basic_attack'; // Default fallback
       }
 
-      const challengeData = await getChallengeForAction(actionType, floorNumber, undefined);
+      const challengeData = await getChallengeForAction(actionType, floorNumber, undefined, userId);
       setChallenge(challengeData);
       setSelectedAnswer('');
       setPhase('challenge');
@@ -360,10 +360,10 @@ export function CombatModal({
       // Try to load a dexterity/dodge challenge, fallback to basic_attack if none exist
       let challengeData;
       try {
-        challengeData = await getChallengeForAction('dodge', floorNumber, undefined);
+        challengeData = await getChallengeForAction('dodge', floorNumber, undefined, userId);
       } catch (dodgeErr) {
         console.log('No dodge challenges found, using basic_attack as fallback');
-        challengeData = await getChallengeForAction('basic_attack', floorNumber, undefined);
+        challengeData = await getChallengeForAction('basic_attack', floorNumber, undefined, userId);
       }
       setChallenge(challengeData);
       setSelectedAnswer('');
@@ -476,7 +476,7 @@ export function CombatModal({
                   <img
                     src={showEnemyAnimation && getEnemyAttackAnimation(enemy.id)
                       ? getEnemyAttackAnimation(enemy.id)!
-                      : getEnemyImage(enemy.id)}
+                      : getEnemyImage(enemy.id, enemy.icon)}
                     alt={combat.enemyName}
                     className="max-w-full max-h-full"
                     style={{ width: '192px', height: '192px', objectFit: 'contain' }}
