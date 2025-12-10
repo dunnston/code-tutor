@@ -84,6 +84,7 @@ pub fn run() {
       // Gamification - Inventory commands
       gamification_commands::get_user_inventory,
       gamification_commands::use_inventory_item,
+      gamification_commands::add_dungeon_loot_to_inventory,
       // Gamification - Quest commands
       gamification_commands::get_quests,
       gamification_commands::get_user_quest_progress,
@@ -203,6 +204,7 @@ pub fn run() {
       mcq_commands::delete_mcq_question,
       mcq_commands::duplicate_mcq_question,
       mcq_commands::get_random_mcq_question,
+      mcq_commands::get_smart_mcq_question,
       mcq_commands::import_dungeon_challenges_to_mcq,
       // Item commands
       item_commands::list_equipment_items,

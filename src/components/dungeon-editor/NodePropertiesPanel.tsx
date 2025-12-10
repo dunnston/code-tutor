@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   DungeonNode,
   DungeonNodeData,
@@ -19,6 +19,15 @@ import {
   Difficulty,
 } from '../../types/dungeonEditor';
 import { ItemManager } from './ItemManager';
+import { invoke } from '@tauri-apps/api/core';
+
+// Enemy list item from database
+interface EnemyListItem {
+  id: string;
+  name: string;
+  enemy_type: 'regular' | 'elite' | 'boss';
+  level: number;
+}
 
 interface NodePropertiesPanelProps {
   selectedNode: DungeonNode | null;
@@ -143,117 +152,161 @@ const StartNodeFields: React.FC<{ data: StartNodeData; updateField: (field: stri
   </div>
 );
 
-const CombatNodeFields: React.FC<{ data: CombatNodeData; updateField: (field: string, value: any) => void }> = ({ data, updateField }) => (
-  <div className="space-y-4">
-    <div>
-      <label className="block text-xs text-gray-400 mb-1">Difficulty</label>
-      <select
-        value={data.difficulty}
-        onChange={(e) => updateField('difficulty', e.target.value as Difficulty)}
-        className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm"
-      >
-        <option value="easy">Easy</option>
-        <option value="medium">Medium</option>
-        <option value="hard">Hard</option>
-        <option value="deadly">Deadly</option>
-      </select>
-    </div>
+const CombatNodeFields: React.FC<{ data: CombatNodeData; updateField: (field: string, value: any) => void }> = ({ data, updateField }) => {
+  const [availableEnemies, setAvailableEnemies] = useState<EnemyListItem[]>([]);
+  const [isLoadingEnemies, setIsLoadingEnemies] = useState(true);
 
-    <div className="grid grid-cols-2 gap-2">
-      <div>
-        <label className="block text-xs text-gray-400 mb-1">Reward XP</label>
-        <input
-          type="number"
-          value={data.rewardXp}
-          onChange={(e) => updateField('rewardXp', parseInt(e.target.value) || 0)}
-          className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm"
-        />
-      </div>
-      <div>
-        <label className="block text-xs text-gray-400 mb-1">Reward Gold</label>
-        <input
-          type="number"
-          value={data.rewardGold}
-          onChange={(e) => updateField('rewardGold', parseInt(e.target.value) || 0)}
-          className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm"
-        />
-      </div>
-    </div>
+  useEffect(() => {
+    const loadEnemies = async () => {
+      try {
+        const enemies: EnemyListItem[] = await invoke('list_custom_enemies', {
+          enemyTypeFilter: null, // Get all enemy types
+        });
+        setAvailableEnemies(enemies);
+      } catch (error) {
+        console.error('Failed to load enemies:', error);
+      } finally {
+        setIsLoadingEnemies(false);
+      }
+    };
+    loadEnemies();
+  }, []);
 
-    <div>
-      <label className="block text-xs text-gray-400 mb-2">Enemies</label>
-      <div className="space-y-2 mb-2">
-        {data.enemies.map((enemy, index) => (
-          <div key={index} className="flex gap-2 items-center bg-slate-900 p-2 rounded">
-            <select
-              value={enemy.type}
-              onChange={(e) => {
-                const newEnemies = [...data.enemies];
-                newEnemies[index].type = e.target.value as EnemyType;
-                updateField('enemies', newEnemies);
-              }}
-              className="flex-1 px-2 py-1 bg-slate-800 border border-slate-700 rounded text-white text-xs"
-            >
-              {Object.values(EnemyType).map((type) => (
-                <option key={type} value={type}>{type}</option>
-              ))}
-            </select>
-            <input
-              type="number"
-              value={enemy.count}
-              onChange={(e) => {
-                const newEnemies = [...data.enemies];
-                newEnemies[index].count = parseInt(e.target.value) || 1;
-                updateField('enemies', newEnemies);
-              }}
-              className="w-16 px-2 py-1 bg-slate-800 border border-slate-700 rounded text-white text-xs"
-              min="1"
-            />
-            <input
-              type="number"
-              value={enemy.level}
-              placeholder="Lvl"
-              onChange={(e) => {
-                const newEnemies = [...data.enemies];
-                newEnemies[index].level = parseInt(e.target.value) || 1;
-                updateField('enemies', newEnemies);
-              }}
-              className="w-16 px-2 py-1 bg-slate-800 border border-slate-700 rounded text-white text-xs"
-              min="1"
-            />
+  return (
+    <div className="space-y-4">
+      <div>
+        <label className="block text-xs text-gray-400 mb-1">Difficulty</label>
+        <select
+          value={data.difficulty}
+          onChange={(e) => updateField('difficulty', e.target.value as Difficulty)}
+          className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm"
+        >
+          <option value="easy">Easy</option>
+          <option value="medium">Medium</option>
+          <option value="hard">Hard</option>
+          <option value="deadly">Deadly</option>
+        </select>
+      </div>
+
+      <div className="grid grid-cols-2 gap-2">
+        <div>
+          <label className="block text-xs text-gray-400 mb-1">Reward XP</label>
+          <input
+            type="number"
+            value={data.rewardXp}
+            onChange={(e) => updateField('rewardXp', parseInt(e.target.value) || 0)}
+            className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm"
+          />
+        </div>
+        <div>
+          <label className="block text-xs text-gray-400 mb-1">Reward Gold</label>
+          <input
+            type="number"
+            value={data.rewardGold}
+            onChange={(e) => updateField('rewardGold', parseInt(e.target.value) || 0)}
+            className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm"
+          />
+        </div>
+      </div>
+
+      <div>
+        <label className="block text-xs text-gray-400 mb-2">Enemies</label>
+        {isLoadingEnemies ? (
+          <div className="text-gray-400 text-xs py-2">Loading enemies...</div>
+        ) : availableEnemies.length === 0 ? (
+          <div className="text-yellow-400 text-xs py-2">
+            No enemies available. Create enemies in the Enemy Manager first.
+          </div>
+        ) : (
+          <>
+            <div className="space-y-2 mb-2">
+              {data.enemies.map((enemy, index) => {
+                const selectedEnemy = availableEnemies.find(e => e.id === enemy.customEnemyId);
+
+                return (
+                  <div key={index} className="flex gap-2 items-center bg-slate-900 p-2 rounded">
+                    <select
+                      value={enemy.customEnemyId || ''}
+                      onChange={(e) => {
+                        const newEnemies = [...data.enemies];
+                        newEnemies[index].customEnemyId = e.target.value;
+                        // Clear legacy type field
+                        delete newEnemies[index].type;
+                        updateField('enemies', newEnemies);
+                      }}
+                      className="flex-1 px-2 py-1 bg-slate-800 border border-slate-700 rounded text-white text-xs"
+                    >
+                      <option value="">Select Enemy...</option>
+                      {availableEnemies.map((e) => (
+                        <option key={e.id} value={e.id}>
+                          {e.name} (Lv{e.level} {e.enemy_type})
+                        </option>
+                      ))}
+                    </select>
+                    <input
+                      type="number"
+                      value={enemy.count}
+                      onChange={(e) => {
+                        const newEnemies = [...data.enemies];
+                        newEnemies[index].count = parseInt(e.target.value) || 1;
+                        updateField('enemies', newEnemies);
+                      }}
+                      className="w-16 px-2 py-1 bg-slate-800 border border-slate-700 rounded text-white text-xs"
+                      min="1"
+                      placeholder="Qty"
+                      title="Quantity"
+                    />
+                    <input
+                      type="number"
+                      value={enemy.level}
+                      placeholder="Lvl"
+                      onChange={(e) => {
+                        const newEnemies = [...data.enemies];
+                        newEnemies[index].level = parseInt(e.target.value) || 1;
+                        updateField('enemies', newEnemies);
+                      }}
+                      className="w-16 px-2 py-1 bg-slate-800 border border-slate-700 rounded text-white text-xs"
+                      min="1"
+                      title="Level Override"
+                    />
+                    <button
+                      onClick={() => {
+                        const newEnemies = data.enemies.filter((_, i) => i !== index);
+                        updateField('enemies', newEnemies);
+                      }}
+                      className="px-2 py-1 bg-red-600 hover:bg-red-500 text-white text-xs rounded"
+                    >
+                      ×
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
             <button
               onClick={() => {
-                const newEnemies = data.enemies.filter((_, i) => i !== index);
-                updateField('enemies', newEnemies);
+                updateField('enemies', [...data.enemies, { customEnemyId: availableEnemies[0]?.id || '', count: 1, level: 1 }]);
               }}
-              className="px-2 py-1 bg-red-600 hover:bg-red-500 text-white text-xs rounded"
+              className="w-full px-3 py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs rounded"
+              disabled={availableEnemies.length === 0}
             >
-              ×
+              + Add Enemy
             </button>
-          </div>
-        ))}
+          </>
+        )}
       </div>
-      <button
-        onClick={() => {
-          updateField('enemies', [...data.enemies, { type: EnemyType.GOBLIN, count: 1, level: 1 }]);
-        }}
-        className="w-full px-3 py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs rounded"
-      >
-        + Add Enemy
-      </button>
-    </div>
 
-    <div>
-      <label className="block text-xs text-gray-400 mb-1">Flavor Text</label>
-      <textarea
-        value={data.flavorText || ''}
-        onChange={(e) => updateField('flavorText', e.target.value)}
-        className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm"
-        rows={2}
-      />
+      <div>
+        <label className="block text-xs text-gray-400 mb-1">Flavor Text</label>
+        <textarea
+          value={data.flavorText || ''}
+          onChange={(e) => updateField('flavorText', e.target.value)}
+          className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm"
+          rows={2}
+        />
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 const ChoiceNodeFields: React.FC<{ data: ChoiceNodeData; updateField: (field: string, value: any) => void }> = ({ data, updateField }) => (
   <div className="space-y-4">
@@ -380,6 +433,34 @@ const AbilityCheckNodeFields: React.FC<{ data: AbilityCheckNodeData; updateField
       />
       <span className="text-sm text-gray-300">Allow Retry</span>
     </label>
+
+    <div className="border-t border-slate-700 pt-4">
+      <label className="flex items-center gap-2 mb-3">
+        <input
+          type="checkbox"
+          checked={data.useMcq || false}
+          onChange={(e) => updateField('useMcq', e.target.checked)}
+          className="w-4 h-4 rounded bg-slate-900 border-slate-700 text-blue-600"
+        />
+        <span className="text-sm text-gray-300">Use MCQ Question</span>
+      </label>
+
+      {data.useMcq && (
+        <div>
+          <label className="block text-xs text-gray-400 mb-1">MCQ Question ID (Optional)</label>
+          <input
+            type="text"
+            value={data.mcqQuestionId || ''}
+            onChange={(e) => updateField('mcqQuestionId', e.target.value)}
+            placeholder="Leave empty for random question"
+            className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm"
+          />
+          <p className="text-xs text-gray-500 mt-1">
+            Correct = +[stat value], Incorrect = -2. Leave ID empty to select random question from database.
+          </p>
+        </div>
+      )}
+    </div>
   </div>
 );
 
@@ -620,96 +701,138 @@ const StoryNodeFields: React.FC<{ data: StoryNodeData; updateField: (field: stri
   </div>
 );
 
-const BossNodeFields: React.FC<{ data: BossNodeData; updateField: (field: string, value: any) => void }> = ({ data, updateField }) => (
-  <div className="space-y-4">
-    <div>
-      <label className="block text-xs text-gray-400 mb-1">Boss Name</label>
-      <input
-        type="text"
-        value={data.bossName}
-        onChange={(e) => updateField('bossName', e.target.value)}
-        className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm"
-      />
-    </div>
+const BossNodeFields: React.FC<{ data: BossNodeData; updateField: (field: string, value: any) => void }> = ({ data, updateField }) => {
+  const [availableEnemies, setAvailableEnemies] = useState<EnemyListItem[]>([]);
+  const [isLoadingEnemies, setIsLoadingEnemies] = useState(true);
 
-    <div className="grid grid-cols-2 gap-2">
+  useEffect(() => {
+    const loadEnemies = async () => {
+      try {
+        // Load boss and elite enemies for boss nodes
+        const enemies: EnemyListItem[] = await invoke('list_custom_enemies', {
+          enemyTypeFilter: null, // Get all, user can filter
+        });
+        setAvailableEnemies(enemies);
+      } catch (error) {
+        console.error('Failed to load enemies:', error);
+      } finally {
+        setIsLoadingEnemies(false);
+      }
+    };
+    loadEnemies();
+  }, []);
+
+  return (
+    <div className="space-y-4">
       <div>
-        <label className="block text-xs text-gray-400 mb-1">Boss Type</label>
-        <select
-          value={data.bossType}
-          onChange={(e) => updateField('bossType', e.target.value as EnemyType)}
-          className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm"
-        >
-          {Object.values(EnemyType).map((type) => (
-            <option key={type} value={type}>{type}</option>
-          ))}
-        </select>
-      </div>
-      <div>
-        <label className="block text-xs text-gray-400 mb-1">Level</label>
+        <label className="block text-xs text-gray-400 mb-1">Boss Name</label>
         <input
-          type="number"
-          value={data.bossLevel}
-          onChange={(e) => updateField('bossLevel', parseInt(e.target.value) || 1)}
-          className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm"
-          min="1"
-        />
-      </div>
-    </div>
-
-    <div>
-      <label className="block text-xs text-gray-400 mb-1">Health</label>
-      <input
-        type="number"
-        value={data.health}
-        onChange={(e) => updateField('health', parseInt(e.target.value) || 100)}
-        className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm"
-        min="1"
-      />
-    </div>
-
-    <div className="grid grid-cols-2 gap-2">
-      <div>
-        <label className="block text-xs text-gray-400 mb-1">Reward XP</label>
-        <input
-          type="number"
-          value={data.rewardXp}
-          onChange={(e) => updateField('rewardXp', parseInt(e.target.value) || 0)}
+          type="text"
+          value={data.bossName}
+          onChange={(e) => updateField('bossName', e.target.value)}
           className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm"
         />
       </div>
+
       <div>
-        <label className="block text-xs text-gray-400 mb-1">Reward Gold</label>
+        <label className="block text-xs text-gray-400 mb-1">Select Boss Enemy</label>
+        {isLoadingEnemies ? (
+          <div className="text-gray-400 text-xs py-2">Loading enemies...</div>
+        ) : availableEnemies.length === 0 ? (
+          <div className="text-yellow-400 text-xs py-2">
+            No enemies available. Create enemies in the Enemy Manager first.
+          </div>
+        ) : (
+          <select
+            value={data.customEnemyId || ''}
+            onChange={(e) => {
+              const selectedEnemy = availableEnemies.find(enemy => enemy.id === e.target.value);
+              updateField('customEnemyId', e.target.value);
+              // Clear legacy bossType field
+              updateField('bossType', undefined);
+              // Auto-fill boss name if it's empty or matches the old type
+              if (!data.bossName || data.bossName === 'Boss Name') {
+                updateField('bossName', selectedEnemy?.name || 'Boss');
+              }
+            }}
+            className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm"
+          >
+            <option value="">Select Enemy...</option>
+            {availableEnemies.map((e) => (
+              <option key={e.id} value={e.id}>
+                {e.name} (Lv{e.level} {e.enemy_type})
+              </option>
+            ))}
+          </select>
+        )}
+      </div>
+
+      <div className="grid grid-cols-2 gap-2">
+        <div>
+          <label className="block text-xs text-gray-400 mb-1">Level</label>
+          <input
+            type="number"
+            value={data.bossLevel}
+            onChange={(e) => updateField('bossLevel', parseInt(e.target.value) || 1)}
+            className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm"
+            min="1"
+          />
+        </div>
+        <div>
+          <label className="block text-xs text-gray-400 mb-1">Health</label>
+          <input
+            type="number"
+            value={data.health}
+            onChange={(e) => updateField('health', parseInt(e.target.value) || 100)}
+            className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm"
+            min="1"
+          />
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-2">
+        <div>
+          <label className="block text-xs text-gray-400 mb-1">Reward XP</label>
+          <input
+            type="number"
+            value={data.rewardXp}
+            onChange={(e) => updateField('rewardXp', parseInt(e.target.value) || 0)}
+            className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm"
+          />
+        </div>
+        <div>
+          <label className="block text-xs text-gray-400 mb-1">Reward Gold</label>
+          <input
+            type="number"
+            value={data.rewardGold}
+            onChange={(e) => updateField('rewardGold', parseInt(e.target.value) || 0)}
+            className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm"
+          />
+        </div>
+      </div>
+
+      <div>
+        <label className="block text-xs text-gray-400 mb-1">Flavor Text</label>
+        <textarea
+          value={data.flavorText}
+          onChange={(e) => updateField('flavorText', e.target.value)}
+          className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm"
+          rows={2}
+        />
+      </div>
+
+      <div>
+        <label className="block text-xs text-gray-400 mb-1">Abilities (comma-separated)</label>
         <input
-          type="number"
-          value={data.rewardGold}
-          onChange={(e) => updateField('rewardGold', parseInt(e.target.value) || 0)}
+          type="text"
+          value={data.abilities.join(', ')}
+          onChange={(e) => updateField('abilities', e.target.value.split(',').map((s) => s.trim()))}
           className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm"
         />
       </div>
     </div>
-
-    <div>
-      <label className="block text-xs text-gray-400 mb-1">Flavor Text</label>
-      <textarea
-        value={data.flavorText}
-        onChange={(e) => updateField('flavorText', e.target.value)}
-        className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm"
-        rows={2}
-      />
-    </div>
-
-    <div>
-      <label className="block text-xs text-gray-400 mb-1">Abilities (comma-separated)</label>
-      <input
-        type="text"
-        value={data.abilities.join(', ')}
-        onChange={(e) => updateField('abilities', e.target.value.split(',').map((s) => s.trim()))}
-        className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm"
-      />
-    </div>
-  </div>
-);
+  );
+};
 
 const EndNodeFields: React.FC<{ data: EndNodeData; updateField: (field: string, value: any) => void }> = ({ data, updateField }) => (
   <div className="space-y-4">

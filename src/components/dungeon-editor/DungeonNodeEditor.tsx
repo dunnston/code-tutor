@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef } from 'react';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 import ReactFlow, {
   ReactFlowProvider,
   Controls,
@@ -12,6 +12,10 @@ import ReactFlow, {
   Node,
   Edge,
   BackgroundVariant,
+  EdgeProps,
+  BaseEdge,
+  EdgeLabelRenderer,
+  getBezierPath,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 
@@ -29,12 +33,93 @@ import { ItemManager } from './ItemManager';
 import { DungeonNode, DungeonLevel, DungeonNodeType, DungeonNodeData } from '../../types/dungeonEditor';
 import { invoke } from '@tauri-apps/api/core';
 
+// Add custom CSS for selected edges
+const edgeStyles = `
+  .react-flow__edge.selected .react-flow__edge-path {
+    stroke: #f59e0b !important;
+    stroke-width: 3px !important;
+    animation: dash 20s linear infinite;
+  }
+
+  @keyframes dash {
+    to {
+      stroke-dashoffset: -1000;
+    }
+  }
+`;
+
 interface DungeonNodeEditorProps {
   initialLevel?: DungeonLevel;
   onSave?: (level: DungeonLevel) => void;
   onLoad?: () => void;
   onClose?: () => void;
 }
+
+// Custom edge component with delete button
+// We need to pass onDeleteEdge as a data prop to the edge
+const CustomEdge: React.FC<EdgeProps> = ({
+  id,
+  sourceX,
+  sourceY,
+  targetX,
+  targetY,
+  sourcePosition,
+  targetPosition,
+  style = {},
+  markerEnd,
+  selected,
+  data,
+}) => {
+  const [edgePath, labelX, labelY] = getBezierPath({
+    sourceX,
+    sourceY,
+    sourcePosition,
+    targetX,
+    targetY,
+    targetPosition,
+  });
+
+  const handleDelete = (event: React.MouseEvent) => {
+    event.preventDefault();
+    event.stopPropagation();
+    if (data?.onDelete) {
+      data.onDelete(id);
+    }
+  };
+
+  return (
+    <>
+      <BaseEdge path={edgePath} markerEnd={markerEnd} style={style} />
+      {selected && (
+        <EdgeLabelRenderer>
+          <div
+            style={{
+              position: 'absolute',
+              transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px)`,
+              fontSize: 12,
+              pointerEvents: 'all',
+            }}
+            className="nodrag nopan"
+          >
+            <button
+              className="bg-red-500 hover:bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center shadow-lg border border-red-700 transition-colors"
+              onClick={handleDelete}
+              onMouseDown={(e) => e.stopPropagation()}
+              onMouseUp={(e) => e.stopPropagation()}
+              title="Delete edge (or press Delete/Backspace)"
+            >
+              ×
+            </button>
+          </div>
+        </EdgeLabelRenderer>
+      )}
+    </>
+  );
+};
+
+const edgeTypes = {
+  default: CustomEdge,
+};
 
 const DungeonNodeEditorInner: React.FC<DungeonNodeEditorProps> = ({
   initialLevel,
@@ -44,7 +129,7 @@ const DungeonNodeEditorInner: React.FC<DungeonNodeEditorProps> = ({
 }) => {
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
   const [nodes, setNodes, onNodesChange] = useNodesState<DungeonNodeData>(initialLevel?.nodes || []);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initialLevel?.edges || []);
+  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [selectedNode, setSelectedNode] = useState<DungeonNode | null>(null);
   const [reactFlowInstance, setReactFlowInstance] = useState<any>(null);
   const [showLevelManager, setShowLevelManager] = useState(false);
@@ -68,9 +153,37 @@ const DungeonNodeEditorInner: React.FC<DungeonNodeEditorProps> = ({
     }
   );
 
+  // Handler for deleting edges via the × button
+  const handleDeleteEdge = useCallback((edgeId: string) => {
+    setEdges((eds) => eds.filter((edge) => edge.id !== edgeId));
+  }, [setEdges]);
+
+  // Initialize edges from initialLevel with delete handler
+  useEffect(() => {
+    if (initialLevel?.edges && initialLevel.edges.length > 0) {
+      const styledEdges = initialLevel.edges.map(edge => ({
+        ...edge,
+        type: edge.type || 'default',
+        animated: edge.animated !== undefined ? edge.animated : true,
+        style: edge.style || { stroke: '#fb923c', strokeWidth: 2 },
+        data: { ...edge.data, onDelete: handleDeleteEdge },
+      }));
+      setEdges(styledEdges);
+    }
+  }, [initialLevel, handleDeleteEdge, setEdges]);
+
   const onConnect = useCallback(
-    (params: Connection) => setEdges((eds) => addEdge(params, eds)),
-    [setEdges]
+    (params: Connection) => {
+      const newEdge = {
+        ...params,
+        type: 'default',
+        animated: true,
+        style: { stroke: '#fb923c', strokeWidth: 2 },
+        data: { onDelete: handleDeleteEdge },
+      };
+      setEdges((eds) => addEdge(newEdge, eds));
+    },
+    [setEdges, handleDeleteEdge]
   );
 
   const onNodeClick = useCallback((_event: React.MouseEvent, node: Node) => {
@@ -163,9 +276,17 @@ const DungeonNodeEditorInner: React.FC<DungeonNodeEditorProps> = ({
   const handleLoadFromManager = useCallback((level: DungeonLevel) => {
     setLevelMetadata(level.metadata);
     setNodes(level.nodes);
-    setEdges(level.edges);
+    // Ensure loaded edges have proper styling and delete handler
+    const styledEdges = level.edges.map(edge => ({
+      ...edge,
+      type: edge.type || 'default',
+      animated: edge.animated !== undefined ? edge.animated : true,
+      style: edge.style || { stroke: '#fb923c', strokeWidth: 2 },
+      data: { ...edge.data, onDelete: handleDeleteEdge },
+    }));
+    setEdges(styledEdges);
     setSelectedNode(null);
-  }, [setNodes, setEdges]);
+  }, [setNodes, setEdges, handleDeleteEdge]);
 
   const handleValidate = useCallback(() => {
     const errors: string[] = [];
@@ -266,6 +387,9 @@ const DungeonNodeEditorInner: React.FC<DungeonNodeEditorProps> = ({
 
   return (
     <div className="w-full h-screen flex flex-col bg-slate-900">
+      {/* Inject custom edge styles */}
+      <style>{edgeStyles}</style>
+
       {/* Top Toolbar */}
       <LevelToolbar
         levelMetadata={levelMetadata}
@@ -345,6 +469,12 @@ const DungeonNodeEditorInner: React.FC<DungeonNodeEditorProps> = ({
             onPaneClick={onPaneClick}
             onInit={setReactFlowInstance}
             nodeTypes={nodeTypes}
+            edgeTypes={edgeTypes}
+            defaultEdgeOptions={{
+              type: 'default',
+              animated: true,
+              style: { stroke: '#fb923c', strokeWidth: 2 },
+            }}
             fitView
             attributionPosition="bottom-left"
             className="bg-slate-950"
@@ -375,6 +505,18 @@ const DungeonNodeEditorInner: React.FC<DungeonNodeEditorProps> = ({
                 <p className="text-gray-300 text-sm">
                   👈 Select a node type from the palette to get started
                 </p>
+              </Panel>
+            )}
+
+            {/* Edge Controls Help */}
+            {nodes.length > 0 && edges.length > 0 && (
+              <Panel position="bottom-right" className="bg-slate-800/90 backdrop-blur-sm border border-slate-700 rounded-lg p-3 text-xs">
+                <div className="text-gray-300 space-y-1">
+                  <div className="font-semibold text-orange-400 mb-2">Edge Controls</div>
+                  <div>• Click an edge to select it</div>
+                  <div>• Press <kbd className="px-1.5 py-0.5 bg-slate-700 rounded text-orange-300">Delete</kbd> or <kbd className="px-1.5 py-0.5 bg-slate-700 rounded text-orange-300">Backspace</kbd> to remove</div>
+                  <div>• Or click the <span className="text-red-400">× button</span> on selected edge</div>
+                </div>
               </Panel>
             )}
           </ReactFlow>

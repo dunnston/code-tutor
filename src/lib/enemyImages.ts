@@ -21,6 +21,16 @@ export const ENEMY_IMAGES: Record<string, string> = {
 /**
  * Get the image path for an enemy, fallback to a default if not found
  */
-export function getEnemyImage(enemyId: string): string {
+export function getEnemyImage(enemyId: string, icon?: string): string {
+  // If a custom icon is provided and it's an image path (not an emoji), use it
+  if (icon && (icon.startsWith('/') || icon.startsWith('http'))) {
+    // Normalize path: if it starts with /enemies/, prepend /src/images
+    if (icon.startsWith('/enemies/')) {
+      return '/src/images' + icon;
+    }
+    return icon;
+  }
+
+  // Otherwise, look up in predefined enemy images
   return ENEMY_IMAGES[enemyId] || '/src/images/enemies/golbin.png'; // Default fallback
 }

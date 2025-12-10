@@ -592,6 +592,63 @@ pub fn use_inventory_item(app: AppHandle, user_id: i64, item_id: String) -> Resu
     Ok(true)
 }
 
+// Dungeon loot item structure
+#[derive(Debug, Deserialize)]
+pub struct DungeonLootItem {
+    #[serde(rename = "itemSource")]
+    pub item_source: String, // "database" or "custom"
+
+    #[serde(rename = "itemId")]
+    pub item_id: Option<String>,
+
+    #[serde(rename = "itemCategory")]
+    pub item_category: Option<String>, // "equipment" or "consumable"
+
+    pub name: String,
+    pub quantity: i64,
+}
+
+#[tauri::command]
+pub fn add_dungeon_loot_to_inventory(
+    app: AppHandle,
+    user_id: i64,
+    loot_items: Vec<DungeonLootItem>
+) -> Result<(), String> {
+    let conn = db::get_connection(&app)?;
+
+    for item in loot_items {
+        // Only process database items (skip custom items for now)
+        if item.item_source == "database" {
+            if let (Some(item_id), Some(category)) = (item.item_id, item.item_category) {
+                match category.as_str() {
+                    "equipment" => {
+                        // Add to equipment inventory
+                        conn.execute(
+                            "INSERT INTO user_equipment_inventory (user_id, equipment_id, is_equipped, acquired_at)
+                             VALUES (?, ?, 0, CURRENT_TIMESTAMP)",
+                            params![user_id, item_id]
+                        ).map_err(|e| format!("Failed to add equipment to inventory: {}", e))?;
+                    },
+                    "consumable" => {
+                        // Add to consumable inventory (merge with existing)
+                        conn.execute(
+                            "INSERT INTO user_consumable_inventory (user_id, consumable_id, quantity, acquired_at)
+                             VALUES (?, ?, ?, CURRENT_TIMESTAMP)
+                             ON CONFLICT(user_id, consumable_id) DO UPDATE SET quantity = quantity + ?",
+                            params![user_id, item_id, item.quantity, item.quantity]
+                        ).map_err(|e| format!("Failed to add consumable to inventory: {}", e))?;
+                    },
+                    _ => {
+                        eprintln!("Unknown item category: {}", category);
+                    }
+                }
+            }
+        }
+    }
+
+    Ok(())
+}
+
 // ============================================================================
 // QUEST COMMANDS
 // ============================================================================
