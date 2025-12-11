@@ -59,6 +59,8 @@ logs/
 *.db-wal
 *.sqlite
 *.sqlite3
+# Exception: include the seed database for builds
+!src-tauri/seed_database.db
 
 # OS
 Thumbs.db
