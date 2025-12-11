@@ -5,6 +5,13 @@ use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
 use tokio::time::timeout;
 use reqwest::Client;
 
+#[cfg(windows)]
+use std::os::windows::process::CommandExt;
+
+// Windows constant to hide console windows when spawning processes
+#[cfg(windows)]
+const CREATE_NO_WINDOW: u32 = 0x08000000;
+
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ExecutionResult {
@@ -120,6 +127,10 @@ async fn execute_with_config(
                 // Ensure all environment variables are inherited
                 cmd.envs(std::env::vars());
 
+                // Hide console window on Windows
+                #[cfg(windows)]
+                cmd.creation_flags(CREATE_NO_WINDOW);
+
                 let mut child = cmd.arg(&code)
                     .stdin(Stdio::piped())
                     .stdout(Stdio::piped())
@@ -160,6 +171,10 @@ async fn execute_with_config(
 
                 // Ensure all environment variables are inherited
                 cmd.envs(std::env::vars());
+
+                // Hide console window on Windows
+                #[cfg(windows)]
+                cmd.creation_flags(CREATE_NO_WINDOW);
 
                 let mut child = cmd.arg(&temp_file_clone)
                     .stdin(Stdio::piped())
@@ -272,6 +287,10 @@ pub async fn check_language_runtime(language: String) -> Result<bool, String> {
 
         // Ensure all environment variables are inherited
         cmd.envs(std::env::vars());
+
+        // Hide console window on Windows
+        #[cfg(windows)]
+        cmd.creation_flags(CREATE_NO_WINDOW);
 
         cmd.output()
     })
@@ -403,6 +422,10 @@ pub async fn check_runtime_path(language: String, executable_path: String) -> Re
 
         // Ensure all environment variables are inherited
         cmd.envs(std::env::vars());
+
+        // Hide console window on Windows
+        #[cfg(windows)]
+        cmd.creation_flags(CREATE_NO_WINDOW);
 
         cmd.output()
     })

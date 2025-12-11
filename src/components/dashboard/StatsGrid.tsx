@@ -6,6 +6,7 @@ import type { AchievementStats } from '@/lib/achievements'
 export function StatsGrid() {
   const progress = useAppStore((state) => state.progress)
   const setCurrentView = useAppStore((state) => state.setCurrentView)
+  const currentUserId = useAppStore((state) => state.currentUserId)
   const [achievementStats, setAchievementStats] = useState<AchievementStats | null>(null)
 
   // Calculate total lessons completed
@@ -32,12 +33,16 @@ export function StatsGrid() {
   })
   const lessonsThisWeek = recentSessions.length
 
-  // Fetch achievement stats
+  // Fetch achievement stats for current user
   useEffect(() => {
     const fetchAchievementStats = async () => {
+      if (!currentUserId) {
+        setAchievementStats(null)
+        return
+      }
       try {
         const stats = await invoke<AchievementStats>('get_achievement_stats', {
-          userId: 1, // TODO: Get from current profile
+          userId: currentUserId,
         })
         setAchievementStats(stats)
       } catch (error) {
@@ -45,7 +50,7 @@ export function StatsGrid() {
       }
     }
     fetchAchievementStats()
-  }, [])
+  }, [currentUserId])
 
   const stats = [
     {

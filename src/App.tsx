@@ -77,6 +77,14 @@ function App() {
   const handleProfileSelected = async (profile: UserProfile) => {
     setCurrentProfile(profile)
 
+    // IMPORTANT: Refresh progress immediately to avoid showing stale data
+    // This must happen BEFORE async operations that might cause re-renders
+    refreshProgress()
+
+    // Clear current lesson to prevent stale data
+    const setCurrentLesson = useAppStore.getState().setCurrentLesson
+    setCurrentLesson(null)
+
     // Get or create database user for this profile
     const dbUserId = await ensureProfileHasDbUser(profile)
 
@@ -93,13 +101,6 @@ function App() {
     await refreshInventory()
     await refreshQuests()
     await refreshActiveEffects()
-
-    // Clear current lesson to prevent stale data
-    const setCurrentLesson = useAppStore.getState().setCurrentLesson
-    setCurrentLesson(null)
-
-    // Refresh progress data for the new profile
-    refreshProgress()
 
     // Check if this profile has completed onboarding
     setShowWelcome(!hasCompletedOnboarding())

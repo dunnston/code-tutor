@@ -11,6 +11,7 @@ export function Header() {
   const toggleDashboard = useAppStore((state) => state.toggleDashboard)
   const toggleSettings = useAppStore((state) => state.toggleSettings)
   const setCurrentView = useAppStore((state) => state.setCurrentView)
+  const currentUserId = useAppStore((state) => state.currentUserId)
   const [achievementStats, setAchievementStats] = useState<AchievementStats | null>(null)
 
   const currentProfile = getCurrentProfile()
@@ -18,9 +19,13 @@ export function Header() {
   // Fetch achievement stats for unviewed badge
   useEffect(() => {
     const fetchAchievementStats = async () => {
+      if (!currentUserId) {
+        setAchievementStats(null)
+        return
+      }
       try {
         const stats = await invoke<AchievementStats>('get_achievement_stats', {
-          userId: 1, // TODO: Get from current profile
+          userId: currentUserId,
         })
         setAchievementStats(stats)
       } catch (error) {
@@ -32,7 +37,7 @@ export function Header() {
     // Refresh stats every 10 seconds to catch new achievements
     const interval = setInterval(fetchAchievementStats, 10000)
     return () => clearInterval(interval)
-  }, [])
+  }, [currentUserId])
 
   const currentLevel = progress.level
   const currentXP = progress.xpEarned
