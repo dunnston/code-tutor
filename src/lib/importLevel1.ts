@@ -4,7 +4,7 @@
  */
 
 import { DungeonLevel, DungeonNodeType, AbilityType, EnemyType, ItemType, Difficulty } from '../types/dungeonEditor';
-import { invoke } from '@tauri-apps/api/core';
+import { invoke } from '@/lib/tauri';
 
 /**
  * Create complete Level 1 with all major paths and encounters

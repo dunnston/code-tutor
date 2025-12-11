@@ -31,7 +31,7 @@ import { EnemyManager } from './EnemyManager';
 import { QuestionManager } from './QuestionManager';
 import { ItemManager } from './ItemManager';
 import { DungeonNode, DungeonLevel, DungeonNodeType, DungeonNodeData, Difficulty, AbilityType, EnemyType } from '../../types/dungeonEditor';
-import { invoke } from '@tauri-apps/api/core';
+import { invoke } from '@/lib/tauri';
 
 // Add custom CSS for selected edges
 const edgeStyles = `

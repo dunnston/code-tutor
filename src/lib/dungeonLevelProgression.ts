@@ -4,7 +4,7 @@
  * Manages which levels the player has access to and tracks their progress
  */
 
-import { invoke } from '@tauri-apps/api/core';
+import { invoke } from '@/lib/tauri';
 import { DungeonLevel, LevelListItem } from '../types/dungeonEditor';
 
 // ==========================================

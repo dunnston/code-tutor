@@ -114,7 +114,9 @@ export function PuzzleSolver({ puzzleId }: PuzzleSolverProps) {
   }
 
   const handleBack = () => {
-    setCurrentView('puzzle-list')
+    // Navigate back to the puzzle hub instead of puzzle-list
+    // This avoids issues if currentPuzzleCategoryId is not set
+    setCurrentView('puzzles')
   }
 
   const handleLanguageChange = (language: SupportedLanguage) => {

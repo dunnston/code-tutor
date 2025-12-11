@@ -1,9 +1,39 @@
-import { invoke } from '@tauri-apps/api/core'
+import { invoke as tauriInvoke } from '@tauri-apps/api/core'
 import type { ExecutionResult } from '@/types/execution'
 import type { SupportedLanguage } from '@/types/language'
 
+// Extend Window interface to include Tauri internals
+declare global {
+  interface Window {
+    __TAURI_INTERNALS__?: {
+      invoke: <T>(cmd: string, args?: Record<string, unknown>) => Promise<T>
+    }
+  }
+}
+
 // Default timeout for Tauri invoke calls (10 seconds)
 const DEFAULT_INVOKE_TIMEOUT = 10000
+
+/**
+ * Check if Tauri runtime is available
+ * This must be checked before calling any Tauri APIs
+ */
+export function isTauriAvailable(): boolean {
+  return typeof window !== 'undefined' &&
+         window.__TAURI_INTERNALS__ !== undefined &&
+         typeof window.__TAURI_INTERNALS__.invoke === 'function'
+}
+
+/**
+ * Safe invoke wrapper that checks Tauri availability first
+ * Throws a helpful error if Tauri is not available
+ */
+export async function invoke<T>(cmd: string, args?: Record<string, unknown>): Promise<T> {
+  if (!isTauriAvailable()) {
+    throw new Error(`Tauri runtime not available. Cannot execute command: ${cmd}`)
+  }
+  return tauriInvoke<T>(cmd, args)
+}
 
 /**
  * Wrapper for Tauri invoke with timeout protection

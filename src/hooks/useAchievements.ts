@@ -1,5 +1,5 @@
 import { useCallback } from 'react'
-import { invoke } from '@tauri-apps/api/core'
+import { invoke } from '@/lib/tauri'
 import { TrackingKey, TRACKING_KEYS } from '@/lib/achievements'
 
 const USER_ID = 1 // Default user for single-user app

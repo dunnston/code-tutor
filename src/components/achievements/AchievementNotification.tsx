@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef, useCallback } from 'react'
-import { invoke } from '@tauri-apps/api/core'
+import { invoke } from '@/lib/tauri'
 import { AchievementNotification as AchievementNotificationType, TIER_CONFIG } from '@/lib/achievements'
 import { useAppStore } from '@/lib/store'
 

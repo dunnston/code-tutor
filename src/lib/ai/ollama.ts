@@ -1,10 +1,6 @@
 import type { AIProvider, ChatContext } from '@/types/ai'
 import { SYSTEM_PROMPT, buildChatPrompt } from './prompts'
-
-// Check if running in Tauri (runtime check)
-function isTauriAvailable(): boolean {
-  return typeof window !== 'undefined' && '__TAURI__' in window
-}
+import { invoke, isTauriAvailable } from '@/lib/tauri'
 
 /**
  * Ollama local LLM provider
@@ -26,7 +22,6 @@ export class OllamaProvider implements AIProvider {
     // Use Tauri backend check if available (more reliable)
     if (isTauriAvailable()) {
       try {
-        const { invoke } = await import('@tauri-apps/api/core')
         return await invoke<boolean>('check_ollama_available')
       } catch {
         // Fall through to browser check

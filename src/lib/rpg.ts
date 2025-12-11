@@ -1,5 +1,5 @@
 // RPG System API - TypeScript wrapper for Tauri commands
-import { invoke } from '@tauri-apps/api/core';
+import { invoke } from '@/lib/tauri';
 import type {
   CharacterStats,
   CharacterStatsRaw,

@@ -1,6 +1,6 @@
 import type { AIProvider, ChatContext } from '@/types/ai'
 import { SYSTEM_PROMPT, buildChatPrompt } from './prompts'
-import { invoke } from '@tauri-apps/api/core'
+import { invoke } from '@/lib/tauri'
 
 /**
  * Claude API provider (Anthropic)

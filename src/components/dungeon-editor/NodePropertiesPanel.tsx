@@ -19,7 +19,7 @@ import {
   Difficulty,
 } from '../../types/dungeonEditor';
 import { ItemManager } from './ItemManager';
-import { invoke } from '@tauri-apps/api/core';
+import { invoke } from '@/lib/tauri';
 
 // Enemy list item from database
 interface EnemyListItem {

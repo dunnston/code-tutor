@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { invoke } from '@tauri-apps/api/core';
+import { invoke } from '@/lib/tauri';
 import Editor from '@monaco-editor/react';
 import { useAppStore } from '@/lib/store';
 import { LANGUAGE_REGISTRY } from '@/lib/languageRegistry';

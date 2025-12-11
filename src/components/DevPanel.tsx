@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAppStore } from '@/lib/store';
 import { getCharacterStats, distributeStatPoints, restoreHealthAndMana } from '@/lib/rpg';
-import { invoke } from '@tauri-apps/api/core';
+import { invoke } from '@/lib/tauri';
 import type { CharacterStats } from '@/types/rpg';
 import { xpForNextLevel, loadProgress, saveProgress } from '@/lib/storage';
 

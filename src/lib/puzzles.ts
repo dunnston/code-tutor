@@ -3,7 +3,7 @@
  * Interfaces with Tauri backend for puzzle data
  */
 
-import { invoke } from '@tauri-apps/api/core'
+import { invoke } from '@/lib/tauri'
 import type {
   PuzzleCategory,
   Puzzle,

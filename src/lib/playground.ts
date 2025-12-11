@@ -1,5 +1,5 @@
 // Playground Utility Functions
-import { invoke } from '@tauri-apps/api/core';
+import { invoke } from '@/lib/tauri';
 import type {
   PlaygroundProject,
   PlaygroundTemplate,

@@ -1,7 +1,7 @@
 import { useAppStore } from '@/lib/store'
 import { xpForNextLevel, xpProgressToNextLevel } from '@/lib/storage'
 import { getCurrentProfile } from '@/lib/profiles'
-import { invoke } from '@tauri-apps/api/core'
+import { invoke } from '@/lib/tauri'
 import { useEffect, useState } from 'react'
 import type { AchievementStats } from '@/lib/achievements'
 
