@@ -27,6 +27,7 @@ interface LevelPlayerEnhancedProps {
   userId: number;
   onComplete?: (rewards: any) => void;
   onExit?: () => void;
+  skipTownPhase?: boolean; // If true, skip the town preparation screen and start immediately
 }
 
 type GamePhase = 'town' | 'narrative' | 'choice' | 'ability-check' | 'combat' | 'challenge' | 'outcome' | 'loot';
@@ -51,6 +52,7 @@ export const LevelPlayerEnhanced: React.FC<LevelPlayerEnhancedProps> = ({
   userId,
   onComplete,
   onExit,
+  skipTownPhase = false,
 }) => {
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState<CharacterStats | null>(null);
@@ -109,8 +111,26 @@ export const LevelPlayerEnhanced: React.FC<LevelPlayerEnhancedProps> = ({
         maxHealth: characterStats.maxHealth,
       }));
 
-      // Start at town instead of jumping into dungeon
-      setPhase('town');
+      // If skipTownPhase is true, start directly at the dungeon entrance
+      if (skipTownPhase && level) {
+        const startNode = level.nodes.find((n) => n.type === DungeonNodeType.START);
+        if (startNode) {
+          // Set phase to narrative immediately to prevent town screen flash
+          setPhase('narrative');
+          setPlayerState((prev) => ({
+            ...prev,
+            currentNodeId: startNode.id,
+            visitedNodes: [],
+          }));
+          // Process the start node immediately
+          setTimeout(() => processNode(startNode), 100);
+        } else {
+          setPhase('town'); // Fallback to town if no start node
+        }
+      } else {
+        // Start at town preparation screen
+        setPhase('town');
+      }
     } catch (error) {
       console.error('Failed to initialize player:', error);
       setNarrativeText(['Failed to load character data']);
@@ -816,7 +836,7 @@ export const LevelPlayerEnhanced: React.FC<LevelPlayerEnhancedProps> = ({
 
     setAvailableActions([{
       label: 'Return to Town',
-      action: () => returnToTown(),
+      action: () => onExit?.(),
     }]);
   };
 

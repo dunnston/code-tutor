@@ -132,16 +132,15 @@ export async function isLevelUnlocked(
 // ==========================================
 
 /**
- * Get all published levels (for campaign)
+ * Get all levels in campaign sequence order
  */
 export async function getPublishedLevels(): Promise<LevelListItem[]> {
   try {
-    const allLevels = await invoke<LevelListItem[]>('list_dungeon_levels');
-    return allLevels
-      .filter((level) => level.isPublished)
-      .sort((a, b) => a.recommendedLevel - b.recommendedLevel);
+    // Get levels ordered by sequence_order (as configured in Level Sequencer)
+    const sequencedLevels = await invoke<LevelListItem[]>('get_levels_in_sequence');
+    return sequencedLevels.filter((level) => level.isPublished);
   } catch (error) {
-    console.error('Failed to get published levels:', error);
+    console.error('Failed to get sequenced levels:', error);
     return [];
   }
 }
