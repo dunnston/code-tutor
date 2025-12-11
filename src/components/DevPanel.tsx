@@ -202,6 +202,31 @@ export function DevPanel({ onClose }: DevPanelProps) {
     }
   };
 
+  const handleClearInventory = async () => {
+    if (!currentUserId) return;
+    if (!confirm('Are you sure you want to clear your inventory? All items and equipment will be removed.')) {
+      return;
+    }
+    try {
+      await invoke('dev_clear_inventory', { userId: currentUserId });
+      await loadCharacterStats();
+      alert('Inventory cleared!');
+    } catch (error) {
+      console.error('Failed to clear inventory:', error);
+      alert(`Failed to clear inventory: ${error}`);
+    }
+  };
+
+  const handleExportCleanDatabase = async () => {
+    try {
+      const result = await invoke<string>('dev_export_clean_database');
+      alert(result);
+    } catch (error) {
+      console.error('Failed to export database:', error);
+      alert(`Failed to export database: ${error}`);
+    }
+  };
+
   if (!currentUserId) {
     return null;
   }
@@ -544,12 +569,26 @@ export function DevPanel({ onClose }: DevPanelProps) {
           </div>
 
           {/* Footer Actions */}
-          <div className="p-3 bg-slate-900 border-t border-slate-700 rounded-b-lg">
+          <div className="p-3 bg-slate-900 border-t border-slate-700 rounded-b-lg space-y-2">
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                onClick={handleClearInventory}
+                className="px-3 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded text-sm font-medium transition-colors"
+              >
+                Clear Inventory
+              </button>
+              <button
+                onClick={handleResetCharacter}
+                className="px-3 py-2 bg-red-600 hover:bg-red-700 text-white rounded text-sm font-medium transition-colors"
+              >
+                Reset Character
+              </button>
+            </div>
             <button
-              onClick={handleResetCharacter}
-              className="w-full px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded text-sm font-medium transition-colors"
+              onClick={handleExportCleanDatabase}
+              className="w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm font-medium transition-colors"
             >
-              Reset Character
+              Export Clean DB (for Alpha Build)
             </button>
           </div>
         </>

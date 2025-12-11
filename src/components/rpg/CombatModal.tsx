@@ -55,7 +55,7 @@ export function CombatModal({
 
   // Convert cropped avatar to full-size version for combat
   const getFullAvatar = (croppedPath: string | undefined): string => {
-    if (!croppedPath) return '/src/images/avatars/full/dragon-born.png';
+    if (!croppedPath) return '/avatars/full/dragon-born.png';
     // Replace /avatars/ with /avatars/full/
     return croppedPath.replace('/avatars/', '/avatars/full/');
   };

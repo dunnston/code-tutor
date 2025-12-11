@@ -181,6 +181,8 @@ pub fn run() {
       dev_commands::dev_add_charisma,
       dev_commands::dev_generate_loot,
       dev_commands::dev_reset_character,
+      dev_commands::dev_export_clean_database,
+      dev_commands::dev_clear_inventory,
       // Achievement commands
       achievement_commands::get_achievements,
       achievement_commands::get_achievement_stats,

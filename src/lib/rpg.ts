@@ -443,21 +443,18 @@ export async function getCustomEnemyById(enemyId: string): Promise<EnemyType> {
       attackAnimationPath = animData.path;
     }
 
-    // Normalize the path - ensure it starts with /src/images/
+    // Normalize the path for production (assets in public folder)
     if (attackAnimationPath) {
       // Remove leading slash if present for consistent processing
       let normalizedPath = attackAnimationPath.startsWith('/')
         ? attackAnimationPath.slice(1)
         : attackAnimationPath;
 
-      // If path doesn't already include src/images, prepend it
-      if (!normalizedPath.startsWith('src/images/')) {
-        // Handle paths like "animations/wolf.gif" or "images/animations/wolf.gif"
-        if (normalizedPath.startsWith('images/')) {
-          normalizedPath = 'src/' + normalizedPath;
-        } else {
-          normalizedPath = 'src/images/' + normalizedPath;
-        }
+      // Strip src/images prefix if present (for backwards compatibility)
+      if (normalizedPath.startsWith('src/images/')) {
+        normalizedPath = normalizedPath.replace('src/images/', '');
+      } else if (normalizedPath.startsWith('images/')) {
+        normalizedPath = normalizedPath.replace('images/', '');
       }
 
       attackAnimationPath = '/' + normalizedPath;

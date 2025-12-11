@@ -24,11 +24,11 @@ export interface AvatarOption {
 }
 
 export const AVATAR_OPTIONS: AvatarOption[] = [
-  { id: 'dragon', name: 'Dragon Born', path: '/src/images/avatars/dragon-born.png' },
-  { id: 'female-archer', name: 'Female Archer', path: '/src/images/avatars/female-archer.png' },
-  { id: 'female-rouge', name: 'Female Rogue', path: '/src/images/avatars/female-rouge.png' },
-  { id: 'male-rouge', name: 'Male Rogue', path: '/src/images/avatars/male-rouge.png' },
-  { id: 'wizard', name: 'Wizard', path: '/src/images/avatars/wizzard.png' },
+  { id: 'dragon', name: 'Dragon Born', path: '/avatars/dragon-born.png' },
+  { id: 'female-archer', name: 'Female Archer', path: '/avatars/female-archer.png' },
+  { id: 'female-rouge', name: 'Female Rogue', path: '/avatars/female-rouge.png' },
+  { id: 'male-rouge', name: 'Male Rogue', path: '/avatars/male-rouge.png' },
+  { id: 'wizard', name: 'Wizard', path: '/avatars/wizzard.png' },
 ]
 
 /**
