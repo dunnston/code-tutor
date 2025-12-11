@@ -21,12 +21,14 @@ export function NotificationToast({ notification }: NotificationToastProps) {
     'level-up': 'bg-gradient-to-r from-orange-500 to-orange-600',
     badge: 'bg-gradient-to-r from-purple-500 to-purple-600',
     streak: 'bg-gradient-to-r from-red-500 to-orange-500',
+    warning: 'bg-gradient-to-r from-yellow-500 to-amber-600',
   }[notification.type]
 
   const icon = {
     'level-up': '⬆️',
     badge: '🏅',
     streak: '🔥',
+    warning: '⚠️',
   }[notification.type]
 
   return (

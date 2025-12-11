@@ -27,6 +27,7 @@ import { InventoryView } from '@components/inventory/InventoryView'
 import { QuestBoardView } from '@components/quests/QuestBoardView'
 import { DevPanel } from '@components/DevPanel'
 import { DungeonNodeEditor } from '@components/dungeon-editor/DungeonNodeEditor'
+import { ErrorBoundary, ViewErrorBoundary } from '@components/ErrorBoundary'
 import { useAppStore } from '@/lib/store'
 import { executeCode } from '@/lib/tauri'
 import { validateCode, getValidationSummary } from '@/lib/validation'
@@ -73,37 +74,87 @@ function App() {
   // Store last execution result for validation
   const lastExecutionResult = useRef<ExecutionResult | undefined>()
 
+  // Profile change lock and abort controller to prevent race conditions
+  const isProfileChanging = useRef(false)
+  const profileAbortController = useRef<AbortController | null>(null)
+
   // Handle profile selection
   const handleProfileSelected = async (profile: UserProfile) => {
-    setCurrentProfile(profile)
+    // Cancel any in-progress profile switch
+    if (profileAbortController.current) {
+      profileAbortController.current.abort()
+    }
 
-    // IMPORTANT: Refresh progress immediately to avoid showing stale data
-    // This must happen BEFORE async operations that might cause re-renders
-    refreshProgress()
+    // Create new abort controller for this profile switch
+    profileAbortController.current = new AbortController()
+    const signal = profileAbortController.current.signal
 
-    // Clear current lesson to prevent stale data
-    const setCurrentLesson = useAppStore.getState().setCurrentLesson
-    setCurrentLesson(null)
+    // Prevent concurrent profile switches
+    if (isProfileChanging.current) {
+      return
+    }
 
-    // Get or create database user for this profile
-    const dbUserId = await ensureProfileHasDbUser(profile)
+    isProfileChanging.current = true
 
-    // Set the current user ID in the store
-    const { setCurrentUserId, refreshCurrency, refreshInventory, refreshQuests, refreshActiveEffects } = useAppStore.getState()
-    setCurrentUserId(dbUserId)
+    try {
+      // Check if aborted before each major operation
+      if (signal.aborted) return
 
-    // Initialize quest progress for new users
-    await initializeQuestProgress(dbUserId, 'daily')
-    await initializeQuestProgress(dbUserId, 'weekly')
+      setCurrentProfile(profile)
 
-    // Refresh gamification data for the user
-    await refreshCurrency()
-    await refreshInventory()
-    await refreshQuests()
-    await refreshActiveEffects()
+      // IMPORTANT: Refresh progress immediately to avoid showing stale data
+      // This must happen BEFORE async operations that might cause re-renders
+      refreshProgress()
 
-    // Check if this profile has completed onboarding
-    setShowWelcome(!hasCompletedOnboarding())
+      // Clear current lesson to prevent stale data
+      const setCurrentLesson = useAppStore.getState().setCurrentLesson
+      setCurrentLesson(null)
+
+      if (signal.aborted) return
+
+      // Get or create database user for this profile
+      const dbUserId = await ensureProfileHasDbUser(profile)
+
+      if (signal.aborted) return
+
+      // Set the current user ID in the store
+      const { setCurrentUserId, refreshCurrency, refreshInventory, refreshQuests, refreshActiveEffects } = useAppStore.getState()
+      setCurrentUserId(dbUserId)
+
+      if (signal.aborted) return
+
+      // Initialize quest progress for new users
+      await initializeQuestProgress(dbUserId, 'daily')
+      await initializeQuestProgress(dbUserId, 'weekly')
+
+      if (signal.aborted) return
+
+      // Refresh gamification data - use allSettled to prevent one failure from blocking others
+      const results = await Promise.allSettled([
+        refreshCurrency(),
+        refreshInventory(),
+        refreshQuests(),
+        refreshActiveEffects()
+      ])
+
+      if (signal.aborted) return
+
+      // Log any failures but don't block (only in dev mode)
+      if (import.meta.env.DEV) {
+        results.forEach((result, index) => {
+          if (result.status === 'rejected') {
+            const names = ['currency', 'inventory', 'quests', 'activeEffects']
+            console.error(`Failed to refresh ${names[index]}:`, result.reason)
+          }
+        })
+      }
+
+      // Check if this profile has completed onboarding
+      setShowWelcome(!hasCompletedOnboarding())
+    } finally {
+      // Always clear the lock
+      isProfileChanging.current = false
+    }
   }
 
   // Handle onboarding completion
@@ -173,7 +224,10 @@ function App() {
     }
     initProfile()
 
-    // Initialize AI provider based on saved settings
+  }, [refreshProgress])
+
+  // Initialize and re-initialize AI provider when settings change
+  useEffect(() => {
     const initAI = async () => {
       if (settings.aiProvider !== 'none') {
         try {
@@ -183,10 +237,17 @@ function App() {
         } catch (error) {
           console.error('Failed to initialize AI provider:', error)
         }
+      } else {
+        // If provider is set to 'none', clear the current provider
+        try {
+          await aiService.setProvider('none')
+        } catch (error) {
+          console.error('Failed to clear AI provider:', error)
+        }
       }
     }
     initAI()
-  }, [refreshProgress])
+  }, [settings.aiProvider, settings.claudeApiKey])
 
   const handleRun = async () => {
     if (!currentLesson) {
@@ -415,49 +476,94 @@ function App() {
   }
 
   return (
+    <ErrorBoundary>
     <div className="h-screen flex flex-col bg-navy-900">
       {/* Show Header on dashboard, learning, and achievements views */}
       {(currentView === 'learning' || currentView === 'dashboard' || currentView === 'achievements') && <Header />}
 
       {/* Dashboard View */}
-      {currentView === 'dashboard' && <Dashboard onLogout={handleLogout} />}
+      {currentView === 'dashboard' && (
+        <ViewErrorBoundary viewName="Dashboard">
+          <Dashboard onLogout={handleLogout} />
+        </ViewErrorBoundary>
+      )}
 
       {/* Puzzle View */}
-      {currentView === 'puzzles' && <PuzzleHub />}
+      {currentView === 'puzzles' && (
+        <ViewErrorBoundary viewName="Puzzle Hub" onNavigateToDashboard={() => useAppStore.getState().setCurrentView('dashboard')}>
+          <PuzzleHub />
+        </ViewErrorBoundary>
+      )}
 
       {/* Puzzle List View */}
       {currentView === 'puzzle-list' && currentPuzzleCategoryId && (
-        <PuzzleList categoryId={currentPuzzleCategoryId} />
+        <ViewErrorBoundary viewName="Puzzle List" onNavigateToDashboard={() => useAppStore.getState().setCurrentView('dashboard')}>
+          <PuzzleList categoryId={currentPuzzleCategoryId} />
+        </ViewErrorBoundary>
       )}
 
       {/* Puzzle Solver View */}
       {currentView === 'puzzle-solver' && currentPuzzleId && (
-        <PuzzleSolver puzzleId={currentPuzzleId} />
+        <ViewErrorBoundary viewName="Puzzle Solver" onNavigateToDashboard={() => useAppStore.getState().setCurrentView('dashboard')}>
+          <PuzzleSolver puzzleId={currentPuzzleId} />
+        </ViewErrorBoundary>
       )}
 
       {/* All Puzzles View */}
-      {currentView === 'puzzle-all' && <AllPuzzlesList />}
+      {currentView === 'puzzle-all' && (
+        <ViewErrorBoundary viewName="All Puzzles" onNavigateToDashboard={() => useAppStore.getState().setCurrentView('dashboard')}>
+          <AllPuzzlesList />
+        </ViewErrorBoundary>
+      )}
 
       {/* Puzzle Leaderboard View */}
-      {currentView === 'puzzle-leaderboard' && <PuzzleLeaderboard />}
+      {currentView === 'puzzle-leaderboard' && (
+        <ViewErrorBoundary viewName="Leaderboard" onNavigateToDashboard={() => useAppStore.getState().setCurrentView('dashboard')}>
+          <PuzzleLeaderboard />
+        </ViewErrorBoundary>
+      )}
 
       {/* Puzzle Achievements View */}
-      {currentView === 'puzzle-achievements' && <PuzzleAchievements />}
+      {currentView === 'puzzle-achievements' && (
+        <ViewErrorBoundary viewName="Puzzle Achievements" onNavigateToDashboard={() => useAppStore.getState().setCurrentView('dashboard')}>
+          <PuzzleAchievements />
+        </ViewErrorBoundary>
+      )}
 
       {/* Unified Achievements View */}
-      {currentView === 'achievements' && <AchievementsList />}
+      {currentView === 'achievements' && (
+        <ViewErrorBoundary viewName="Achievements" onNavigateToDashboard={() => useAppStore.getState().setCurrentView('dashboard')}>
+          <AchievementsList />
+        </ViewErrorBoundary>
+      )}
 
       {/* Playground View */}
-      {currentView === 'playground' && <PlaygroundView />}
+      {currentView === 'playground' && (
+        <ViewErrorBoundary viewName="Playground" onNavigateToDashboard={() => useAppStore.getState().setCurrentView('dashboard')}>
+          <PlaygroundView />
+        </ViewErrorBoundary>
+      )}
 
       {/* Gamification Views */}
-      {currentView === 'shop' && <ShopView />}
-      {currentView === 'inventory' && <InventoryView />}
-      {currentView === 'quests' && <QuestBoardView />}
+      {currentView === 'shop' && (
+        <ViewErrorBoundary viewName="Shop" onNavigateToDashboard={() => useAppStore.getState().setCurrentView('dashboard')}>
+          <ShopView />
+        </ViewErrorBoundary>
+      )}
+      {currentView === 'inventory' && (
+        <ViewErrorBoundary viewName="Inventory" onNavigateToDashboard={() => useAppStore.getState().setCurrentView('dashboard')}>
+          <InventoryView />
+        </ViewErrorBoundary>
+      )}
+      {currentView === 'quests' && (
+        <ViewErrorBoundary viewName="Quests" onNavigateToDashboard={() => useAppStore.getState().setCurrentView('dashboard')}>
+          <QuestBoardView />
+        </ViewErrorBoundary>
+      )}
 
       {/* Learning View */}
       {currentView === 'learning' && (
-        <>
+        <ViewErrorBoundary viewName="Learning" onNavigateToDashboard={() => useAppStore.getState().setCurrentView('dashboard')}>
           <div className="flex-1 overflow-hidden">
             <PanelGroup direction="horizontal">
               {/* Left: Lesson content panel */}
@@ -504,7 +610,7 @@ function App() {
             onSubmit={handleSubmit}
             onShowSolution={handleShowSolution}
           />
-        </>
+        </ViewErrorBoundary>
       )}
 
       {/* Gamification UI */}
@@ -539,6 +645,7 @@ function App() {
         </div>
       )}
     </div>
+    </ErrorBoundary>
   )
 }
 

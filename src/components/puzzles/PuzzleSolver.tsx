@@ -80,7 +80,17 @@ export function PuzzleSolver({ puzzleId }: PuzzleSolverProps) {
       setImplementation(implData)
 
       // Load user progress if exists
-      const progress = await getPuzzleProgress(puzzleId, selectedLanguage)
+      if (!currentUserId) {
+        console.warn('No user ID available for loading puzzle progress')
+        setCode(implData.starterCode)
+        setHintsRevealed(0)
+        setSolutionViewed(false)
+        setSolveStartTime(Date.now())
+        setError(null)
+        setLoading(false)
+        return
+      }
+      const progress = await getPuzzleProgress(currentUserId, puzzleId, selectedLanguage)
       if (progress && progress.userSolution) {
         // Restore previous solution
         setCode(progress.userSolution)
@@ -158,7 +168,9 @@ export function PuzzleSolver({ puzzleId }: PuzzleSolverProps) {
       }
 
       // Record attempt (save progress)
-      await recordPuzzleAttempt(puzzleId, selectedLanguage, code)
+      if (currentUserId) {
+        await recordPuzzleAttempt(currentUserId, puzzleId, selectedLanguage, code)
+      }
     } catch (err) {
       console.error('Execution error:', err)
       addConsoleMessage({
@@ -206,7 +218,12 @@ export function PuzzleSolver({ puzzleId }: PuzzleSolverProps) {
         const solveTimeSeconds = Math.floor((Date.now() - solveStartTime) / 1000)
 
         // Mark as solved and award points
+        if (!currentUserId) {
+          console.warn('No user ID available for marking puzzle solved')
+          return
+        }
         const points = await markPuzzleSolved(
+          currentUserId,
           puzzleId,
           selectedLanguage,
           code,
@@ -250,9 +267,10 @@ export function PuzzleSolver({ puzzleId }: PuzzleSolverProps) {
 
         // Check if this is today's daily puzzle and award bonus
         try {
-          const dailyChallenge = await getDailyPuzzle()
+          if (!currentUserId) throw new Error('No user ID')
+          const dailyChallenge = await getDailyPuzzle(currentUserId)
           if (dailyChallenge.puzzleId === puzzleId && !dailyChallenge.completedToday) {
-            const bonusPoints = await completeDailyPuzzle(puzzleId, selectedLanguage)
+            const bonusPoints = await completeDailyPuzzle(currentUserId, puzzleId, selectedLanguage)
             if (bonusPoints > 0) {
               addConsoleMessage({
                 type: 'success',
@@ -292,7 +310,9 @@ export function PuzzleSolver({ puzzleId }: PuzzleSolverProps) {
       }
 
       // Record attempt
-      await recordPuzzleAttempt(puzzleId, selectedLanguage, code)
+      if (currentUserId) {
+        await recordPuzzleAttempt(currentUserId, puzzleId, selectedLanguage, code)
+      }
     } catch (err) {
       console.error('Submission error:', err)
       addConsoleMessage({
@@ -316,10 +336,12 @@ export function PuzzleSolver({ puzzleId }: PuzzleSolverProps) {
     setHintsRevealed(hintsRevealed + 1)
 
     // Record hint usage in database
-    try {
-      await recordHintUsed(puzzleId, selectedLanguage)
-    } catch (err) {
-      console.error('Failed to record hint usage:', err)
+    if (currentUserId) {
+      try {
+        await recordHintUsed(currentUserId, puzzleId, selectedLanguage)
+      } catch (err) {
+        console.error('Failed to record hint usage:', err)
+      }
     }
   }
 
@@ -339,9 +361,9 @@ export function PuzzleSolver({ puzzleId }: PuzzleSolverProps) {
     if (!implementation) return
 
     // Record solution viewed if first time
-    if (!solutionViewed) {
+    if (!solutionViewed && currentUserId) {
       try {
-        await recordSolutionViewed(puzzleId, selectedLanguage)
+        await recordSolutionViewed(currentUserId, puzzleId, selectedLanguage)
         setSolutionViewed(true)
       } catch (err) {
         console.error('Failed to record solution viewed:', err)

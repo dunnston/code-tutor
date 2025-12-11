@@ -1,5 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { invoke } from '@tauri-apps/api/core';
+
+// Declare global window property for combat sequence tracking
+declare global {
+  interface Window {
+    _dungeonCombatSequence?: {
+      enemies: Array<{ customEnemyId: string; name: string; level: number }>;
+      currentIndex: number;
+      onVictory: (rewards: CombatRewards) => void;
+      onDefeat?: () => void;
+    };
+  }
+}
 import {
   DungeonLevel,
   DungeonNode,

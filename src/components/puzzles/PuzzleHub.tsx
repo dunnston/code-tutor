@@ -1,16 +1,21 @@
 import { useEffect, useState } from 'react'
-import { getPuzzleCategories, getPuzzlesByCategory } from '@/lib/puzzles'
+import { getPuzzleCategories, getPuzzlesByCategory, getAllPuzzleProgress } from '@/lib/puzzles'
 import { useAppStore } from '@/lib/store'
-import type { PuzzleCategory } from '@/types/puzzle'
+import type { PuzzleCategory, UserPuzzleProgress, Puzzle } from '@/types/puzzle'
 import { CategoryCard } from './CategoryCard'
 import { DailyChallengeCard } from './DailyChallengeCard'
 
 export function PuzzleHub() {
   const [categories, setCategories] = useState<PuzzleCategory[]>([])
   const [puzzleCounts, setPuzzleCounts] = useState<Record<string, number>>({})
+  const [solvedCounts, setSolvedCounts] = useState<Record<string, number>>({})
+  const [totalSolved, setTotalSolved] = useState(0)
+  const [totalPuzzles, setTotalPuzzles] = useState(0)
+  const [totalPoints, setTotalPoints] = useState(0)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const setCurrentView = useAppStore((state) => state.setCurrentView)
+  const dailyPuzzleStreak = useAppStore((state) => state.dailyPuzzleStreak)
 
   const handleBackToDashboard = () => {
     setCurrentView('dashboard')
@@ -32,18 +37,63 @@ export function PuzzleHub() {
       const data = await getPuzzleCategories()
       setCategories(data)
 
-      // Fetch puzzle counts for each category
+      // Fetch puzzle counts and puzzle data for each category
       const counts: Record<string, number> = {}
+      const allPuzzles: Puzzle[] = []
+      const puzzlesByCategory: Record<string, Puzzle[]> = {}
+
       for (const category of data) {
         try {
           const puzzles = await getPuzzlesByCategory(category.id)
           counts[category.id] = puzzles.length
+          allPuzzles.push(...puzzles)
+          puzzlesByCategory[category.id] = puzzles
         } catch (err) {
           console.error(`Failed to load puzzles for category ${category.id}:`, err)
           counts[category.id] = 0
+          puzzlesByCategory[category.id] = []
         }
       }
       setPuzzleCounts(counts)
+      setTotalPuzzles(allPuzzles.length)
+
+      // Fetch user progress
+      const currentUserId = useAppStore.getState().currentUserId
+      if (!currentUserId) {
+        console.warn('No user ID available for loading puzzle progress')
+        return
+      }
+      const progress = await getAllPuzzleProgress(currentUserId)
+
+      // Create a set of solved puzzle IDs (unique by puzzleId, not language)
+      const solvedPuzzleIds = new Set<string>()
+      let pointsEarned = 0
+
+      // Add null checks for progress data
+      for (const p of progress) {
+        if (p && typeof p === 'object' && p.status === 'solved' && typeof p.puzzleId === 'string') {
+          solvedPuzzleIds.add(p.puzzleId)
+        }
+      }
+
+      // Calculate solved counts per category and total points
+      const solved: Record<string, number> = {}
+      for (const category of data) {
+        const categoryPuzzles = puzzlesByCategory[category.id] || []
+        let categorySolved = 0
+        for (const puzzle of categoryPuzzles) {
+          if (puzzle && puzzle.id && solvedPuzzleIds.has(puzzle.id)) {
+            categorySolved++
+            // Safely access points with fallback
+            pointsEarned += (puzzle.points ?? 0)
+          }
+        }
+        solved[category.id] = categorySolved
+      }
+
+      setSolvedCounts(solved)
+      setTotalSolved(solvedPuzzleIds.size)
+      setTotalPoints(pointsEarned)
 
       setError(null)
     } catch (err) {
@@ -113,7 +163,7 @@ export function PuzzleHub() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
           <div className="bg-navy-800 rounded-lg p-4 border border-navy-700">
             <div className="text-sm text-gray-400 mb-1">Solved</div>
-            <div className="text-3xl font-bold text-white">0 <span className="text-lg text-gray-500">/ 0</span></div>
+            <div className="text-3xl font-bold text-white">{totalSolved} <span className="text-lg text-gray-500">/ {totalPuzzles}</span></div>
           </div>
           <div className="bg-navy-800 rounded-lg p-4 border border-navy-700">
             <div className="text-sm text-gray-400 mb-1">Current Rank</div>
@@ -121,12 +171,12 @@ export function PuzzleHub() {
           </div>
           <div className="bg-navy-800 rounded-lg p-4 border border-navy-700">
             <div className="text-sm text-gray-400 mb-1">Total Points</div>
-            <div className="text-3xl font-bold text-green-500">0 pts</div>
+            <div className="text-3xl font-bold text-green-500">{totalPoints} pts</div>
           </div>
           <div className="bg-navy-800 rounded-lg p-4 border border-navy-700">
             <div className="text-sm text-gray-400 mb-1">Streak</div>
             <div className="text-3xl font-bold text-orange-500 flex items-center gap-2">
-              <span>0</span>
+              <span>{dailyPuzzleStreak?.currentStreak ?? 0}</span>
               <span className="text-2xl">🔥</span>
             </div>
           </div>
@@ -149,7 +199,7 @@ export function PuzzleHub() {
                 key={category.id}
                 category={category}
                 totalCount={puzzleCounts[category.id] || 0}
-                solvedCount={0}
+                solvedCount={solvedCounts[category.id] || 0}
                 onClick={() => handleCategoryClick(category.id)}
               />
             ))}

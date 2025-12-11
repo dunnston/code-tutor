@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react'
-import { getPuzzleCategories, getPuzzlesByCategory } from '@/lib/puzzles'
+import { getPuzzleCategories, getPuzzlesByCategory, getAllPuzzleProgress } from '@/lib/puzzles'
 import { useAppStore } from '@/lib/store'
-import type { Puzzle, PuzzleDifficulty } from '@/types/puzzle'
+import type { Puzzle, PuzzleDifficulty, UserPuzzleProgress } from '@/types/puzzle'
 import { PuzzleCard } from './PuzzleCard'
 
 type SortOption = 'difficulty' | 'points' | 'acceptance' | 'title' | 'category'
 
 export function AllPuzzlesList() {
   const [puzzles, setPuzzles] = useState<Puzzle[]>([])
+  const [progressMap, setProgressMap] = useState<Map<string, UserPuzzleProgress>>(new Map())
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [difficultyFilter, setDifficultyFilter] = useState<PuzzleDifficulty | 'all'>('all')
@@ -26,6 +27,7 @@ export function AllPuzzlesList() {
 
   useEffect(() => {
     loadAllPuzzles()
+    loadProgress()
   }, [])
 
   const loadAllPuzzles = async () => {
@@ -52,6 +54,27 @@ export function AllPuzzlesList() {
       setError('Failed to load puzzles')
     } finally {
       setLoading(false)
+    }
+  }
+
+  const loadProgress = async () => {
+    try {
+      const currentUserId = useAppStore.getState().currentUserId
+      if (!currentUserId) {
+        console.warn('No user ID available for loading puzzle progress')
+        return
+      }
+      const allProgress = await getAllPuzzleProgress(currentUserId)
+      const map = new Map<string, UserPuzzleProgress>()
+      for (const progress of allProgress) {
+        const existing = map.get(progress.puzzleId)
+        if (!existing || (progress.status === 'solved' && existing.status !== 'solved')) {
+          map.set(progress.puzzleId, progress)
+        }
+      }
+      setProgressMap(map)
+    } catch (err) {
+      console.error('Failed to load progress:', err)
     }
   }
 
@@ -235,6 +258,7 @@ export function AllPuzzlesList() {
               <PuzzleCard
                 key={puzzle.id}
                 puzzle={puzzle}
+                progress={progressMap.get(puzzle.id)}
                 onClick={() => handlePuzzleClick(puzzle.id)}
               />
             ))}

@@ -76,7 +76,7 @@ export interface AchievementNotification {
   achievement: Achievement
 }
 
-export interface AchievementCategory {
+export interface AchievementCategoryInfo {
   id: string
   name: string
   description: string

@@ -1,20 +1,90 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef, useCallback } from 'react'
 import { invoke } from '@tauri-apps/api/core'
 import { AchievementNotification as AchievementNotificationType, TIER_CONFIG } from '@/lib/achievements'
+import { useAppStore } from '@/lib/store'
+
+// Polling configuration with exponential backoff
+const MIN_POLL_INTERVAL = 5000  // 5 seconds minimum
+const MAX_POLL_INTERVAL = 30000 // 30 seconds maximum
+const BACKOFF_MULTIPLIER = 1.5  // Increase by 50% each time
 
 export function AchievementNotificationManager() {
   const [notifications, setNotifications] = useState<AchievementNotificationType[]>([])
   const [currentNotification, setCurrentNotification] = useState<AchievementNotificationType | null>(null)
   const [isVisible, setIsVisible] = useState(false)
 
-  const userId = 1 // Default user
+  // Refs to track active timers for cleanup
+  const autoHideTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const animationTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const pollTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const pollIntervalRef = useRef(MIN_POLL_INTERVAL)
 
-  // Poll for new notifications every 5 seconds
-  useEffect(() => {
-    checkForNotifications()
-    const interval = setInterval(checkForNotifications, 5000)
-    return () => clearInterval(interval)
+  const currentUserId = useAppStore((state) => state.currentUserId)
+
+  // Cleanup function to clear all timers
+  const clearAllTimers = useCallback(() => {
+    if (autoHideTimerRef.current) {
+      clearTimeout(autoHideTimerRef.current)
+      autoHideTimerRef.current = null
+    }
+    if (animationTimerRef.current) {
+      clearTimeout(animationTimerRef.current)
+      animationTimerRef.current = null
+    }
+    if (pollTimerRef.current) {
+      clearTimeout(pollTimerRef.current)
+      pollTimerRef.current = null
+    }
   }, [])
+
+  // Schedule next poll with current interval
+  const scheduleNextPoll = useCallback(() => {
+    if (pollTimerRef.current) {
+      clearTimeout(pollTimerRef.current)
+    }
+    pollTimerRef.current = setTimeout(checkForNotificationsWithBackoff, pollIntervalRef.current)
+  }, [])
+
+  // Check for notifications with exponential backoff
+  const checkForNotificationsWithBackoff = useCallback(async () => {
+    if (!currentUserId) return
+
+    try {
+      const pending = await invoke<AchievementNotificationType[]>(
+        'get_pending_achievement_notifications',
+        { userId: currentUserId }
+      )
+      if (pending.length > 0) {
+        setNotifications(pending)
+        // Reset to minimum interval when notifications found
+        pollIntervalRef.current = MIN_POLL_INTERVAL
+      } else {
+        // Increase interval with exponential backoff (capped at MAX)
+        pollIntervalRef.current = Math.min(
+          pollIntervalRef.current * BACKOFF_MULTIPLIER,
+          MAX_POLL_INTERVAL
+        )
+      }
+    } catch (err) {
+      console.error('Failed to check for achievement notifications:', err)
+      // On error, use slower polling to avoid hammering the backend
+      pollIntervalRef.current = MAX_POLL_INTERVAL
+    }
+
+    // Schedule next poll
+    scheduleNextPoll()
+  }, [currentUserId, scheduleNextPoll])
+
+  // Poll for new notifications with exponential backoff
+  useEffect(() => {
+    if (currentUserId) {
+      // Reset interval on user change
+      pollIntervalRef.current = MIN_POLL_INTERVAL
+      checkForNotificationsWithBackoff()
+      return () => clearAllTimers()
+    }
+    return () => clearAllTimers()
+  }, [currentUserId, clearAllTimers, checkForNotificationsWithBackoff])
 
   // Show next notification when queue changes
   useEffect(() => {
@@ -22,20 +92,6 @@ export function AchievementNotificationManager() {
       showNextNotification()
     }
   }, [notifications, currentNotification, isVisible])
-
-  const checkForNotifications = async () => {
-    try {
-      const pending = await invoke<AchievementNotificationType[]>(
-        'get_pending_achievement_notifications',
-        { userId }
-      )
-      if (pending.length > 0) {
-        setNotifications(pending)
-      }
-    } catch (err) {
-      console.error('Failed to check for achievement notifications:', err)
-    }
-  }
 
   const showNextNotification = () => {
     if (notifications.length === 0) return
@@ -45,14 +101,25 @@ export function AchievementNotificationManager() {
     setNotifications(rest)
     setIsVisible(true)
 
+    // Clear any existing auto-hide timer
+    if (autoHideTimerRef.current) {
+      clearTimeout(autoHideTimerRef.current)
+    }
+
     // Auto-hide after 5 seconds
-    setTimeout(() => {
+    autoHideTimerRef.current = setTimeout(() => {
       hideNotification(next.id)
     }, 5000)
   }
 
   const hideNotification = async (notificationId: number) => {
     setIsVisible(false)
+
+    // Clear auto-hide timer
+    if (autoHideTimerRef.current) {
+      clearTimeout(autoHideTimerRef.current)
+      autoHideTimerRef.current = null
+    }
 
     // Mark as shown in database
     try {
@@ -61,8 +128,13 @@ export function AchievementNotificationManager() {
       console.error('Failed to mark notification as shown:', err)
     }
 
+    // Clear any existing animation timer
+    if (animationTimerRef.current) {
+      clearTimeout(animationTimerRef.current)
+    }
+
     // Wait for animation to complete before clearing
-    setTimeout(() => {
+    animationTimerRef.current = setTimeout(() => {
       setCurrentNotification(null)
     }, 300)
   }
@@ -89,7 +161,8 @@ function AchievementNotification({ notification, onClose }: AchievementNotificat
 
   useEffect(() => {
     // Start animation after mount
-    setTimeout(() => setIsAnimating(true), 10)
+    const timer = setTimeout(() => setIsAnimating(true), 10)
+    return () => clearTimeout(timer)
   }, [])
 
   return (

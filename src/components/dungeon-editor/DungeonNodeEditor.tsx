@@ -30,7 +30,7 @@ import { LevelSequencer } from './LevelSequencer';
 import { EnemyManager } from './EnemyManager';
 import { QuestionManager } from './QuestionManager';
 import { ItemManager } from './ItemManager';
-import { DungeonNode, DungeonLevel, DungeonNodeType, DungeonNodeData } from '../../types/dungeonEditor';
+import { DungeonNode, DungeonLevel, DungeonNodeType, DungeonNodeData, Difficulty, AbilityType, EnemyType } from '../../types/dungeonEditor';
 import { invoke } from '@tauri-apps/api/core';
 
 // Add custom CSS for selected edges
@@ -144,7 +144,7 @@ const DungeonNodeEditorInner: React.FC<DungeonNodeEditorProps> = ({
       name: 'Untitled Level',
       description: '',
       recommendedLevel: 1,
-      difficulty: 'medium' as const,
+      difficulty: Difficulty.MEDIUM,
       estimatedDuration: 30,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
@@ -222,8 +222,8 @@ const DungeonNodeEditorInner: React.FC<DungeonNodeEditorProps> = ({
           if (node.id === nodeId) {
             return {
               ...node,
-              data: { ...node.data, ...newData },
-            };
+              data: { ...node.data, ...newData } as DungeonNodeData,
+            } as DungeonNode;
           }
           return node;
         })
@@ -232,7 +232,7 @@ const DungeonNodeEditorInner: React.FC<DungeonNodeEditorProps> = ({
       // Update selected node if it's the one being edited
       if (selectedNode && selectedNode.id === nodeId) {
         setSelectedNode((prev) =>
-          prev ? { ...prev, data: { ...prev.data, ...newData } } : null
+          prev ? { ...prev, data: { ...prev.data, ...newData } as DungeonNodeData } as DungeonNode : null
         );
       }
     },
@@ -336,7 +336,7 @@ const DungeonNodeEditorInner: React.FC<DungeonNodeEditorProps> = ({
         name: 'Untitled Level',
         description: '',
         recommendedLevel: 1,
-        difficulty: 'medium',
+        difficulty: Difficulty.MEDIUM,
         estimatedDuration: 30,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
@@ -544,11 +544,11 @@ function createDefaultNodeData(nodeType: DungeonNodeType): DungeonNodeData {
     case DungeonNodeType.START:
       return { ...baseData, nodeType: DungeonNodeType.START, welcomeMessage: 'Welcome to the dungeon!' };
     case DungeonNodeType.COMBAT:
-      return { ...baseData, nodeType: DungeonNodeType.COMBAT, enemies: [], difficulty: 'medium' as const, rewardXp: 100, rewardGold: 50 };
+      return { ...baseData, nodeType: DungeonNodeType.COMBAT, enemies: [], difficulty: Difficulty.MEDIUM, rewardXp: 100, rewardGold: 50 };
     case DungeonNodeType.CHOICE:
       return { ...baseData, nodeType: DungeonNodeType.CHOICE, prompt: 'What do you do?', options: [] };
     case DungeonNodeType.ABILITY_CHECK:
-      return { ...baseData, nodeType: DungeonNodeType.ABILITY_CHECK, ability: 'STR' as const, dc: 10, successText: 'Success!', failureText: 'Failure!', allowRetry: false };
+      return { ...baseData, nodeType: DungeonNodeType.ABILITY_CHECK, ability: AbilityType.STRENGTH, dc: 10, successText: 'Success!', failureText: 'Failure!', allowRetry: false };
     case DungeonNodeType.TRAP:
       return { ...baseData, nodeType: DungeonNodeType.TRAP, trapType: 'Spike Trap', damage: 10, description: 'A hidden trap!' };
     case DungeonNodeType.LOOT:
@@ -556,7 +556,7 @@ function createDefaultNodeData(nodeType: DungeonNodeType): DungeonNodeData {
     case DungeonNodeType.STORY:
       return { ...baseData, nodeType: DungeonNodeType.STORY, storyText: 'Story text here...', autoProgress: false };
     case DungeonNodeType.BOSS:
-      return { ...baseData, nodeType: DungeonNodeType.BOSS, bossName: 'Boss Name', bossType: 'dragon' as const, bossLevel: 10, health: 500, abilities: [], rewardXp: 1000, rewardGold: 500, rewardItems: [], flavorText: 'A mighty boss appears!' };
+      return { ...baseData, nodeType: DungeonNodeType.BOSS, bossName: 'Boss Name', bossType: EnemyType.DRAGON, bossLevel: 10, health: 500, abilities: [], rewardXp: 1000, rewardGold: 500, rewardItems: [], flavorText: 'A mighty boss appears!' };
     case DungeonNodeType.END:
       return { ...baseData, nodeType: DungeonNodeType.END, completionMessage: 'Congratulations!' };
     default:

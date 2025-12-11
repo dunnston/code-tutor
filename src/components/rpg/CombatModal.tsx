@@ -128,15 +128,25 @@ export function CombatModal({
     }
   }
 
+  // Normalize answer for comparison (handles whitespace, case, and multiple correct answers)
+  function normalizeAnswer(answer: string): string {
+    return answer.trim().replace(/\s+/g, ' ').toUpperCase();
+  }
+
+  function checkAnswer(userAnswer: string, correctAnswer: string): boolean {
+    const normalizedUser = normalizeAnswer(userAnswer);
+    // Support multiple correct answers separated by |
+    const correctAnswers = correctAnswer.split('|').map(normalizeAnswer);
+    return correctAnswers.includes(normalizedUser);
+  }
+
   async function handleChallengeSubmit() {
     if (!combat || !selectedAbility || !challenge || !selectedAnswer) return;
 
     setPhase('executing');
 
-    // Check if the selected answer is correct (case-insensitive, trimmed comparison)
-    const userAnswer = selectedAnswer.trim().toUpperCase();
-    const correctAnswer = (challenge.correctAnswer || '').trim().toUpperCase();
-    const challengeSuccess = userAnswer === correctAnswer;
+    // Check if the selected answer is correct (supports multiple answers, normalized comparison)
+    const challengeSuccess = checkAnswer(selectedAnswer, challenge.correctAnswer || '');
 
     try {
       // Record challenge attempt
@@ -145,8 +155,6 @@ export function CombatModal({
 
       // Execute combat turn
       const result: CombatTurnResult = await executeCombatTurn(userId, selectedAbility.id, challengeSuccess);
-      console.log('Combat turn result:', result);
-      console.log('Enemy defeated?', result.enemyDefeated, 'Enemy HP:', result.enemyCurrentHealth);
 
       // Update turn number immediately
       if (combat) {
@@ -164,16 +172,13 @@ export function CombatModal({
       });
 
       // Add answer feedback immediately
-      console.log('DEBUG: About to show feedback, challengeSuccess =', challengeSuccess);
       if (challengeSuccess) {
-        console.log('DEBUG: Showing CORRECT message');
         addLogEntry(
           result.turnNumber,
           `Correct! Your ${selectedAbility.name} succeeds!`,
           'status'
         );
       } else {
-        console.log('DEBUG: Showing WRONG message');
         addLogEntry(
           result.turnNumber,
           `Wrong answer! The correct answer was ${challenge.correctAnswer}. Your attack fails!`,
@@ -215,7 +220,6 @@ export function CombatModal({
 
           // Check if enemy is defeated
           if (result.enemyDefeated) {
-            console.log('VICTORY DETECTED! Ending combat...');
             setTimeout(async () => {
               setPhase('victory');
               const rewards = await endCombatVictory(
@@ -366,8 +370,8 @@ export function CombatModal({
       let challengeData;
       try {
         challengeData = await getChallengeForAction('dodge', floorNumber, undefined, userId);
-      } catch (dodgeErr) {
-        console.log('No dodge challenges found, using basic_attack as fallback');
+      } catch {
+        // Fallback to basic_attack if no dodge challenges exist
         challengeData = await getChallengeForAction('basic_attack', floorNumber, undefined, userId);
       }
       setChallenge(challengeData);
@@ -382,10 +386,8 @@ export function CombatModal({
   async function handleFleeChallengeSubmit() {
     if (!combat || !challenge || !selectedAnswer || fleeRoll === null) return;
 
-    // Check if answer is correct (case-insensitive, trimmed comparison)
-    const userAnswer = selectedAnswer.trim().toUpperCase();
-    const correctAnswer = (challenge.correctAnswer || '').trim().toUpperCase();
-    const challengeSuccess = userAnswer === correctAnswer;
+    // Check if answer is correct (supports multiple answers, normalized comparison)
+    const challengeSuccess = checkAnswer(selectedAnswer, challenge.correctAnswer || '');
 
     // Simple modifier - dexterity stat value is the modifier
     const dexModifier = playerStats.dexterity;
@@ -480,16 +482,6 @@ export function CombatModal({
             <div className="bg-red-900/20 border-2 border-red-700 rounded-lg p-4">
               <div className="text-center mb-4">
                 <div className="mb-2 flex justify-center items-center mx-auto" style={{ width: '192px', height: '192px' }}>
-                  {/* DEBUG: Log animation paths */}
-                  {console.log('Enemy Animation Debug:', {
-                    enemyId: enemy.id,
-                    customAnimation: enemy.attackAnimation,
-                    hardcodedAnimation: getEnemyAttackAnimation(enemy.id),
-                    showEnemyAnimation,
-                    finalPath: showEnemyAnimation && (enemy.attackAnimation || getEnemyAttackAnimation(enemy.id))
-                      ? (enemy.attackAnimation || getEnemyAttackAnimation(enemy.id))
-                      : getEnemyImage(enemy.id, enemy.icon)
-                  })}
                   <img
                     src={showEnemyAnimation && (enemy.attackAnimation || getEnemyAttackAnimation(enemy.id))
                       ? (enemy.attackAnimation || getEnemyAttackAnimation(enemy.id))!

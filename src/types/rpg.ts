@@ -423,6 +423,7 @@ export interface BossEnemy {
   guaranteedLoot?: string[];
   icon: string;
   asciiArt?: string;
+  attackAnimation?: string; // Path to attack animation GIF
   createdAt: Date;
 }
 
@@ -931,9 +932,9 @@ export function convertEnemyTypeToRaw(enemy: EnemyType): EnemyTypeRaw {
     gold_drop_min: enemy.goldDropMin,
     gold_drop_max: enemy.goldDropMax,
     xp_reward: enemy.xpReward,
-    loot_table: enemy.lootTable ? JSON.stringify(enemy.lootTable) : undefined,
+    loot_table: enemy.lootTable ? JSON.stringify(enemy.lootTable) : null,
     icon: enemy.icon,
-    ascii_art: enemy.asciiArt,
+    ascii_art: enemy.asciiArt ?? null,
     created_at: enemy.createdAt.toISOString(),
   };
 }
@@ -968,12 +969,12 @@ export function convertBossEnemyToRaw(boss: BossEnemy): BossEnemyRaw {
     damage: boss.damage,
     defense: boss.defense,
     abilities: JSON.stringify(boss.abilities),
-    phases: boss.phases ? JSON.stringify(boss.phases) : undefined,
+    phases: boss.phases ? JSON.stringify(boss.phases) : null,
     gold_reward: boss.goldReward,
     xp_reward: boss.xpReward,
-    guaranteed_loot: boss.guaranteedLoot ? JSON.stringify(boss.guaranteedLoot) : undefined,
+    guaranteed_loot: boss.guaranteedLoot ? JSON.stringify(boss.guaranteedLoot) : null,
     icon: boss.icon,
-    ascii_art: boss.asciiArt,
+    ascii_art: boss.asciiArt ?? null,
     created_at: boss.createdAt.toISOString(),
   };
 }

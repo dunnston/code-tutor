@@ -42,9 +42,10 @@ export const EnemyManager: React.FC<EnemyManagerProps> = ({ onClose, onSelectEne
 
   const handleEdit = async (enemyId: string) => {
     try {
-      const enemy: CustomEnemy = await invoke('load_custom_enemy', { enemyId });
+      // Backend returns attacks and attackAnimation as JSON strings
+      const enemy = await invoke<CustomEnemy & { attacks: string; attackAnimation?: string }>('load_custom_enemy', { enemyId });
       // Convert attacks from JSON string to array
-      const enemyData = {
+      const enemyData: CustomEnemy = {
         ...enemy,
         attacks: JSON.parse(enemy.attacks),
         attackAnimation: enemy.attackAnimation ? JSON.parse(enemy.attackAnimation) : undefined,

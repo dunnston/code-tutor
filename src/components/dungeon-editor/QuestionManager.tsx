@@ -49,9 +49,10 @@ export const QuestionManager: React.FC<QuestionManagerProps> = ({ onClose, onSel
 
   const handleEdit = async (questionId: string) => {
     try {
-      const question: McqQuestion = await invoke('load_mcq_question', { questionId });
+      // Backend returns options and tags as JSON strings
+      const question = await invoke<McqQuestion & { options: string; tags?: string }>('load_mcq_question', { questionId });
       // Convert options from JSON string to array
-      const questionData = {
+      const questionData: McqQuestion = {
         ...question,
         options: JSON.parse(question.options),
         tags: question.tags ? JSON.parse(question.tags) : [],

@@ -129,9 +129,20 @@ function buildPythonTestCode(userCode: string, input: Record<string, unknown>): 
   }
   const functionName = functionMatch[1]
 
-  // Build function call with arguments
+  // Validate function name is safe (alphanumeric and underscores only)
+  if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(functionName)) {
+    throw new Error('Invalid function name detected')
+  }
+
+  // Build function call with arguments - safely serialize
   const args = Object.values(input)
-    .map(arg => JSON.stringify(arg))
+    .map(arg => {
+      try {
+        return JSON.stringify(arg)
+      } catch (e) {
+        throw new Error('Invalid test case input: cannot serialize')
+      }
+    })
     .join(', ')
 
   return `${userCode}
@@ -153,8 +164,19 @@ function buildJavaScriptTestCode(userCode: string, input: Record<string, unknown
   }
   const functionName = functionMatch[1]
 
+  // Validate function name is safe
+  if (!/^[a-zA-Z_$][a-zA-Z0-9_$]*$/.test(functionName)) {
+    throw new Error('Invalid function name detected')
+  }
+
   const args = Object.values(input)
-    .map(arg => JSON.stringify(arg))
+    .map(arg => {
+      try {
+        return JSON.stringify(arg)
+      } catch (e) {
+        throw new Error('Invalid test case input: cannot serialize')
+      }
+    })
     .join(', ')
 
   return `${userCode}

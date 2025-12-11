@@ -240,6 +240,7 @@ pub struct UserPuzzleProgress {
 #[tauri::command]
 pub fn get_puzzle_progress(
     app: AppHandle,
+    user_id: i32,
     puzzle_id: String,
     language_id: String,
 ) -> Result<Option<UserPuzzleProgress>, String> {
@@ -251,8 +252,8 @@ pub fn get_puzzle_progress(
                 first_attempt_at, solved_at, last_attempt_at, is_optimal,
                 COALESCE(solution_viewed, 0) as solution_viewed, solution_viewed_at
          FROM user_puzzle_progress
-         WHERE user_id = 1 AND puzzle_id = ?1 AND language_id = ?2",
-        params![puzzle_id, language_id],
+         WHERE user_id = ?1 AND puzzle_id = ?2 AND language_id = ?3",
+        params![user_id, puzzle_id, language_id],
         |row| {
             Ok(UserPuzzleProgress {
                 id: row.get(0)?,
@@ -282,10 +283,58 @@ pub fn get_puzzle_progress(
     }
 }
 
+/// Get all puzzle progress for a user (for batch loading)
+#[tauri::command]
+pub fn get_all_puzzle_progress(app: AppHandle, user_id: i32) -> Result<Vec<UserPuzzleProgress>, String> {
+    let conn = db::get_connection(&app)?;
+
+    let mut stmt = conn
+        .prepare(
+            "SELECT id, user_id, puzzle_id, language_id, status, attempts, hints_used,
+                    user_solution, solve_time, solution_lines,
+                    first_attempt_at, solved_at, last_attempt_at, is_optimal,
+                    COALESCE(solution_viewed, 0) as solution_viewed, solution_viewed_at
+             FROM user_puzzle_progress
+             WHERE user_id = ?1",
+        )
+        .map_err(|e| format!("Failed to prepare statement: {}", e))?;
+
+    let progress_iter = stmt
+        .query_map(params![user_id], |row| {
+            Ok(UserPuzzleProgress {
+                id: row.get(0)?,
+                user_id: row.get(1)?,
+                puzzle_id: row.get(2)?,
+                language_id: row.get(3)?,
+                status: row.get(4)?,
+                attempts: row.get(5)?,
+                hints_used: row.get(6)?,
+                user_solution: row.get(7)?,
+                solve_time: row.get(8)?,
+                solution_lines: row.get(9)?,
+                first_attempt_at: row.get(10)?,
+                solved_at: row.get(11)?,
+                last_attempt_at: row.get(12)?,
+                is_optimal: row.get(13)?,
+                solution_viewed: row.get(14)?,
+                solution_viewed_at: row.get(15)?,
+            })
+        })
+        .map_err(|e| format!("Failed to query progress: {}", e))?;
+
+    let mut results = Vec::new();
+    for progress in progress_iter {
+        results.push(progress.map_err(|e| format!("Failed to read progress: {}", e))?);
+    }
+
+    Ok(results)
+}
+
 /// Record a puzzle attempt
 #[tauri::command]
 pub fn record_puzzle_attempt(
     app: AppHandle,
+    user_id: i32,
     puzzle_id: String,
     language_id: String,
     user_solution: String,
@@ -296,8 +345,8 @@ pub fn record_puzzle_attempt(
     let exists: bool = conn
         .query_row(
             "SELECT COUNT(*) > 0 FROM user_puzzle_progress
-             WHERE user_id = 1 AND puzzle_id = ?1 AND language_id = ?2",
-            params![&puzzle_id, &language_id],
+             WHERE user_id = ?1 AND puzzle_id = ?2 AND language_id = ?3",
+            params![user_id, &puzzle_id, &language_id],
             |row| row.get(0),
         )
         .map_err(|e| format!("Failed to check progress: {}", e))?;
@@ -308,10 +357,10 @@ pub fn record_puzzle_attempt(
             "UPDATE user_puzzle_progress
              SET attempts = attempts + 1,
                  status = CASE WHEN status = 'not_started' THEN 'attempted' ELSE status END,
-                 user_solution = ?3,
+                 user_solution = ?4,
                  last_attempt_at = CURRENT_TIMESTAMP
-             WHERE user_id = 1 AND puzzle_id = ?1 AND language_id = ?2",
-            params![&puzzle_id, &language_id, &user_solution],
+             WHERE user_id = ?1 AND puzzle_id = ?2 AND language_id = ?3",
+            params![user_id, &puzzle_id, &language_id, &user_solution],
         )
         .map_err(|e| format!("Failed to update attempt: {}", e))?;
     } else {
@@ -320,8 +369,8 @@ pub fn record_puzzle_attempt(
             "INSERT INTO user_puzzle_progress
              (user_id, puzzle_id, language_id, status, attempts, user_solution,
               first_attempt_at, last_attempt_at)
-             VALUES (1, ?1, ?2, 'attempted', 1, ?3, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)",
-            params![&puzzle_id, &language_id, &user_solution],
+             VALUES (?1, ?2, ?3, 'attempted', 1, ?4, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)",
+            params![user_id, &puzzle_id, &language_id, &user_solution],
         )
         .map_err(|e| format!("Failed to insert attempt: {}", e))?;
     }
@@ -333,6 +382,7 @@ pub fn record_puzzle_attempt(
 #[tauri::command]
 pub fn record_hint_used(
     app: AppHandle,
+    user_id: i32,
     puzzle_id: String,
     language_id: String,
 ) -> Result<(), String> {
@@ -341,10 +391,10 @@ pub fn record_hint_used(
     conn.execute(
         "INSERT INTO user_puzzle_progress
          (user_id, puzzle_id, language_id, hints_used)
-         VALUES (1, ?1, ?2, 1)
+         VALUES (?1, ?2, ?3, 1)
          ON CONFLICT(user_id, puzzle_id, language_id)
          DO UPDATE SET hints_used = hints_used + 1",
-        params![puzzle_id, language_id],
+        params![user_id, puzzle_id, language_id],
     )
     .map_err(|e| format!("Failed to record hint: {}", e))?;
 
@@ -355,6 +405,7 @@ pub fn record_hint_used(
 #[tauri::command]
 pub fn record_solution_viewed(
     app: AppHandle,
+    user_id: i32,
     puzzle_id: String,
     language_id: String,
 ) -> Result<(), String> {
@@ -363,10 +414,10 @@ pub fn record_solution_viewed(
     conn.execute(
         "INSERT INTO user_puzzle_progress
          (user_id, puzzle_id, language_id, solution_viewed, solution_viewed_at)
-         VALUES (1, ?1, ?2, 1, CURRENT_TIMESTAMP)
+         VALUES (?1, ?2, ?3, 1, CURRENT_TIMESTAMP)
          ON CONFLICT(user_id, puzzle_id, language_id)
          DO UPDATE SET solution_viewed = 1, solution_viewed_at = CURRENT_TIMESTAMP",
-        params![puzzle_id, language_id],
+        params![user_id, puzzle_id, language_id],
     )
     .map_err(|e| format!("Failed to record solution viewed: {}", e))?;
 
@@ -377,6 +428,7 @@ pub fn record_solution_viewed(
 #[tauri::command]
 pub fn mark_puzzle_solved(
     app: AppHandle,
+    user_id: i32,
     puzzle_id: String,
     language_id: String,
     user_solution: String,
@@ -384,18 +436,19 @@ pub fn mark_puzzle_solved(
 ) -> Result<i32, String> {
     let conn = db::get_connection(&app)?;
 
-    // Check if solution was viewed
-    let solution_viewed: bool = conn
+    // Check if already solved or solution was viewed
+    let (already_solved, solution_viewed): (bool, bool) = conn
         .query_row(
-            "SELECT COALESCE(solution_viewed, 0) FROM user_puzzle_progress
-             WHERE user_id = 1 AND puzzle_id = ?1 AND language_id = ?2",
-            params![&puzzle_id, &language_id],
-            |row| row.get(0),
+            "SELECT COALESCE(status = 'solved', 0), COALESCE(solution_viewed, 0)
+             FROM user_puzzle_progress
+             WHERE user_id = ?1 AND puzzle_id = ?2 AND language_id = ?3",
+            params![user_id, &puzzle_id, &language_id],
+            |row| Ok((row.get(0)?, row.get(1)?)),
         )
-        .unwrap_or(false);
+        .unwrap_or((false, false));
 
-    // Get puzzle points (0 if solution was viewed)
-    let points: i32 = if solution_viewed {
+    // Get puzzle points (0 if already solved or solution was viewed)
+    let points: i32 = if already_solved || solution_viewed {
         0
     } else {
         conn.query_row(
@@ -413,8 +466,8 @@ pub fn mark_puzzle_solved(
     let exists: bool = conn
         .query_row(
             "SELECT COUNT(*) > 0 FROM user_puzzle_progress
-             WHERE user_id = 1 AND puzzle_id = ?1 AND language_id = ?2",
-            params![&puzzle_id, &language_id],
+             WHERE user_id = ?1 AND puzzle_id = ?2 AND language_id = ?3",
+            params![user_id, &puzzle_id, &language_id],
             |row| row.get(0),
         )
         .map_err(|e| format!("Failed to check progress: {}", e))?;
@@ -424,14 +477,14 @@ pub fn mark_puzzle_solved(
         conn.execute(
             "UPDATE user_puzzle_progress
              SET status = 'solved',
-                 user_solution = ?3,
-                 solve_time = ?4,
-                 solution_lines = ?5,
+                 user_solution = ?4,
+                 solve_time = ?5,
+                 solution_lines = ?6,
                  solved_at = CURRENT_TIMESTAMP,
                  last_attempt_at = CURRENT_TIMESTAMP
-             WHERE user_id = 1 AND puzzle_id = ?1 AND language_id = ?2
+             WHERE user_id = ?1 AND puzzle_id = ?2 AND language_id = ?3
                AND status != 'solved'",
-            params![&puzzle_id, &language_id, &user_solution, solve_time_seconds, solution_lines],
+            params![user_id, &puzzle_id, &language_id, &user_solution, solve_time_seconds, solution_lines],
         )
         .map_err(|e| format!("Failed to update solved status: {}", e))?;
     } else {
@@ -439,9 +492,9 @@ pub fn mark_puzzle_solved(
             "INSERT INTO user_puzzle_progress
              (user_id, puzzle_id, language_id, status, attempts, user_solution,
               solve_time, solution_lines, first_attempt_at, solved_at, last_attempt_at)
-             VALUES (1, ?1, ?2, 'solved', 1, ?3, ?4, ?5,
+             VALUES (?1, ?2, ?3, 'solved', 1, ?4, ?5, ?6,
                      CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)",
-            params![&puzzle_id, &language_id, &user_solution, solve_time_seconds, solution_lines],
+            params![user_id, &puzzle_id, &language_id, &user_solution, solve_time_seconds, solution_lines],
         )
         .map_err(|e| format!("Failed to insert solved record: {}", e))?;
     }
@@ -629,15 +682,18 @@ fn update_daily_puzzle_streak(
 
 /// Get today's daily puzzle challenge
 #[tauri::command]
-pub fn get_daily_puzzle(app: AppHandle) -> Result<DailyPuzzleChallenge, String> {
-    let conn = db::get_connection(&app)?;
-    let user_id = 1; // Hardcoded for now
+pub fn get_daily_puzzle(app: AppHandle, user_id: i32) -> Result<DailyPuzzleChallenge, String> {
+    let mut conn = db::get_connection(&app)?;
 
     // Get today's date (local)
     let today = chrono::Local::now().format("%Y-%m-%d").to_string();
 
-    // Check if daily puzzle exists for today
-    let existing_puzzle: Option<(i32, String, i32)> = conn
+    // Use a transaction to prevent race conditions when creating daily puzzles
+    let tx = conn.transaction()
+        .map_err(|e| format!("Failed to start transaction: {}", e))?;
+
+    // Check if daily puzzle exists for today (within transaction for consistency)
+    let existing_puzzle: Option<(i32, String, i32)> = tx
         .query_row(
             "SELECT id, puzzle_id, bonus_points FROM daily_puzzles WHERE date = ?1",
             params![&today],
@@ -648,20 +704,27 @@ pub fn get_daily_puzzle(app: AppHandle) -> Result<DailyPuzzleChallenge, String> 
     let (daily_id, puzzle_id, bonus_points) = match existing_puzzle {
         Some(data) => data,
         None => {
-            // Generate new daily puzzle
-            let selected_puzzle_id = select_daily_puzzle_for_user(&conn, user_id)?;
+            // Generate new daily puzzle within transaction
+            let selected_puzzle_id = select_daily_puzzle_for_user(&tx, user_id)?;
 
-            conn.execute(
+            tx.execute(
                 "INSERT INTO daily_puzzles (puzzle_id, date, bonus_points)
                  VALUES (?1, ?2, 50)",
                 params![&selected_puzzle_id, &today],
             )
             .map_err(|e| format!("Failed to insert daily puzzle: {}", e))?;
 
-            let daily_id = conn.last_insert_rowid() as i32;
+            let daily_id = tx.last_insert_rowid() as i32;
             (daily_id, selected_puzzle_id, 50)
         }
     };
+
+    // Commit the transaction
+    tx.commit()
+        .map_err(|e| format!("Failed to commit transaction: {}", e))?;
+
+    // Re-acquire connection for remaining read-only queries
+    let conn = db::get_connection(&app)?;
 
     // Get puzzle details
     let puzzle = get_puzzle(app.clone(), puzzle_id.clone())?;
@@ -710,11 +773,11 @@ pub fn get_daily_puzzle(app: AppHandle) -> Result<DailyPuzzleChallenge, String> 
 #[tauri::command]
 pub fn complete_daily_puzzle(
     app: AppHandle,
+    user_id: i32,
     puzzle_id: String,
     language_id: String,
 ) -> Result<i32, String> {
     let mut conn = db::get_connection(&app)?;
-    let user_id = 1;
 
     let today = chrono::Local::now().format("%Y-%m-%d").to_string();
 
@@ -790,9 +853,8 @@ pub fn complete_daily_puzzle(
 
 /// Get user's daily puzzle streak information
 #[tauri::command]
-pub fn get_daily_puzzle_streak(app: AppHandle) -> Result<DailyPuzzleStreak, String> {
+pub fn get_daily_puzzle_streak(app: AppHandle, user_id: i32) -> Result<DailyPuzzleStreak, String> {
     let conn = db::get_connection(&app)?;
-    let user_id = 1;
 
     let (current_streak, longest_streak, total_completed, last_date): (i32, i32, i32, Option<String>) = conn
         .query_row(

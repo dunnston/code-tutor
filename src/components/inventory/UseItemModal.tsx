@@ -32,7 +32,7 @@ export function UseItemModal({ item, onConfirm, onCancel, using }: UseItemModalP
       } else if (effects.type === 'gold_multiplier') {
         effectsDisplay = `${effects.value}x gold multiplier for ${effects.durationSeconds ? Math.floor(effects.durationSeconds / 3600) + ' hours' : 'a duration'}`;
       } else if (effects.type === 'streak_protection') {
-        effectsDisplay = `Protects your streak ${effects.value > 1 ? `for up to ${effects.value} days` : 'for 1 day'}`;
+        effectsDisplay = `Protects your streak ${(effects.value ?? 1) > 1 ? `for up to ${effects.value} days` : 'for 1 day'}`;
       } else if (effects.type === 'free_hint') {
         effectsDisplay = 'Grants 1 free hint';
       } else if (effects.type === 'skip_timer') {

@@ -56,7 +56,7 @@ export function MarkdownRenderer({ content, className = '' }: MarkdownRendererPr
         ),
 
         // Inline code
-        code: ({ node, className, children, ...props }) => {
+        code: ({ node, className, children, ref, ...props }) => {
           const match = /language-(\w+)/.exec(className || '')
           const language = match ? match[1] : ''
           const isInline = !match
@@ -75,7 +75,8 @@ export function MarkdownRenderer({ content, className = '' }: MarkdownRendererPr
           return (
             <div className="overflow-hidden max-w-full" style={{ wordBreak: 'break-word' }}>
               <SyntaxHighlighter
-                style={vscDarkPlus}
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                style={vscDarkPlus as any}
                 language={language}
                 PreTag="div"
                 className="rounded-lg mb-4 text-sm [&>pre]:!whitespace-pre-wrap [&>pre]:!break-words [&_code]:!whitespace-pre-wrap [&_code]:!break-words"
@@ -96,7 +97,6 @@ export function MarkdownRenderer({ content, className = '' }: MarkdownRendererPr
                   }
                 }}
                 wrapLongLines={true}
-                {...props}
               >
                 {String(children).replace(/\n$/, '')}
               </SyntaxHighlighter>

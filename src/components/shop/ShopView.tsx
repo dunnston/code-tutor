@@ -14,7 +14,7 @@ const CATEGORIES: { id: ShopItemCategory | 'all'; label: string; icon: string }[
 ];
 
 export function ShopView() {
-  const { userCurrency, refreshCurrency, refreshInventory, progress, setCurrentView } = useAppStore();
+  const { userCurrency, refreshCurrency, refreshInventory, progress, setCurrentView, currentUserId } = useAppStore();
   const [items, setItems] = useState<ShopItem[]>([]);
   const [filteredItems, setFilteredItems] = useState<ShopItem[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<ShopItemCategory | 'all'>('all');
@@ -31,10 +31,10 @@ export function ShopView() {
 
   // Load currency
   useEffect(() => {
-    if (!userCurrency) {
-      refreshCurrency(1); // TODO: Use actual user ID
+    if (!userCurrency && currentUserId) {
+      refreshCurrency(currentUserId);
     }
-  }, [userCurrency, refreshCurrency]);
+  }, [userCurrency, refreshCurrency, currentUserId]);
 
   // Filter items by category
   useEffect(() => {
@@ -60,23 +60,37 @@ export function ShopView() {
   };
 
   const handlePurchase = async () => {
-    if (!selectedItem || !userCurrency) return;
+    // Capture current values to prevent race conditions
+    const userId = currentUserId;
+    const item = selectedItem;
+    const quantity = purchaseQuantity;
+    const currency = userCurrency;
+
+    // Defensive null checks
+    if (!item || !currency || !userId) {
+      if (!userId) {
+        alert('Please wait for your profile to load before making purchases.');
+      }
+      return;
+    }
 
     try {
       setPurchasing(true);
-      await purchaseItem(1, selectedItem.id, purchaseQuantity); // TODO: Use actual user ID
+      await purchaseItem(userId, item.id, quantity);
 
-      // Refresh currency and inventory
-      await refreshCurrency(1);
-      await refreshInventory(1);
+      // Re-check userId before refreshing (could have changed during async operation)
+      if (userId === currentUserId) {
+        // Refresh currency and inventory
+        await refreshCurrency(userId);
+        await refreshInventory(userId);
+      }
 
       // Close modal and reset
       setSelectedItem(null);
       setPurchaseQuantity(1);
 
       // Show success notification
-      // TODO: Add toast notification
-      alert(`Successfully purchased ${purchaseQuantity}x ${selectedItem.name}!`);
+      alert(`Successfully purchased ${quantity}x ${item.name}!`);
     } catch (err) {
       alert(err instanceof Error ? err.message : 'Purchase failed');
     } finally {

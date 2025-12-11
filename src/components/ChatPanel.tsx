@@ -54,15 +54,15 @@ export function ChatPanel() {
     try {
       // Get last console output for context
       const lastOutput = consoleMessages
-        .filter((msg) => msg.type === 'output')
+        .filter((msg) => msg.type === 'stdout')
         .slice(-3)
-        .map((msg) => msg.text)
+        .map((msg) => msg.content)
         .join('\n')
 
       const lastError = consoleMessages
         .filter((msg) => msg.type === 'error')
         .slice(-1)
-        .map((msg) => msg.text)
+        .map((msg) => msg.content)
         .join('\n')
 
       // Build comprehensive prompt context
@@ -79,7 +79,6 @@ export function ChatPanel() {
 
       // Detect appropriate prompt type
       const promptType = detectPromptType(userMessage, promptContext)
-      console.log(`🎯 Detected prompt type: ${promptType}`)
 
       // Build the complete prompt
       const { systemPrompt, userPrompt } = buildPrompt(
@@ -87,8 +86,6 @@ export function ChatPanel() {
         userMessage,
         promptContext
       )
-      console.log(`📋 System prompt length: ${systemPrompt.length} chars`)
-      console.log(`💬 User prompt length: ${userPrompt.length} chars`)
 
       // Get current provider
       const provider = aiService.getCurrentProvider()

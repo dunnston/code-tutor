@@ -8,7 +8,7 @@ export interface ExecutionResult {
 
 export interface ConsoleMessage {
   id: string
-  type: 'stdout' | 'stderr' | 'system' | 'error'
+  type: 'stdout' | 'stderr' | 'system' | 'error' | 'success'
   content: string
   timestamp: Date
 }

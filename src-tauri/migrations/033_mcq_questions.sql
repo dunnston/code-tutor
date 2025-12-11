@@ -57,7 +57,7 @@ INSERT OR IGNORE INTO mcq_questions (id, question_text, explanation, options, co
 
 ('py-dict-001', 'How do you create an empty dictionary in Python?',
  'Both {} and dict() create empty dictionaries, but {} is more common.',
- ["{}", "[]", "dict[]", "dictionary()"]', 0, 'medium', 'dictionaries', 'python', '["data-structures", "dictionaries"]'),
+ '["{}","[]","dict[]","dictionary()"]', 0, 'medium', 'dictionaries', 'python', '["data-structures", "dictionaries"]'),
 
 ('py-range-001', 'What does range(3) produce?',
  'range(3) produces numbers from 0 up to (but not including) 3: [0, 1, 2].',

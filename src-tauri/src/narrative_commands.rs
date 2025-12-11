@@ -307,6 +307,9 @@ pub fn start_narrative_dungeon(
         .map_err(|e| format!("Failed to find starting location: {}", e))?;
 
     // Initialize user's narrative progress
+    let visited_locations_json = serde_json::to_string(&vec![start_location.id.clone()])
+        .unwrap_or_else(|_| "[]".to_string());
+
     conn.execute(
         "UPDATE user_narrative_progress
          SET floor_number = ?,
@@ -318,7 +321,7 @@ pub fn start_narrative_dungeon(
         params![
             floor_number,
             start_location.id,
-            serde_json::to_string(&vec![start_location.id.clone()]).unwrap(),
+            visited_locations_json,
             user_id
         ],
     )
@@ -514,7 +517,11 @@ pub fn apply_narrative_outcome(
             completed_choices.push(outcome_key.clone());
         }
 
-        // Update database
+        // Update database - use unwrap_or_else for safe JSON serialization
+        let visited_json = serde_json::to_string(&visited).unwrap_or_else(|_| "[]".to_string());
+        let completed_json = serde_json::to_string(&completed_choices).unwrap_or_else(|_| "[]".to_string());
+        let flags_json = serde_json::to_string(&flags).unwrap_or_else(|_| "{}".to_string());
+
         conn.execute(
             "UPDATE user_narrative_progress
              SET current_location_id = ?,
@@ -525,9 +532,9 @@ pub fn apply_narrative_outcome(
              WHERE user_id = ?",
             params![
                 next_location_id,
-                serde_json::to_string(&visited).unwrap(),
-                serde_json::to_string(&completed_choices).unwrap(),
-                serde_json::to_string(&flags).unwrap(),
+                visited_json,
+                completed_json,
+                flags_json,
                 user_id
             ],
         )
@@ -535,13 +542,15 @@ pub fn apply_narrative_outcome(
     } else if !already_completed {
         // Even if no next location, mark the outcome as completed
         completed_choices.push(outcome_key.clone());
+        let completed_json = serde_json::to_string(&completed_choices).unwrap_or_else(|_| "[]".to_string());
+
         conn.execute(
             "UPDATE user_narrative_progress
              SET completed_choices = ?,
                  updated_at = CURRENT_TIMESTAMP
              WHERE user_id = ?",
             params![
-                serde_json::to_string(&completed_choices).unwrap(),
+                completed_json,
                 user_id
             ],
         )

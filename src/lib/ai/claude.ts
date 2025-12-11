@@ -34,7 +34,6 @@ export class ClaudeProvider implements AIProvider {
     const messages = this.buildMessages(prompt, context)
 
     try {
-      console.log('🔍 Calling Claude API via Tauri backend...')
       const response = await invoke<string>('call_claude_api', {
         apiKey: this.apiKey,
         model: this.model,
@@ -44,7 +43,6 @@ export class ClaudeProvider implements AIProvider {
           content: msg.content,
         })),
       })
-      console.log('✅ Claude API call successful!')
       return response
     } catch (error) {
       console.error('❌ Claude API error:', error)

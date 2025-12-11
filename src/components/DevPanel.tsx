@@ -68,7 +68,7 @@ export function DevPanel({ onClose }: DevPanelProps) {
     try {
       // Add gold to main gamification system only
       const { addCurrency } = await import('@/lib/gamification');
-      await addCurrency(currentUserId, 'gold', mainGoldAmount, 'dev_panel', null);
+      await addCurrency(currentUserId, 'gold', mainGoldAmount, 'dev_panel', undefined);
       await refreshCurrency();
     } catch (error) {
       console.error('Failed to add main gold:', error);

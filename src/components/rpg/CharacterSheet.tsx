@@ -76,9 +76,8 @@ export function CharacterSheet({ userId, isOpen, onClose }: CharacterSheetProps)
 
   const handleEquipItem = async (item: EquipmentItem, slot: string) => {
     try {
-      const updatedEquipment = await equipItemToSlot(userId, item.id, slot);
-      setEquipment(updatedEquipment);
-      await loadCharacterData(); // Reload to update stats and inventory
+      await equipItemToSlot(userId, item.id, slot);
+      await loadCharacterData(); // Reload to update stats, equipment, and inventory
     } catch (error) {
       console.error('Failed to equip item:', error);
       alert('Failed to equip item');
@@ -87,9 +86,8 @@ export function CharacterSheet({ userId, isOpen, onClose }: CharacterSheetProps)
 
   const handleUnequipItem = async (slot: string) => {
     try {
-      const updatedEquipment = await unequipItemFromSlot(userId, slot);
-      setEquipment(updatedEquipment);
-      await loadCharacterData(); // Reload to update stats and inventory
+      await unequipItemFromSlot(userId, slot);
+      await loadCharacterData(); // Reload to update stats, equipment, and inventory
     } catch (error) {
       console.error('Failed to unequip item:', error);
       alert('Failed to unequip item');

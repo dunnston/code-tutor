@@ -10,8 +10,10 @@ import {
   saveUserCode,
   clearUserCode,
   loadProgress,
+  saveProgress,
   markLessonComplete,
   trackLessonTime,
+  calculateLevel,
   type UserProgress,
   type BadgeId,
 } from './storage'
@@ -20,7 +22,7 @@ import { loadPreferences, savePreferences, applyTheme } from './preferences'
 // Notification types for gamification
 export interface Notification {
   id: string
-  type: 'level-up' | 'badge' | 'streak'
+  type: 'level-up' | 'badge' | 'streak' | 'warning'
   title: string
   message: string
   timestamp: Date
@@ -66,6 +68,7 @@ interface AppState {
   completeLesson: (lessonId: number, xpReward: number, hintsUsed: number) => void
   isLessonCompleted: (lessonId: number) => boolean
   refreshProgress: () => void
+  addXP: (xp: number) => void
 
   // Gamification
   notifications: Notification[]
@@ -108,7 +111,7 @@ interface AppState {
   dailyPuzzleStreak: DailyPuzzleStreak | null
   setDailyPuzzle: (puzzle: DailyPuzzleChallenge | null) => void
   setDailyPuzzleStreak: (streak: DailyPuzzleStreak | null) => void
-  refreshDailyPuzzle: () => Promise<void>
+  refreshDailyPuzzle: (userId?: number) => Promise<void>
 
   // Playground state
   playgroundProjectId: string | null
@@ -151,6 +154,8 @@ interface AppState {
 
 // Auto-save timeout
 let autoSaveTimeout: NodeJS.Timeout | null = null
+// Track if quota warning has been shown to avoid repeated notifications
+let quotaWarningShown = false
 
 export const useAppStore = create<AppState>((set, get) => ({
   // User state
@@ -183,17 +188,40 @@ export const useAppStore = create<AppState>((set, get) => ({
   // Code state
   code: '',
   setCode: (code, autoSave = true) => {
+    // Validate size before saving (1MB limit)
+    const MAX_SAVE_SIZE = 1_000_000
+    if (code.length > MAX_SAVE_SIZE) {
+      console.warn(`Code exceeds maximum save size (${MAX_SAVE_SIZE} bytes)`)
+      set({ code })
+      return
+    }
+
     set({ code })
 
     // Auto-save to local storage with debounce
     if (autoSave) {
-      const { currentLesson } = get()
+      const { currentLesson, addNotification } = get()
       if (currentLesson) {
         if (autoSaveTimeout) {
           clearTimeout(autoSaveTimeout)
         }
         autoSaveTimeout = setTimeout(() => {
-          saveUserCode(currentLesson.id, code)
+          const result = saveUserCode(currentLesson.id, code)
+          if (!result.success) {
+            console.warn('Auto-save failed:', result.message)
+            // Only show quota warning once per session to avoid spamming
+            if (result.error === 'quota_exceeded' && !quotaWarningShown) {
+              quotaWarningShown = true
+              addNotification({
+                type: 'warning',
+                title: 'Storage Full',
+                message: 'Auto-save disabled due to storage limits. Your code will not persist after closing the app.',
+              })
+            }
+          } else {
+            // Reset warning flag on successful save
+            quotaWarningShown = false
+          }
         }, 1000) // 1 second debounce
       }
     }
@@ -210,16 +238,22 @@ export const useAppStore = create<AppState>((set, get) => ({
   // Console state
   consoleMessages: [],
   addConsoleMessage: (message) =>
-    set((state) => ({
-      consoleMessages: [
+    set((state) => {
+      const MAX_CONSOLE_MESSAGES = 1000
+      const newMessages = [
         ...state.consoleMessages,
         {
           ...message,
           id: Math.random().toString(36).substring(7),
           timestamp: new Date(),
         },
-      ],
-    })),
+      ]
+      // Keep only the most recent messages to prevent memory leaks
+      const trimmedMessages = newMessages.length > MAX_CONSOLE_MESSAGES
+        ? newMessages.slice(-MAX_CONSOLE_MESSAGES)
+        : newMessages
+      return { consoleMessages: trimmedMessages }
+    }),
   clearConsole: () => set({ consoleMessages: [] }),
 
   // Execution state
@@ -250,16 +284,22 @@ export const useAppStore = create<AppState>((set, get) => ({
     // Show badge notifications
     if (result.newBadges.length > 0) {
       // Import BADGES here to avoid circular dependency
-      import('./storage').then(({ BADGES }) => {
-        result.newBadges.forEach((badgeId) => {
-          const badge = BADGES[badgeId]
-          get().addNotification({
-            type: 'badge',
-            title: 'Badge Earned!',
-            message: `${badge.icon} ${badge.name}: ${badge.description}`,
+      import('./storage')
+        .then(({ BADGES }) => {
+          result.newBadges.forEach((badgeId) => {
+            const badge = BADGES[badgeId]
+            if (badge) {
+              get().addNotification({
+                type: 'badge',
+                title: 'Badge Earned!',
+                message: `${badge.icon} ${badge.name}: ${badge.description}`,
+              })
+            }
           })
         })
-      })
+        .catch((error) => {
+          console.error('Failed to load badges for notification:', error)
+        })
     }
   },
   isLessonCompleted: (lessonId) => {
@@ -268,6 +308,41 @@ export const useAppStore = create<AppState>((set, get) => ({
   },
   refreshProgress: () => {
     set({ progress: loadProgress() })
+  },
+  addXP: (xp) => {
+    const { progress, addNotification } = get()
+    const oldLevel = progress.level
+
+    // Validate XP to prevent overflow and invalid values
+    const MAX_XP_PER_ACTION = 10000
+    const MAX_TOTAL_XP = Number.MAX_SAFE_INTEGER - 1000000
+    const validatedXp = Math.min(Math.max(0, xp), MAX_XP_PER_ACTION)
+
+    if (xp !== validatedXp) {
+      console.warn(`XP value ${xp} clamped to ${validatedXp}`)
+    }
+
+    const newXpEarned = Math.min(progress.xpEarned + validatedXp, MAX_TOTAL_XP)
+    const newLevel = calculateLevel(newXpEarned)
+
+    const updatedProgress = {
+      ...progress,
+      xpEarned: newXpEarned,
+      level: newLevel,
+      lastUpdated: new Date().toISOString(),
+    }
+
+    saveProgress(updatedProgress)
+    set({ progress: updatedProgress })
+
+    // Show level-up notification if leveled up
+    if (newLevel > oldLevel) {
+      addNotification({
+        type: 'level-up',
+        title: 'Level Up!',
+        message: `Congratulations! You've reached Level ${newLevel}!`,
+      })
+    }
   },
 
   // Gamification state
@@ -348,14 +423,32 @@ export const useAppStore = create<AppState>((set, get) => ({
   dailyPuzzleStreak: null,
   setDailyPuzzle: (puzzle) => set({ dailyPuzzle: puzzle }),
   setDailyPuzzleStreak: (streak) => set({ dailyPuzzleStreak: streak }),
-  refreshDailyPuzzle: async () => {
+  refreshDailyPuzzle: async (userId?: number) => {
+    const effectiveUserId = userId ?? get().currentUserId
+    if (!effectiveUserId) {
+      console.warn('No user ID available for refreshDailyPuzzle')
+      return
+    }
+
     try {
       const { getDailyPuzzle, getDailyPuzzleStreak } = await import('./puzzles')
-      const [puzzle, streak] = await Promise.all([
-        getDailyPuzzle(),
-        getDailyPuzzleStreak(),
+      const results = await Promise.allSettled([
+        getDailyPuzzle(effectiveUserId),
+        getDailyPuzzleStreak(effectiveUserId),
       ])
-      set({ dailyPuzzle: puzzle, dailyPuzzleStreak: streak })
+
+      // Handle results individually to prevent one failure from blocking the other
+      if (results[0].status === 'fulfilled') {
+        set({ dailyPuzzle: results[0].value })
+      } else {
+        console.error('Failed to get daily puzzle:', results[0].reason)
+      }
+
+      if (results[1].status === 'fulfilled') {
+        set({ dailyPuzzleStreak: results[1].value })
+      } else {
+        console.error('Failed to get daily puzzle streak:', results[1].reason)
+      }
     } catch (error) {
       console.error('Failed to refresh daily puzzle:', error)
     }
@@ -448,17 +541,17 @@ export const useAppStore = create<AppState>((set, get) => ({
     applyTheme(settings.theme)
 
     // Initialize AI provider
-    const { aiService } = await import('./ai')
-    if (settings.aiProvider !== 'none') {
-      try {
+    try {
+      const { aiService } = await import('./ai')
+      if (settings.aiProvider !== 'none') {
         await aiService.setProvider(settings.aiProvider, {
           claudeApiKey: settings.claudeApiKey,
         })
-      } catch (error) {
-        console.error('Failed to set AI provider:', error)
+      } else {
+        await aiService.setProvider('none')
       }
-    } else {
-      await aiService.setProvider('none')
+    } catch (error) {
+      console.error('Failed to set AI provider:', error)
     }
 
     set({ settings, aiProvider: settings.aiProvider })

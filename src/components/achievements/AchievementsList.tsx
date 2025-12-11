@@ -8,6 +8,7 @@ import {
   TIER_CONFIG,
   getProgressPercentage,
 } from '@/lib/achievements'
+import { useAppStore } from '@/lib/store'
 
 type FilterType = 'all' | 'completed' | 'locked' | 'in-progress'
 type SortType = 'name' | 'completion' | 'progress' | 'tier' | 'rewards'
@@ -25,19 +26,23 @@ export function AchievementsList() {
   const [searchQuery, setSearchQuery] = useState('')
   const [sortBy, setSortBy] = useState<SortType>('tier')
 
-  const userId = 1 // Default user
+  const currentUserId = useAppStore((state) => state.currentUserId)
 
   useEffect(() => {
-    loadAchievements()
-    loadStats()
-  }, [categoryFilter, tierFilter])
+    if (currentUserId) {
+      loadAchievements()
+      loadStats()
+    }
+  }, [categoryFilter, tierFilter, currentUserId])
 
   // Mark all completed achievements as viewed when this component mounts
   useEffect(() => {
+    if (!currentUserId) return
+
     const markAsViewed = async () => {
       try {
         await invoke('mark_achievements_as_viewed', {
-          userId,
+          userId: currentUserId,
           achievementIds: null, // null = mark all completed as viewed
         })
         // Reload stats to clear the badge count
@@ -50,13 +55,14 @@ export function AchievementsList() {
     // Delay slightly to give user a chance to see the "NEW" badges
     const timeout = setTimeout(markAsViewed, 2000)
     return () => clearTimeout(timeout)
-  }, [])
+  }, [currentUserId])
 
   const loadAchievements = async () => {
+    if (!currentUserId) return
     try {
       setLoading(true)
       const result = await invoke<AchievementWithProgress[]>('get_achievements', {
-        userId,
+        userId: currentUserId,
         categoryFilter: categoryFilter !== 'all' ? categoryFilter : null,
         tierFilter: tierFilter !== 'all' ? tierFilter : null,
         completionFilter: null, // We'll filter on frontend
@@ -72,8 +78,9 @@ export function AchievementsList() {
   }
 
   const loadStats = async () => {
+    if (!currentUserId) return
     try {
-      const result = await invoke<AchievementStats>('get_achievement_stats', { userId })
+      const result = await invoke<AchievementStats>('get_achievement_stats', { userId: currentUserId })
       setStats(result)
     } catch (err) {
       console.error('Failed to load achievement stats:', err)

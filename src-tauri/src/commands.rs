@@ -152,7 +152,7 @@ async fn execute_with_config(
             // Write code to temp file and execute
             let timestamp = SystemTime::now()
                 .duration_since(UNIX_EPOCH)
-                .unwrap()
+                .unwrap_or_default()
                 .as_millis();
             let temp_file = std::env::temp_dir()
                 .join(format!("code_tutor_temp_{}{}", timestamp, config.extension));
@@ -162,6 +162,9 @@ async fn execute_with_config(
 
             let command_parts = config.command.clone();
             let temp_file_clone = temp_file.clone();
+
+            // Clone temp_file path for cleanup after process completes
+            let temp_file_for_cleanup = temp_file.clone();
 
             let result = tokio::task::spawn_blocking(move || {
                 let mut cmd = Command::new(&command_parts[0]);
@@ -190,14 +193,12 @@ async fn execute_with_config(
                     }
                 }
 
-                child.wait_with_output()
-            });
+                let output = child.wait_with_output();
 
-            // Clean up temp file after execution (best effort)
-            let temp_file_for_cleanup = temp_file.clone();
-            tokio::spawn(async move {
-                tokio::time::sleep(Duration::from_secs(1)).await;
+                // Clean up temp file AFTER process completes (not before)
                 let _ = fs::remove_file(temp_file_for_cleanup);
+
+                output
             });
 
             result
@@ -233,7 +234,52 @@ pub async fn execute_code(
     stdin: Option<String>,
     custom_executable_path: Option<String>,
 ) -> Result<ExecutionResult, String> {
-    let timeout_duration = Duration::from_millis(timeout_ms.unwrap_or(5000));
+    // Input validation
+    const MAX_CODE_SIZE: usize = 100_000; // 100KB limit
+    const MAX_LINES: usize = 2000; // Maximum lines of code
+    const MAX_TIMEOUT_MS: u64 = 30_000; // 30 seconds max
+
+    if code.is_empty() {
+        return Err("Code cannot be empty".to_string());
+    }
+
+    if code.len() > MAX_CODE_SIZE {
+        return Err(format!("Code too large (max {} bytes)", MAX_CODE_SIZE));
+    }
+
+    // Check line count
+    let line_count = code.lines().count();
+    if line_count > MAX_LINES {
+        return Err(format!("Code has too many lines (max {} lines)", MAX_LINES));
+    }
+
+    // Check for potentially dangerous patterns (basic heuristics)
+    let code_lower = code.to_lowercase();
+    let suspicious_patterns = [
+        ("fork()", "Process forking"),
+        ("os.system", "Shell command execution"),
+        ("subprocess.call", "Subprocess execution"),
+        ("exec(", "Dynamic code execution"),
+        ("eval(", "Dynamic code evaluation"),
+        ("__import__", "Dynamic import"),
+        ("rm -rf", "File deletion"),
+        ("format c:", "Disk formatting"),
+        (":(){:|:&};:", "Fork bomb pattern"),
+    ];
+
+    for (pattern, description) in suspicious_patterns.iter() {
+        if code_lower.contains(pattern) {
+            log::warn!("Suspicious pattern detected: {} - {}", pattern, description);
+            // Note: We log but don't block - the sandbox and timeout will handle actual threats
+            // This is informational for monitoring purposes
+        }
+    }
+
+    // Enforce reasonable timeout
+    let timeout_duration = Duration::from_millis(
+        timeout_ms.unwrap_or(5000).min(MAX_TIMEOUT_MS)
+    );
+
     let mut config = LanguageConfig::get_config(&language)?;
 
     // If a custom executable path is provided, use it instead of the default command
@@ -334,6 +380,14 @@ pub struct ClaudeResponse {
     pub content: Vec<ClaudeContent>,
 }
 
+// Rate limiter for Claude API calls
+use std::sync::Mutex;
+use std::collections::HashMap;
+
+lazy_static::lazy_static! {
+    static ref CLAUDE_RATE_LIMITER: Mutex<HashMap<String, Vec<std::time::Instant>>> = Mutex::new(HashMap::new());
+}
+
 /// Proxy Claude API requests through Tauri backend to avoid CORS
 #[tauri::command]
 pub async fn call_claude_api(
@@ -342,7 +396,34 @@ pub async fn call_claude_api(
     system_prompt: String,
     messages: Vec<ClaudeMessage>,
 ) -> Result<String, String> {
-    let client = Client::new();
+    // Rate limiting: 10 requests per minute
+    const RATE_LIMIT: usize = 10;
+    const RATE_WINDOW_SECS: u64 = 60;
+
+    let key_hash = format!("{:x}", md5::compute(&api_key));
+    let now = std::time::Instant::now();
+
+    {
+        let mut limiter = CLAUDE_RATE_LIMITER.lock()
+            .map_err(|e| format!("Rate limiter error: {}. Please restart the app.", e))?;
+        let requests = limiter.entry(key_hash.clone()).or_insert_with(Vec::new);
+
+        // Remove old requests outside the window
+        requests.retain(|&time| now.duration_since(time) < Duration::from_secs(RATE_WINDOW_SECS));
+
+        // Check if limit exceeded
+        if requests.len() >= RATE_LIMIT {
+            return Err("Rate limit exceeded. Please wait before making more requests.".to_string());
+        }
+
+        requests.push(now);
+    }
+
+    // Build client with timeout
+    let client = Client::builder()
+        .timeout(Duration::from_secs(30))
+        .build()
+        .map_err(|e| format!("Failed to build HTTP client: {}", e))?;
 
     let request_body = ClaudeRequest {
         model,
@@ -359,7 +440,13 @@ pub async fn call_claude_api(
         .json(&request_body)
         .send()
         .await
-        .map_err(|e| format!("Failed to send request: {}", e))?;
+        .map_err(|e| {
+            if e.is_timeout() {
+                "Request timed out. Please try again.".to_string()
+            } else {
+                format!("Failed to send request: {}", e)
+            }
+        })?;
 
     if !response.status().is_success() {
         let error_text = response.text().await.unwrap_or_else(|_| "Unknown error".to_string());

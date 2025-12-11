@@ -45,6 +45,7 @@ import type {
   ConsumableItemRaw,
   UserConsumableInventoryItem,
   UserConsumableInventoryItemRaw,
+  EnemyBehavior,
 } from '../types/rpg';
 import {
   convertCharacterStats,
@@ -411,8 +412,6 @@ export async function getEnemyById(enemyId: string): Promise<EnemyType> {
 export async function getCustomEnemyById(enemyId: string): Promise<EnemyType> {
   const customEnemy = await invoke<any>('load_custom_enemy', { enemyId });
 
-  console.log('Loading custom enemy from database:', customEnemy);
-
   // Parse attacks if it's a JSON string
   const attacks = typeof customEnemy.attacks === 'string'
     ? JSON.parse(customEnemy.attacks)
@@ -461,14 +460,6 @@ export async function getCustomEnemyById(enemyId: string): Promise<EnemyType> {
     }
   }
 
-  console.log('Converted enemy stats:', {
-    name: customEnemy.name,
-    baseHealth,
-    baseDamage,
-    baseDefense,
-    attackAnimation: attackAnimationPath
-  });
-
   // Convert CustomEnemy to EnemyType format
   return {
     id: customEnemy.id,
@@ -503,7 +494,7 @@ export async function getRandomEncounter(
   });
   return {
     id: raw.id,
-    type: raw.encounter_type as any,
+    type: raw.type,
     floorNumber: raw.floor_number,
     descriptionPrompt: raw.description_prompt,
     requiredStat: raw.required_stat as any,

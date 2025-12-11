@@ -2,6 +2,34 @@ import { invoke } from '@tauri-apps/api/core'
 import type { ExecutionResult } from '@/types/execution'
 import type { SupportedLanguage } from '@/types/language'
 
+// Default timeout for Tauri invoke calls (10 seconds)
+const DEFAULT_INVOKE_TIMEOUT = 10000
+
+/**
+ * Wrapper for Tauri invoke with timeout protection
+ * Prevents the frontend from hanging indefinitely if the backend becomes unresponsive
+ * @param command - Tauri command name
+ * @param args - Command arguments
+ * @param timeoutMs - Timeout in milliseconds (default: 10000ms)
+ * @returns Promise that resolves with the command result or rejects on timeout
+ */
+export async function invokeWithTimeout<T>(
+  command: string,
+  args?: Record<string, unknown>,
+  timeoutMs: number = DEFAULT_INVOKE_TIMEOUT
+): Promise<T> {
+  const timeoutPromise = new Promise<never>((_, reject) => {
+    setTimeout(() => {
+      reject(new Error(`Request timeout: ${command} did not respond within ${timeoutMs}ms`))
+    }, timeoutMs)
+  })
+
+  return Promise.race([
+    invoke<T>(command, args),
+    timeoutPromise
+  ])
+}
+
 /**
  * Execute code in any supported language via Tauri backend
  * @param language - Programming language to execute

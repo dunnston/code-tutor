@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
-import { getPuzzlesByCategory, getPuzzleCategories } from '@/lib/puzzles'
+import { getPuzzlesByCategory, getPuzzleCategories, getAllPuzzleProgress } from '@/lib/puzzles'
 import { useAppStore } from '@/lib/store'
-import type { Puzzle, PuzzleCategory, PuzzleDifficulty } from '@/types/puzzle'
+import type { Puzzle, PuzzleCategory, PuzzleDifficulty, UserPuzzleProgress } from '@/types/puzzle'
 import { PuzzleCard } from './PuzzleCard'
 
 interface PuzzleListProps {
@@ -13,6 +13,7 @@ type SortOption = 'difficulty' | 'points' | 'acceptance' | 'title'
 export function PuzzleList({ categoryId }: PuzzleListProps) {
   const [puzzles, setPuzzles] = useState<Puzzle[]>([])
   const [category, setCategory] = useState<PuzzleCategory | null>(null)
+  const [progressMap, setProgressMap] = useState<Map<string, UserPuzzleProgress>>(new Map())
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [difficultyFilter, setDifficultyFilter] = useState<PuzzleDifficulty | 'all'>('all')
@@ -28,6 +29,7 @@ export function PuzzleList({ categoryId }: PuzzleListProps) {
   useEffect(() => {
     loadPuzzles()
     loadCategory()
+    loadProgress()
   }, [categoryId])
 
   const loadPuzzles = async () => {
@@ -51,6 +53,29 @@ export function PuzzleList({ categoryId }: PuzzleListProps) {
       setCategory(found || null)
     } catch (err) {
       console.error('Failed to load category:', err)
+    }
+  }
+
+  const loadProgress = async () => {
+    try {
+      const currentUserId = useAppStore.getState().currentUserId
+      if (!currentUserId) {
+        console.warn('No user ID available for loading puzzle progress')
+        return
+      }
+      const allProgress = await getAllPuzzleProgress(currentUserId)
+      // Create a map keyed by puzzleId for easy lookup
+      const map = new Map<string, UserPuzzleProgress>()
+      for (const progress of allProgress) {
+        // If puzzle has progress in multiple languages, prefer the 'solved' one
+        const existing = map.get(progress.puzzleId)
+        if (!existing || (progress.status === 'solved' && existing.status !== 'solved')) {
+          map.set(progress.puzzleId, progress)
+        }
+      }
+      setProgressMap(map)
+    } catch (err) {
+      console.error('Failed to load progress:', err)
     }
   }
 
@@ -237,6 +262,7 @@ export function PuzzleList({ categoryId }: PuzzleListProps) {
               <PuzzleCard
                 key={puzzle.id}
                 puzzle={puzzle}
+                progress={progressMap.get(puzzle.id)}
                 onClick={() => handlePuzzleClick(puzzle.id)}
               />
             ))}

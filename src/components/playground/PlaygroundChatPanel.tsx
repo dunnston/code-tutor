@@ -206,7 +206,7 @@ export function PlaygroundChatPanel({ isOpen, onToggle }: PlaygroundChatPanelPro
         conversationHistory: messages,
         playgroundMode: true,
         completedLessons,
-        lastCompletedLesson, // NEW: Add the most recent lesson for focused challenges
+        lastCompletedLesson: lastCompletedLesson ?? undefined, // NEW: Add the most recent lesson for focused challenges
       }
 
       // Detect appropriate prompt type

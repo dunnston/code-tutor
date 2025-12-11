@@ -72,15 +72,41 @@ export async function getPuzzleImplementation(
       languageId,
     })
 
+    // Safely parse JSON fields with error handling
+    let testCases: PuzzleImplementation['testCases'] = []
+    let hiddenTests: PuzzleImplementation['hiddenTests'] = undefined
+    let hints: string[] = []
+
+    try {
+      testCases = JSON.parse(impl.test_cases || '[]')
+    } catch (parseError) {
+      console.error('Failed to parse test_cases JSON:', parseError)
+      testCases = []
+    }
+
+    try {
+      hiddenTests = impl.hidden_tests ? JSON.parse(impl.hidden_tests) : undefined
+    } catch (parseError) {
+      console.error('Failed to parse hidden_tests JSON:', parseError)
+      hiddenTests = undefined
+    }
+
+    try {
+      hints = impl.hints ? JSON.parse(impl.hints) : []
+    } catch (parseError) {
+      console.error('Failed to parse hints JSON:', parseError)
+      hints = []
+    }
+
     return {
       id: impl.id,
       puzzleId: impl.puzzle_id,
       languageId: impl.language_id,
       starterCode: impl.starter_code,
       solutionCode: impl.solution_code,
-      testCases: JSON.parse(impl.test_cases || '[]'),
-      hiddenTests: impl.hidden_tests ? JSON.parse(impl.hidden_tests) : undefined,
-      hints: impl.hints ? JSON.parse(impl.hints) : [],
+      testCases,
+      hiddenTests,
+      hints,
     }
   } catch (error) {
     console.error(`Failed to get puzzle implementation ${puzzleId}/${languageId}:`, error)
@@ -110,6 +136,15 @@ export async function hasPuzzleImplementation(
  * Helper function to map Rust puzzle to TypeScript Puzzle
  */
 function mapPuzzleFromRust(puzzle: any): Puzzle {
+  // Safely parse concepts JSON
+  let concepts: string[] = []
+  try {
+    concepts = puzzle.concepts ? JSON.parse(puzzle.concepts) : []
+  } catch (parseError) {
+    console.error('Failed to parse puzzle concepts JSON:', parseError)
+    concepts = []
+  }
+
   return {
     id: puzzle.id,
     categoryId: puzzle.category_id,
@@ -117,7 +152,7 @@ function mapPuzzleFromRust(puzzle: any): Puzzle {
     description: puzzle.description,
     difficulty: puzzle.difficulty,
     points: puzzle.points,
-    concepts: puzzle.concepts ? JSON.parse(puzzle.concepts) : [],
+    concepts,
     estimatedMinutes: puzzle.estimated_minutes || 0,
     solveCount: puzzle.solve_count || 0,
     averageTime: puzzle.average_time,
@@ -133,14 +168,47 @@ function mapPuzzleFromRust(puzzle: any): Puzzle {
 // ============================================================================
 
 /**
+ * Get all puzzle progress for a user
+ */
+export async function getAllPuzzleProgress(userId: number): Promise<import('@/types/puzzle').UserPuzzleProgress[]> {
+  try {
+    const progressList = await invoke<any[]>('get_all_puzzle_progress', { userId })
+
+    return progressList.map(progress => ({
+      id: progress.id,
+      userId: progress.user_id,
+      puzzleId: progress.puzzle_id,
+      languageId: progress.language_id,
+      status: progress.status,
+      attempts: progress.attempts,
+      hintsUsed: progress.hints_used,
+      userSolution: progress.user_solution,
+      solveTime: progress.solve_time,
+      solutionLines: progress.solution_lines,
+      firstAttemptAt: progress.first_attempt_at,
+      solvedAt: progress.solved_at,
+      lastAttemptAt: progress.last_attempt_at,
+      isOptimal: progress.is_optimal,
+      solutionViewed: progress.solution_viewed || false,
+      solutionViewedAt: progress.solution_viewed_at,
+    }))
+  } catch (error) {
+    console.error('Failed to get all puzzle progress:', error)
+    return []
+  }
+}
+
+/**
  * Get user progress for a puzzle
  */
 export async function getPuzzleProgress(
+  userId: number,
   puzzleId: string,
   languageId: string
 ): Promise<import('@/types/puzzle').UserPuzzleProgress | null> {
   try {
     const progress = await invoke<any>('get_puzzle_progress', {
+      userId,
       puzzleId,
       languageId,
     })
@@ -175,12 +243,14 @@ export async function getPuzzleProgress(
  * Record a puzzle attempt
  */
 export async function recordPuzzleAttempt(
+  userId: number,
   puzzleId: string,
   languageId: string,
   userSolution: string
 ): Promise<void> {
   try {
     await invoke('record_puzzle_attempt', {
+      userId,
       puzzleId,
       languageId,
       userSolution,
@@ -195,11 +265,13 @@ export async function recordPuzzleAttempt(
  * Record hint usage
  */
 export async function recordHintUsed(
+  userId: number,
   puzzleId: string,
   languageId: string
 ): Promise<void> {
   try {
     await invoke('record_hint_used', {
+      userId,
       puzzleId,
       languageId,
     })
@@ -213,11 +285,13 @@ export async function recordHintUsed(
  * Record that the user viewed the solution
  */
 export async function recordSolutionViewed(
+  userId: number,
   puzzleId: string,
   languageId: string
 ): Promise<void> {
   try {
     await invoke('record_solution_viewed', {
+      userId,
       puzzleId,
       languageId,
     })
@@ -231,6 +305,7 @@ export async function recordSolutionViewed(
  * Mark puzzle as solved and award points
  */
 export async function markPuzzleSolved(
+  userId: number,
   puzzleId: string,
   languageId: string,
   userSolution: string,
@@ -238,6 +313,7 @@ export async function markPuzzleSolved(
 ): Promise<number> {
   try {
     const points = await invoke<number>('mark_puzzle_solved', {
+      userId,
       puzzleId,
       languageId,
       userSolution,
@@ -257,9 +333,9 @@ export async function markPuzzleSolved(
 /**
  * Get today's daily puzzle challenge
  */
-export async function getDailyPuzzle(): Promise<DailyPuzzleChallenge> {
+export async function getDailyPuzzle(userId: number): Promise<DailyPuzzleChallenge> {
   try {
-    const challenge = await invoke<any>('get_daily_puzzle')
+    const challenge = await invoke<any>('get_daily_puzzle', { userId })
 
     return {
       id: challenge.id,
@@ -280,11 +356,13 @@ export async function getDailyPuzzle(): Promise<DailyPuzzleChallenge> {
  * Complete today's daily puzzle and get bonus points awarded
  */
 export async function completeDailyPuzzle(
+  userId: number,
   puzzleId: string,
   languageId: string
 ): Promise<number> {
   try {
     const bonusPoints = await invoke<number>('complete_daily_puzzle', {
+      userId,
       puzzleId,
       languageId,
     })
@@ -298,9 +376,9 @@ export async function completeDailyPuzzle(
 /**
  * Get daily puzzle streak information
  */
-export async function getDailyPuzzleStreak(): Promise<DailyPuzzleStreak> {
+export async function getDailyPuzzleStreak(userId: number): Promise<DailyPuzzleStreak> {
   try {
-    const streak = await invoke<any>('get_daily_puzzle_streak')
+    const streak = await invoke<any>('get_daily_puzzle_streak', { userId })
 
     return {
       currentStreak: streak.current_streak,

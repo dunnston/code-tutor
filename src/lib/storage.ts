@@ -71,14 +71,44 @@ export interface UserProgress {
 }
 
 /**
- * Save user code for a specific lesson
+ * Result of a save operation
  */
-export function saveUserCode(lessonId: number, code: string): void {
+export type SaveResult = {
+  success: true
+} | {
+  success: false
+  error: 'quota_exceeded' | 'unknown'
+  message: string
+}
+
+/**
+ * Save user code for a specific lesson
+ * Returns a SaveResult indicating success or failure
+ */
+export function saveUserCode(lessonId: number, code: string): SaveResult {
   try {
     const key = getProfileStorageKey(`${STORAGE_PREFIX}lesson-${lessonId}-code`)
     localStorage.setItem(key, code)
+    return { success: true }
   } catch (error) {
+    // Check if it's a quota exceeded error
+    if (error instanceof DOMException && (
+      error.name === 'QuotaExceededError' ||
+      error.name === 'NS_ERROR_DOM_QUOTA_REACHED' ||
+      error.code === 22 // Legacy quota exceeded code
+    )) {
+      return {
+        success: false,
+        error: 'quota_exceeded',
+        message: 'Storage quota exceeded. Your code is too large to save automatically.'
+      }
+    }
     console.error('Failed to save code to local storage:', error)
+    return {
+      success: false,
+      error: 'unknown',
+      message: 'Failed to save code to local storage.'
+    }
   }
 }
 

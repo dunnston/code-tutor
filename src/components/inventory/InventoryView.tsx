@@ -16,7 +16,7 @@ const TABS: { id: TabType; label: string; icon: string }[] = [
 ];
 
 export function InventoryView() {
-  const { inventory, refreshInventory, userCurrency, refreshCurrency, setCurrentView } = useAppStore();
+  const { inventory, refreshInventory, userCurrency, refreshCurrency, setCurrentView, currentUserId } = useAppStore();
   const [activeTab, setActiveTab] = useState<TabType>('all');
   const [filteredItems, setFilteredItems] = useState<InventoryItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -25,15 +25,17 @@ export function InventoryView() {
 
   // Load inventory
   useEffect(() => {
-    loadInventory();
-  }, []);
+    if (currentUserId) {
+      loadInventory();
+    }
+  }, [currentUserId]);
 
   // Load currency
   useEffect(() => {
-    if (!userCurrency) {
-      refreshCurrency(1); // TODO: Use actual user ID
+    if (!userCurrency && currentUserId) {
+      refreshCurrency(currentUserId);
     }
-  }, [userCurrency, refreshCurrency]);
+  }, [userCurrency, refreshCurrency, currentUserId]);
 
   // Filter items by tab
   useEffect(() => {
@@ -52,9 +54,10 @@ export function InventoryView() {
   }, [activeTab, inventory]);
 
   const loadInventory = async () => {
+    if (!currentUserId) return;
     try {
       setLoading(true);
-      await refreshInventory(1); // TODO: Use actual user ID
+      await refreshInventory(currentUserId);
     } catch (err) {
       console.error('Failed to load inventory:', err);
     } finally {
@@ -63,14 +66,14 @@ export function InventoryView() {
   };
 
   const handleUseItem = async () => {
-    if (!selectedItem) return;
+    if (!selectedItem || !currentUserId) return;
 
     try {
       setUsing(true);
-      await useInventoryItem(1, selectedItem.itemId); // TODO: Use actual user ID
+      await useInventoryItem(currentUserId, selectedItem.itemId);
 
       // Refresh inventory
-      await refreshInventory(1);
+      await refreshInventory(currentUserId);
 
       // Close modal
       setSelectedItem(null);

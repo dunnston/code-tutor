@@ -1,7 +1,8 @@
-import type { Puzzle, PuzzleDifficulty } from '@/types/puzzle'
+import type { Puzzle, PuzzleDifficulty, UserPuzzleProgress } from '@/types/puzzle'
 
 interface PuzzleCardProps {
   puzzle: Puzzle
+  progress?: UserPuzzleProgress | null
   onClick?: () => void
 }
 
@@ -12,13 +13,13 @@ const difficultyColors: Record<PuzzleDifficulty, { bg: string; text: string; bor
   expert: { bg: 'bg-purple-500/20', text: 'text-purple-400', border: 'border-purple-500/30' },
 }
 
-export function PuzzleCard({ puzzle, onClick }: PuzzleCardProps) {
+export function PuzzleCard({ puzzle, progress, onClick }: PuzzleCardProps) {
   const difficultyColor = difficultyColors[puzzle.difficulty]
 
-  // TODO: Get actual user progress
-  const isSolved = false
-  const isAttempted = false
-  const userAttempts = 0
+  // Get actual user progress
+  const isSolved = progress?.status === 'solved'
+  const isAttempted = progress != null && progress.attempts > 0
+  const userAttempts = progress?.attempts ?? 0
 
   return (
     <button
@@ -96,7 +97,7 @@ export function PuzzleCard({ puzzle, onClick }: PuzzleCardProps) {
           </div>
 
           {/* Concepts/Tags */}
-          {puzzle.concepts.length > 0 && (
+          {puzzle.concepts && Array.isArray(puzzle.concepts) && puzzle.concepts.length > 0 && (
             <div className="flex flex-wrap gap-2 mt-3">
               {puzzle.concepts.slice(0, 3).map((concept) => (
                 <span
@@ -106,7 +107,7 @@ export function PuzzleCard({ puzzle, onClick }: PuzzleCardProps) {
                   #{concept}
                 </span>
               ))}
-              {puzzle.concepts.length > 3 && (
+              {puzzle.concepts && puzzle.concepts.length > 3 && (
                 <span className="px-2 py-1 text-xs text-gray-500">
                   +{puzzle.concepts.length - 3} more
                 </span>

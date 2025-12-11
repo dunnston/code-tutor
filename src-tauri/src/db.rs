@@ -2,6 +2,23 @@ use rusqlite::{Connection, Result};
 use std::path::PathBuf;
 use tauri::{AppHandle, Manager};
 
+/// Helper function to safely execute ALTER TABLE ADD COLUMN statements
+/// Only ignores "duplicate column" errors, returns error for any other failure
+fn safe_add_column(conn: &Connection, sql: &str) -> std::result::Result<(), String> {
+    match conn.execute(sql, []) {
+        Ok(_) => Ok(()),
+        Err(e) => {
+            let error_msg = e.to_string().to_lowercase();
+            if error_msg.contains("duplicate column") || error_msg.contains("already exists") {
+                // Column already exists - this is fine
+                Ok(())
+            } else {
+                Err(format!("Migration failed: {}", e))
+            }
+        }
+    }
+}
+
 /// Get the database file path
 fn get_db_path(app: &AppHandle) -> Result<PathBuf, String> {
     let app_data_dir = app
@@ -123,9 +140,9 @@ pub fn initialize_database(app: &AppHandle) -> Result<(), String> {
     conn.execute_batch(multiple_choice_migration)
         .map_err(|e| format!("Failed to execute multiple choice migration: {}", e))?;
 
-    // Add multiple choice columns (safe to run multiple times - ignores errors if columns exist)
-    let _ = conn.execute("ALTER TABLE dungeon_challenges ADD COLUMN choices TEXT", []);
-    let _ = conn.execute("ALTER TABLE dungeon_challenges ADD COLUMN correct_answer TEXT", []);
+    // Add multiple choice columns (safe to run multiple times)
+    safe_add_column(&conn, "ALTER TABLE dungeon_challenges ADD COLUMN choices TEXT")?;
+    safe_add_column(&conn, "ALTER TABLE dungeon_challenges ADD COLUMN correct_answer TEXT")?;
 
     // Execute narrative dungeon system migration
     let narrative_migration = include_str!("../migrations/014_narrative_dungeon_system.sql");
@@ -137,20 +154,20 @@ pub fn initialize_database(app: &AppHandle) -> Result<(), String> {
     conn.execute_batch(equipment_expansion)
         .map_err(|e| format!("Failed to execute equipment expansion migration: {}", e))?;
 
-    // Add new equipment columns (safe to run multiple times - ignores errors if columns exist)
-    let _ = conn.execute("ALTER TABLE character_equipment ADD COLUMN shield_id TEXT REFERENCES equipment_items(id)", []);
-    let _ = conn.execute("ALTER TABLE character_equipment ADD COLUMN helmet_id TEXT REFERENCES equipment_items(id)", []);
-    let _ = conn.execute("ALTER TABLE character_equipment ADD COLUMN chest_id TEXT REFERENCES equipment_items(id)", []);
-    let _ = conn.execute("ALTER TABLE character_equipment ADD COLUMN boots_id TEXT REFERENCES equipment_items(id)", []);
-    let _ = conn.execute("ALTER TABLE user_abilities ADD COLUMN ability_level INTEGER DEFAULT 1", []);
+    // Add new equipment columns (safe to run multiple times)
+    safe_add_column(&conn, "ALTER TABLE character_equipment ADD COLUMN shield_id TEXT REFERENCES equipment_items(id)")?;
+    safe_add_column(&conn, "ALTER TABLE character_equipment ADD COLUMN helmet_id TEXT REFERENCES equipment_items(id)")?;
+    safe_add_column(&conn, "ALTER TABLE character_equipment ADD COLUMN chest_id TEXT REFERENCES equipment_items(id)")?;
+    safe_add_column(&conn, "ALTER TABLE character_equipment ADD COLUMN boots_id TEXT REFERENCES equipment_items(id)")?;
+    safe_add_column(&conn, "ALTER TABLE user_abilities ADD COLUMN ability_level INTEGER DEFAULT 1")?;
 
     // Execute equipment slot fix migration
     let equipment_slot_fix = include_str!("../migrations/016_fix_equipment_slots.sql");
     conn.execute_batch(equipment_slot_fix)
         .map_err(|e| format!("Failed to execute equipment slot fix migration: {}", e))?;
 
-    // Add charisma column (safe to run multiple times - ignores errors if column exists)
-    let _ = conn.execute("ALTER TABLE character_stats ADD COLUMN charisma INTEGER DEFAULT 1", []);
+    // Add charisma column (safe to run multiple times)
+    safe_add_column(&conn, "ALTER TABLE character_stats ADD COLUMN charisma INTEGER DEFAULT 1")?;
 
     // Execute charisma stat migration
     let charisma_migration = include_str!("../migrations/017_add_charisma_stat.sql");
@@ -162,9 +179,9 @@ pub fn initialize_database(app: &AppHandle) -> Result<(), String> {
     conn.execute_batch(active_abilities_migration)
         .map_err(|e| format!("Failed to execute active abilities migration: {}", e))?;
 
-    // Add shop system columns (safe to run multiple times - ignores errors if columns exist)
-    let _ = conn.execute("ALTER TABLE character_stats ADD COLUMN current_gold INTEGER DEFAULT 100", []);
-    let _ = conn.execute("ALTER TABLE user_dungeon_progress ADD COLUMN in_town BOOLEAN DEFAULT TRUE", []);
+    // Add shop system columns (safe to run multiple times)
+    safe_add_column(&conn, "ALTER TABLE character_stats ADD COLUMN current_gold INTEGER DEFAULT 100")?;
+    safe_add_column(&conn, "ALTER TABLE user_dungeon_progress ADD COLUMN in_town BOOLEAN DEFAULT TRUE")?;
 
     // Execute shop system migration
     let shop_migration = include_str!("../migrations/019_shop_system.sql");
@@ -277,10 +294,22 @@ pub fn initialize_database(app: &AppHandle) -> Result<(), String> {
     log::info!("Loading achievement viewed tracking migration...");
 
     // Try to add the viewed_at column - ignore error if column already exists
-    let _ = conn.execute(
+    // Add viewed_at column - ignore only duplicate column errors
+    match conn.execute(
         "ALTER TABLE user_achievement_progress ADD COLUMN viewed_at TEXT",
         [],
-    );
+    ) {
+        Ok(_) => log::info!("Added viewed_at column to user_achievement_progress"),
+        Err(e) => {
+            let error_msg = e.to_string();
+            if error_msg.contains("duplicate column") || error_msg.contains("already exists") {
+                log::info!("viewed_at column already exists, skipping");
+            } else {
+                log::error!("Failed to add viewed_at column: {}", e);
+                return Err(format!("Failed to add viewed_at column: {}", e));
+            }
+        }
+    }
 
     // Create index (IF NOT EXISTS handles idempotency)
     conn.execute(
@@ -300,8 +329,19 @@ pub fn initialize_database(app: &AppHandle) -> Result<(), String> {
         ALTER TABLE user_puzzle_progress ADD COLUMN solution_viewed_at TIMESTAMP;
     "#;
 
-    // Try to execute migration, but don't fail if columns already exist
-    let _ = conn.execute_batch(solution_viewed_migration);
+    // Try to execute migration - only ignore "duplicate column" errors
+    match conn.execute_batch(solution_viewed_migration) {
+        Ok(_) => log::info!("Solution viewed migration completed successfully"),
+        Err(e) => {
+            let error_msg = e.to_string();
+            if error_msg.contains("duplicate column") || error_msg.contains("already exists") {
+                log::info!("Solution viewed columns already exist, skipping migration");
+            } else {
+                log::error!("Solution viewed migration failed: {}", e);
+                return Err(format!("Failed to execute solution viewed migration: {}", e));
+            }
+        }
+    }
 
     // Execute dungeon level editor migration
     log::info!("Loading dungeon level editor migration...");
@@ -316,26 +356,66 @@ pub fn initialize_database(app: &AppHandle) -> Result<(), String> {
     // Execute level sequencing migration
     log::info!("Loading level sequencing migration...");
     let level_sequencing_migration = include_str!("../migrations/031_level_sequencing.sql");
-    let _ = conn.execute_batch(level_sequencing_migration); // Allow failure if column already exists
-    log::info!("Level sequencing migration completed");
+    match conn.execute_batch(level_sequencing_migration) {
+        Ok(_) => log::info!("Level sequencing migration completed successfully"),
+        Err(e) => {
+            let error_msg = e.to_string();
+            if error_msg.contains("duplicate column") || error_msg.contains("already exists") {
+                log::info!("Level sequencing columns already exist, skipping migration");
+            } else {
+                log::error!("Level sequencing migration failed: {}", e);
+                return Err(format!("Failed to execute level sequencing migration: {}", e));
+            }
+        }
+    }
 
     // Execute custom enemies migration
     log::info!("Loading custom enemies migration...");
     let custom_enemies_migration = include_str!("../migrations/032_custom_enemies.sql");
-    let _ = conn.execute_batch(custom_enemies_migration); // Allow failure if table already exists
-    log::info!("Custom enemies migration completed");
+    match conn.execute_batch(custom_enemies_migration) {
+        Ok(_) => log::info!("Custom enemies migration completed successfully"),
+        Err(e) => {
+            let error_msg = e.to_string();
+            if error_msg.contains("already exists") || error_msg.contains("duplicate") {
+                log::info!("Custom enemies table already exists, skipping migration");
+            } else {
+                log::error!("Custom enemies migration failed: {}", e);
+                return Err(format!("Failed to execute custom enemies migration: {}", e));
+            }
+        }
+    }
 
     // Execute MCQ questions migration
     log::info!("Loading MCQ questions migration...");
     let mcq_migration = include_str!("../migrations/033_mcq_questions.sql");
-    let _ = conn.execute_batch(mcq_migration); // Allow failure if table already exists
-    log::info!("MCQ questions migration completed");
+    match conn.execute_batch(mcq_migration) {
+        Ok(_) => log::info!("MCQ questions migration completed successfully"),
+        Err(e) => {
+            let error_msg = e.to_string();
+            if error_msg.contains("already exists") || error_msg.contains("duplicate") {
+                log::info!("MCQ questions table already exists, skipping migration");
+            } else {
+                log::error!("MCQ questions migration failed: {}", e);
+                return Err(format!("Failed to execute MCQ questions migration: {}", e));
+            }
+        }
+    }
 
     // Execute challenge history foreign key fix migration
     log::info!("Loading challenge history FK fix migration...");
     let challenge_history_fk_migration = include_str!("../migrations/034_fix_challenge_history_fk.sql");
-    let _ = conn.execute_batch(challenge_history_fk_migration); // Allow failure if already fixed
-    log::info!("Challenge history FK fix migration completed");
+    match conn.execute_batch(challenge_history_fk_migration) {
+        Ok(_) => log::info!("Challenge history FK fix migration completed successfully"),
+        Err(e) => {
+            let error_msg = e.to_string();
+            if error_msg.contains("already exists") || error_msg.contains("duplicate") || error_msg.contains("no such table") {
+                log::info!("Challenge history FK fix already applied or not needed, skipping");
+            } else {
+                log::error!("Challenge history FK fix migration failed: {}", e);
+                return Err(format!("Failed to execute challenge history FK fix migration: {}", e));
+            }
+        }
+    }
 
     // Auto-seed MCQ questions if none exist (for production builds)
     log::info!("Checking if MCQ questions need to be seeded...");

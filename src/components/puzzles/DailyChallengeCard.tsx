@@ -29,9 +29,14 @@ export function DailyChallengeCard() {
   const loadDailyChallenge = async () => {
     try {
       setLoading(true)
+      const currentUserId = useAppStore.getState().currentUserId
+      if (!currentUserId) {
+        setError('No user logged in')
+        return
+      }
       const [challengeData, streakData] = await Promise.all([
-        getDailyPuzzle(),
-        getDailyPuzzleStreak(),
+        getDailyPuzzle(currentUserId),
+        getDailyPuzzleStreak(currentUserId),
       ])
       setChallenge(challengeData)
       setStreak(streakData)

@@ -16,7 +16,12 @@ export function PuzzleWidget() {
 
   const loadDailyStreak = async () => {
     try {
-      const streakData = await getDailyPuzzleStreak()
+      const currentUserId = useAppStore.getState().currentUserId
+      if (!currentUserId) {
+        console.warn('No user ID available for loading daily streak')
+        return
+      }
+      const streakData = await getDailyPuzzleStreak(currentUserId)
       setDailyStreak(streakData.currentStreak)
     } catch (error) {
       console.error('Failed to load daily puzzle streak:', error)

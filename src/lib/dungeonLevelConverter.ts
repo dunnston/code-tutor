@@ -180,9 +180,9 @@ export function createLevel1Template(): DungeonLevel {
           nodeType: DungeonNodeType.LOOT,
           description: 'You discover a hidden cache of weapons and supplies!',
           items: [
-            { type: ItemType.WEAPON, name: 'Rusty Shortsword', quantity: 1, description: '+3 Attack' },
-            { type: ItemType.ARMOR, name: 'Leather Armor', quantity: 1, description: '+2 Defense' },
-            { type: ItemType.POTION, name: 'Healing Potion', quantity: 2, description: 'Restores 30 HP' },
+            { itemSource: 'custom', type: ItemType.WEAPON, name: 'Rusty Shortsword', quantity: 1, description: '+3 Attack' },
+            { itemSource: 'custom', type: ItemType.ARMOR, name: 'Leather Armor', quantity: 1, description: '+2 Defense' },
+            { itemSource: 'custom', type: ItemType.POTION, name: 'Healing Potion', quantity: 2, description: 'Restores 30 HP' },
           ],
           gold: 50,
           xp: 25,
@@ -205,7 +205,7 @@ export function createLevel1Template(): DungeonLevel {
           rewardXp: 300,
           rewardGold: 150,
           rewardItems: [
-            { type: ItemType.ARTIFACT, name: 'Mysterious Glowing Crystal', quantity: 1, description: 'Pulses with strange energy' },
+            { itemSource: 'custom', type: ItemType.ARTIFACT, name: 'Mysterious Glowing Crystal', quantity: 1, description: 'Pulses with strange energy' },
           ],
           flavorText: 'A massive gelatinous cube blocks your path, its translucent body revealing the bones of previous victims!',
           introDialog: 'The cube pulses and shifts, sensing your presence...',
