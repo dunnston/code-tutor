@@ -946,15 +946,15 @@ pub fn spend_stat_point_on_health(
     let health_increase = 5; // Each point gives +5 max HP
     let new_max_health = old_max_health + health_increase;
 
-    // Update stats
+    // Update stats (cap current_health at new max)
     conn.execute(
         "UPDATE character_stats
          SET max_health = ?,
-             current_health = current_health + ?,
+             current_health = MIN(current_health + ?, ?),
              stat_points_available = stat_points_available - 1,
              updated_at = CURRENT_TIMESTAMP
          WHERE user_id = ?",
-        params![new_max_health, health_increase, user_id],
+        params![new_max_health, health_increase, new_max_health, user_id],
     )
     .map_err(|e| format!("Failed to update health: {}", e))?;
 
@@ -986,15 +986,15 @@ pub fn spend_stat_point_on_mana(
     let mana_increase = 5; // Each point gives +5 max mana
     let new_max_mana = old_max_mana + mana_increase;
 
-    // Update stats
+    // Update stats (cap current_mana at new max)
     conn.execute(
         "UPDATE character_stats
          SET max_mana = ?,
-             current_mana = current_mana + ?,
+             current_mana = MIN(current_mana + ?, ?),
              stat_points_available = stat_points_available - 1,
              updated_at = CURRENT_TIMESTAMP
          WHERE user_id = ?",
-        params![new_max_mana, mana_increase, user_id],
+        params![new_max_mana, mana_increase, new_max_mana, user_id],
     )
     .map_err(|e| format!("Failed to update mana: {}", e))?;
 
@@ -1296,4 +1296,58 @@ pub fn remove_active_ability(app: AppHandle, user_id: i64, slot_number: i64) -> 
     .map_err(|e| format!("Failed to remove active ability: {}", e))?;
 
     Ok(())
+}
+
+// Get only the abilities that are equipped in active slots (for combat)
+// Always includes basic_attack as it's always available
+#[tauri::command]
+pub fn get_active_abilities_for_combat(app: AppHandle, user_id: i64) -> Result<Vec<Ability>, String> {
+    let conn = get_connection(&app)?;
+
+    // Get basic_attack ability (always available)
+    let basic_attack: Option<Ability> = conn
+        .query_row(
+            "SELECT id, name, description, type, required_level, mana_cost,
+                    cooldown_turns, base_value, scaling_stat, scaling_ratio,
+                    additional_effects, icon, animation_text, created_at
+             FROM abilities
+             WHERE id = 'basic_attack'",
+            [],
+            Ability::from_row,
+        )
+        .ok();
+
+    // Get abilities from active slots
+    let mut stmt = conn
+        .prepare(
+            "SELECT a.id, a.name, a.description, a.type, a.required_level, a.mana_cost,
+                    a.cooldown_turns, a.base_value, a.scaling_stat, a.scaling_ratio,
+                    a.additional_effects, a.icon, a.animation_text, a.created_at
+             FROM abilities a
+             INNER JOIN user_active_abilities uaa ON a.id = uaa.ability_id
+             WHERE uaa.user_id = ?
+             ORDER BY uaa.slot_number",
+        )
+        .map_err(|e| format!("Failed to prepare statement: {}", e))?;
+
+    let active_abilities: Vec<Ability> = stmt
+        .query_map(params![user_id], Ability::from_row)
+        .map_err(|e| format!("Failed to query active abilities: {}", e))?
+        .collect::<SqlResult<Vec<Ability>>>()
+        .map_err(|e| format!("Failed to collect active abilities: {}", e))?;
+
+    // Combine: basic_attack first, then active abilities (avoiding duplicates)
+    let mut result: Vec<Ability> = Vec::new();
+
+    if let Some(ba) = basic_attack {
+        result.push(ba);
+    }
+
+    for ability in active_abilities {
+        if ability.id != "basic_attack" {
+            result.push(ability);
+        }
+    }
+
+    Ok(result)
 }

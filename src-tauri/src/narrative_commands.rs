@@ -466,6 +466,17 @@ pub fn apply_narrative_outcome(
     // Get current progress
     let progress = get_user_narrative_progress(app.clone(), user_id)?;
 
+    // Check if this choice/outcome has already been completed (to prevent reward farming)
+    let mut completed_choices: Vec<String> = if let Some(ref completed_str) = progress.completed_choices {
+        serde_json::from_str(completed_str).unwrap_or_default()
+    } else {
+        Vec::new()
+    };
+
+    // Use the outcome ID to track completion (more granular than choice_id)
+    let outcome_key = format!("{}:{}", outcome.choice_id, outcome.outcome_type);
+    let already_completed = completed_choices.contains(&outcome_key);
+
     // Update current location if outcome leads somewhere
     if let Some(ref next_location_id) = outcome.next_location_id {
         // Add to visited locations
@@ -498,83 +509,228 @@ pub fn apply_narrative_outcome(
             }
         }
 
+        // Mark this outcome as completed
+        if !already_completed {
+            completed_choices.push(outcome_key.clone());
+        }
+
         // Update database
         conn.execute(
             "UPDATE user_narrative_progress
              SET current_location_id = ?,
                  visited_locations = ?,
+                 completed_choices = ?,
                  story_flags = ?,
                  updated_at = CURRENT_TIMESTAMP
              WHERE user_id = ?",
             params![
                 next_location_id,
                 serde_json::to_string(&visited).unwrap(),
+                serde_json::to_string(&completed_choices).unwrap(),
                 serde_json::to_string(&flags).unwrap(),
                 user_id
             ],
         )
         .map_err(|e| format!("Failed to update location: {}", e))?;
+    } else if !already_completed {
+        // Even if no next location, mark the outcome as completed
+        completed_choices.push(outcome_key.clone());
+        conn.execute(
+            "UPDATE user_narrative_progress
+             SET completed_choices = ?,
+                 updated_at = CURRENT_TIMESTAMP
+             WHERE user_id = ?",
+            params![
+                serde_json::to_string(&completed_choices).unwrap(),
+                user_id
+            ],
+        )
+        .map_err(|e| format!("Failed to update completed choices: {}", e))?;
     }
 
-    // Apply rewards if any
-    if let Some(ref rewards_str) = outcome.rewards {
-        log::info!("Applying rewards: {}", rewards_str);
-        if let Ok(rewards) = serde_json::from_str::<serde_json::Value>(rewards_str) {
-            // Award gold
-            if let Some(gold) = rewards.get("gold").and_then(|v| v.as_i64()) {
-                log::info!("Awarding {} gold to user {}", gold, user_id);
-                let rows_affected = conn.execute(
-                    "UPDATE user_currency
-                     SET gold = gold + ?,
-                         lifetime_gold_earned = lifetime_gold_earned + ?
-                     WHERE user_id = ?",
-                    params![gold, gold, user_id],
-                )
-                .map_err(|e| format!("Failed to award gold: {}", e))?;
-                log::info!("Gold awarded, rows affected: {}", rows_affected);
-            }
+    // Only apply rewards if this is the FIRST time completing this outcome
+    // This prevents players from farming rewards by revisiting locations
+    if !already_completed {
+        // Apply rewards if any
+        if let Some(ref rewards_str) = outcome.rewards {
+            log::info!("Applying rewards (first time): {}", rewards_str);
+            if let Ok(rewards) = serde_json::from_str::<serde_json::Value>(rewards_str) {
+                // Award gold to BOTH dungeon currency and gamification currency
+                if let Some(gold) = rewards.get("gold").and_then(|v| v.as_i64()) {
+                    log::info!("Awarding {} gold to user {}", gold, user_id);
 
-            // Award XP
-            if let Some(xp) = rewards.get("xp").and_then(|v| v.as_i64()) {
-                log::info!("Awarding {} XP to user {}", xp, user_id);
-                conn.execute(
-                    "UPDATE user_dungeon_progress
-                     SET total_xp_earned = total_xp_earned + ?
-                     WHERE user_id = ?",
-                    params![xp, user_id],
-                )
-                .map_err(|e| format!("Failed to award XP: {}", e))?;
-            }
-
-            // Handle healing
-            if let Some(heal) = rewards.get("heal") {
-                if heal == "full" {
-                    // Restore to full HP
+                    // Award to dungeon gold (character_stats.current_gold) for dungeon shop
                     conn.execute(
                         "UPDATE character_stats
-                         SET current_health = max_health
+                         SET current_gold = current_gold + ?,
+                             updated_at = CURRENT_TIMESTAMP
                          WHERE user_id = ?",
-                        params![user_id],
+                        params![gold, user_id],
                     )
-                    .map_err(|e| format!("Failed to heal: {}", e))?;
-                } else if let Some(heal_amount) = heal.as_i64() {
-                    // Heal specific amount
+                    .map_err(|e| format!("Failed to award dungeon gold: {}", e))?;
+
+                    // Also award to gamification gold for tracking
+                    let rows_affected = conn.execute(
+                        "UPDATE user_currency
+                         SET gold = gold + ?,
+                             lifetime_gold_earned = lifetime_gold_earned + ?
+                         WHERE user_id = ?",
+                        params![gold, gold, user_id],
+                    )
+                    .map_err(|e| format!("Failed to award gamification gold: {}", e))?;
+                    log::info!("Gold awarded, rows affected: {}", rows_affected);
+                }
+
+                // Award XP and apply leveling
+                if let Some(xp) = rewards.get("xp").and_then(|v| v.as_i64()) {
+                    log::info!("Awarding {} XP to user {}", xp, user_id);
+
+                    // Get current level and XP
+                    let (current_level, current_xp): (i64, i64) = conn
+                        .query_row(
+                            "SELECT level, COALESCE((SELECT total_xp_earned FROM user_dungeon_progress WHERE user_id = ?), 0)
+                             FROM character_stats WHERE user_id = ?",
+                            params![user_id, user_id],
+                            |row| Ok((row.get(0)?, row.get(1)?)),
+                        )
+                        .unwrap_or((1, 0));
+
+                    // Update dungeon progress XP tracking
                     conn.execute(
-                        "UPDATE character_stats
-                         SET current_health = MIN(current_health + ?, max_health)
+                        "UPDATE user_dungeon_progress
+                         SET total_xp_earned = total_xp_earned + ?
                          WHERE user_id = ?",
-                        params![heal_amount, user_id],
+                        params![xp, user_id],
                     )
-                    .map_err(|e| format!("Failed to heal: {}", e))?;
+                    .map_err(|e| format!("Failed to award XP: {}", e))?;
+
+                    // Calculate level ups (100 XP per level)
+                    let new_total_xp = current_xp + xp;
+                    let mut new_level = current_level;
+                    let mut xp_remaining = new_total_xp;
+                    let mut levels_gained = 0i64;
+
+                    while xp_remaining >= new_level * 100 {
+                        xp_remaining -= new_level * 100;
+                        new_level += 1;
+                        levels_gained += 1;
+                    }
+
+                    // Apply level up if we gained levels
+                    if levels_gained > 0 {
+                        // Each level grants stat points - player chooses how to spend them
+                        let stat_points_gained = levels_gained;
+
+                        conn.execute(
+                            "UPDATE character_stats
+                             SET level = ?,
+                                 stat_points_available = stat_points_available + ?,
+                                 updated_at = CURRENT_TIMESTAMP
+                             WHERE user_id = ?",
+                            params![new_level, stat_points_gained, user_id],
+                        )
+                        .map_err(|e| format!("Failed to apply level up: {}", e))?;
+
+                        log::info!(
+                            "User {} leveled up from narrative reward! {} -> {} (+{} stat points)",
+                            user_id, current_level, new_level, stat_points_gained
+                        );
+                    }
+                }
+
+                // Handle healing (always apply, not a farmable reward)
+                if let Some(heal) = rewards.get("heal") {
+                    if heal == "full" {
+                        conn.execute(
+                            "UPDATE character_stats
+                             SET current_health = max_health
+                             WHERE user_id = ?",
+                            params![user_id],
+                        )
+                        .map_err(|e| format!("Failed to heal: {}", e))?;
+                    } else if let Some(heal_amount) = heal.as_i64() {
+                        conn.execute(
+                            "UPDATE character_stats
+                             SET current_health = MIN(current_health + ?, max_health)
+                             WHERE user_id = ?",
+                            params![heal_amount, user_id],
+                        )
+                        .map_err(|e| format!("Failed to heal: {}", e))?;
+                    }
+                }
+
+                // Handle item rewards
+                if let Some(items) = rewards.get("items").and_then(|v| v.as_array()) {
+                    for item_value in items {
+                        if let Some(item_id) = item_value.as_str() {
+                            // Try consumable first
+                            let is_consumable: bool = conn
+                                .query_row(
+                                    "SELECT EXISTS(SELECT 1 FROM consumable_items WHERE id = ?)",
+                                    params![item_id],
+                                    |row| row.get(0),
+                                )
+                                .unwrap_or(false);
+
+                            if is_consumable {
+                                conn.execute(
+                                    "INSERT INTO user_consumable_inventory (user_id, consumable_id, quantity, acquired_at)
+                                     VALUES (?, ?, 1, CURRENT_TIMESTAMP)
+                                     ON CONFLICT(user_id, consumable_id) DO UPDATE SET
+                                         quantity = quantity + 1",
+                                    params![user_id, item_id],
+                                )
+                                .map_err(|e| format!("Failed to add consumable: {}", e))?;
+                                log::info!("User {} received consumable: {}", user_id, item_id);
+                            } else {
+                                // Try equipment
+                                let is_equipment: bool = conn
+                                    .query_row(
+                                        "SELECT EXISTS(SELECT 1 FROM equipment_items WHERE id = ?)",
+                                        params![item_id],
+                                        |row| row.get(0),
+                                    )
+                                    .unwrap_or(false);
+
+                                if is_equipment {
+                                    let existing: Option<i64> = conn
+                                        .query_row(
+                                            "SELECT quantity FROM user_equipment_inventory
+                                             WHERE user_id = ? AND equipment_id = ?",
+                                            params![user_id, item_id],
+                                            |row| row.get(0),
+                                        )
+                                        .ok();
+
+                                    if existing.is_some() {
+                                        conn.execute(
+                                            "UPDATE user_equipment_inventory
+                                             SET quantity = quantity + 1
+                                             WHERE user_id = ? AND equipment_id = ?",
+                                            params![user_id, item_id],
+                                        )
+                                        .map_err(|e| format!("Failed to update equipment: {}", e))?;
+                                    } else {
+                                        conn.execute(
+                                            "INSERT INTO user_equipment_inventory (user_id, equipment_id, quantity, acquired_at)
+                                             VALUES (?, ?, 1, CURRENT_TIMESTAMP)",
+                                            params![user_id, item_id],
+                                        )
+                                        .map_err(|e| format!("Failed to add equipment: {}", e))?;
+                                    }
+                                    log::info!("User {} received equipment: {}", user_id, item_id);
+                                }
+                            }
+                        }
+                    }
                 }
             }
-
-            // TODO: Handle items/equipment rewards
-            // This would require inserting into character_inventory table
         }
+    } else {
+        log::info!("Outcome {} already completed by user {}, skipping rewards", outcome_key, user_id);
     }
 
-    // Apply penalties if any
+    // Penalties are ALWAYS applied (they're punishments, not rewards to farm)
     if let Some(ref penalties_str) = outcome.penalties {
         log::info!("Applying penalties: {}", penalties_str);
         if let Ok(penalties) = serde_json::from_str::<serde_json::Value>(penalties_str) {
@@ -598,12 +754,19 @@ pub fn apply_narrative_outcome(
             if let Some(gold_lost) = penalties.get("gold").and_then(|v| v.as_i64()) {
                 log::info!("Removing {} gold from user {}", gold_lost, user_id);
                 conn.execute(
+                    "UPDATE character_stats
+                     SET current_gold = MAX(0, current_gold - ?)
+                     WHERE user_id = ?",
+                    params![gold_lost, user_id],
+                )
+                .map_err(|e| format!("Failed to remove dungeon gold: {}", e))?;
+                conn.execute(
                     "UPDATE user_currency
                      SET gold = MAX(0, gold - ?)
                      WHERE user_id = ?",
                     params![gold_lost, user_id],
                 )
-                .map_err(|e| format!("Failed to remove gold: {}", e))?;
+                .map_err(|e| format!("Failed to remove gamification gold: {}", e))?;
             }
         }
     }

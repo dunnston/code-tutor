@@ -610,7 +610,8 @@ pub fn use_inventory_item(app: AppHandle, user_id: i64, item_id: String) -> Resu
 // Dungeon loot item structure
 #[derive(Debug, Deserialize)]
 pub struct DungeonLootItem {
-    #[serde(rename = "itemSource")]
+    // Made optional with default to handle legacy loot data
+    #[serde(rename = "itemSource", default = "default_item_source")]
     pub item_source: String, // "database" or "custom"
 
     #[serde(rename = "itemId")]
@@ -619,45 +620,139 @@ pub struct DungeonLootItem {
     #[serde(rename = "itemCategory")]
     pub item_category: Option<String>, // "equipment" or "consumable"
 
+    // Item type for legacy/custom items (e.g., "weapon", "potion")
+    #[serde(rename = "type", default)]
+    pub item_type: Option<String>,
+
     pub name: String,
+
+    #[serde(default = "default_quantity")]
     pub quantity: i64,
+
+    #[serde(default)]
+    pub description: Option<String>,
+}
+
+fn default_item_source() -> String {
+    "custom".to_string() // Default to custom for legacy items without itemSource
+}
+
+fn default_quantity() -> i64 {
+    1
 }
 
 #[tauri::command]
 pub fn add_dungeon_loot_to_inventory(
     app: AppHandle,
     user_id: i64,
-    loot_items: Vec<DungeonLootItem>
+    loot_items: Vec<DungeonLootItem>,
+    gold: Option<i64>,
+    xp: Option<i64>,
 ) -> Result<(), String> {
     let conn = db::get_connection(&app)?;
 
+    // Add gold if provided
+    if let Some(gold_amount) = gold {
+        if gold_amount > 0 {
+            // Add to dungeon gold (character_stats.current_gold)
+            conn.execute(
+                "UPDATE character_stats SET current_gold = current_gold + ? WHERE user_id = ?",
+                params![gold_amount, user_id]
+            ).map_err(|e| format!("Failed to add dungeon gold: {}", e))?;
+
+            // Also add to gamification gold
+            conn.execute(
+                "UPDATE user_currency SET gold = gold + ?, lifetime_gold_earned = lifetime_gold_earned + ? WHERE user_id = ?",
+                params![gold_amount, gold_amount, user_id]
+            ).map_err(|e| format!("Failed to add gamification gold: {}", e))?;
+        }
+    }
+
+    // Add XP if provided
+    if let Some(xp_amount) = xp {
+        if xp_amount > 0 {
+            conn.execute(
+                "UPDATE user_dungeon_progress SET total_xp_earned = total_xp_earned + ? WHERE user_id = ?",
+                params![xp_amount, user_id]
+            ).map_err(|e| format!("Failed to add XP: {}", e))?;
+        }
+    }
+
     for item in loot_items {
-        // Only process database items (skip custom items for now)
+        // Process database items
         if item.item_source == "database" {
-            if let (Some(item_id), Some(category)) = (item.item_id, item.item_category) {
-                match category.as_str() {
-                    "equipment" => {
-                        // Add to equipment inventory
-                        conn.execute(
-                            "INSERT INTO user_equipment_inventory (user_id, equipment_id, is_equipped, acquired_at)
-                             VALUES (?, ?, 0, CURRENT_TIMESTAMP)",
-                            params![user_id, item_id]
-                        ).map_err(|e| format!("Failed to add equipment to inventory: {}", e))?;
-                    },
-                    "consumable" => {
-                        // Add to consumable inventory (merge with existing)
-                        conn.execute(
-                            "INSERT INTO user_consumable_inventory (user_id, consumable_id, quantity, acquired_at)
-                             VALUES (?, ?, ?, CURRENT_TIMESTAMP)
-                             ON CONFLICT(user_id, consumable_id) DO UPDATE SET quantity = quantity + ?",
-                            params![user_id, item_id, item.quantity, item.quantity]
-                        ).map_err(|e| format!("Failed to add consumable to inventory: {}", e))?;
-                    },
-                    _ => {
-                        eprintln!("Unknown item category: {}", category);
+            if let Some(item_id) = item.item_id {
+                // Try to determine category if not provided
+                let category = item.item_category.clone().or_else(|| {
+                    // Auto-detect: check if item exists in equipment_items or consumable_items
+                    let is_equipment: bool = conn.query_row(
+                        "SELECT EXISTS(SELECT 1 FROM equipment_items WHERE id = ?)",
+                        params![&item_id],
+                        |row| row.get(0)
+                    ).unwrap_or(false);
+
+                    if is_equipment {
+                        Some("equipment".to_string())
+                    } else {
+                        let is_consumable: bool = conn.query_row(
+                            "SELECT EXISTS(SELECT 1 FROM consumable_items WHERE id = ?)",
+                            params![&item_id],
+                            |row| row.get(0)
+                        ).unwrap_or(false);
+
+                        if is_consumable {
+                            Some("consumable".to_string())
+                        } else {
+                            None
+                        }
                     }
+                });
+
+                if let Some(cat) = category {
+                    match cat.as_str() {
+                        "equipment" => {
+                            // Check if already in inventory
+                            let existing: Option<i64> = conn.query_row(
+                                "SELECT quantity FROM user_equipment_inventory WHERE user_id = ? AND equipment_id = ?",
+                                params![user_id, &item_id],
+                                |row| row.get(0)
+                            ).ok();
+
+                            if existing.is_some() {
+                                conn.execute(
+                                    "UPDATE user_equipment_inventory SET quantity = quantity + ? WHERE user_id = ? AND equipment_id = ?",
+                                    params![item.quantity, user_id, &item_id]
+                                ).map_err(|e| format!("Failed to update equipment quantity: {}", e))?;
+                            } else {
+                                conn.execute(
+                                    "INSERT INTO user_equipment_inventory (user_id, equipment_id, quantity, acquired_at)
+                                     VALUES (?, ?, ?, CURRENT_TIMESTAMP)",
+                                    params![user_id, &item_id, item.quantity]
+                                ).map_err(|e| format!("Failed to add equipment to inventory: {}", e))?;
+                            }
+                            log::info!("Added equipment {} x{} to user {}'s inventory", item_id, item.quantity, user_id);
+                        },
+                        "consumable" => {
+                            // Add to consumable inventory (merge with existing)
+                            conn.execute(
+                                "INSERT INTO user_consumable_inventory (user_id, consumable_id, quantity, acquired_at)
+                                 VALUES (?, ?, ?, CURRENT_TIMESTAMP)
+                                 ON CONFLICT(user_id, consumable_id) DO UPDATE SET quantity = quantity + ?",
+                                params![user_id, &item_id, item.quantity, item.quantity]
+                            ).map_err(|e| format!("Failed to add consumable to inventory: {}", e))?;
+                            log::info!("Added consumable {} x{} to user {}'s inventory", item_id, item.quantity, user_id);
+                        },
+                        _ => {
+                            log::warn!("Unknown item category '{}' for item {}", cat, item_id);
+                        }
+                    }
+                } else {
+                    log::warn!("Could not determine category for item_id: {}", item_id);
                 }
             }
+        } else {
+            // Custom items - log them but don't add to database tables (they're in-dungeon only)
+            log::info!("Custom loot item '{}' x{} - not adding to persistent inventory", item.name, item.quantity);
         }
     }
 

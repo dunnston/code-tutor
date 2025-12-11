@@ -317,6 +317,11 @@ export async function removeActiveAbility(userId: number, slotNumber: number): P
   await invoke('remove_active_ability', { userId, slotNumber });
 }
 
+export async function getActiveAbilitiesForCombat(userId: number): Promise<Ability[]> {
+  const rawAbilities = await invoke<AbilityRaw[]>('get_active_abilities_for_combat', { userId });
+  return rawAbilities.map(convertAbility);
+}
+
 // ============================================================================
 // DUNGEON EXPLORATION
 // ============================================================================
@@ -422,11 +427,49 @@ export async function getCustomEnemyById(enemyId: string): Promise<EnemyType> {
   const baseDamage = customEnemy.base_attack || customEnemy.baseAttack || 10;
   const baseDefense = customEnemy.base_defense || customEnemy.baseDefense || 5;
 
+  // Parse attack animation if it's a JSON string
+  let attackAnimationPath: string | undefined;
+  if (customEnemy.attack_animation || customEnemy.attackAnimation) {
+    const animData = customEnemy.attack_animation || customEnemy.attackAnimation;
+    if (typeof animData === 'string') {
+      try {
+        const parsed = JSON.parse(animData);
+        attackAnimationPath = parsed.path;
+      } catch {
+        // If it's not JSON, treat it as a direct path
+        attackAnimationPath = animData;
+      }
+    } else if (animData?.path) {
+      attackAnimationPath = animData.path;
+    }
+
+    // Normalize the path - ensure it starts with /src/images/
+    if (attackAnimationPath) {
+      // Remove leading slash if present for consistent processing
+      let normalizedPath = attackAnimationPath.startsWith('/')
+        ? attackAnimationPath.slice(1)
+        : attackAnimationPath;
+
+      // If path doesn't already include src/images, prepend it
+      if (!normalizedPath.startsWith('src/images/')) {
+        // Handle paths like "animations/wolf.gif" or "images/animations/wolf.gif"
+        if (normalizedPath.startsWith('images/')) {
+          normalizedPath = 'src/' + normalizedPath;
+        } else {
+          normalizedPath = 'src/images/' + normalizedPath;
+        }
+      }
+
+      attackAnimationPath = '/' + normalizedPath;
+    }
+  }
+
   console.log('Converted enemy stats:', {
     name: customEnemy.name,
     baseHealth,
     baseDamage,
-    baseDefense
+    baseDefense,
+    attackAnimation: attackAnimationPath
   });
 
   // Convert CustomEnemy to EnemyType format
@@ -444,6 +487,7 @@ export async function getCustomEnemyById(enemyId: string): Promise<EnemyType> {
     lootTable: [], // Custom enemies don't have loot tables yet
     icon: customEnemy.image_path || customEnemy.imagePath || '👹',
     asciiArt: undefined,
+    attackAnimation: attackAnimationPath,
     createdAt: new Date(customEnemy.created_at || customEnemy.createdAt),
   };
 }

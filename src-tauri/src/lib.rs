@@ -120,6 +120,7 @@ pub fn run() {
       rpg_commands::get_all_abilities_with_status,
       rpg_commands::set_active_ability,
       rpg_commands::remove_active_ability,
+      rpg_commands::get_active_abilities_for_combat,
       // RPG - Character Sheet commands
       rpg_commands::get_equipment_inventory,
       rpg_commands::equip_item_to_slot,

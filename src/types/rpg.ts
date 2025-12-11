@@ -382,6 +382,7 @@ export interface EnemyType {
   }>;
   icon: string;
   asciiArt?: string;
+  attackAnimation?: string; // Path to attack animation GIF
   createdAt: Date;
 }
 

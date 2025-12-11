@@ -1,5 +1,6 @@
 use rusqlite::params;
 use serde::{Deserialize, Serialize};
+use serde_json;
 use tauri::AppHandle;
 use rand::Rng;
 
@@ -368,6 +369,12 @@ pub struct CombatRewards {
     pub items_looted: Vec<String>,
 }
 
+#[derive(Debug, Serialize, Deserialize)]
+struct LootEntry {
+    item: String,
+    chance: f64,
+}
+
 #[tauri::command]
 pub fn end_combat_victory(
     app: AppHandle,
@@ -384,7 +391,17 @@ pub fn end_combat_victory(
     let gold_gained = rng.gen_range(enemy.gold_drop_min..=enemy.gold_drop_max);
     let xp_gained = enemy.xp_reward;
 
-    // Award gold (using existing gamification system)
+    // Award gold to DUNGEON currency (character_stats.current_gold) for dungeon shop
+    conn.execute(
+        "UPDATE character_stats
+         SET current_gold = current_gold + ?,
+             updated_at = CURRENT_TIMESTAMP
+         WHERE user_id = ?",
+        params![gold_gained, user_id],
+    )
+    .map_err(|e| format!("Failed to award dungeon gold: {}", e))?;
+
+    // Also update gamification gold for general rewards tracking
     conn.execute(
         "UPDATE user_currency
          SET gold = gold + ?,
@@ -392,7 +409,62 @@ pub fn end_combat_victory(
          WHERE user_id = ?",
         params![gold_gained, gold_gained, user_id],
     )
-    .map_err(|e| format!("Failed to award gold: {}", e))?;
+    .map_err(|e| format!("Failed to award gamification gold: {}", e))?;
+
+    // Apply XP and check for level up
+    let (current_level, current_xp): (i64, i64) = conn
+        .query_row(
+            "SELECT level, COALESCE((SELECT total_xp_earned FROM user_dungeon_progress WHERE user_id = ?), 0)
+             FROM character_stats WHERE user_id = ?",
+            params![user_id, user_id],
+            |row| Ok((row.get(0)?, row.get(1)?)),
+        )
+        .map_err(|e| format!("Failed to get current level: {}", e))?;
+
+    // XP required per level: 100 XP per level (level 1 needs 100 XP, level 2 needs 200 XP total, etc.)
+    let new_total_xp = current_xp + xp_gained;
+
+    // Calculate if we leveled up
+    let mut new_level = current_level;
+    let mut xp_remaining = new_total_xp;
+    let mut levels_gained = 0i64;
+
+    while xp_remaining >= new_level * 100 {
+        xp_remaining -= new_level * 100;
+        new_level += 1;
+        levels_gained += 1;
+    }
+
+    // Apply level up if we gained levels
+    if levels_gained > 0 {
+        // Each level grants stat points - player chooses how to spend them
+        let stat_points_gained = levels_gained;
+
+        conn.execute(
+            "UPDATE character_stats
+             SET level = ?,
+                 stat_points_available = stat_points_available + ?,
+                 updated_at = CURRENT_TIMESTAMP
+             WHERE user_id = ?",
+            params![new_level, stat_points_gained, user_id],
+        )
+        .map_err(|e| format!("Failed to apply level up: {}", e))?;
+
+        log::info!(
+            "User {} leveled up! {} -> {} (+{} stat points)",
+            user_id, current_level, new_level, stat_points_gained
+        );
+
+        // Check for new ability unlocks
+        conn.execute(
+            "INSERT OR IGNORE INTO user_abilities (user_id, ability_id, unlocked_at)
+             SELECT ?, id, CURRENT_TIMESTAMP
+             FROM abilities
+             WHERE required_level <= ?",
+            params![user_id, new_level],
+        )
+        .map_err(|e| format!("Failed to unlock abilities: {}", e))?;
+    }
 
     // Update dungeon progress
     conn.execute(
@@ -431,12 +503,116 @@ pub fn end_combat_victory(
     )
     .map_err(|e| format!("Failed to log combat: {}", e))?;
 
-    // TODO: Handle loot drops
+    // Process loot drops from enemy loot_table
+    let mut items_looted: Vec<String> = vec![];
+
+    if let Some(loot_table_json) = &enemy.loot_table {
+        if !loot_table_json.is_empty() {
+            // Parse loot table JSON: [{"item": "health_potion_small", "chance": 0.15}, ...]
+            if let Ok(loot_entries) = serde_json::from_str::<Vec<LootEntry>>(loot_table_json) {
+                for entry in loot_entries {
+                    let roll: f64 = rng.gen();
+                    if roll < entry.chance {
+                        // Item dropped! Determine if it's equipment or consumable
+                        let item_id = &entry.item;
+
+                        // Try to add as consumable first
+                        let is_consumable: bool = conn
+                            .query_row(
+                                "SELECT EXISTS(SELECT 1 FROM consumable_items WHERE id = ?)",
+                                params![item_id],
+                                |row| row.get(0),
+                            )
+                            .unwrap_or(false);
+
+                        if is_consumable {
+                            // Add to consumable inventory (upsert)
+                            conn.execute(
+                                "INSERT INTO user_consumable_inventory (user_id, consumable_id, quantity, acquired_at)
+                                 VALUES (?, ?, 1, CURRENT_TIMESTAMP)
+                                 ON CONFLICT(user_id, consumable_id) DO UPDATE SET
+                                     quantity = quantity + 1",
+                                params![user_id, item_id],
+                            )
+                            .map_err(|e| format!("Failed to add consumable loot: {}", e))?;
+
+                            // Get item name for display
+                            let item_name: String = conn
+                                .query_row(
+                                    "SELECT name FROM consumable_items WHERE id = ?",
+                                    params![item_id],
+                                    |row| row.get(0),
+                                )
+                                .unwrap_or_else(|_| item_id.clone());
+
+                            items_looted.push(item_name);
+                            log::info!("User {} looted consumable: {}", user_id, item_id);
+                        } else {
+                            // Try as equipment
+                            let is_equipment: bool = conn
+                                .query_row(
+                                    "SELECT EXISTS(SELECT 1 FROM equipment_items WHERE id = ?)",
+                                    params![item_id],
+                                    |row| row.get(0),
+                                )
+                                .unwrap_or(false);
+
+                            if is_equipment {
+                                // Check if already in inventory
+                                let existing: Option<i64> = conn
+                                    .query_row(
+                                        "SELECT quantity FROM user_equipment_inventory
+                                         WHERE user_id = ? AND equipment_id = ?",
+                                        params![user_id, item_id],
+                                        |row| row.get(0),
+                                    )
+                                    .ok();
+
+                                if existing.is_some() {
+                                    conn.execute(
+                                        "UPDATE user_equipment_inventory
+                                         SET quantity = quantity + 1
+                                         WHERE user_id = ? AND equipment_id = ?",
+                                        params![user_id, item_id],
+                                    )
+                                    .map_err(|e| format!("Failed to update equipment quantity: {}", e))?;
+                                } else {
+                                    conn.execute(
+                                        "INSERT INTO user_equipment_inventory (user_id, equipment_id, quantity, acquired_at)
+                                         VALUES (?, ?, 1, CURRENT_TIMESTAMP)",
+                                        params![user_id, item_id],
+                                    )
+                                    .map_err(|e| format!("Failed to add equipment loot: {}", e))?;
+                                }
+
+                                // Get item name for display
+                                let item_name: String = conn
+                                    .query_row(
+                                        "SELECT name FROM equipment_items WHERE id = ?",
+                                        params![item_id],
+                                        |row| row.get(0),
+                                    )
+                                    .unwrap_or_else(|_| item_id.clone());
+
+                                items_looted.push(item_name);
+                                log::info!("User {} looted equipment: {}", user_id, item_id);
+                            } else {
+                                // Item ID not found in either table - log but don't fail
+                                log::warn!("Loot item '{}' not found in consumable or equipment tables", item_id);
+                            }
+                        }
+                    }
+                }
+            } else {
+                log::warn!("Failed to parse loot_table JSON for enemy {}: {}", enemy.id, loot_table_json);
+            }
+        }
+    }
 
     Ok(CombatRewards {
         xp_gained,
         gold_gained,
-        items_looted: vec![],
+        items_looted,
     })
 }
 

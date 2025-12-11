@@ -623,17 +623,19 @@ export const LevelPlayerEnhanced: React.FC<LevelPlayerEnhancedProps> = ({
       label: 'Take Loot',
       action: async () => {
         try {
-          // Add items to actual inventory in database
-          if (data.items.length > 0) {
-            await invoke('add_dungeon_loot_to_inventory', {
-              userId,
-              lootItems: data.items
-            });
-            addNarrative('✅ Items added to your inventory!');
+          // Add items, gold, and XP to actual inventory in database
+          await invoke('add_dungeon_loot_to_inventory', {
+            userId,
+            lootItems: data.items,
+            gold: data.gold || 0,
+            xp: data.xp || 0
+          });
+          if (data.items.length > 0 || data.gold > 0 || data.xp > 0) {
+            addNarrative('✅ Loot added to your inventory!');
           }
         } catch (error) {
           console.error('Failed to add loot to inventory:', error);
-          addNarrative('⚠️ Warning: Failed to save items to inventory');
+          addNarrative('⚠️ Warning: Failed to save loot to inventory');
         }
         autoProgress(node);
       },
