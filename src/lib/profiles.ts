@@ -83,23 +83,22 @@ export function saveProfiles(profiles: UserProfile[]): void {
 
 /**
  * Ensure profile has a database user ID
+ * Always validates by calling getOrCreateUser to handle database resets
  */
 export async function ensureProfileHasDbUser(profile: UserProfile): Promise<number> {
-  // If profile already has a dbUserId, return it
-  if (profile.dbUserId) {
-    return profile.dbUserId
-  }
-
-  // Otherwise, get or create a database user
+  // Always call getOrCreateUser to ensure the user exists in the current database
+  // This handles cases where the database was reset/deleted but localStorage persisted
   const { getOrCreateUser } = await import('./gamification')
   const dbUserId = await getOrCreateUser(profile.id)
 
-  // Update the profile with the dbUserId
-  const profiles = loadProfiles()
-  const index = profiles.findIndex((p) => p.id === profile.id)
-  if (index !== -1) {
-    profiles[index]!.dbUserId = dbUserId
-    saveProfiles(profiles)
+  // Update the profile with the dbUserId if it changed or wasn't set
+  if (profile.dbUserId !== dbUserId) {
+    const profiles = loadProfiles()
+    const index = profiles.findIndex((p) => p.id === profile.id)
+    if (index !== -1) {
+      profiles[index]!.dbUserId = dbUserId
+      saveProfiles(profiles)
+    }
   }
 
   return dbUserId
