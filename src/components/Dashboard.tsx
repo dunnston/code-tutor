@@ -31,39 +31,31 @@ export function Dashboard({ onLogout }: DashboardProps) {
           onOpenCharacterSheet={() => setCharacterSheetOpen(true)}
         />
 
-        {/* Playground Widget */}
+        {/* Stats Grid */}
         <section className="mt-6">
+          <StatsGrid />
+        </section>
+
+        {/* Active Course & Playground - Side by Side */}
+        <section className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+          <ActiveCourseCard />
           <PlaygroundWidget />
         </section>
 
-        {/* Active Courses Section */}
-        <section className="mt-8">
-          <ActiveCourseCard />
-        </section>
-
-        {/* Stats Grid */}
-        <section className="mt-8">
-          <StatsGrid />
+        {/* Dungeon & Puzzle Widgets - Side by Side */}
+        <section className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+          {currentUserId && (
+            <DungeonWidget
+              userId={currentUserId}
+              onEnterDungeon={() => setDungeonOpen(true)}
+            />
+          )}
+          <PuzzleWidget />
         </section>
 
         {/* Gamification Widget - Shop, Inventory, Quests */}
         <section className="mt-8">
           <GamificationWidget />
-        </section>
-
-        {/* RPG Dungeon Widget */}
-        {currentUserId && (
-          <section className="mt-8">
-            <DungeonWidget
-              userId={currentUserId}
-              onEnterDungeon={() => setDungeonOpen(true)}
-            />
-          </section>
-        )}
-
-        {/* Puzzle Widget */}
-        <section className="mt-8">
-          <PuzzleWidget />
         </section>
 
         {/* Course Catalog */}

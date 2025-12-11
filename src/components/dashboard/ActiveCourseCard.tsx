@@ -15,8 +15,8 @@ export function ActiveCourseCard() {
     return (
       <div className="bg-navy-800 rounded-xl p-8 border border-navy-700 text-center">
         <div className="text-5xl mb-4">📚</div>
-        <h3 className="text-xl font-semibold text-gray-300 mb-2">No Active Courses</h3>
-        <p className="text-gray-400">Activate a course from the Explore Courses section below to start your learning journey!</p>
+        <h3 className="text-xl font-semibold text-gray-300 mb-2">No Active Course</h3>
+        <p className="text-gray-400">Activate a course from the Explore Courses section below to start learning!</p>
       </div>
     )
   }
@@ -79,9 +79,8 @@ export function ActiveCourseCard() {
         onCancel={() => setConfirmModal(null)}
       />
 
-      <div className="space-y-4">
-        <h2 className="text-2xl font-bold text-gray-100">Your Active Courses</h2>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <div className="space-y-4 h-full flex flex-col">
+        <h2 className="text-lg font-bold text-gray-100">Active Course</h2>
         {activeCourses.map(({ course, progress }) => {
           if (!course) return null
 
@@ -91,7 +90,7 @@ export function ActiveCourseCard() {
           return (
             <div
               key={course.id}
-              className="bg-gradient-to-br from-accent-600 to-orange-700 rounded-xl p-6 border border-accent-500 shadow-lg"
+              className="bg-gradient-to-br from-accent-600 to-orange-700 rounded-xl p-6 border border-accent-500 shadow-lg flex-1 flex flex-col"
             >
               {/* Course Header */}
               <div className="flex items-start justify-between mb-4">
@@ -132,6 +131,9 @@ export function ActiveCourseCard() {
                 </div>
               )}
 
+              {/* Spacer */}
+              <div className="flex-1" />
+
               {/* Action Button */}
               <div className="mt-4">
                 {isCompleted ? (
@@ -169,7 +171,6 @@ export function ActiveCourseCard() {
             </div>
           )
         })}
-        </div>
       </div>
     </>
   )

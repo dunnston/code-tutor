@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { getTownState, setTownState, getCharacterStats, restoreHealthAndMana, updateDungeonFloor } from '../../lib/rpg';
 import { ShopWidget } from './ShopWidget';
-import { DungeonExplorer } from './DungeonExplorer';
+import { DungeonCampaignManager } from '../dungeon-editor/DungeonCampaignManager';
 import { CharacterSheet } from './CharacterSheet';
 import type { CharacterStats } from '../../types/rpg';
 
@@ -115,9 +115,9 @@ export function TownHub({ userId, onClose }: TownHubProps) {
           </div>
         </div>
 
-        <DungeonExplorer
+        <DungeonCampaignManager
           userId={userId}
-          onClose={handleReturnToTownClick}
+          onReturnToTown={handleReturnToTownClick}
         />
 
         {/* Return to Town Warning Modal */}
